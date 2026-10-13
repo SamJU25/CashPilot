@@ -1,17 +1,17 @@
 # Graph Report - SME Finance Copilot  (2026-10-14)
 
 ## Corpus Check
-- 164 files · ~76,781 words
+- 165 files · ~75,486 words
 - Verdict: corpus is large enough that graph structure adds value.
-- Unclassified: 3 file(s) not represented in the graph (top: (none) 3)
+- Unclassified: 4 file(s) not represented in the graph (top: (none) 4)
 
 ## Summary
-- 1458 nodes · 1332 edges · 172 communities (160 shown, 12 thin omitted)
+- 1452 nodes · 1325 edges · 173 communities (160 shown, 13 thin omitted)
 - Extraction: 100% EXTRACTED · 0% INFERRED · 0% AMBIGUOUS
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `b6212618`
+- Built from commit: `ff48e665`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -30,7 +30,7 @@
 - 1. Core SME Working Capital & Liquidity Metrics
 - 2. Specialized Agent Personas & Responsibilities
 - 1. Mandatory Invariants for Every Project
-- 3. Subagent Suites Directory (57 Specialized Subagents)
+- 2. Subagent Suites Directory (57 Specialized Subagents)
 - YouTube (yt-dlp)
 - first-principles-thinking (Suite: 6-product-pitch)
 - Step 3: Model-integrity checks (MODEL scope only)
@@ -187,6 +187,7 @@
 - package.json
 - 2. Mandatory Invariants (Strict Enforcement)
 - SME Finance Copilot
+- workflows/graphify.md
 
 ## God Nodes (most connected - your core abstractions)
 1. `DCF Process Workflow` - 30 edges
@@ -206,7 +207,7 @@
 ## Import Cycles
 - None detected.
 
-## Communities (172 total, 12 thin omitted)
+## Communities (173 total, 13 thin omitted)
 
 ### Community 0 - "DCF Model Builder"
 Cohesion: 0.04
@@ -264,9 +265,9 @@ Nodes (21): 1. Operating Model: Orchestrator & Specialist Team, 2. Specialized A
 Cohesion: 0.09
 Nodes (22): 1.1 Knowledge Graph Synchronization (`graphify`), 1.2 Internet Research Routing (`agent-reach`), 1.3 Anti-Slop & Writing Discipline (`antislop` & `no-ai-slop`), 1.4 Senior Developer Ladder (`ponytail`), 1.5 Domain Alignment & ADR Protocol (`domain-alignment`), 1.6 Frontend Design Engineering (`frontend-craft`), 1.7 ADHD-Friendly Communication Protocol (`i-have-adhd`), 1. Mandatory Invariants for Every Project (+14 more)
 
-### Community 14 - "3. Subagent Suites Directory (57 Specialized Subagents)"
-Cohesion: 0.09
-Nodes (21): 1. Multi-Agent Operating Model & Hierarchy Matrix, 2. Complete Skills Registry (54 Curated Skills), 3. Subagent Suites Directory (57 Specialized Subagents), 4.1 Gate-by-Gate Engineering Decision Matrix, 4.2 Dynamic Task Routing Matrix (Scenario-to-Squad Mapping), 4. Andrej Karpathy × Superpowers Decision Engine (When to Use Which Agent, Skill & Rule), Category A: Global Engineering Governance & Methodologies (18 Skills), Category B: Global Specialist Capabilities (12 Skills) (+13 more)
+### Community 14 - "2. Subagent Suites Directory (57 Specialized Subagents)"
+Cohesion: 0.14
+Nodes (13): 1. Multi-Agent Operating Model & Hierarchy Matrix, 2. Subagent Suites Directory (57 Specialized Subagents), 3. Dynamic Task Routing Matrix (Scenario-to-Squad Mapping), 4. Antigravity Agent Execution Protocol, SME Finance Copilot — AI Agents & Task Routing Engine, Suite 0: Global Governance Specialists (`.agent/agents/0-global-specialists/`), Suite 1: Agentic AI Orchestration (`.agent/agents/1-agentic-orchestration/`), Suite 2: FinTech Engine & Blockchain (`.agent/agents/2-fintech-engine/`) (+5 more)
 
 ### Community 15 - "YouTube (yt-dlp)"
 Cohesion: 0.12
@@ -849,9 +850,9 @@ Cohesion: 0.17
 Nodes (11): 1. Executive Summary & Problem Statement, 2. Core Architecture & Hackathon Rubric Alignment, 3. The Three-Tier Security Gate, 4. Quick Start & Installation, 5. Development & Assistant Compatibility, 6. Repository Documentation Index, 7. License, SME Finance Copilot (+3 more)
 
 ## Knowledge Gaps
-- **998 isolated node(s):** `config.sh script`, `SUBAGENT_CATALOG_TTL_SECONDS`, `SUBAGENT_CATALOG_CACHE_FILE`, `SUBAGENT_CATALOG_REPO_URL`, `name` (+993 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 1158 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
-- **12 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **993 isolated node(s):** `config.sh script`, `SUBAGENT_CATALOG_TTL_SECONDS`, `SUBAGENT_CATALOG_CACHE_FILE`, `SUBAGENT_CATALOG_REPO_URL`, `name` (+988 more)
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 1154 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **13 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
@@ -861,7 +862,7 @@ _Questions this graph is uniquely positioned to answer:_
 - **Why does `DCF Model Builder` connect `DCF Model Builder` to `DCF Process Workflow`?**
   _High betweenness centrality (0.001) - this node is a cross-community bridge._
 - **What connects `config.sh script`, `SUBAGENT_CATALOG_TTL_SECONDS`, `SUBAGENT_CATALOG_CACHE_FILE` to the rest of the system?**
-  _998 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _993 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `DCF Model Builder` be split into smaller, more focused modules?**
   _Cohesion score 0.04081632653061224 - nodes in this community are weakly interconnected._
 - **Should `Equity Research Earnings Update` be split into smaller, more focused modules?**

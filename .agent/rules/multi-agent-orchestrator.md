@@ -1,3 +1,8 @@
+---
+trigger: model_decision
+description: Multi-agent orchestration blueprint, specialist personas, and squad delegation protocols.
+---
+
 # Multi-Agent Orchestration Blueprint (AGENTS.md)
 
 ## 1. Operating Model: Orchestrator & Specialist Team

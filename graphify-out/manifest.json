@@ -372,9 +372,9 @@
     "semantic_hash": ""
   },
   ".agent/rules/multi-agent-orchestrator.md": {
-    "mtime": 1791150940.8382723,
-    "seen": 1791903716.169051,
-    "ast_hash": "c6f1c1985bb6f7b02f9a7de3d1eb64bb",
+    "mtime": 1791924676.7308986,
+    "seen": 1791924772.615209,
+    "ast_hash": "11231f652cf0a18329b0772ed6c4eeb5",
     "semantic_hash": ""
   },
   ".agent/rules/no-ai-slop.md": {
@@ -924,15 +924,15 @@
     "semantic_hash": ""
   },
   "AGENTS.md": {
-    "mtime": 1791905931.6917336,
-    "seen": 1791905974.230689,
-    "ast_hash": "c8b5e2d1dee41806f9c3b51f0064637d",
+    "mtime": 1791924709.0994766,
+    "seen": 1791924772.6153994,
+    "ast_hash": "8b6d8d0d0a535c197de330e42492b1cf",
     "semantic_hash": ""
   },
   "GEMINI.md": {
-    "mtime": 1791905888.5487597,
-    "seen": 1791905974.2306905,
-    "ast_hash": "6f4c3c3ffd8392977b141f7bf50199c5",
+    "mtime": 1791924759.5869462,
+    "seen": 1791924772.6154032,
+    "ast_hash": "fc3954354caf3ae08c5134379925a128",
     "semantic_hash": ""
   },
   "GLOSSARY.md": {
@@ -999,6 +999,12 @@
     "mtime": 1791908044.0118167,
     "seen": 1791908105.874442,
     "ast_hash": "d60e61ebe660556ee99f8f178cbaf8b9",
+    "semantic_hash": ""
+  },
+  ".agent/workflows/graphify.md": {
+    "mtime": 1791924565.0992022,
+    "seen": 1791924772.6153972,
+    "ast_hash": "a831cf3669f1e6ab85d8a80ebe655f99",
     "semantic_hash": ""
   }
 }

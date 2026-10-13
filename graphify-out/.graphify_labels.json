@@ -13,7 +13,7 @@
   "11": "1. Core SME Working Capital & Liquidity Metrics",
   "12": "2. Specialized Agent Personas & Responsibilities",
   "13": "1. Mandatory Invariants for Every Project",
-  "14": "3. Subagent Suites Directory (57 Specialized Subagents)",
+  "14": "2. Subagent Suites Directory (57 Specialized Subagents)",
   "15": "YouTube (yt-dlp)",
   "16": "first-principles-thinking (Suite: 6-product-pitch)",
   "17": "Step 3: Model-integrity checks (MODEL scope only)",
@@ -170,5 +170,6 @@
   "168": "Rule: ADHD-Friendly Output Protocol (i-have-adhd)",
   "169": "package.json",
   "170": "2. Mandatory Invariants (Strict Enforcement)",
-  "171": "SME Finance Copilot"
+  "171": "SME Finance Copilot",
+  "172": "workflows/graphify.md"
 }

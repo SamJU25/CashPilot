@@ -1,14 +1,19 @@
-# Graph Report - SME Finance Copilot  (2026-10-13)
+# Graph Report - SME Finance Copilot  (2026-10-14)
 
 ## Corpus Check
-- 164 files · ~76,422 words
+- 164 files · ~76,781 words
 - Verdict: corpus is large enough that graph structure adds value.
-- Unclassified: 2 file(s) not represented in the graph (top: (none) 2)
+- Unclassified: 3 file(s) not represented in the graph (top: (none) 3)
 
 ## Summary
 - 1458 nodes · 1332 edges · 172 communities (160 shown, 12 thin omitted)
 - Extraction: 100% EXTRACTED · 0% INFERRED · 0% AMBIGUOUS
 - Token cost: 0 input · 0 output
+
+## Graph Freshness
+- Built from commit: `b6212618`
+- Run `git rev-parse HEAD` and compare to check if the graph is stale.
+- Run `graphify update .` after code changes (no API cost).
 
 ## Community Hubs (Navigation)
 - DCF Model Builder
@@ -841,11 +846,11 @@ Nodes (15): 1. Environment & Architecture Overview, 2.10 Terminal Verification B
 
 ### Community 171 - "SME Finance Copilot"
 Cohesion: 0.17
-Nodes (11): 1. Quick Start for Teammates, 2. Using AI Coding Assistants, 3. Core Developer Commands, 4. Key Documentation Links, Claude / Claude Code, Cursor / VS Code / Other Assistants, Google Antigravity, SME Finance Copilot (+3 more)
+Nodes (11): 1. Executive Summary & Problem Statement, 2. Core Architecture & Hackathon Rubric Alignment, 3. The Three-Tier Security Gate, 4. Quick Start & Installation, 5. Development & Assistant Compatibility, 6. Repository Documentation Index, 7. License, SME Finance Copilot (+3 more)
 
 ## Knowledge Gaps
-- **997 isolated node(s):** `config.sh script`, `SUBAGENT_CATALOG_TTL_SECONDS`, `SUBAGENT_CATALOG_CACHE_FILE`, `SUBAGENT_CATALOG_REPO_URL`, `name` (+992 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 1157 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **998 isolated node(s):** `config.sh script`, `SUBAGENT_CATALOG_TTL_SECONDS`, `SUBAGENT_CATALOG_CACHE_FILE`, `SUBAGENT_CATALOG_REPO_URL`, `name` (+993 more)
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 1158 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
 - **12 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
@@ -856,7 +861,7 @@ _Questions this graph is uniquely positioned to answer:_
 - **Why does `DCF Model Builder` connect `DCF Model Builder` to `DCF Process Workflow`?**
   _High betweenness centrality (0.001) - this node is a cross-community bridge._
 - **What connects `config.sh script`, `SUBAGENT_CATALOG_TTL_SECONDS`, `SUBAGENT_CATALOG_CACHE_FILE` to the rest of the system?**
-  _997 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _998 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `DCF Model Builder` be split into smaller, more focused modules?**
   _Cohesion score 0.04081632653061224 - nodes in this community are weakly interconnected._
 - **Should `Equity Research Earnings Update` be split into smaller, more focused modules?**

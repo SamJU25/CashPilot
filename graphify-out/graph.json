@@ -3225,6 +3225,10 @@
       "community": 12,
       "community_name": "2. Specialized Agent Personas & Responsibilities",
       "file_type": "document",
+      "frontmatter": {
+        "trigger": "model_decision",
+        "description": "Multi-agent orchestration blueprint, specialist personas, and squad delegation protocols."
+      },
       "node_kind": "page",
       "norm_label": "multi-agent-orchestrator.md",
       "source_file": ".agent/rules/multi-agent-orchestrator.md",
@@ -3240,7 +3244,7 @@
       "node_kind": "heading",
       "norm_label": "1. operating model: orchestrator & specialist team",
       "source_file": ".agent/rules/multi-agent-orchestrator.md",
-      "source_location": "L3"
+      "source_location": "L8"
     },
     {
       "id": "agent_rules_multi_agent_orchestrator_2_specialized_agent_personas_responsibilities",
@@ -3252,7 +3256,7 @@
       "node_kind": "heading",
       "norm_label": "2. specialized agent personas & responsibilities",
       "source_file": ".agent/rules/multi-agent-orchestrator.md",
-      "source_location": "L31"
+      "source_location": "L36"
     },
     {
       "id": "agent_rules_multi_agent_orchestrator_3_standing_governance_consultation_anti_rationalization_communication",
@@ -3264,7 +3268,7 @@
       "node_kind": "heading",
       "norm_label": "3. standing governance: consultation, anti-rationalization & communication",
       "source_file": ".agent/rules/multi-agent-orchestrator.md",
-      "source_location": "L84"
+      "source_location": "L89"
     },
     {
       "id": "agent_rules_multi_agent_orchestrator_4_token_conservation_invariant_rtk",
@@ -3276,7 +3280,7 @@
       "node_kind": "heading",
       "norm_label": "4. token conservation invariant (rtk)",
       "source_file": ".agent/rules/multi-agent-orchestrator.md",
-      "source_location": "L105"
+      "source_location": "L110"
     },
     {
       "id": "agent_rules_multi_agent_orchestrator_5_autonomous_goal_loop_circuit_breaker_discipline_the_ralph_wiggum_pattern",
@@ -3288,7 +3292,7 @@
       "node_kind": "heading",
       "norm_label": "5. autonomous goal loop & circuit-breaker discipline (the ralph wiggum pattern)",
       "source_file": ".agent/rules/multi-agent-orchestrator.md",
-      "source_location": "L110"
+      "source_location": "L115"
     },
     {
       "id": "agent_rules_multi_agent_orchestrator_agent_10_technical_writer_technical_writer",
@@ -3300,7 +3304,7 @@
       "node_kind": "heading",
       "norm_label": "agent 10: technical writer (`technical-writer`)",
       "source_file": ".agent/rules/multi-agent-orchestrator.md",
-      "source_location": "L70"
+      "source_location": "L75"
     },
     {
       "id": "agent_rules_multi_agent_orchestrator_agent_11_cross_platform_engineer_cross_platform_engineer",
@@ -3312,7 +3316,7 @@
       "node_kind": "heading",
       "norm_label": "agent 11: cross-platform engineer (`cross-platform-engineer`)",
       "source_file": ".agent/rules/multi-agent-orchestrator.md",
-      "source_location": "L74"
+      "source_location": "L79"
     },
     {
       "id": "agent_rules_multi_agent_orchestrator_agent_12_penetration_tester_penetration_tester",
@@ -3324,7 +3328,7 @@
       "node_kind": "heading",
       "norm_label": "agent 12: penetration tester (`penetration-tester`)",
       "source_file": ".agent/rules/multi-agent-orchestrator.md",
-      "source_location": "L78"
+      "source_location": "L83"
     },
     {
       "id": "agent_rules_multi_agent_orchestrator_agent_1_research_scout_research_scout",
@@ -3336,7 +3340,7 @@
       "node_kind": "heading",
       "norm_label": "agent 1: research scout (`research-scout`)",
       "source_file": ".agent/rules/multi-agent-orchestrator.md",
-      "source_location": "L33"
+      "source_location": "L38"
     },
     {
       "id": "agent_rules_multi_agent_orchestrator_agent_2_agentic_architect_agentic_architect",
@@ -3348,7 +3352,7 @@
       "node_kind": "heading",
       "norm_label": "agent 2: agentic architect (`agentic-architect`)",
       "source_file": ".agent/rules/multi-agent-orchestrator.md",
-      "source_location": "L37"
+      "source_location": "L42"
     },
     {
       "id": "agent_rules_multi_agent_orchestrator_agent_3_systems_architect_systems_architect",
@@ -3360,7 +3364,7 @@
       "node_kind": "heading",
       "norm_label": "agent 3: systems architect (`systems-architect`)",
       "source_file": ".agent/rules/multi-agent-orchestrator.md",
-      "source_location": "L41"
+      "source_location": "L46"
     },
     {
       "id": "agent_rules_multi_agent_orchestrator_agent_4_frontend_design_engineer_frontend_craft_engineer",
@@ -3372,7 +3376,7 @@
       "node_kind": "heading",
       "norm_label": "agent 4: frontend & design engineer (`frontend-craft-engineer`)",
       "source_file": ".agent/rules/multi-agent-orchestrator.md",
-      "source_location": "L45"
+      "source_location": "L50"
     },
     {
       "id": "agent_rules_multi_agent_orchestrator_agent_5_security_guardian_security_guardian",
@@ -3384,7 +3388,7 @@
       "node_kind": "heading",
       "norm_label": "agent 5: security guardian (`security-guardian`)",
       "source_file": ".agent/rules/multi-agent-orchestrator.md",
-      "source_location": "L49"
+      "source_location": "L54"
     },
     {
       "id": "agent_rules_multi_agent_orchestrator_agent_6_qa_verifier_qa_verifier",
@@ -3396,7 +3400,7 @@
       "node_kind": "heading",
       "norm_label": "agent 6: qa verifier (`qa-verifier`)",
       "source_file": ".agent/rules/multi-agent-orchestrator.md",
-      "source_location": "L53"
+      "source_location": "L58"
     },
     {
       "id": "agent_rules_multi_agent_orchestrator_agent_7_code_reviewer_code_reviewer",
@@ -3408,7 +3412,7 @@
       "node_kind": "heading",
       "norm_label": "agent 7: code reviewer (`code-reviewer`)",
       "source_file": ".agent/rules/multi-agent-orchestrator.md",
-      "source_location": "L58"
+      "source_location": "L63"
     },
     {
       "id": "agent_rules_multi_agent_orchestrator_agent_8_code_optimizer_code_optimizer",
@@ -3420,7 +3424,7 @@
       "node_kind": "heading",
       "norm_label": "agent 8: code optimizer (`code-optimizer`)",
       "source_file": ".agent/rules/multi-agent-orchestrator.md",
-      "source_location": "L62"
+      "source_location": "L67"
     },
     {
       "id": "agent_rules_multi_agent_orchestrator_agent_9_prompt_engineer_auto_prompt_refiner_prompt_engineer",
@@ -3432,7 +3436,7 @@
       "node_kind": "heading",
       "norm_label": "agent 9: prompt engineer & auto-prompt refiner (`prompt-engineer`)",
       "source_file": ".agent/rules/multi-agent-orchestrator.md",
-      "source_location": "L66"
+      "source_location": "L71"
     },
     {
       "id": "agent_rules_multi_agent_orchestrator_multi_agent_orchestration_blueprint_agents_md",
@@ -3444,7 +3448,7 @@
       "node_kind": "heading",
       "norm_label": "multi-agent orchestration blueprint (agents.md)",
       "source_file": ".agent/rules/multi-agent-orchestrator.md",
-      "source_location": "L1"
+      "source_location": "L6"
     },
     {
       "id": "agent_rules_multi_agent_orchestrator_the_anti_rationalization_gate",
@@ -3456,7 +3460,7 @@
       "node_kind": "heading",
       "norm_label": "the anti-rationalization gate",
       "source_file": ".agent/rules/multi-agent-orchestrator.md",
-      "source_location": "L96"
+      "source_location": "L101"
     },
     {
       "id": "agent_rules_multi_agent_orchestrator_the_interactive_consultation_invariant",
@@ -3468,7 +3472,7 @@
       "node_kind": "heading",
       "norm_label": "the interactive consultation invariant",
       "source_file": ".agent/rules/multi-agent-orchestrator.md",
-      "source_location": "L91"
+      "source_location": "L96"
     },
     {
       "id": "agent_rules_multi_agent_orchestrator_the_thoughtful_collaborator_standard_steipete_agent_scripts",
@@ -3480,7 +3484,7 @@
       "node_kind": "heading",
       "norm_label": "the thoughtful collaborator standard (steipete/agent-scripts)",
       "source_file": ".agent/rules/multi-agent-orchestrator.md",
-      "source_location": "L86"
+      "source_location": "L91"
     },
     {
       "id": "agent_skills_comps_analysis_skill_core_columns_start_with_these",
@@ -4210,7 +4214,7 @@
       "node_kind": "heading",
       "norm_label": "3. fintech domain invariants",
       "source_file": "GEMINI.md",
-      "source_location": "L133"
+      "source_location": "L88"
     },
     {
       "id": "gemini_4_the_3_tier_security_matrix_hitl_governance",
@@ -4222,7 +4226,7 @@
       "node_kind": "heading",
       "norm_label": "4. the 3-tier security matrix (hitl governance)",
       "source_file": "GEMINI.md",
-      "source_location": "L141"
+      "source_location": "L96"
     },
     {
       "id": "gemini_5_blockchain_audit_trail_fisco_bcos_5_pts",
@@ -4234,7 +4238,7 @@
       "node_kind": "heading",
       "norm_label": "5. blockchain audit trail (fisco bcos +5 pts)",
       "source_file": "GEMINI.md",
-      "source_location": "L151"
+      "source_location": "L106"
     },
     {
       "id": "gemini_6_end_to_end_project_execution_workflows",
@@ -4246,7 +4250,7 @@
       "node_kind": "heading",
       "norm_label": "6. end-to-end project execution workflows",
       "source_file": "GEMINI.md",
-      "source_location": "L158"
+      "source_location": "L113"
     },
     {
       "id": "gemini_detailed_phase_breakdown_when_to_use_which_agent_skill_and_rule",
@@ -4258,7 +4262,7 @@
       "node_kind": "heading",
       "norm_label": "detailed phase breakdown: when to use which agent, skill, and rule",
       "source_file": "GEMINI.md",
-      "source_location": "L121"
+      "source_location": "L76"
     },
     {
       "id": "gemini_sme_finance_copilot_engineering_rules_operational_protocol",
@@ -4282,7 +4286,7 @@
       "node_kind": "heading",
       "norm_label": "workflow 1: beginner research & first-principles learning",
       "source_file": "GEMINI.md",
-      "source_location": "L160"
+      "source_location": "L115"
     },
     {
       "id": "gemini_workflow_2_sme_financial_health_transaction_ingestion",
@@ -4294,7 +4298,7 @@
       "node_kind": "heading",
       "norm_label": "workflow 2: sme financial health & transaction ingestion",
       "source_file": "GEMINI.md",
-      "source_location": "L166"
+      "source_location": "L121"
     },
     {
       "id": "gemini_workflow_3_cash_flow_crunch_predictive_early_warning",
@@ -4306,7 +4310,7 @@
       "node_kind": "heading",
       "norm_label": "workflow 3: cash flow crunch predictive early-warning",
       "source_file": "GEMINI.md",
-      "source_location": "L172"
+      "source_location": "L127"
     },
     {
       "id": "gemini_workflow_4_financing_option_matching_digital_underwriting",
@@ -4318,7 +4322,7 @@
       "node_kind": "heading",
       "norm_label": "workflow 4: financing option matching & digital underwriting",
       "source_file": "GEMINI.md",
-      "source_location": "L178"
+      "source_location": "L133"
     },
     {
       "id": "gemini_workflow_5_3_tier_security_gatekeeper_execution",
@@ -4330,7 +4334,7 @@
       "node_kind": "heading",
       "norm_label": "workflow 5: 3-tier security gatekeeper execution",
       "source_file": "GEMINI.md",
-      "source_location": "L184"
+      "source_location": "L139"
     },
     {
       "id": "gemini_workflow_6_consortium_blockchain_invoice_hashing_verification",
@@ -4342,7 +4346,7 @@
       "node_kind": "heading",
       "norm_label": "workflow 6: consortium blockchain invoice hashing & verification",
       "source_file": "GEMINI.md",
-      "source_location": "L190"
+      "source_location": "L145"
     },
     {
       "id": "gemini_workflow_7_full_stack_implementation_antislop_delivery",
@@ -4354,7 +4358,7 @@
       "node_kind": "heading",
       "norm_label": "workflow 7: full-stack implementation & antislop delivery",
       "source_file": "GEMINI.md",
-      "source_location": "L196"
+      "source_location": "L151"
     },
     {
       "id": "agent_skills_comps_analysis_skill_comparability_issues",
@@ -4853,7 +4857,7 @@
       "label": "AGENTS.md",
       "_origin": "ast",
       "community": 14,
-      "community_name": "3. Subagent Suites Directory (57 Specialized Subagents)",
+      "community_name": "2. Subagent Suites Directory (57 Specialized Subagents)",
       "file_type": "document",
       "node_kind": "page",
       "norm_label": "agents.md",
@@ -4865,154 +4869,58 @@
       "label": "1. Multi-Agent Operating Model & Hierarchy Matrix",
       "_origin": "ast",
       "community": 14,
-      "community_name": "3. Subagent Suites Directory (57 Specialized Subagents)",
+      "community_name": "2. Subagent Suites Directory (57 Specialized Subagents)",
       "file_type": "document",
       "node_kind": "heading",
       "norm_label": "1. multi-agent operating model & hierarchy matrix",
       "source_file": "AGENTS.md",
-      "source_location": "L12"
+      "source_location": "L7"
     },
     {
-      "id": "agents_2_complete_skills_registry_54_curated_skills",
-      "label": "2. Complete Skills Registry (54 Curated Skills)",
+      "id": "agents_2_subagent_suites_directory_57_specialized_subagents",
+      "label": "2. Subagent Suites Directory (57 Specialized Subagents)",
       "_origin": "ast",
       "community": 14,
-      "community_name": "3. Subagent Suites Directory (57 Specialized Subagents)",
+      "community_name": "2. Subagent Suites Directory (57 Specialized Subagents)",
       "file_type": "document",
       "node_kind": "heading",
-      "norm_label": "2. complete skills registry (54 curated skills)",
+      "norm_label": "2. subagent suites directory (57 specialized subagents)",
       "source_file": "AGENTS.md",
-      "source_location": "L35"
+      "source_location": "L33"
     },
     {
-      "id": "agents_3_subagent_suites_directory_57_specialized_subagents",
-      "label": "3. Subagent Suites Directory (57 Specialized Subagents)",
+      "id": "agents_3_dynamic_task_routing_matrix_scenario_to_squad_mapping",
+      "label": "3. Dynamic Task Routing Matrix (Scenario-to-Squad Mapping)",
       "_origin": "ast",
       "community": 14,
-      "community_name": "3. Subagent Suites Directory (57 Specialized Subagents)",
+      "community_name": "2. Subagent Suites Directory (57 Specialized Subagents)",
       "file_type": "document",
       "node_kind": "heading",
-      "norm_label": "3. subagent suites directory (57 specialized subagents)",
+      "norm_label": "3. dynamic task routing matrix (scenario-to-squad mapping)",
       "source_file": "AGENTS.md",
-      "source_location": "L111"
+      "source_location": "L110"
     },
     {
-      "id": "agents_4_1_gate_by_gate_engineering_decision_matrix",
-      "label": "4.1 Gate-by-Gate Engineering Decision Matrix",
+      "id": "agents_4_antigravity_agent_execution_protocol",
+      "label": "4. Antigravity Agent Execution Protocol",
       "_origin": "ast",
       "community": 14,
-      "community_name": "3. Subagent Suites Directory (57 Specialized Subagents)",
+      "community_name": "2. Subagent Suites Directory (57 Specialized Subagents)",
       "file_type": "document",
       "node_kind": "heading",
-      "norm_label": "4.1 gate-by-gate engineering decision matrix",
+      "norm_label": "4. antigravity agent execution protocol",
       "source_file": "AGENTS.md",
-      "source_location": "L193"
+      "source_location": "L130"
     },
     {
-      "id": "agents_4_2_dynamic_task_routing_matrix_scenario_to_squad_mapping",
-      "label": "4.2 Dynamic Task Routing Matrix (Scenario-to-Squad Mapping)",
+      "id": "agents_sme_finance_copilot_ai_agents_task_routing_engine",
+      "label": "SME Finance Copilot \u2014 AI Agents & Task Routing Engine",
       "_origin": "ast",
       "community": 14,
-      "community_name": "3. Subagent Suites Directory (57 Specialized Subagents)",
+      "community_name": "2. Subagent Suites Directory (57 Specialized Subagents)",
       "file_type": "document",
       "node_kind": "heading",
-      "norm_label": "4.2 dynamic task routing matrix (scenario-to-squad mapping)",
-      "source_file": "AGENTS.md",
-      "source_location": "L205"
-    },
-    {
-      "id": "agents_4_andrej_karpathy_superpowers_decision_engine_when_to_use_which_agent_skill_rule",
-      "label": "4. Andrej Karpathy \u00d7 Superpowers Decision Engine (When to Use Which Agent, Skill & Rule)",
-      "_origin": "ast",
-      "community": 14,
-      "community_name": "3. Subagent Suites Directory (57 Specialized Subagents)",
-      "file_type": "document",
-      "node_kind": "heading",
-      "norm_label": "4. andrej karpathy \u00d7 superpowers decision engine (when to use which agent, skill & rule)",
-      "source_file": "AGENTS.md",
-      "source_location": "L189"
-    },
-    {
-      "id": "agents_category_a_global_engineering_governance_methodologies_18_skills",
-      "label": "Category A: Global Engineering Governance & Methodologies (18 Skills)",
-      "_origin": "ast",
-      "community": 14,
-      "community_name": "3. Subagent Suites Directory (57 Specialized Subagents)",
-      "file_type": "document",
-      "node_kind": "heading",
-      "norm_label": "category a: global engineering governance & methodologies (18 skills)",
-      "source_file": "AGENTS.md",
-      "source_location": "L37"
-    },
-    {
-      "id": "agents_category_b_global_specialist_capabilities_12_skills",
-      "label": "Category B: Global Specialist Capabilities (12 Skills)",
-      "_origin": "ast",
-      "community": 14,
-      "community_name": "3. Subagent Suites Directory (57 Specialized Subagents)",
-      "file_type": "document",
-      "node_kind": "heading",
-      "norm_label": "category b: global specialist capabilities (12 skills)",
-      "source_file": "AGENTS.md",
-      "source_location": "L58"
-    },
-    {
-      "id": "agents_category_c_financial_research_deep_dive_learning_10_skills",
-      "label": "Category C: Financial Research & Deep-Dive Learning (10 Skills)",
-      "_origin": "ast",
-      "community": 14,
-      "community_name": "3. Subagent Suites Directory (57 Specialized Subagents)",
-      "file_type": "document",
-      "node_kind": "heading",
-      "norm_label": "category c: financial research & deep-dive learning (10 skills)",
-      "source_file": "AGENTS.md",
-      "source_location": "L73"
-    },
-    {
-      "id": "agents_category_d_fintech_engine_underwriting_math_5_skills",
-      "label": "Category D: FinTech Engine & Underwriting Math (5 Skills)",
-      "_origin": "ast",
-      "community": 14,
-      "community_name": "3. Subagent Suites Directory (57 Specialized Subagents)",
-      "file_type": "document",
-      "node_kind": "heading",
-      "norm_label": "category d: fintech engine & underwriting math (5 skills)",
-      "source_file": "AGENTS.md",
-      "source_location": "L86"
-    },
-    {
-      "id": "agents_category_e_full_stack_web_payment_engineering_4_skills",
-      "label": "Category E: Full-Stack Web & Payment Engineering (4 Skills)",
-      "_origin": "ast",
-      "community": 14,
-      "community_name": "3. Subagent Suites Directory (57 Specialized Subagents)",
-      "file_type": "document",
-      "node_kind": "heading",
-      "norm_label": "category e: full-stack web & payment engineering (4 skills)",
-      "source_file": "AGENTS.md",
-      "source_location": "L94"
-    },
-    {
-      "id": "agents_category_f_security_qa_tooling_5_skills",
-      "label": "Category F: Security, QA & Tooling (5 Skills)",
-      "_origin": "ast",
-      "community": 14,
-      "community_name": "3. Subagent Suites Directory (57 Specialized Subagents)",
-      "file_type": "document",
-      "node_kind": "heading",
-      "norm_label": "category f: security, qa & tooling (5 skills)",
-      "source_file": "AGENTS.md",
-      "source_location": "L101"
-    },
-    {
-      "id": "agents_sme_finance_copilot_ai_agents_optimized_skills_registry",
-      "label": "SME Finance Copilot \u2014 AI Agents & Optimized Skills Registry",
-      "_origin": "ast",
-      "community": 14,
-      "community_name": "3. Subagent Suites Directory (57 Specialized Subagents)",
-      "file_type": "document",
-      "node_kind": "heading",
-      "norm_label": "sme finance copilot \u2014 ai agents & optimized skills registry",
+      "norm_label": "sme finance copilot \u2014 ai agents & task routing engine",
       "source_file": "AGENTS.md",
       "source_location": "L1"
     },
@@ -5021,96 +4929,96 @@
       "label": "Suite 0: Global Governance Specialists (`.agent/agents/0-global-specialists/`)",
       "_origin": "ast",
       "community": 14,
-      "community_name": "3. Subagent Suites Directory (57 Specialized Subagents)",
+      "community_name": "2. Subagent Suites Directory (57 Specialized Subagents)",
       "file_type": "document",
       "node_kind": "heading",
       "norm_label": "suite 0: global governance specialists (`.agent/agents/0-global-specialists/`)",
       "source_file": "AGENTS.md",
-      "source_location": "L113"
+      "source_location": "L35"
     },
     {
       "id": "agents_suite_1_agentic_ai_orchestration_agent_agents_1_agentic_orchestration",
       "label": "Suite 1: Agentic AI Orchestration (`.agent/agents/1-agentic-orchestration/`)",
       "_origin": "ast",
       "community": 14,
-      "community_name": "3. Subagent Suites Directory (57 Specialized Subagents)",
+      "community_name": "2. Subagent Suites Directory (57 Specialized Subagents)",
       "file_type": "document",
       "node_kind": "heading",
       "norm_label": "suite 1: agentic ai orchestration (`.agent/agents/1-agentic-orchestration/`)",
       "source_file": "AGENTS.md",
-      "source_location": "L127"
+      "source_location": "L49"
     },
     {
       "id": "agents_suite_2_fintech_engine_blockchain_agent_agents_2_fintech_engine",
       "label": "Suite 2: FinTech Engine & Blockchain (`.agent/agents/2-fintech-engine/`)",
       "_origin": "ast",
       "community": 14,
-      "community_name": "3. Subagent Suites Directory (57 Specialized Subagents)",
+      "community_name": "2. Subagent Suites Directory (57 Specialized Subagents)",
       "file_type": "document",
       "node_kind": "heading",
       "norm_label": "suite 2: fintech engine & blockchain (`.agent/agents/2-fintech-engine/`)",
       "source_file": "AGENTS.md",
-      "source_location": "L136"
+      "source_location": "L58"
     },
     {
       "id": "agents_suite_3_backend_platform_agent_agents_3_backend_platform",
       "label": "Suite 3: Backend Platform (`.agent/agents/3-backend-platform/`)",
       "_origin": "ast",
       "community": 14,
-      "community_name": "3. Subagent Suites Directory (57 Specialized Subagents)",
+      "community_name": "2. Subagent Suites Directory (57 Specialized Subagents)",
       "file_type": "document",
       "node_kind": "heading",
       "norm_label": "suite 3: backend platform (`.agent/agents/3-backend-platform/`)",
       "source_file": "AGENTS.md",
-      "source_location": "L144"
+      "source_location": "L66"
     },
     {
       "id": "agents_suite_4_frontend_dashboard_agent_agents_4_frontend_dashboard",
       "label": "Suite 4: Frontend Dashboard (`.agent/agents/4-frontend-dashboard/`)",
       "_origin": "ast",
       "community": 14,
-      "community_name": "3. Subagent Suites Directory (57 Specialized Subagents)",
+      "community_name": "2. Subagent Suites Directory (57 Specialized Subagents)",
       "file_type": "document",
       "node_kind": "heading",
       "norm_label": "suite 4: frontend dashboard (`.agent/agents/4-frontend-dashboard/`)",
       "source_file": "AGENTS.md",
-      "source_location": "L152"
+      "source_location": "L74"
     },
     {
       "id": "agents_suite_5_security_compliance_qa_agent_agents_5_security_qa",
       "label": "Suite 5: Security, Compliance & QA (`.agent/agents/5-security-qa/`)",
       "_origin": "ast",
       "community": 14,
-      "community_name": "3. Subagent Suites Directory (57 Specialized Subagents)",
+      "community_name": "2. Subagent Suites Directory (57 Specialized Subagents)",
       "file_type": "document",
       "node_kind": "heading",
       "norm_label": "suite 5: security, compliance & qa (`.agent/agents/5-security-qa/`)",
       "source_file": "AGENTS.md",
-      "source_location": "L158"
+      "source_location": "L80"
     },
     {
       "id": "agents_suite_6_product_hackathon_pitch_agent_agents_6_product_pitch",
       "label": "Suite 6: Product & Hackathon Pitch (`.agent/agents/6-product-pitch/`)",
       "_origin": "ast",
       "community": 14,
-      "community_name": "3. Subagent Suites Directory (57 Specialized Subagents)",
+      "community_name": "2. Subagent Suites Directory (57 Specialized Subagents)",
       "file_type": "document",
       "node_kind": "heading",
       "norm_label": "suite 6: product & hackathon pitch (`.agent/agents/6-product-pitch/`)",
       "source_file": "AGENTS.md",
-      "source_location": "L167"
+      "source_location": "L89"
     },
     {
       "id": "agents_suite_7_research_intelligence_squad_agent_agents_7_research_intelligence",
       "label": "Suite 7: Research & Intelligence Squad (`.agent/agents/7-research-intelligence/`)",
       "_origin": "ast",
       "community": 14,
-      "community_name": "3. Subagent Suites Directory (57 Specialized Subagents)",
+      "community_name": "2. Subagent Suites Directory (57 Specialized Subagents)",
       "file_type": "document",
       "node_kind": "heading",
       "norm_label": "suite 7: research & intelligence squad (`.agent/agents/7-research-intelligence/`)",
       "source_file": "AGENTS.md",
-      "source_location": "L175"
+      "source_location": "L97"
     },
     {
       "id": "agent_skills_mcp_builder_skill",
@@ -6514,7 +6422,7 @@
     },
     {
       "id": "agent_rules_graphify",
-      "label": "graphify.md",
+      "label": "rules/graphify.md",
       "_origin": "ast",
       "community": 163,
       "community_name": "graphify.md",
@@ -6524,7 +6432,7 @@
         "description": "Consult the graphify knowledge graph at graphify-out/ for codebase questions, and automatically sync on every project update, edit, or file creation."
       },
       "node_kind": "page",
-      "norm_label": "graphify.md",
+      "norm_label": "rules/graphify.md",
       "source_file": ".agent/rules/graphify.md",
       "source_location": "L1"
     },
@@ -7944,6 +7852,34 @@
       "norm_label": "step 3: verify test suite & knowledge graph",
       "source_file": "README.md",
       "source_location": "L85"
+    },
+    {
+      "id": "agent_workflows_graphify",
+      "label": "workflows/graphify.md",
+      "_origin": "ast",
+      "community": 172,
+      "community_name": "workflows/graphify.md",
+      "file_type": "document",
+      "frontmatter": {
+        "name": "graphify",
+        "description": "Turn any folder of files into a navigable knowledge graph"
+      },
+      "node_kind": "page",
+      "norm_label": "workflows/graphify.md",
+      "source_file": ".agent/workflows/graphify.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "agent_workflows_graphify_workflow_graphify",
+      "label": "Workflow: graphify",
+      "_origin": "ast",
+      "community": 172,
+      "community_name": "workflows/graphify.md",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "workflow: graphify",
+      "source_file": ".agent/workflows/graphify.md",
+      "source_location": "L6"
     },
     {
       "id": "agent_skills_unit_economics_skill",
@@ -21923,7 +21859,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": ".agent/rules/multi-agent-orchestrator.md",
-      "source_location": "L1",
+      "source_location": "L6",
       "weight": 1.0
     },
     {
@@ -21934,7 +21870,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": ".agent/rules/multi-agent-orchestrator.md",
-      "source_location": "L33",
+      "source_location": "L38",
       "weight": 1.0
     },
     {
@@ -21945,7 +21881,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": ".agent/rules/multi-agent-orchestrator.md",
-      "source_location": "L37",
+      "source_location": "L42",
       "weight": 1.0
     },
     {
@@ -21956,7 +21892,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": ".agent/rules/multi-agent-orchestrator.md",
-      "source_location": "L41",
+      "source_location": "L46",
       "weight": 1.0
     },
     {
@@ -21967,7 +21903,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": ".agent/rules/multi-agent-orchestrator.md",
-      "source_location": "L45",
+      "source_location": "L50",
       "weight": 1.0
     },
     {
@@ -21978,7 +21914,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": ".agent/rules/multi-agent-orchestrator.md",
-      "source_location": "L49",
+      "source_location": "L54",
       "weight": 1.0
     },
     {
@@ -21989,7 +21925,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": ".agent/rules/multi-agent-orchestrator.md",
-      "source_location": "L53",
+      "source_location": "L58",
       "weight": 1.0
     },
     {
@@ -22000,7 +21936,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": ".agent/rules/multi-agent-orchestrator.md",
-      "source_location": "L58",
+      "source_location": "L63",
       "weight": 1.0
     },
     {
@@ -22011,7 +21947,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": ".agent/rules/multi-agent-orchestrator.md",
-      "source_location": "L62",
+      "source_location": "L67",
       "weight": 1.0
     },
     {
@@ -22022,7 +21958,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": ".agent/rules/multi-agent-orchestrator.md",
-      "source_location": "L66",
+      "source_location": "L71",
       "weight": 1.0
     },
     {
@@ -22033,7 +21969,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": ".agent/rules/multi-agent-orchestrator.md",
-      "source_location": "L70",
+      "source_location": "L75",
       "weight": 1.0
     },
     {
@@ -22044,7 +21980,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": ".agent/rules/multi-agent-orchestrator.md",
-      "source_location": "L74",
+      "source_location": "L79",
       "weight": 1.0
     },
     {
@@ -22055,7 +21991,18 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": ".agent/rules/multi-agent-orchestrator.md",
-      "source_location": "L78",
+      "source_location": "L83",
+      "weight": 1.0
+    },
+    {
+      "source": "agent_rules_multi_agent_orchestrator_3_standing_governance_consultation_anti_rationalization_communication",
+      "target": "agent_rules_multi_agent_orchestrator_the_anti_rationalization_gate",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".agent/rules/multi-agent-orchestrator.md",
+      "source_location": "L101",
       "weight": 1.0
     },
     {
@@ -22066,23 +22013,12 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": ".agent/rules/multi-agent-orchestrator.md",
-      "source_location": "L86",
-      "weight": 1.0
-    },
-    {
-      "source": "agent_rules_multi_agent_orchestrator_3_standing_governance_consultation_anti_rationalization_communication",
-      "target": "agent_rules_multi_agent_orchestrator_the_interactive_consultation_invariant",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": ".agent/rules/multi-agent-orchestrator.md",
       "source_location": "L91",
       "weight": 1.0
     },
     {
       "source": "agent_rules_multi_agent_orchestrator_3_standing_governance_consultation_anti_rationalization_communication",
-      "target": "agent_rules_multi_agent_orchestrator_the_anti_rationalization_gate",
+      "target": "agent_rules_multi_agent_orchestrator_the_interactive_consultation_invariant",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -22099,7 +22035,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": ".agent/rules/multi-agent-orchestrator.md",
-      "source_location": "L105",
+      "source_location": "L110",
       "weight": 1.0
     },
     {
@@ -22110,18 +22046,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": ".agent/rules/multi-agent-orchestrator.md",
-      "source_location": "L110",
-      "weight": 1.0
-    },
-    {
-      "source": "agent_rules_multi_agent_orchestrator_multi_agent_orchestration_blueprint_agents_md",
-      "target": "agent_rules_multi_agent_orchestrator_1_operating_model_orchestrator_specialist_team",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": ".agent/rules/multi-agent-orchestrator.md",
-      "source_location": "L3",
+      "source_location": "L115",
       "weight": 1.0
     },
     {
@@ -22132,7 +22057,18 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": ".agent/rules/multi-agent-orchestrator.md",
-      "source_location": "L31",
+      "source_location": "L36",
+      "weight": 1.0
+    },
+    {
+      "source": "agent_rules_multi_agent_orchestrator_multi_agent_orchestration_blueprint_agents_md",
+      "target": "agent_rules_multi_agent_orchestrator_1_operating_model_orchestrator_specialist_team",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".agent/rules/multi-agent-orchestrator.md",
+      "source_location": "L8",
       "weight": 1.0
     },
     {
@@ -22143,7 +22079,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": ".agent/rules/multi-agent-orchestrator.md",
-      "source_location": "L84",
+      "source_location": "L89",
       "weight": 1.0
     },
     {
@@ -30914,8 +30850,19 @@
       "weight": 1.0
     },
     {
+      "source": "agent_workflows_graphify",
+      "target": "agent_workflows_graphify_workflow_graphify",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".agent/workflows/graphify.md",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
       "source": "agents",
-      "target": "agents_sme_finance_copilot_ai_agents_optimized_skills_registry",
+      "target": "agents_sme_finance_copilot_ai_agents_task_routing_engine",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -30925,30 +30872,30 @@
       "weight": 1.0
     },
     {
-      "source": "agents_2_complete_skills_registry_54_curated_skills",
-      "target": "agents_category_f_security_qa_tooling_5_skills",
+      "source": "agents_2_subagent_suites_directory_57_specialized_subagents",
+      "target": "agents_suite_0_global_governance_specialists_agent_agents_0_global_specialists",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "AGENTS.md",
-      "source_location": "L101",
+      "source_location": "L35",
       "weight": 1.0
     },
     {
-      "source": "agents_2_complete_skills_registry_54_curated_skills",
-      "target": "agents_category_a_global_engineering_governance_methodologies_18_skills",
+      "source": "agents_2_subagent_suites_directory_57_specialized_subagents",
+      "target": "agents_suite_1_agentic_ai_orchestration_agent_agents_1_agentic_orchestration",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "AGENTS.md",
-      "source_location": "L37",
+      "source_location": "L49",
       "weight": 1.0
     },
     {
-      "source": "agents_2_complete_skills_registry_54_curated_skills",
-      "target": "agents_category_b_global_specialist_capabilities_12_skills",
+      "source": "agents_2_subagent_suites_directory_57_specialized_subagents",
+      "target": "agents_suite_2_fintech_engine_blockchain_agent_agents_2_fintech_engine",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -30958,190 +30905,102 @@
       "weight": 1.0
     },
     {
-      "source": "agents_2_complete_skills_registry_54_curated_skills",
-      "target": "agents_category_c_financial_research_deep_dive_learning_10_skills",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "AGENTS.md",
-      "source_location": "L73",
-      "weight": 1.0
-    },
-    {
-      "source": "agents_2_complete_skills_registry_54_curated_skills",
-      "target": "agents_category_d_fintech_engine_underwriting_math_5_skills",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "AGENTS.md",
-      "source_location": "L86",
-      "weight": 1.0
-    },
-    {
-      "source": "agents_2_complete_skills_registry_54_curated_skills",
-      "target": "agents_category_e_full_stack_web_payment_engineering_4_skills",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "AGENTS.md",
-      "source_location": "L94",
-      "weight": 1.0
-    },
-    {
-      "source": "agents_3_subagent_suites_directory_57_specialized_subagents",
-      "target": "agents_suite_0_global_governance_specialists_agent_agents_0_global_specialists",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "AGENTS.md",
-      "source_location": "L113",
-      "weight": 1.0
-    },
-    {
-      "source": "agents_3_subagent_suites_directory_57_specialized_subagents",
-      "target": "agents_suite_1_agentic_ai_orchestration_agent_agents_1_agentic_orchestration",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "AGENTS.md",
-      "source_location": "L127",
-      "weight": 1.0
-    },
-    {
-      "source": "agents_3_subagent_suites_directory_57_specialized_subagents",
-      "target": "agents_suite_2_fintech_engine_blockchain_agent_agents_2_fintech_engine",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "AGENTS.md",
-      "source_location": "L136",
-      "weight": 1.0
-    },
-    {
-      "source": "agents_3_subagent_suites_directory_57_specialized_subagents",
+      "source": "agents_2_subagent_suites_directory_57_specialized_subagents",
       "target": "agents_suite_3_backend_platform_agent_agents_3_backend_platform",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "AGENTS.md",
-      "source_location": "L144",
+      "source_location": "L66",
       "weight": 1.0
     },
     {
-      "source": "agents_3_subagent_suites_directory_57_specialized_subagents",
+      "source": "agents_2_subagent_suites_directory_57_specialized_subagents",
       "target": "agents_suite_4_frontend_dashboard_agent_agents_4_frontend_dashboard",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "AGENTS.md",
-      "source_location": "L152",
+      "source_location": "L74",
       "weight": 1.0
     },
     {
-      "source": "agents_3_subagent_suites_directory_57_specialized_subagents",
+      "source": "agents_2_subagent_suites_directory_57_specialized_subagents",
       "target": "agents_suite_5_security_compliance_qa_agent_agents_5_security_qa",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "AGENTS.md",
-      "source_location": "L158",
+      "source_location": "L80",
       "weight": 1.0
     },
     {
-      "source": "agents_3_subagent_suites_directory_57_specialized_subagents",
+      "source": "agents_2_subagent_suites_directory_57_specialized_subagents",
       "target": "agents_suite_6_product_hackathon_pitch_agent_agents_6_product_pitch",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "AGENTS.md",
-      "source_location": "L167",
+      "source_location": "L89",
       "weight": 1.0
     },
     {
-      "source": "agents_3_subagent_suites_directory_57_specialized_subagents",
+      "source": "agents_2_subagent_suites_directory_57_specialized_subagents",
       "target": "agents_suite_7_research_intelligence_squad_agent_agents_7_research_intelligence",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "AGENTS.md",
-      "source_location": "L175",
+      "source_location": "L97",
       "weight": 1.0
     },
     {
-      "source": "agents_4_andrej_karpathy_superpowers_decision_engine_when_to_use_which_agent_skill_rule",
-      "target": "agents_4_1_gate_by_gate_engineering_decision_matrix",
+      "source": "agents_sme_finance_copilot_ai_agents_task_routing_engine",
+      "target": "agents_3_dynamic_task_routing_matrix_scenario_to_squad_mapping",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "AGENTS.md",
-      "source_location": "L193",
+      "source_location": "L110",
       "weight": 1.0
     },
     {
-      "source": "agents_4_andrej_karpathy_superpowers_decision_engine_when_to_use_which_agent_skill_rule",
-      "target": "agents_4_2_dynamic_task_routing_matrix_scenario_to_squad_mapping",
+      "source": "agents_sme_finance_copilot_ai_agents_task_routing_engine",
+      "target": "agents_4_antigravity_agent_execution_protocol",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "AGENTS.md",
-      "source_location": "L205",
+      "source_location": "L130",
       "weight": 1.0
     },
     {
-      "source": "agents_sme_finance_copilot_ai_agents_optimized_skills_registry",
-      "target": "agents_3_subagent_suites_directory_57_specialized_subagents",
+      "source": "agents_sme_finance_copilot_ai_agents_task_routing_engine",
+      "target": "agents_2_subagent_suites_directory_57_specialized_subagents",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "AGENTS.md",
-      "source_location": "L111",
+      "source_location": "L33",
       "weight": 1.0
     },
     {
-      "source": "agents_sme_finance_copilot_ai_agents_optimized_skills_registry",
+      "source": "agents_sme_finance_copilot_ai_agents_task_routing_engine",
       "target": "agents_1_multi_agent_operating_model_hierarchy_matrix",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "AGENTS.md",
-      "source_location": "L12",
-      "weight": 1.0
-    },
-    {
-      "source": "agents_sme_finance_copilot_ai_agents_optimized_skills_registry",
-      "target": "agents_4_andrej_karpathy_superpowers_decision_engine_when_to_use_which_agent_skill_rule",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "AGENTS.md",
-      "source_location": "L189",
-      "weight": 1.0
-    },
-    {
-      "source": "agents_sme_finance_copilot_ai_agents_optimized_skills_registry",
-      "target": "agents_2_complete_skills_registry_54_curated_skills",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "AGENTS.md",
-      "source_location": "L35",
+      "source_location": "L7",
       "weight": 1.0
     },
     {
@@ -31405,7 +31264,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "GEMINI.md",
-      "source_location": "L121",
+      "source_location": "L76",
       "weight": 1.0
     },
     {
@@ -31416,7 +31275,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "GEMINI.md",
-      "source_location": "L160",
+      "source_location": "L115",
       "weight": 1.0
     },
     {
@@ -31427,7 +31286,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "GEMINI.md",
-      "source_location": "L166",
+      "source_location": "L121",
       "weight": 1.0
     },
     {
@@ -31438,7 +31297,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "GEMINI.md",
-      "source_location": "L172",
+      "source_location": "L127",
       "weight": 1.0
     },
     {
@@ -31449,7 +31308,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "GEMINI.md",
-      "source_location": "L178",
+      "source_location": "L133",
       "weight": 1.0
     },
     {
@@ -31460,7 +31319,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "GEMINI.md",
-      "source_location": "L184",
+      "source_location": "L139",
       "weight": 1.0
     },
     {
@@ -31471,7 +31330,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "GEMINI.md",
-      "source_location": "L190",
+      "source_location": "L145",
       "weight": 1.0
     },
     {
@@ -31482,29 +31341,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "GEMINI.md",
-      "source_location": "L196",
-      "weight": 1.0
-    },
-    {
-      "source": "gemini_sme_finance_copilot_engineering_rules_operational_protocol",
-      "target": "gemini_3_fintech_domain_invariants",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "GEMINI.md",
-      "source_location": "L133",
-      "weight": 1.0
-    },
-    {
-      "source": "gemini_sme_finance_copilot_engineering_rules_operational_protocol",
-      "target": "gemini_4_the_3_tier_security_matrix_hitl_governance",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "GEMINI.md",
-      "source_location": "L141",
+      "source_location": "L151",
       "weight": 1.0
     },
     {
@@ -31515,7 +31352,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "GEMINI.md",
-      "source_location": "L151",
+      "source_location": "L106",
       "weight": 1.0
     },
     {
@@ -31526,7 +31363,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "GEMINI.md",
-      "source_location": "L158",
+      "source_location": "L113",
       "weight": 1.0
     },
     {
@@ -31549,6 +31386,28 @@
       "confidence_score": 1.0,
       "source_file": "GEMINI.md",
       "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "gemini_sme_finance_copilot_engineering_rules_operational_protocol",
+      "target": "gemini_3_fintech_domain_invariants",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "GEMINI.md",
+      "source_location": "L88",
+      "weight": 1.0
+    },
+    {
+      "source": "gemini_sme_finance_copilot_engineering_rules_operational_protocol",
+      "target": "gemini_4_the_3_tier_security_matrix_hitl_governance",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "GEMINI.md",
+      "source_location": "L96",
       "weight": 1.0
     },
     {
@@ -32796,5 +32655,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "b621261820eb080095607cd362428f539adcb96a"
+  "built_at_commit": "ff48e6656900796d9f7733b464cbd54bd4a1e4fb"
 }

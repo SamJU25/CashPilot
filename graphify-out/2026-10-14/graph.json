@@ -7814,88 +7814,88 @@
       "source_location": "L1"
     },
     {
-      "id": "readme_1_quick_start_for_teammates",
-      "label": "1. Quick Start for Teammates",
+      "id": "readme_1_executive_summary_problem_statement",
+      "label": "1. Executive Summary & Problem Statement",
       "_origin": "ast",
       "community": 171,
       "community_name": "SME Finance Copilot",
       "file_type": "document",
       "node_kind": "heading",
-      "norm_label": "1. quick start for teammates",
+      "norm_label": "1. executive summary & problem statement",
       "source_file": "README.md",
-      "source_location": "L7"
+      "source_location": "L12"
     },
     {
-      "id": "readme_2_using_ai_coding_assistants",
-      "label": "2. Using AI Coding Assistants",
+      "id": "readme_2_core_architecture_hackathon_rubric_alignment",
+      "label": "2. Core Architecture & Hackathon Rubric Alignment",
       "_origin": "ast",
       "community": 171,
       "community_name": "SME Finance Copilot",
       "file_type": "document",
       "node_kind": "heading",
-      "norm_label": "2. using ai coding assistants",
-      "source_file": "README.md",
-      "source_location": "L28"
-    },
-    {
-      "id": "readme_3_core_developer_commands",
-      "label": "3. Core Developer Commands",
-      "_origin": "ast",
-      "community": 171,
-      "community_name": "SME Finance Copilot",
-      "file_type": "document",
-      "node_kind": "heading",
-      "norm_label": "3. core developer commands",
-      "source_file": "README.md",
-      "source_location": "L43"
-    },
-    {
-      "id": "readme_4_key_documentation_links",
-      "label": "4. Key Documentation Links",
-      "_origin": "ast",
-      "community": 171,
-      "community_name": "SME Finance Copilot",
-      "file_type": "document",
-      "node_kind": "heading",
-      "norm_label": "4. key documentation links",
-      "source_file": "README.md",
-      "source_location": "L55"
-    },
-    {
-      "id": "readme_claude_claude_code",
-      "label": "Claude / Claude Code",
-      "_origin": "ast",
-      "community": 171,
-      "community_name": "SME Finance Copilot",
-      "file_type": "document",
-      "node_kind": "heading",
-      "norm_label": "claude / claude code",
+      "norm_label": "2. core architecture & hackathon rubric alignment",
       "source_file": "README.md",
       "source_location": "L34"
     },
     {
-      "id": "readme_cursor_vs_code_other_assistants",
-      "label": "Cursor / VS Code / Other Assistants",
+      "id": "readme_3_the_three_tier_security_gate",
+      "label": "3. The Three-Tier Security Gate",
       "_origin": "ast",
       "community": 171,
       "community_name": "SME Finance Copilot",
       "file_type": "document",
       "node_kind": "heading",
-      "norm_label": "cursor / vs code / other assistants",
+      "norm_label": "3. the three-tier security gate",
       "source_file": "README.md",
-      "source_location": "L38"
+      "source_location": "L44"
     },
     {
-      "id": "readme_google_antigravity",
-      "label": "Google Antigravity",
+      "id": "readme_4_quick_start_installation",
+      "label": "4. Quick Start & Installation",
       "_origin": "ast",
       "community": 171,
       "community_name": "SME Finance Copilot",
       "file_type": "document",
       "node_kind": "heading",
-      "norm_label": "google antigravity",
+      "norm_label": "4. quick start & installation",
       "source_file": "README.md",
-      "source_location": "L30"
+      "source_location": "L72"
+    },
+    {
+      "id": "readme_5_development_assistant_compatibility",
+      "label": "5. Development & Assistant Compatibility",
+      "_origin": "ast",
+      "community": 171,
+      "community_name": "SME Finance Copilot",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "5. development & assistant compatibility",
+      "source_file": "README.md",
+      "source_location": "L96"
+    },
+    {
+      "id": "readme_6_repository_documentation_index",
+      "label": "6. Repository Documentation Index",
+      "_origin": "ast",
+      "community": 171,
+      "community_name": "SME Finance Copilot",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "6. repository documentation index",
+      "source_file": "README.md",
+      "source_location": "L106"
+    },
+    {
+      "id": "readme_7_license",
+      "label": "7. License",
+      "_origin": "ast",
+      "community": 171,
+      "community_name": "SME Finance Copilot",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "7. license",
+      "source_file": "README.md",
+      "source_location": "L116"
     },
     {
       "id": "readme_sme_finance_copilot",
@@ -7919,7 +7919,7 @@
       "node_kind": "heading",
       "norm_label": "step 1: clone repository",
       "source_file": "README.md",
-      "source_location": "L9"
+      "source_location": "L74"
     },
     {
       "id": "readme_step_2_install_python_dependencies",
@@ -7931,19 +7931,19 @@
       "node_kind": "heading",
       "norm_label": "step 2: install python dependencies",
       "source_file": "README.md",
-      "source_location": "L15"
+      "source_location": "L80"
     },
     {
-      "id": "readme_step_3_install_frontend_dependencies_optional_when_building_ui",
-      "label": "Step 3: Install Frontend Dependencies (Optional / When Building UI)",
+      "id": "readme_step_3_verify_test_suite_knowledge_graph",
+      "label": "Step 3: Verify Test Suite & Knowledge Graph",
       "_origin": "ast",
       "community": 171,
       "community_name": "SME Finance Copilot",
       "file_type": "document",
       "node_kind": "heading",
-      "norm_label": "step 3: install frontend dependencies (optional / when building ui)",
+      "norm_label": "step 3: verify test suite & knowledge graph",
       "source_file": "README.md",
-      "source_location": "L21"
+      "source_location": "L85"
     },
     {
       "id": "agent_skills_unit_economics_skill",
@@ -32113,52 +32113,74 @@
       "weight": 1.0
     },
     {
-      "source": "readme_1_quick_start_for_teammates",
-      "target": "readme_step_2_install_python_dependencies",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "README.md",
-      "source_location": "L15",
-      "weight": 1.0
-    },
-    {
-      "source": "readme_1_quick_start_for_teammates",
-      "target": "readme_step_3_install_frontend_dependencies_optional_when_building_ui",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "README.md",
-      "source_location": "L21",
-      "weight": 1.0
-    },
-    {
-      "source": "readme_1_quick_start_for_teammates",
+      "source": "readme_4_quick_start_installation",
       "target": "readme_step_1_clone_repository",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
-      "source_location": "L9",
+      "source_location": "L74",
       "weight": 1.0
     },
     {
-      "source": "readme_2_using_ai_coding_assistants",
-      "target": "readme_google_antigravity",
+      "source": "readme_4_quick_start_installation",
+      "target": "readme_step_2_install_python_dependencies",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
-      "source_location": "L30",
+      "source_location": "L80",
       "weight": 1.0
     },
     {
-      "source": "readme_2_using_ai_coding_assistants",
-      "target": "readme_claude_claude_code",
+      "source": "readme_4_quick_start_installation",
+      "target": "readme_step_3_verify_test_suite_knowledge_graph",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "README.md",
+      "source_location": "L85",
+      "weight": 1.0
+    },
+    {
+      "source": "readme_sme_finance_copilot",
+      "target": "readme_6_repository_documentation_index",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "README.md",
+      "source_location": "L106",
+      "weight": 1.0
+    },
+    {
+      "source": "readme_sme_finance_copilot",
+      "target": "readme_7_license",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "README.md",
+      "source_location": "L116",
+      "weight": 1.0
+    },
+    {
+      "source": "readme_sme_finance_copilot",
+      "target": "readme_1_executive_summary_problem_statement",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "README.md",
+      "source_location": "L12",
+      "weight": 1.0
+    },
+    {
+      "source": "readme_sme_finance_copilot",
+      "target": "readme_2_core_architecture_hackathon_rubric_alignment",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -32168,58 +32190,36 @@
       "weight": 1.0
     },
     {
-      "source": "readme_2_using_ai_coding_assistants",
-      "target": "readme_cursor_vs_code_other_assistants",
+      "source": "readme_sme_finance_copilot",
+      "target": "readme_3_the_three_tier_security_gate",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
-      "source_location": "L38",
+      "source_location": "L44",
       "weight": 1.0
     },
     {
       "source": "readme_sme_finance_copilot",
-      "target": "readme_2_using_ai_coding_assistants",
+      "target": "readme_4_quick_start_installation",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
-      "source_location": "L28",
+      "source_location": "L72",
       "weight": 1.0
     },
     {
       "source": "readme_sme_finance_copilot",
-      "target": "readme_3_core_developer_commands",
+      "target": "readme_5_development_assistant_compatibility",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
-      "source_location": "L43",
-      "weight": 1.0
-    },
-    {
-      "source": "readme_sme_finance_copilot",
-      "target": "readme_4_key_documentation_links",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "README.md",
-      "source_location": "L55",
-      "weight": 1.0
-    },
-    {
-      "source": "readme_sme_finance_copilot",
-      "target": "readme_1_quick_start_for_teammates",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "README.md",
-      "source_location": "L7",
+      "source_location": "L96",
       "weight": 1.0
     },
     {
@@ -32795,5 +32795,6 @@
       "weight": 1.0
     }
   ],
-  "hyperedges": []
+  "hyperedges": [],
+  "built_at_commit": "b621261820eb080095607cd362428f539adcb96a"
 }

@@ -65,57 +65,12 @@ Every contributor (human developer or AI coding agent) working in this workspace
 
 Every development task must pass through the **Andrej Karpathy Behavioral Guidelines** integrated with the **Superpowers 5-Gate Protocol**. No feature, refactor, or bugfix may skip any gate:
 
-```
-[ User Request / Task ]
-          │
-          ▼
-┌────────────────────────────────────────────────────────────────────────┐
-│ Gate 1: Intent & Spec Gate (Karpathy Principle 1: Think Before Coding) │
-│ • Don't assume. Never hide confusion. State assumptions explicitly.   │
-│ • WHEN TO USE AGENTS: prompt-engineer, research-scout, llm-architect   │
-│ • WHEN TO USE SKILLS: writing-plans, brainstorming, karpathy-guidelines│
-│ • RULES: superpowers.md (Intent Gate), multi-agent-orchestrator.md     │
-└───────────────────────────────────┬────────────────────────────────────┘
-                                    │
-                                    ▼
-┌────────────────────────────────────────────────────────────────────────┐
-│ Gate 2: Interactive Grilling (Karpathy Principle 2: Simplicity First)  │
-│ • Surface trade-offs. Push back on complexity. Present simple options. │
-│ • Minimum code that solves the problem. Nothing speculative (YAGNI).   │
-│ • WHEN TO USE AGENTS: first-principles-thinking, systems-architect     │
-│ • WHEN TO USE SKILLS: grill-me, doubt-driven-development, antislop     │
-│ • RULES: ponytail.md (The Ladder), domain-alignment.md, antislop.md    │
-└───────────────────────────────────┬────────────────────────────────────┘
-                                    │
-                                    ▼
-┌────────────────────────────────────────────────────────────────────────┐
-│ Gate 3: Test-Driven Development (Karpathy Principle 4: Goal-Driven)   │
-│ • Ground in official documentation. Write failing tests first.         │
-│ • Transform tasks into verifiable goals with deterministic criteria.   │
-│ • WHEN TO USE AGENTS: fintech-engineer, fastapi-developer, qa-expert   │
-│ • WHEN TO USE SKILLS: test-driven-development, pytest-financial-testing│
-│ • RULES: superpowers.md, source-driven-development                     │
-└───────────────────────────────────┬────────────────────────────────────┘
-                                    │
-                                    ▼
-┌────────────────────────────────────────────────────────────────────────┐
-│ Gate 4: Root-Cause Debugging (Karpathy Principle 3: Surgical Changes)  │
-│ • Touch only what you must. Fix root cause once; grep sibling callers. │
-│ • Match existing style. Never rewrite or refactor unbroken code.       │
-│ • WHEN TO USE AGENTS: debugger, architect-reviewer, code-reviewer      │
-│ • WHEN TO USE SKILLS: systematic-debugging, code-optimizer             │
-│ • RULES: superpowers.md (Root Cause), ponytail.md (Shortest diff wins) │
-└───────────────────────────────────┬────────────────────────────────────┘
-                                    │
-                                    ▼
-┌────────────────────────────────────────────────────────────────────────┐
-│ Gate 5: Terminal Verification (Karpathy Principle 4: Loop to Verify)   │
-│ • Execute fresh terminal commands (pytest, typecheck). Inspect logs.   │
-│ • Ralph Wiggum self-repair loop: diagnose, repair, re-test (max 5).    │
-│ • WHEN TO USE AGENTS: qa-verifier, security-auditor, compliance-audit  │
-│ • WHEN TO USE SKILLS: verification-before-completion, graphify         │
-│ • RULES: superpowers.md (Verification Invariant), graphify.md (Sync)   │
-└────────────────────────────────────────────────────────────────────────┘
+```mermaid
+flowchart TD
+    G1["Gate 1: Intent & Spec Alignment (Karpathy: Think Before Coding)"] --> G2["Gate 2: Interactive Grilling (Karpathy: Simplicity First)"]
+    G2 --> G3["Gate 3: Test-Driven Development (Karpathy: Goal-Driven)"]
+    G3 --> G4["Gate 4: Root-Cause Debugging (Karpathy: Surgical Changes)"]
+    G4 --> G5["Gate 5: Terminal Verification & Graph Sync (Karpathy: Loop to Verify)"]
 ```
 
 ### Detailed Phase Breakdown: When to Use Which Agent, Skill, and Rule
@@ -125,7 +80,7 @@ Every development task must pass through the **Andrej Karpathy Behavioral Guidel
 | **Gate 1: Intent & Spec Alignment** | **1. Think Before Coding**: Never guess or implement silently; clarify ambiguous intent upfront. | • [`prompt-engineer`](file:///F:/SME%20Finance%20Copilot/.agent/agents/0-global-specialists/prompt-engineer.md) for vague prompts.<br>• [`research-scout`](file:///F:/SME%20Finance%20Copilot/.agent/agents/0-global-specialists/research-scout.md) for external docs.<br>• [`research-analyst`](file:///F:/SME%20Finance%20Copilot/.agent/agents/7-research-intelligence/research-analyst.md) for domain concepts. | • [`writing-plans`](file:///F:/SME%20Finance%20Copilot/.agent/skills/writing-plans) for multi-step tasks.<br>• [`brainstorming`](file:///F:/SME%20Finance%20Copilot/.agent/skills/brainstorming) for new features.<br>• [`karpathy-guidelines`](file:///F:/SME%20Finance%20Copilot/.agent/skills/karpathy-guidelines) to surface assumptions. | [`superpowers.md`](file:///F:/SME%20Finance%20Copilot/.agent/rules/superpowers.md) (Intent Gate), [`multi-agent-orchestrator.md`](file:///F:/SME%20Finance%20Copilot/.agent/rules/multi-agent-orchestrator.md) (Thoughtful Collaborator). |
 | **Gate 2: Interactive Grilling & Consultation** | **2. Simplicity First**: Minimum code that works; question complex requests and propose simpler alternatives. | • [`first-principles-thinking`](file:///F:/SME%20Finance%20Copilot/.agent/agents/6-product-pitch/first-principles-thinking.md) to deconstruct complexity.<br>• [`systems-architect`](file:///F:/SME%20Finance%20Copilot/.agent/agents/0-global-specialists/systems-architect.md) for trade-offs. | • [`grill-me`](file:///F:/SME%20Finance%20Copilot/.agent/skills/grill-me) for structured interviews.<br>• [`doubt-driven-development`](file:///F:/SME%20Finance%20Copilot/.agent/skills/doubt-driven-development) for adversarial review.<br>• [`antislop`](file:///F:/SME%20Finance%20Copilot/.agent/skills/antislop) to cut boilerplate. | [`ponytail.md`](file:///F:/SME%20Finance%20Copilot/.agent/rules/ponytail.md) (The Ladder), [`domain-alignment.md`](file:///F:/SME%20Finance%20Copilot/.agent/rules/domain-alignment.md), [`no-ai-slop.md`](file:///F:/SME%20Finance%20Copilot/.agent/rules/no-ai-slop.md). |
 | **Gate 3: Test-Driven Development (TDD)** | **4. Goal-Driven Execution**: Define measurable test criteria before implementation; loop until green. | • [`fintech-engineer`](file:///F:/SME%20Finance%20Copilot/.agent/agents/2-fintech-engine/fintech-engineer.md) for decimal math.<br>• [`fastapi-developer`](file:///F:/SME%20Finance%20Copilot/.agent/agents/3-backend-platform/fastapi-developer.md) for API routes.<br>• [`test-automator`](file:///F:/SME%20Finance%20Copilot/.agent/agents/5-security-qa/test-automator.md) for test generation. | • [`source-driven-development`](file:///F:/SME%20Finance%20Copilot/.agent/skills/source-driven-development) for official doc grounding.<br>• [`test-driven-development`](file:///F:/SME%20Finance%20Copilot/.agent/skills/test-driven-development) for Red-Green cycles.<br>• [`pytest-financial-testing`](file:///F:/SME%20Finance%20Copilot/.agent/skills/pytest-financial-testing) for cash flow assertions. | [`superpowers.md`](file:///F:/SME%20Finance%20Copilot/.agent/rules/superpowers.md), [`multi-agent-orchestrator.md`](file:///F:/SME%20Finance%20Copilot/.agent/rules/multi-agent-orchestrator.md) (Anti-Rationalization Gate). |
-| **Gate 4: Root-Cause Debugging** | **3. Surgical Changes**: Touch only what you must. Fix the shared function once; never patch symptoms. | • [`debugger`](file:///F:/SME%20Finance%20Copilot/.agent/agents/5-security-qa/debugger.md) to trace stack traces.<br>• [`architect-reviewer`](file:///F:/SME%20Finance%20Copilot/.agent/agents/5-security-qa/architect-reviewer.md) for boundaries.<br>• [`code-reviewer`](file:///F:/SME%20Finance%20Copilot/.agent/agents/0-global-specialists/code-reviewer.md) for diff minimization. | • [`systematic-debugging`](file:///F:/SME%20Finance%20Copilot/.agent/skills/systematic-debugging) (reproduce, isolate, fix, verify).<br>• [`code-optimizer`](file:///F:/SME%20Finance%20Copilot/.agent/skills/code-optimizer) for hot-path latency. | [`superpowers.md`](file:///F:/SME%20Finance%20Copilot/.agent/rules/superpowers.md) (Root Cause Invariant), [`ponytail.md`](file:///F:/SME%20Finance%20Copilot/.agent/rules/ponytail.md) (Shortest working diff). |
+| **Gate 4: Root-Cause Debugging** | **3. Surgical Changes**: Touch only what you must. Fix the shared function once; never patch symptoms. | • [`debugger`](file:///F:/SME%20Finance%20Copilot/.agent/agents/5-security-qa/debugger.md) to trace stack traces.<br>• [`architect-reviewer`](file:///F:/SME%20Finance%20Copilot/.agent/agents/5-security-qa/architect-reviewer.md) for boundaries.<br>• [`code-reviewer`](file:///F:/SME%20Finance%20Copilot/.agent/agents/0-global-specialists/code-reviewer.md) for diff minimization. | • [`systematic-debugging`](file:///F:/SME%20Finance%20Copilot/.agent/skills/systematic-debugging) (reproduce, isolate, fix, verify).<br>• [`code-optimizer`](file:///F:/SME%20Finance%20Copilot/.agent/skills/code-optimizer) for hot-path latency. | [`superpowers.md`](file:///F:/SME%20Finance%20Copilot/.agent/rules/superpowers.md) (Root Cause Invariant), [`ponytail.md`](file:///F:/SME%20Finance%20Copilot/.agent/rules/ponytail.md) (Shortest diff wins). |
 | **Gate 5: Terminal Verification & Sync** | **4. Goal-Driven Execution**: Run deterministic commands; require concrete terminal output; sync graph. | • [`qa-verifier`](file:///F:/SME%20Finance%20Copilot/.agent/agents/0-global-specialists/qa-verifier.md) for final pass/fail verdict.<br>• [`security-auditor`](file:///F:/SME%20Finance%20Copilot/.agent/agents/5-security-qa/security-auditor.md) for permission audits.<br>• [`compliance-auditor`](file:///F:/SME%20Finance%20Copilot/.agent/agents/5-security-qa/compliance-auditor.md) for truth-in-lending. | • [`verification-before-completion`](file:///F:/SME%20Finance%20Copilot/.agent/skills/verification-before-completion) for command proof.<br>• [`graphify`](file:///F:/SME%20Finance%20Copilot/.agent/skills/graphify) to update knowledge graph. | [`superpowers.md`](file:///F:/SME%20Finance%20Copilot/.agent/rules/superpowers.md) (Verification Invariant), [`graphify.md`](file:///F:/SME%20Finance%20Copilot/.agent/rules/graphify.md) (Mandatory AST sync). |
 
 ---
