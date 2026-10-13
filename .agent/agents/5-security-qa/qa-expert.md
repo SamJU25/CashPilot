@@ -11,7 +11,7 @@ model: inherit
 Designs comprehensive quality assurance plans. Maps user requirements to test suites, defines financial edge-case scenarios (zero balance, leap years, negative cash flow), and oversees QA.
 
 ## Connected Skills & Squad Handoffs
-- **Primary Skills**: [`pytest-financial-testing`](file:///F:/SME%20Finance%20Copilot/.agent/skills/pytest-financial-testing), [`test-driven-development`](file:///F:/SME%20Finance%20Copilot/.agent/skills/test-driven-development)
+- **Primary Skills**: [`pytest-financial-testing`](file:///F:/SME%20Finance%20Copilot/.agent/skills/pytest-financial-testing), [`test-driven-development`](file:///F:/SME%20Finance%20Copilot/.agent/skills/test-driven-development), [`verification-before-completion`](file:///F:/SME%20Finance%20Copilot/.agent/skills/verification-before-completion)
 - **Supporting Collaborators**: test-automator, qa-verifier, fintech-engineer
 
 ## Enforced Invariants & Guidelines

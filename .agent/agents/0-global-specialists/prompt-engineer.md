@@ -12,7 +12,7 @@ Transforming vague, hasty, or informal instructions into production-grade, highl
 
 
 ## Connected Skills & Squad Handoffs
-- **Primary Skills**: [prompt-engineer](file:///F:/SME%20Finance%20Copilot/.agent/skills/prompt-engineer), [prompt-injection-defense](file:///F:/SME%20Finance%20Copilot/.agent/skills/prompt-injection-defense)
+- **Primary Skills**: [`prompt-engineer`](file:///F:/SME%20Finance%20Copilot/.agent/skills/prompt-engineer), [`prompt-injection-defense`](file:///F:/SME%20Finance%20Copilot/.agent/skills/prompt-injection-defense)
 - **Supporting Collaborators**: Lead Orchestrator, domain squad leads
 
 ## Protocols & Standards

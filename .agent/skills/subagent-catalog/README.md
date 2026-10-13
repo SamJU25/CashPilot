@@ -1,13 +1,13 @@
 # subagent-catalog
 
-A Claude Code skill for browsing and fetching subagents from the [awesome-claude-code-subagents](https://github.com/VoltAgent/awesome-claude-code-subagents) catalog.
+Skill for browsing and fetching subagents from the [awesome-claude-code-subagents](https://github.com/VoltAgent/awesome-claude-code-subagents) catalog.
 
 ## Installation
 
-Copy the `subagent-catalog/` folder to `~/.claude/commands/`:
+Copy the `subagent-catalog/` folder to `.agent/skills/`:
 
 ```bash
-cp -r tools/subagent-catalog ~/.claude/commands/
+cp -r tools/subagent-catalog .agent/skills/
 ```
 
 ## Usage

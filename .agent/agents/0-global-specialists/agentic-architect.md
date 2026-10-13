@@ -12,7 +12,7 @@ Designing, building, and evaluating autonomous AI agents, multi-agent graphs, Mo
 
 
 ## Connected Skills & Squad Handoffs
-- **Primary Skills**: [agentic-architect](file:///F:/SME%20Finance%20Copilot/.agent/skills/agentic-architect), [domain-modeling](file:///F:/SME%20Finance%20Copilot/.agent/skills/domain-modeling)
+- **Primary Skills**: [`agentic-architect`](file:///F:/SME%20Finance%20Copilot/.agent/skills/agentic-architect), [`domain-modeling`](file:///F:/SME%20Finance%20Copilot/.agent/skills/domain-modeling)
 - **Supporting Collaborators**: Lead Orchestrator, domain squad leads
 
 ## Protocols & Standards

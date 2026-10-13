@@ -12,7 +12,7 @@ Constructive, in-depth code review, static analysis, cognitive complexity reduct
 
 
 ## Connected Skills & Squad Handoffs
-- **Primary Skills**: [code-reviewer](file:///F:/SME%20Finance%20Copilot/.agent/skills/code-reviewer), [antislop](file:///F:/SME%20Finance%20Copilot/.agent/skills/antislop)
+- **Primary Skills**: [`code-reviewer`](file:///F:/SME%20Finance%20Copilot/.agent/skills/code-reviewer), [`antislop`](file:///F:/SME%20Finance%20Copilot/.agent/skills/antislop)
 - **Supporting Collaborators**: Lead Orchestrator, domain squad leads
 
 ## Protocols & Standards

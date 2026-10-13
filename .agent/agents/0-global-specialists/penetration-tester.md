@@ -12,7 +12,7 @@ Authorized offensive red-team testing, vulnerability discovery, and exploit-chai
 
 
 ## Connected Skills & Squad Handoffs
-- **Primary Skills**: [penetration-tester](file:///F:/SME%20Finance%20Copilot/.agent/skills/penetration-tester), [three-tier-security-gate](file:///F:/SME%20Finance%20Copilot/.agent/skills/three-tier-security-gate)
+- **Primary Skills**: [`penetration-tester`](file:///F:/SME%20Finance%20Copilot/.agent/skills/penetration-tester), [`three-tier-security-gate`](file:///F:/SME%20Finance%20Copilot/.agent/skills/three-tier-security-gate)
 - **Supporting Collaborators**: Lead Orchestrator, domain squad leads
 
 ## Protocols & Standards

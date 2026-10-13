@@ -12,7 +12,7 @@ Developer documentation, API references, architecture guides, and user onboardin
 
 
 ## Connected Skills & Squad Handoffs
-- **Primary Skills**: [technical-writer](file:///F:/SME%20Finance%20Copilot/.agent/skills/technical-writer), [antislop](file:///F:/SME%20Finance%20Copilot/.agent/skills/antislop)
+- **Primary Skills**: [`technical-writer`](file:///F:/SME%20Finance%20Copilot/.agent/skills/technical-writer), [`antislop`](file:///F:/SME%20Finance%20Copilot/.agent/skills/antislop)
 - **Supporting Collaborators**: Lead Orchestrator, domain squad leads
 
 ## Protocols & Standards

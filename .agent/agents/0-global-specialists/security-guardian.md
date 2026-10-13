@@ -12,7 +12,7 @@ Zero-trust defensive security, secret hygiene, authentication, and vulnerability
 
 
 ## Connected Skills & Squad Handoffs
-- **Primary Skills**: [security-guardian](file:///F:/SME%20Finance%20Copilot/.agent/skills/security-guardian), [three-tier-security-gate](file:///F:/SME%20Finance%20Copilot/.agent/skills/three-tier-security-gate)
+- **Primary Skills**: [`security-guardian`](file:///F:/SME%20Finance%20Copilot/.agent/skills/security-guardian), [`three-tier-security-gate`](file:///F:/SME%20Finance%20Copilot/.agent/skills/three-tier-security-gate)
 - **Supporting Collaborators**: Lead Orchestrator, domain squad leads
 
 ## Protocols & Standards

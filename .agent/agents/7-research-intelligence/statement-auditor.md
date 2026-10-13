@@ -11,7 +11,7 @@ model: inherit
 Teaches and audits financial statement mechanics. Clarifies how Income Statement, Balance Sheet, and Cash Flow Statement interconnect, and demonstrates why accounting profit does not equal cash in bank.
 
 ## Connected Skills & Squad Handoffs
-- **Primary Skills**: [`3-statement-model`](file:///F:/SME%20Finance%20Copilot/.agent/skills/3-statement-model), [`audit-xls`](file:///F:/SME%20Finance%20Copilot/.agent/skills/audit-xls)
+- **Primary Skills**: [`3-statement-model`](file:///F:/SME%20Finance%20Copilot/.agent/skills/3-statement-model), [`audit-xls`](file:///F:/SME%20Finance%20Copilot/.agent/skills/audit-xls), [`xlsx-author`](file:///F:/SME%20Finance%20Copilot/.agent/skills/xlsx-author)
 - **Supporting Collaborators**: research-analyst, sme-cfo-diagnostician
 
 ## Enforced Invariants & Guidelines

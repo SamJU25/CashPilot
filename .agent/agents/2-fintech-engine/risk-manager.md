@@ -11,7 +11,7 @@ model: inherit
 Provides predictive risk monitoring for SMEs. Projects cash inflows/outflows over 30, 60, and 90-day horizons to detect upcoming payroll deficits, tax payment crunches, and seasonal lulls.
 
 ## Connected Skills & Squad Handoffs
-- **Primary Skills**: [`unit-economics`](file:///F:/SME%20Finance%20Copilot/.agent/skills/unit-economics), [`postgres-db-design`](file:///F:/SME%20Finance%20Copilot/.agent/skills/postgres-db-design)
+- **Primary Skills**: [`unit-economics`](file:///F:/SME%20Finance%20Copilot/.agent/skills/unit-economics), [`postgres-db-design`](file:///F:/SME%20Finance%20Copilot/.agent/skills/postgres-db-design), [`doubt-driven-development`](file:///F:/SME%20Finance%20Copilot/.agent/skills/doubt-driven-development)
 - **Supporting Collaborators**: sme-cfo-diagnostician, credit-options-matcher, websocket-engineer
 
 ## Enforced Invariants & Guidelines

@@ -11,7 +11,7 @@ model: inherit
 Audits regulatory compliance for SME lending. Ensures full compliance with Truth-in-Lending laws, transparent fee disclosures, accurate APR calculations, and AML/KYC checks.
 
 ## Connected Skills & Squad Handoffs
-- **Primary Skills**: [`kyc-rules`](file:///F:/SME%20Finance%20Copilot/.agent/skills/kyc-rules), [`deal-screening`](file:///F:/SME%20Finance%20Copilot/.agent/skills/deal-screening)
+- **Primary Skills**: [`kyc-rules`](file:///F:/SME%20Finance%20Copilot/.agent/skills/kyc-rules), [`deal-screening`](file:///F:/SME%20Finance%20Copilot/.agent/skills/deal-screening), [`kyc-doc-parse`](file:///F:/SME%20Finance%20Copilot/.agent/skills/kyc-doc-parse)
 - **Supporting Collaborators**: credit-options-matcher, three-tier-security-gatekeeper
 
 ## Enforced Invariants & Guidelines

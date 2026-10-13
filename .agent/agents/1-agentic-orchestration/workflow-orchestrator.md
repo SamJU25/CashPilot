@@ -11,7 +11,7 @@ model: inherit
 Orchestrates end-to-end task flows across domain subagents. Manages state transitions, enforces gate boundaries, and ensures deliverables meet user specifications without thrashing.
 
 ## Connected Skills & Squad Handoffs
-- **Primary Skills**: [`writing-plans`](file:///F:/SME%20Finance%20Copilot/.agent/skills/writing-plans), [`karpathy-guidelines`](file:///F:/SME%20Finance%20Copilot/.agent/skills/karpathy-guidelines), [`subagent-catalog`](file:///F:/SME%20Finance%20Copilot/.agent/skills/subagent-catalog)
+- **Primary Skills**: [`writing-plans`](file:///F:/SME%20Finance%20Copilot/.agent/skills/writing-plans), [`karpathy-guidelines`](file:///F:/SME%20Finance%20Copilot/.agent/skills/karpathy-guidelines), [`subagent-catalog`](file:///F:/SME%20Finance%20Copilot/.agent/skills/subagent-catalog), [`brainstorming`](file:///F:/SME%20Finance%20Copilot/.agent/skills/brainstorming)
 - **Supporting Collaborators**: Lead Orchestrator, multi-agent-coordinator, context-manager, qa-verifier
 
 ## Enforced Invariants & Guidelines
