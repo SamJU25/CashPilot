@@ -342,33 +342,33 @@
     "semantic_hash": ""
   },
   ".agent/rules/agent-reach.md": {
-    "mtime": 1791139684.2769444,
-    "seen": 1791903716.169046,
-    "ast_hash": "a0850a73110c6a14f5da7a11c1859993",
+    "mtime": 1791911206.6376147,
+    "seen": 1791911237.0846827,
+    "ast_hash": "c8a208d5ef299377dae4bb4857356382",
     "semantic_hash": ""
   },
   ".agent/rules/antislop.md": {
-    "mtime": 1791138501.7306855,
-    "seen": 1791903716.1690469,
-    "ast_hash": "16e66052af27e928de4c1d74d252bde2",
+    "mtime": 1791911140.8988976,
+    "seen": 1791911237.0846846,
+    "ast_hash": "401a72e85da7876c07d1cd2f055814c3",
     "semantic_hash": ""
   },
   ".agent/rules/domain-alignment.md": {
-    "mtime": 1791136486.9001052,
-    "seen": 1791903716.169048,
-    "ast_hash": "5179458808a7d1d94d79efb8b1b860f0",
+    "mtime": 1791911140.8988976,
+    "seen": 1791911237.0846858,
+    "ast_hash": "adf26e490ff7b703e23d45eb4d0b3c54",
     "semantic_hash": ""
   },
   ".agent/rules/frontend-craft.md": {
-    "mtime": 1791137732.6038506,
-    "seen": 1791903716.1690488,
-    "ast_hash": "4bf376f5d518e2024fde4850296fce69",
+    "mtime": 1791911140.8988976,
+    "seen": 1791911237.084687,
+    "ast_hash": "1d4c68b4c6eec1afb5b0677b4b508e16",
     "semantic_hash": ""
   },
   ".agent/rules/graphify.md": {
-    "mtime": 1791135299.5552025,
-    "seen": 1791903716.1690497,
-    "ast_hash": "55a50f3f29136417dfa0db861379b5e4",
+    "mtime": 1791911140.900373,
+    "seen": 1791911237.0846882,
+    "ast_hash": "ef65ea2d4bbfb0c9b7d47d9f64ae45e2",
     "semantic_hash": ""
   },
   ".agent/rules/multi-agent-orchestrator.md": {
@@ -390,9 +390,9 @@
     "semantic_hash": ""
   },
   ".agent/rules/superpowers.md": {
-    "mtime": 1791135856.0288634,
-    "seen": 1791903716.1690538,
-    "ast_hash": "2cebddfeadde73758c956a24bf19235c",
+    "mtime": 1791911140.900373,
+    "seen": 1791911237.0846953,
+    "ast_hash": "92187765bd93c4196626320c3c81ba38",
     "semantic_hash": ""
   },
   ".agent/skills/3-statement-model/SKILL.md": {
@@ -792,9 +792,9 @@
     "semantic_hash": ""
   },
   ".agent/skills/research-scout/SKILL.md": {
-    "mtime": 1791145164.277261,
-    "seen": 1791903716.1691213,
-    "ast_hash": "8b870b5f58e7b9fe5b3c650796602466",
+    "mtime": 1791911213.1097803,
+    "seen": 1791911237.0847936,
+    "ast_hash": "053959883a7f52da5b2cc0f4f0f0468d",
     "semantic_hash": ""
   },
   ".agent/skills/sector-overview/SKILL.md": {
@@ -870,9 +870,9 @@
     "semantic_hash": ""
   },
   ".agent/skills/taste-skill/SKILL.md": {
-    "mtime": 1791137399.7382295,
-    "seen": 1791903716.1691346,
-    "ast_hash": "e791c4a0debe5f5ce596642457e23583",
+    "mtime": 1791911140.9145837,
+    "seen": 1791911237.0848126,
+    "ast_hash": "eb07cdd0faef4d97242cc504e416227a",
     "semantic_hash": ""
   },
   ".agent/skills/technical-writer/SKILL.md": {

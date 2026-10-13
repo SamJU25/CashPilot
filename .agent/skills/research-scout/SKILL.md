@@ -19,6 +19,6 @@ Responsible for rapidly gathering facts, upstream architectural patterns, offici
 2. **Strictly Read-Only:**
    - Only fetch, search, and analyze public content. Never attempt write actions, form posts, or authenticated mutations.
 3. **Workspace Hygiene:**
-   - Never save scratch downloads or temp files into `f:/agent`. Use Windows `%TEMP%` or `C:\Users\Sam\.agent-reach\`.
+   - Never save scratch downloads or temp files into the project repository. Use Windows `%TEMP%` or `C:\Users\Sam\.agent-reach\`.
 4. **Output Synthesis:**
    - Deliver clear, actionable takeaways to the Lead Orchestrator: recommended packages, version requirements, gotchas, and minimal code snippets.

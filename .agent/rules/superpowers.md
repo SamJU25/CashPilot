@@ -5,7 +5,7 @@ description: Auto-apply Superpowers engineering methodology: spec alignment befo
 
 # Superpowers Engineering Methodology
 
-Scope: Antigravity coding assistant only. Do not add to JARVIS runtime settings.
+Scope: Antigravity and Claude coding assistants.
 
 ## 1. Intent & Spec Gate
 - Before writing code for new features or modifying behavior, confirm intent with the user.

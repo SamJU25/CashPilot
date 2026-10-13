@@ -5,7 +5,7 @@ description: Auto-apply the 4-pillar frontend design protocol (Taste, Impeccable
 
 # 4-Pillar Frontend Design & Motion Protocol
 
-Scope: Antigravity coding assistant only. Do not add to JARVIS runtime settings.
+Scope: Antigravity and Claude coding assistants.
 
 ## 1. Situational Execution Flow
 - **When creating UI:** Enforce intentional typography, avoid nested card boilerplate, and preserve project design tokens.

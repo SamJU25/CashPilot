@@ -5,7 +5,7 @@ description: Stress-test requirements using structured grilling rounds and enfor
 
 # Domain Alignment & Grilling Protocol
 
-Scope: Antigravity coding assistant only. Do not add to JARVIS runtime settings.
+Scope: Antigravity and Claude coding assistants.
 
 ## 1. Grilling Rounds
 - Identify unsettled decisions and group them into a single round.

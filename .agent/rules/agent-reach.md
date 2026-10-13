@@ -5,7 +5,7 @@ description: Auto-apply Agent Reach multi-platform internet routing, search, and
 
 # Agent Reach Internet Capability Router
 
-Scope: Antigravity coding assistant only. Do not add to JARVIS runtime settings.
+Scope: Antigravity and Claude coding assistants.
 Source: https://github.com/Panniantong/Agent-Reach
 
 ## 1. Capability Routing Invariant
@@ -25,5 +25,5 @@ When the user requests internet research, web page extraction, repository inspec
 
 ## 2. Safety & Workspace Invariant
 - **Strictly Read-Only:** Only fetch, search, and read internet content. Do not automate write actions (posting, commenting, liking, following, or profile mutations).
-- **Workspace Hygiene:** Never write scratch, media, or temporary files into the project workspace (`f:\agent`). Use Windows `%TEMP%` or `C:\Users\Sam\.agent-reach\`.
-- **Runtime Isolation:** Never inject Agent Reach configuration, tokens, or history into `data/settings.json`.
+- **Workspace Hygiene:** Never write scratch, media, or temporary files into the project repository. Use Windows `%TEMP%` or `C:\Users\Sam\.agent-reach\`.
+- **Runtime Isolation:** Never commit Agent Reach configuration, tokens, or history into project configuration files.

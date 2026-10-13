@@ -20,4 +20,4 @@ Deliver premium visual craft and eliminate generic AI styling patterns.
 - Give key elements room to breathe; maintain strong hierarchical focal points.
 
 ### 3. Repository Ground Truth
-- In this repository, [DESIGN-SYSTEM.md](file:///f:/agent/DESIGN-SYSTEM.md) tokens (`--void`, `--surface`, `--cyan`, `--amber`) remain the master palette.
+- In this repository, [DESIGN-SYSTEM.md](project design tokens) tokens (`--void`, `--surface`, `--cyan`, `--amber`) remain the master palette.

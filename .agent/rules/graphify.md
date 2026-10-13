@@ -6,7 +6,7 @@ description: Consult the graphify knowledge graph at graphify-out/ for codebase 
 ## graphify
 
 This project has a graphify knowledge graph at graphify-out/.
-Scope: Antigravity coding assistant only. Do not add to JARVIS runtime settings.
+Scope: Antigravity and Claude coding assistants.
 
 Rules:
 - For codebase or architecture questions, when `graphify-out/graph.json` exists, first run `graphify query "<question>"` (CLI) or `query_graph` (MCP). Use `graphify path "<A>" "<B>"` / `shortest_path` for relationships and `graphify explain "<concept>"` / `get_node` for focused concepts.

@@ -5,7 +5,7 @@ description: Auto-apply the antislop filter during UI design, copy authoring, an
 
 # Antislop Filter Invariant
 
-Scope: Antigravity coding assistant only. Do not add to JARVIS runtime settings.
+Scope: Antigravity and Claude coding assistants.
 Mode: during (continuous filtering during generation).
 
 ## 1. UI & Visuals
