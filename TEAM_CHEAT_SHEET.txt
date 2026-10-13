@@ -1,0 +1,97 @@
+================================================================================
+SME FINANCE COPILOT — TEAM ESSENTIAL CHEAT SHEET
+================================================================================
+
+Hey team! Here is a 3-minute summary of what we are building, why it matters,
+and the key concepts you need to know for development and our pitch.
+
+--------------------------------------------------------------------------------
+1. WHAT ARE WE BUILDING?
+--------------------------------------------------------------------------------
+An "Autonomous AI CFO and Financial Participant for SMEs (Small & Medium Enterprises)".
+It connects to a small business's bank transactions and invoices, predicts cash
+shortages before they happen, and safely drafts financing solutions.
+
+--------------------------------------------------------------------------------
+2. AI AGENTS IN 60 SECONDS (WHAT MAKES US DIFFERENT)
+--------------------------------------------------------------------------------
+* Chatbot vs. Agent:
+  - A chatbot (like standard ChatGPT) only generates text.
+  - An AI Agent has "hands": it reads databases, runs Python code, calls APIs,
+    and takes actions inside strict safety boundaries.
+
+* Why Multi-Agent?
+  - A real business has an accountant, a backend engineer, and a security officer.
+  - Our project splits work into specialized agents (FinTech math squad, Backend
+    squad, Security squad). This prevents hallucinations and errors.
+
+* The Golden Rule of Financial AI:
+  - The AI NEVER guesses financial math in text.
+  - The AI writes Python code, and Python computes the exact numbers deterministically.
+
+--------------------------------------------------------------------------------
+3. SME FINANCE 101 (THE PROBLEM WE ARE SOLVING)
+--------------------------------------------------------------------------------
+* Why Profitable Small Businesses Go Bankrupt:
+  - A business can make $50,000 in paper profit this month, but if customers pay
+    in 60 days (Net 60 terms) and payroll ($20,000) is due tomorrow, the bank
+    account is empty.
+  - This timing gap between paying expenses and collecting cash is called the
+    "Cash Conversion Cycle (CCC)".
+
+* Why Traditional Banks Reject SMEs:
+  - Banks demand physical collateral (factories, buildings) and 3 years of audited
+    statements. Small businesses don't have that.
+
+* Our Solution (The Digital Underwriting / WeBank Model):
+  - Instead of waiting for paper audits, we look at real-time cash flows:
+    daily bank balance trends, revenue stability, tax filings, and unpaid invoices.
+  - We warn the business owner before payroll bounces and recommend tailored financing
+    (invoice factoring, credit line, or revenue-based financing).
+
+--------------------------------------------------------------------------------
+4. HOW WE WIN THE HACKATHON (THE 3 SCORING CRITERIA)
+--------------------------------------------------------------------------------
+Judges do NOT want another generic ChatGPT wrapper. They grade 3 areas:
+
+1. Task Completion (40%):
+   - The Copilot actually ingests transactions and calculates real financial metrics:
+     Cash Runway, Debt Service Coverage Ratio (DSCR), and Cash Conversion Cycle.
+
+2. Defensive Security (30%) — OUR BIGGEST ADVANTAGE:
+   - We enforce a "Three-Tier Permission Gate":
+     * Tier 1 (Read-Only): Checking balances, calculating ratios -> AI runs autonomously.
+     * Tier 2 (Action Drafting): Preparing loan requests or invoice drafts -> AI drafts,
+       human confirms.
+     * Tier 3 (High Stakes): Sending real money or signing loans -> STRICTLY LOCKED
+       behind Human 2-Factor Authentication (2FA). The AI cannot move funds alone.
+
+3. Technical Innovation (30%):
+   - Replacing slow paper loan applications with real-time cash-flow intelligence.
+   - Optional tamper-proof verification to prevent invoice double-financing.
+
+--------------------------------------------------------------------------------
+5. TEAM DIVISION OF WORK
+--------------------------------------------------------------------------------
+* Backend / Data:
+  - Build the FastAPI endpoints and PostgreSQL transaction models.
+  - Ensure math formulas use exact Decimals (never floating-point for money).
+
+* Frontend / Dashboard:
+  - Build clean Next.js cards: Cash Runway tracker, DSO alert banners,
+    and 3-Tier approval modals.
+
+* Pitch / Slides:
+  - Tell the story: "SMEs die from cash crunches, not lack of profit. Our AI CFO
+    protects them with real-time data and strict 3-tier security."
+
+--------------------------------------------------------------------------------
+6. QUICKSTART (HOW TO RUN LOCALLY)
+--------------------------------------------------------------------------------
+git clone https://github.com/SamJU25/F-SME-Finance-Copilot.git
+cd F-SME-Finance-Copilot
+pip install -r requirements.txt
+
+Note: The repo already has all the architecture, rules, and AI skills built-in.
+Just prompt Antigravity or Claude directly inside the repository!
+================================================================================
