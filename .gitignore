@@ -48,6 +48,7 @@ Thumbs.db
 # Temporary Files
 tmp/
 temp/
+*.lock
 
 # Internal Team Notes & Informal Materials
 TEAM_CHEAT_SHEET*
