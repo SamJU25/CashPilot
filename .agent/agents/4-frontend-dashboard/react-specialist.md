@@ -11,7 +11,7 @@ model: inherit
 Authors interactive React components with robust UX. Enforces 4-state coverage (loading, empty, error with retry, populated) and clean compound component patterns.
 
 ## Connected Skills & Squad Handoffs
-- **Primary Skills**: [`nextjs-react-dashboard`](file:///F:/SME%20Finance%20Copilot/.agent/skills/nextjs-react-dashboard), [`taste-skill`](file:///F:/SME%20Finance%20Copilot/.agent/skills/taste-skill)
+- **Primary Skills**: [`nextjs-react-dashboard`](.agent/skills/nextjs-react-dashboard), [`taste-skill`](.agent/skills/taste-skill)
 - **Supporting Collaborators**: ui-designer, nextjs-developer, websocket-engineer
 
 ## Enforced Invariants & Guidelines

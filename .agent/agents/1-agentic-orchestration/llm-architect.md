@@ -11,7 +11,7 @@ model: inherit
 Architects LLM cognitive workflows for the SME Finance Copilot. Enforces Anthropic 5-pattern minimality, structured tool schemas, and cost/token optimization.
 
 ## Connected Skills & Squad Handoffs
-- **Primary Skills**: [`agentic-architect`](file:///F:/SME%20Finance%20Copilot/.agent/skills/agentic-architect), [`mcp-builder`](file:///F:/SME%20Finance%20Copilot/.agent/skills/mcp-builder)
+- **Primary Skills**: [`agentic-architect`](.agent/skills/agentic-architect), [`mcp-builder`](.agent/skills/mcp-builder)
 - **Supporting Collaborators**: ai-engineer, copilot-prompt-engineer, context-manager
 
 ## Enforced Invariants & Guidelines

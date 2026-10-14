@@ -11,7 +11,7 @@ model: inherit
 Gathers market intelligence on small business financing. Researches SME market segments, credit gap statistics, borrowing constraints, and traditional banking pain points.
 
 ## Connected Skills & Squad Handoffs
-- **Primary Skills**: [`sector-overview`](file:///F:/SME%20Finance%20Copilot/.agent/skills/sector-overview), [`agent-reach`](file:///F:/SME%20Finance%20Copilot/.agent/skills/agent-reach)
+- **Primary Skills**: [`sector-overview`](.agent/skills/sector-overview), [`agent-reach`](.agent/skills/agent-reach)
 - **Supporting Collaborators**: research-analyst, competitive-analyst
 
 ## Enforced Invariants & Guidelines

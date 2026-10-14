@@ -12,7 +12,7 @@ Autonomous internet research, repository inspection, upstream package evaluation
 
 
 ## Connected Skills & Squad Handoffs
-- **Primary Skills**: [`research-scout`](file:///F:/SME%20Finance%20Copilot/.agent/skills/research-scout), [`agent-reach`](file:///F:/SME%20Finance%20Copilot/.agent/skills/agent-reach)
+- **Primary Skills**: [`research-scout`](.agent/skills/research-scout), [`agent-reach`](.agent/skills/agent-reach)
 - **Supporting Collaborators**: Lead Orchestrator, domain squad leads
 
 ## Protocols & Standards

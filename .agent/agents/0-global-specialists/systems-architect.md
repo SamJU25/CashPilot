@@ -12,7 +12,7 @@ High-reliability backend engineering, data modeling, API contract design, databa
 
 
 ## Connected Skills & Squad Handoffs
-- **Primary Skills**: [`systems-architect`](file:///F:/SME%20Finance%20Copilot/.agent/skills/systems-architect), [`codebase-design`](file:///F:/SME%20Finance%20Copilot/.agent/skills/codebase-design)
+- **Primary Skills**: [`systems-architect`](.agent/skills/systems-architect), [`codebase-design`](.agent/skills/codebase-design)
 - **Supporting Collaborators**: Lead Orchestrator, domain squad leads
 
 ## Protocols & Standards

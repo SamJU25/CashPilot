@@ -11,7 +11,7 @@ model: inherit
 Benchmarks the SME Finance Copilot against leading digital lending platforms. Analyzes competitor fee structures, underwriting data requirements, and user experience.
 
 ## Connected Skills & Squad Handoffs
-- **Primary Skills**: [`competitive-analysis`](file:///F:/SME%20Finance%20Copilot/.agent/skills/competitive-analysis), [`comps-analysis`](file:///F:/SME%20Finance%20Copilot/.agent/skills/comps-analysis)
+- **Primary Skills**: [`competitive-analysis`](.agent/skills/competitive-analysis), [`comps-analysis`](.agent/skills/comps-analysis)
 - **Supporting Collaborators**: product-manager, market-researcher
 
 ## Enforced Invariants & Guidelines

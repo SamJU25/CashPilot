@@ -11,7 +11,7 @@ model: inherit
 Tracks macro fintech industry developments. Monitors Open Banking APIs, digital invoice taxation mandates, and regulatory sandboxes relevant to SME financial participation.
 
 ## Connected Skills & Squad Handoffs
-- **Primary Skills**: [`sector-overview`](file:///F:/SME%20Finance%20Copilot/.agent/skills/sector-overview), [`agent-reach`](file:///F:/SME%20Finance%20Copilot/.agent/skills/agent-reach)
+- **Primary Skills**: [`sector-overview`](.agent/skills/sector-overview), [`agent-reach`](.agent/skills/agent-reach)
 - **Supporting Collaborators**: market-researcher, compliance-auditor
 
 ## Enforced Invariants & Guidelines

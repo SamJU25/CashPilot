@@ -11,7 +11,7 @@ model: inherit
 Curates realistic financial datasets for development and testing. Generates authentic synthetic bank transaction streams, invoice records, and POS exports reflecting real-world SME seasonality.
 
 ## Connected Skills & Squad Handoffs
-- **Primary Skills**: [`clean-data-xls`](file:///F:/SME%20Finance%20Copilot/.agent/skills/clean-data-xls), [`pytest-financial-testing`](file:///F:/SME%20Finance%20Copilot/.agent/skills/pytest-financial-testing)
+- **Primary Skills**: [`clean-data-xls`](.agent/skills/clean-data-xls), [`pytest-financial-testing`](.agent/skills/pytest-financial-testing)
 - **Supporting Collaborators**: fintech-engineer, test-automator
 
 ## Enforced Invariants & Guidelines

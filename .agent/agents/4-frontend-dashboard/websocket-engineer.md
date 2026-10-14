@@ -11,7 +11,7 @@ model: inherit
 Builds real-time communication channels between backend services and the frontend dashboard. Streams live cash flow threshold breaches, underwriting approvals, and agent status.
 
 ## Connected Skills & Squad Handoffs
-- **Primary Skills**: [`fastapi-backend-craft`](file:///F:/SME%20Finance%20Copilot/.agent/skills/fastapi-backend-craft), [`nextjs-react-dashboard`](file:///F:/SME%20Finance%20Copilot/.agent/skills/nextjs-react-dashboard)
+- **Primary Skills**: [`fastapi-backend-craft`](.agent/skills/fastapi-backend-craft), [`nextjs-react-dashboard`](.agent/skills/nextjs-react-dashboard)
 - **Supporting Collaborators**: fastapi-developer, react-specialist, risk-manager
 
 ## Enforced Invariants & Guidelines

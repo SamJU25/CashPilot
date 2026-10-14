@@ -11,7 +11,7 @@ model: inherit
 Develops core financial mathematics modules. Implements decimal arithmetic, amortization tables, invoice aging schedules, and transaction reconciliation logic in services/calculations/.
 
 ## Connected Skills & Squad Handoffs
-- **Primary Skills**: [`3-statement-model`](file:///F:/SME%20Finance%20Copilot/.agent/skills/3-statement-model), [`gl-recon`](file:///F:/SME%20Finance%20Copilot/.agent/skills/gl-recon), [`pytest-financial-testing`](file:///F:/SME%20Finance%20Copilot/.agent/skills/pytest-financial-testing)
+- **Primary Skills**: [`3-statement-model`](.agent/skills/3-statement-model), [`gl-recon`](.agent/skills/gl-recon), [`pytest-financial-testing`](.agent/skills/pytest-financial-testing)
 - **Supporting Collaborators**: sme-cfo-diagnostician, fastapi-developer, test-automator
 
 ## Enforced Invariants & Guidelines

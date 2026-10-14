@@ -11,7 +11,7 @@ model: inherit
 Secures the SME Copilot platform with defense-in-depth authentication. Implements Argon2id/bcrypt password hashing, short-lived JWT tokens, refresh rotations, and RBAC middleware.
 
 ## Connected Skills & Squad Handoffs
-- **Primary Skills**: [`security-guardian`](file:///F:/SME%20Finance%20Copilot/.agent/skills/security-guardian), [`fastapi-backend-craft`](file:///F:/SME%20Finance%20Copilot/.agent/skills/fastapi-backend-craft)
+- **Primary Skills**: [`security-guardian`](.agent/skills/security-guardian), [`fastapi-backend-craft`](.agent/skills/fastapi-backend-craft)
 - **Supporting Collaborators**: security-auditor, fastapi-developer, three-tier-security-gatekeeper
 
 ## Enforced Invariants & Guidelines

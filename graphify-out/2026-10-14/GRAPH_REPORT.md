@@ -1,22 +1,22 @@
 # Graph Report - SME Finance Copilot  (2026-10-14)
 
 ## Corpus Check
-- 164 files · ~76,781 words
+- 204 files · ~96,666 words
 - Verdict: corpus is large enough that graph structure adds value.
-- Unclassified: 3 file(s) not represented in the graph (top: (none) 3)
+- Unclassified: 5 file(s) not represented in the graph (top: (none) 5)
 
 ## Summary
-- 1458 nodes · 1332 edges · 172 communities (160 shown, 12 thin omitted)
-- Extraction: 100% EXTRACTED · 0% INFERRED · 0% AMBIGUOUS
+- 1797 nodes · 1815 edges · 213 communities (193 shown, 20 thin omitted)
+- Extraction: 100% EXTRACTED · 0% INFERRED · 0% AMBIGUOUS · INFERRED: 3 edges (avg confidence: 0.95)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `b6212618`
+- Built from commit: `1cf2d47d`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
 ## Community Hubs (Navigation)
-- DCF Model Builder
+- DCF Model Troubleshooting Guide
 - Equity Research Earnings Update
 - 3-Statement Financial Model Template Completion
 - DCF Process Workflow
@@ -30,7 +30,7 @@
 - 1. Core SME Working Capital & Liquidity Metrics
 - 2. Specialized Agent Personas & Responsibilities
 - 1. Mandatory Invariants for Every Project
-- 3. Subagent Suites Directory (57 Specialized Subagents)
+- 2. Subagent Suites Directory (57 Specialized Subagents)
 - YouTube (yt-dlp)
 - first-principles-thinking (Suite: 6-product-pitch)
 - Step 3: Model-integrity checks (MODEL scope only)
@@ -129,7 +129,7 @@
 - earnings-reviewer (Suite: 7-research-intelligence)
 - statement-auditor (Suite: 7-research-intelligence)
 - Antislop Filter Invariant
-- Superpowers Engineering Methodology
+- AGENTS.md
 - 职场招聘
 - Exa AI 搜索
 - 网页阅读
@@ -142,7 +142,7 @@
 - Three-Tier Security Gate Protocol
 - pitch-agent (Suite: 6-product-pitch)
 - Agent Reach Internet Capability Router
-- Domain Alignment & Grilling Protocol
+- Superpowers Engineering Methodology
 - 4-Pillar Frontend Design & Motion Protocol
 - 金融行情
 - Section 10: Red Flags & Warning Signs
@@ -178,8 +178,8 @@
 - credit-options-matcher (Suite: 2-fintech-engine)
 - sme-cfo-diagnostician (Suite: 2-fintech-engine)
 - three-tier-security-gatekeeper (Suite: 5-security-qa)
-- graphify.md
-- no-ai-slop.md
+- csv_parser.py
+- Extracting Data from SEC Filings (10-K / 10-Q)
 - extraction-spec.md
 - Karpathy Guidelines
 - Core Behavioral Invariants
@@ -187,6 +187,44 @@
 - package.json
 - 2. Mandatory Invariants (Strict Enforcement)
 - SME Finance Copilot
+- workflows/graphify.md
+- Decadal Security Architecture: 30-Year Resilience for Autonomous Financial Participants
+- api.ts
+- 3. The 5 Defensive Invariants
+- test_calculations.py
+- 3. Self-Healing Mechanisms
+- 2. Comprehensive Deep Dive Across 37 Sourced Technologies
+- 5. Master Implementation Roadmap (6 Sprints)
+- 3. Ring-by-Ring Implementation Specifications
+- 2. Deep Reasoning & Verification for Every Component Selection
+- SME Finance Copilot: Master System Design (`system.md`)
+- SME Finance Copilot: Complete System Design Specification
+- 2. Squad Role, Tools, and Security Invariant Specifications
+- Model Validation and Audit
+- SME Finance Copilot: Master Architectural Plan (`architecture.md`)
+- ADR-004: LLM Gateway, Model Selection & Structured Output Contract
+- SME Finance Copilot: Master Security Architecture (`security.md`)
+- 3. Detailed Defense Mechanics
+- 3. Defensive Implementations
+- Completing Model Templates
+- SME Finance Copilot: Complete Architectural Plan & Governance Blueprint
+- 3-statement-model/SKILL.md
+- Credit Metrics
+- test_invariants.py
+- Model Structure
+- main.py
+- Domain Alignment & Grilling Protocol
+- Master Sprint Execution Workflow (AI Agent Guardrails)
+- DCF Model Builder
+- Excel Model Structure
+- Workflow Integration
+- Common Variations
+- Case Selector Implementation
+- Best Practices
+- routes/__init__.py
+- services/__init__.py
+- tests/__init__.py
+- tests/security/__init__.py
 
 ## God Nodes (most connected - your core abstractions)
 1. `DCF Process Workflow` - 30 edges
@@ -201,24 +239,33 @@
 10. `Core Behavioral Invariants` - 11 edges
 
 ## Surprising Connections (you probably didn't know these)
-- None detected - all connections are within the same source files.
+- `5. Branch Integration & Final Security Certification Gate` --references--> `main()`  [INFERRED]
+  docs/team_distribution_guide.md → .agent/skills/dcf-model/scripts/validate_dcf.py
+- `3. Communication Contract` --references--> `CashRunwayReport`  [INFERRED]
+  docs/adr/ADR-001-multi-agent-topology.md → frontend/src/types/api.ts
+- `How Our Code Physically Neutralizes It` --references--> `ActionIntentDraft`  [INFERRED]
+  docs/archive/SME_Finance_Copilot_Security_Adversarial_Verification.md → frontend/src/types/api.ts
+- `test_calculate_net_burn()` --calls--> `calculate_net_burn()`  [EXTRACTED]
+  tests/unit/test_calculations.py → services/calculations/runway.py
+- `test_calculate_runway_days_cash_flow_positive()` --calls--> `calculate_runway_days()`  [EXTRACTED]
+  tests/unit/test_calculations.py → services/calculations/runway.py
 
 ## Import Cycles
 - None detected.
 
-## Communities (172 total, 12 thin omitted)
+## Communities (213 total, 20 thin omitted)
 
-### Community 0 - "DCF Model Builder"
-Cohesion: 0.04
-Nodes (47): At Start of DCF Build, Available Data Sources, Base Case, Bear Case, Before Delivering Model (MANDATORY), Best Practices, Border Standards (REQUIRED for Professional Appearance), Bull Case (+39 more)
+### Community 0 - "DCF Model Troubleshooting Guide"
+Cohesion: 0.17
+Nodes (10): Case Selector Not Working, Consolidation column not updating when switching scenarios, DCF Model Troubleshooting Guide, #DIV/0! Errors, Implied price far too high, Implied price far too low, Model Returns Error Values, #REF! Errors (+2 more)
 
 ### Community 1 - "Equity Research Earnings Update"
 Cohesion: 0.05
 Nodes (37): 5-Minute Final Review:, Accuracy Checklist, Bad Headlines (Avoid):, Best Practices, Examples, and Quality Guidelines, Citations & Sources Checklist ⭐⭐⭐ MANDATORY, Common Mistakes to Avoid, Comprehensive Quality Control Checklist, Content & Analysis Checklist (+29 more)
 
 ### Community 2 - "3-Statement Financial Model Template Completion"
-Cohesion: 0.07
-Nodes (30): 3-Statement Financial Model Template Completion, Check Categories, Circular Reference Handling, Completing Model Templates, Core Credit Metrics to Include, Core Linkages (Must Always Hold), Core Margins to Include, Covenant Compliance Tracking (+22 more)
+Cohesion: 0.25
+Nodes (8): 3-Statement Financial Model Template Completion, Core Margins to Include, ⚠️ CRITICAL PRINCIPLES — Read Before Populating Any Template, Formatting — Professional Blue/Grey Palette (Default unless template/user specifies otherwise), Income Statement Layout with Margins, Margin Analysis, Scenario Analysis (Base / Upside / Downside), SEC Filings Data Extraction
 
 ### Community 3 - "DCF Process Workflow"
 Cohesion: 0.07
@@ -229,12 +276,12 @@ Cohesion: 0.07
 Nodes (30): 1. Page 1 Requirements, 2. All Tables Requirements, 3. All Charts Requirements, 4. Year Notation, 5. Writing Style, 6. Hyperlink Requirements ⭐⭐⭐, Business Metrics (1 page), Call Transcript Highlights (optional) (+22 more)
 
 ### Community 5 - "Formula Reference"
-Cohesion: 0.07
-Nodes (25): Balance Sheet Structure, Cash Flow Statement Structure, Check Formulas, Core Linkages, Credit Metric Formulas, D&A Schedule Formulas, Debt Schedule Formulas, Forecast Formulas (% of Net Revenue Method) (+17 more)
+Cohesion: 0.13
+Nodes (15): Balance Sheet Structure, Cash Flow Statement Structure, Check Formulas, Core Linkages, Credit Metric Formulas, D&A Schedule Formulas, Debt Schedule Formulas, Forecast Formulas (% of Net Revenue Method) (+7 more)
 
 ### Community 6 - "DCFModelValidator"
-Cohesion: 0.10
-Nodes (18): DCFModelValidator, main(), Validate DCF-specific logic and calculations, Critical check: Terminal growth must be less than WACC, Validates DCF models for errors and quality issues, Check if WACC is in reasonable range, Check if terminal value is reasonable proportion of enterprise value, DCF Model Validation Script Validates Excel DCF models for formula errors and… (+10 more)
+Cohesion: 0.05
+Nodes (37): DCFModelValidator, main(), Validate DCF-specific logic and calculations, Critical check: Terminal growth must be less than WACC, Validates DCF models for errors and quality issues, Check if WACC is in reasonable range, Check if terminal value is reasonable proportion of enterprise value, DCF Model Validation Script Validates Excel DCF models for formula errors and… (+29 more)
 
 ### Community 7 - "What You Must Do When Invoked"
 Cohesion: 0.07
@@ -262,11 +309,11 @@ Nodes (21): 1. Operating Model: Orchestrator & Specialist Team, 2. Specialized A
 
 ### Community 13 - "1. Mandatory Invariants for Every Project"
 Cohesion: 0.09
-Nodes (22): 1.1 Knowledge Graph Synchronization (`graphify`), 1.2 Internet Research Routing (`agent-reach`), 1.3 Anti-Slop & Writing Discipline (`antislop` & `no-ai-slop`), 1.4 Senior Developer Ladder (`ponytail`), 1.5 Domain Alignment & ADR Protocol (`domain-alignment`), 1.6 Frontend Design Engineering (`frontend-craft`), 1.7 ADHD-Friendly Communication Protocol (`i-have-adhd`), 1. Mandatory Invariants for Every Project (+14 more)
+Nodes (23): 0. Master Specifications & Engineering Documentation, 1.1 Knowledge Graph Synchronization (`graphify`), 1.2 Internet Research Routing (`agent-reach`), 1.3 Anti-Slop & Writing Discipline (`antislop` & `no-ai-slop`), 1.4 Senior Developer Ladder (`ponytail`), 1.5 Domain Alignment & ADR Protocol (`domain-alignment`), 1.6 Frontend Design Engineering (`frontend-craft`), 1.7 ADHD-Friendly Communication Protocol (`i-have-adhd`) (+15 more)
 
-### Community 14 - "3. Subagent Suites Directory (57 Specialized Subagents)"
-Cohesion: 0.09
-Nodes (21): 1. Multi-Agent Operating Model & Hierarchy Matrix, 2. Complete Skills Registry (54 Curated Skills), 3. Subagent Suites Directory (57 Specialized Subagents), 4.1 Gate-by-Gate Engineering Decision Matrix, 4.2 Dynamic Task Routing Matrix (Scenario-to-Squad Mapping), 4. Andrej Karpathy × Superpowers Decision Engine (When to Use Which Agent, Skill & Rule), Category A: Global Engineering Governance & Methodologies (18 Skills), Category B: Global Specialist Capabilities (12 Skills) (+13 more)
+### Community 14 - "2. Subagent Suites Directory (57 Specialized Subagents)"
+Cohesion: 0.14
+Nodes (14): 1. Multi-Agent Operating Model & Hierarchy Matrix, 2. Subagent Suites Directory (57 Specialized Subagents), 3. Dynamic Task Routing Matrix (Scenario-to-Squad Mapping), 4. Antigravity Agent Execution Protocol, Master Documentation & Operational Protocols:, SME Finance Copilot — AI Agents & Task Routing Engine, Suite 0: Global Governance Specialists (`.agent/agents/0-global-specialists/`), Suite 1: Agentic AI Orchestration (`.agent/agents/1-agentic-orchestration/`) (+6 more)
 
 ### Community 15 - "YouTube (yt-dlp)"
 Cohesion: 0.12
@@ -429,11 +476,11 @@ Cohesion: 0.33
 Nodes (5): Connected Skills & Squad Handoffs, copilot-prompt-engineer (Suite: 1-agentic-orchestration), Enforced Invariants & Guidelines, Mission & Domain Focus, Operational Workflow
 
 ### Community 56 - "blockchain-developer (Suite: 2-fintech-engine)"
-Cohesion: 0.33
+Cohesion: 0.40
 Nodes (5): blockchain-developer (Suite: 2-fintech-engine), Connected Skills & Squad Handoffs, Enforced Invariants & Guidelines, Mission & Domain Focus, Operational Workflow
 
 ### Community 57 - "fintech-engineer (Suite: 2-fintech-engine)"
-Cohesion: 0.33
+Cohesion: 0.40
 Nodes (5): Connected Skills & Squad Handoffs, Enforced Invariants & Guidelines, fintech-engineer (Suite: 2-fintech-engine), Mission & Domain Focus, Operational Workflow
 
 ### Community 58 - "payment-integration (Suite: 2-fintech-engine)"
@@ -489,7 +536,7 @@ Cohesion: 0.33
 Nodes (5): architect-reviewer (Suite: 5-security-qa), Connected Skills & Squad Handoffs, Enforced Invariants & Guidelines, Mission & Domain Focus, Operational Workflow
 
 ### Community 71 - "compliance-auditor (Suite: 5-security-qa)"
-Cohesion: 0.33
+Cohesion: 0.40
 Nodes (5): compliance-auditor (Suite: 5-security-qa), Connected Skills & Squad Handoffs, Enforced Invariants & Guidelines, Mission & Domain Focus, Operational Workflow
 
 ### Community 72 - "debugger (Suite: 5-security-qa)"
@@ -501,11 +548,11 @@ Cohesion: 0.33
 Nodes (5): Connected Skills & Squad Handoffs, Enforced Invariants & Guidelines, Mission & Domain Focus, Operational Workflow, qa-expert (Suite: 5-security-qa)
 
 ### Community 74 - "security-auditor (Suite: 5-security-qa)"
-Cohesion: 0.33
+Cohesion: 0.40
 Nodes (5): Connected Skills & Squad Handoffs, Enforced Invariants & Guidelines, Mission & Domain Focus, Operational Workflow, security-auditor (Suite: 5-security-qa)
 
 ### Community 75 - "test-automator (Suite: 5-security-qa)"
-Cohesion: 0.33
+Cohesion: 0.40
 Nodes (5): Connected Skills & Squad Handoffs, Enforced Invariants & Guidelines, Mission & Domain Focus, Operational Workflow, test-automator (Suite: 5-security-qa)
 
 ### Community 76 - "docker-expert (Suite: 6-product-pitch)"
@@ -537,7 +584,7 @@ Cohesion: 0.33
 Nodes (5): Connected Skills & Squad Handoffs, Enforced Invariants & Guidelines, market-researcher (Suite: 7-research-intelligence), Mission & Domain Focus, Operational Workflow
 
 ### Community 83 - "research-analyst (Suite: 7-research-intelligence)"
-Cohesion: 0.33
+Cohesion: 0.40
 Nodes (5): Connected Skills & Squad Handoffs, Enforced Invariants & Guidelines, Mission & Domain Focus, Operational Workflow, research-analyst (Suite: 7-research-intelligence)
 
 ### Community 84 - "scientific-literature-researcher (Suite: 7-research-intelligence)"
@@ -609,7 +656,7 @@ Cohesion: 0.33
 Nodes (5): code-optimizer (Global Specialist Agent), Connected Skills & Squad Handoffs, Mission, Operational Workflow, Protocols & Standards
 
 ### Community 101 - "code-reviewer (Global Specialist Agent)"
-Cohesion: 0.33
+Cohesion: 0.40
 Nodes (5): code-reviewer (Global Specialist Agent), Connected Skills & Squad Handoffs, Mission, Operational Workflow, Protocols & Standards
 
 ### Community 102 - "cross-platform-engineer (Global Specialist Agent)"
@@ -617,7 +664,7 @@ Cohesion: 0.33
 Nodes (5): Connected Skills & Squad Handoffs, cross-platform-engineer (Global Specialist Agent), Mission, Operational Workflow, Protocols & Standards
 
 ### Community 103 - "frontend-craft-engineer (Global Specialist Agent)"
-Cohesion: 0.33
+Cohesion: 0.40
 Nodes (5): Connected Skills & Squad Handoffs, frontend-craft-engineer (Global Specialist Agent), Mission, Operational Workflow, Protocols & Standards
 
 ### Community 104 - "penetration-tester (Global Specialist Agent)"
@@ -637,11 +684,11 @@ Cohesion: 0.33
 Nodes (5): Connected Skills & Squad Handoffs, Mission, Operational Workflow, Protocols & Standards, research-scout (Global Specialist Agent)
 
 ### Community 108 - "security-guardian (Global Specialist Agent)"
-Cohesion: 0.33
+Cohesion: 0.40
 Nodes (5): Connected Skills & Squad Handoffs, Mission, Operational Workflow, Protocols & Standards, security-guardian (Global Specialist Agent)
 
 ### Community 109 - "systems-architect (Global Specialist Agent)"
-Cohesion: 0.33
+Cohesion: 0.40
 Nodes (5): Connected Skills & Squad Handoffs, Mission, Operational Workflow, Protocols & Standards, systems-architect (Global Specialist Agent)
 
 ### Community 110 - "technical-writer (Global Specialist Agent)"
@@ -659,10 +706,6 @@ Nodes (5): Connected Skills & Squad Handoffs, Enforced Invariants & Guidelines, 
 ### Community 113 - "Antislop Filter Invariant"
 Cohesion: 0.40
 Nodes (4): 1. UI & Visuals, 2. Copy & Prose, 3. Code Comments, Antislop Filter Invariant
-
-### Community 114 - "Superpowers Engineering Methodology"
-Cohesion: 0.40
-Nodes (4): 1. Intent & Spec Gate, 2. Root Cause Debugging Invariant, 3. Verification Invariant, Superpowers Engineering Methodology
 
 ### Community 115 - "职场招聘"
 Cohesion: 0.40
@@ -712,9 +755,9 @@ Nodes (5): Connected Skills & Squad Handoffs, Enforced Invariants & Guidelines, 
 Cohesion: 0.50
 Nodes (3): 1. Capability Routing Invariant, 2. Safety & Workspace Invariant, Agent Reach Internet Capability Router
 
-### Community 127 - "Domain Alignment & Grilling Protocol"
-Cohesion: 0.50
-Nodes (3): 1. Grilling Rounds, 2. Ubiquitous Vocabulary, Domain Alignment & Grilling Protocol
+### Community 127 - "Superpowers Engineering Methodology"
+Cohesion: 0.40
+Nodes (4): 1. Intent & Spec Gate, 2. Root Cause Debugging Invariant, 3. Verification Invariant, Superpowers Engineering Methodology
 
 ### Community 128 - "4-Pillar Frontend Design & Motion Protocol"
 Cohesion: 0.50
@@ -813,16 +856,24 @@ Cohesion: 0.67
 Nodes (3): Header Block (Rows 1-3), Section 1: Document Structure & Setup, Visual Convention Standards (OPTIONAL - User preferences and uploaded templates always override)
 
 ### Community 160 - "credit-options-matcher (Suite: 2-fintech-engine)"
-Cohesion: 0.33
+Cohesion: 0.40
 Nodes (5): Connected Skills & Squad Handoffs, credit-options-matcher (Suite: 2-fintech-engine), Enforced Invariants & Guidelines, Mission & Domain Focus, Operational Workflow
 
 ### Community 161 - "sme-cfo-diagnostician (Suite: 2-fintech-engine)"
-Cohesion: 0.33
+Cohesion: 0.40
 Nodes (5): Connected Skills & Squad Handoffs, Enforced Invariants & Guidelines, Mission & Domain Focus, Operational Workflow, sme-cfo-diagnostician (Suite: 2-fintech-engine)
 
 ### Community 162 - "three-tier-security-gatekeeper (Suite: 5-security-qa)"
-Cohesion: 0.33
+Cohesion: 0.40
 Nodes (5): Connected Skills & Squad Handoffs, Enforced Invariants & Guidelines, Mission & Domain Focus, Operational Workflow, three-tier-security-gatekeeper (Suite: 5-security-qa)
+
+### Community 163 - "csv_parser.py"
+Cohesion: 0.18
+Nodes (13): Any, datetime, NormalizedTransaction, parse_bank_records(), BaseModel, Bank CSV Data Ingestion and PII Sanitization Service. Enforces Pydantic v2…, Masks phone numbers, IBANs, and SSNs. Integrates with Presidio or regex…, Parses and sanitizes a list of raw transaction dictionaries into validated… (+5 more)
+
+### Community 164 - "Extracting Data from SEC Filings (10-K / 10-Q)"
+Cohesion: 0.22
+Nodes (9): Data Extraction Checklist, Extracting Data from SEC Filings (10-K / 10-Q), Handling Common Filing Variations, Step 1: Locate the Filing, Step 2: Identify Filing Currency, Step 3: Navigate to Financial Statements, Step 4: Data Extraction Mapping, Step 5: Extract Supporting Detail from Notes (+1 more)
 
 ### Community 166 - "Karpathy Guidelines"
 Cohesion: 0.33
@@ -841,32 +892,160 @@ Cohesion: 0.05
 Nodes (42): dependencies, clsx, lucide-react, next, react, react-dom, recharts, tailwind-merge (+34 more)
 
 ### Community 170 - "2. Mandatory Invariants (Strict Enforcement)"
-Cohesion: 0.12
+Cohesion: 0.13
 Nodes (15): 1. Environment & Architecture Overview, 2.10 Terminal Verification Before Completion (`verification-before-completion`), 2.1 Knowledge Graph Synchronization (`graphify`), 2.2 Internet Research Routing (`agent-reach`), 2.3 Anti-Slop & Writing Standard (`antislop` & `no-ai-slop`), 2.4 Senior Developer Ladder (`ponytail`), 2.5 Domain Alignment (`domain-alignment`), 2.6 Frontend Craft Protocol (`frontend-craft`) (+7 more)
 
 ### Community 171 - "SME Finance Copilot"
 Cohesion: 0.17
-Nodes (11): 1. Executive Summary & Problem Statement, 2. Core Architecture & Hackathon Rubric Alignment, 3. The Three-Tier Security Gate, 4. Quick Start & Installation, 5. Development & Assistant Compatibility, 6. Repository Documentation Index, 7. License, SME Finance Copilot (+3 more)
+Nodes (12): 1. Executive Summary & Problem Statement, 2. Core Architecture & Hackathon Rubric Alignment, 3. The Three-Tier Security Gate, 4. Quick Start & Installation, 5. Development & Assistant Compatibility, 6. Repository Documentation Index, 7. License, Master Documentation & Engineering Specifications: (+4 more)
+
+### Community 173 - "Decadal Security Architecture: 30-Year Resilience for Autonomous Financial Participants"
+Cohesion: 0.09
+Nodes (21): 1. Executive Thesis: Provable Invariants vs. Heuristic Decay, 2. Pillar 1: Post-Quantum Cryptography (PQC) & HNDL Defense, 3. Pillar 2: Formal Verification of Financial State Machines, 4. Pillar 3: Hardware Enclaves & Confidential Computing, 5. Pillar 4: Zero-Knowledge Underwriting (zk-SNARKs), 6. Pillar 5: Multi-Party Computation (MPC) Threshold Signatures, 7. Pillar 6: The Neuro-Symbolic Air Gap (AI vs. Execution), 8. Summary Comparison: Traditional FinTech vs. Our Decadal Architecture (+13 more)
+
+### Community 174 - "api.ts"
+Cohesion: 0.06
+Nodes (31): 1. Context & Problem Statement, 2. Decision: 1 Supervisor + 4 Deterministic Squads, 3. Communication Contract, ADR-001: Runtime Multi-Agent Topology & Isolation Protocol, 1. Attack Vector 1: Prompt Injection Forcing Unauthorized Disbursement, 2. Attack Vector 2: AI Hallucination & Math Poisoning, 3. Attack Vector 3: SQL Injection & Type Smuggling (SQLmap / Burp), 4. Attack Vector 4: Multi-Tenant Data Theft (IDOR / BOLA) (+23 more)
+
+### Community 175 - "3. The 5 Defensive Invariants"
+Cohesion: 0.18
+Nodes (10): 1. Context & Threat Landscape, 2. Decision: Invariant-Driven Zero-Trust Architecture, 3. The 5 Defensive Invariants, 4. Consequences & Verification Plan, ADR-002: Zero-Trust Threat Defense & Automated Bypass Neutralization, Invariant 1: Type Boundary & Parameterized Kernel, Invariant 2: Tenant Isolation via PostgreSQL Row-Level Security (RLS), Invariant 3: Air-Gapped Financial Execution (Three-Tier Gate) (+2 more)
+
+### Community 176 - "test_calculations.py"
+Cohesion: 0.19
+Nodes (18): Decimal, calculate_dab(), calculate_dscr(), calculate_net_burn(), calculate_runway_days(), Deterministic CFO Financial Health Calculation Engine. Enforces pure Python…, Calculate Net Daily Burn Rate. Formula: (Sum of Operating Debits - Sum of…, Calculate exact Cash Runway in days. If net_daily_burn <= 0, the company is… (+10 more)
+
+### Community 177 - "3. Self-Healing Mechanisms"
+Cohesion: 0.20
+Nodes (9): 1. Context & Threat Scenario, 2. Decision: 4-Layer Self-Healing Architecture, 3. Self-Healing Mechanisms, 4. Verification & Chaos Testing Plan, ADR-003: Automated Self-Healing & Cryptographic State Reconstruction, Layer 1: Stateless Ephemeral Agents (Context Poisoning Recovery), Layer 2: Circuit Breakers & Automated Quarantine, Layer 3: Append-Only Ledger Rollback (Event Sourcing) (+1 more)
+
+### Community 178 - "2. Comprehensive Deep Dive Across 37 Sourced Technologies"
+Cohesion: 0.13
+Nodes (14): 1. The 8-Pillar Technology Architecture Matrix, 2. Comprehensive Deep Dive Across 37 Sourced Technologies, 3. The Championship Feature Stack: 4 Breakthrough Combinations, 4. Verification & Feasibility Audit, Executive Summary: How We Win Track E, Pillar 1: Deterministic Accounting, Ledgers & Mathematical Safety, Pillar 2: Econometric Forecasting, Uncertainty Quantification & Survival Modeling, Pillar 3: Combinatorial Optimization & Autonomous Liquidity Solvers (+6 more)
+
+### Community 179 - "5. Master Implementation Roadmap (6 Sprints)"
+Cohesion: 0.13
+Nodes (14): 1. Executive Vision: The "Autonomous Financial Participant", 2. Selected Technology Stack & Architectural Rationale, 3. End-to-End System Architecture, 4.1 Transaction & Account Schema, 4.2 Staged Action Intent Schema (Tier 2 Staging), 4. Domain Data Models & Schema Design, 5. Master Implementation Roadmap (6 Sprints), SME Finance Copilot: Master Architectural Plan & System Specification (+6 more)
+
+### Community 180 - "3. Ring-by-Ring Implementation Specifications"
+Cohesion: 0.20
+Nodes (9): 1. Threat Scenario: Direct Backend Attacks, 2. Decision: 5-Ring Backend Defense Architecture, 3. Ring-by-Ring Implementation Specifications, ADR-007: Backend Defense-in-Depth & Container Hardening, Ring 1: Network Perimeter & Private VPC Isolation, Ring 2: Strict Application Gateway (FastAPI + Pydantic v2), Ring 3: Asymmetric Authentication & RBAC, Ring 4: Database Least Privilege & Kernel RLS (+1 more)
+
+### Community 181 - "2. Deep Reasoning & Verification for Every Component Selection"
+Cohesion: 0.15
+Nodes (12): 1. End-to-End System Topology (6 Structural Layers), 2. Deep Reasoning & Verification for Every Component Selection, 3. Sprint-by-Sprint Execution Roadmap, Selection 1: Pure Python `decimal.Decimal` (Calculation Engine), Selection 2: Microsoft Presidio PII Masking (Ingestion Layer), Selection 3: MAPIE Conformal Prediction (Risk Engine), Selection 4: PuLP Mixed-Integer Linear Programming (Underwriting Matcher), Selection 5: WebAuthn / FIDO2 Biometric Execution (Tier 3 Gate) (+4 more)
+
+### Community 182 - "SME Finance Copilot: Master System Design (`system.md`)"
+Cohesion: 0.09
+Nodes (23): 1.1 Project Form Factor: Responsive Web Application with PWA, 1.2 Form Factor Decision & Trade-Off Matrix, 1. Executive System Overview & Form Factor, 2.1 Deterministic CFO Financial Health Engine (Squad 2), 2.2 Conformal Cash Forecasting & Survival Analysis (Squad 3), 2.3 Mixed-Integer Linear Programming Liquidity Matcher (Squad 4), 2. FinTech Features Adopted from Research, 3.1 Technology Stack & Rendering (+15 more)
+
+### Community 183 - "SME Finance Copilot: Complete System Design Specification"
+Cohesion: 0.10
+Nodes (19): 1.1 Deterministic CFO Financial Metrics (Squad 2), 1.2 Conformal Cash Forecasting & Survival Curves (Squad 3), 1.3 Mixed-Integer Linear Programming Liquidity Matcher (Squad 4), 1. Features Adopted from Research & Mathematical Formulation, 2.1 Technology Stack & Rendering Strategy, 2.2 Four-State Component Protocol, 2.3 Real-Time Streaming Architecture, 2. Frontend Backbone Specification (+11 more)
+
+### Community 184 - "2. Squad Role, Tools, and Security Invariant Specifications"
+Cohesion: 0.20
+Nodes (9): 1. Lead Orchestrator (Supervisor), 1. Runtime Topology Matrix, 2. Squad 1: Ingestion & Privacy Squad, 2. Squad Role, Tools, and Security Invariant Specifications, 3. Squad 2: Diagnostic CFO Engine, 4. Squad 3: Risk Forecasting & Alerting Squad, 5. Squad 4: Underwriting & Matching Squad, 6. The Three-Tier Security Gatekeeper (The Enforcer) (+1 more)
+
+### Community 185 - "Model Validation and Audit"
+Cohesion: 0.29
+Nodes (7): Check Categories, Circular Reference Handling, Core Linkages (Must Always Hold), Master Check Formula, Model Validation and Audit, Quick Debug Workflow, Sign Convention Reference
+
+### Community 186 - "SME Finance Copilot: Master Architectural Plan (`architecture.md`)"
+Cohesion: 0.22
+Nodes (9): 1. Macro Architecture & 6-Layer Topology, 2. Runtime Subagent Topology & Squad Contracts, 3.1 Database Selection: PostgreSQL 16 (+ SQLite for Local Dev), 3.2 Agent Memory Architecture: Zero Cognitive Graph Bloat, 3. Database & Agent Memory Architectural Decision, 4. Phased Sprint Roadmap & Milestone Acceptance Criteria, Master Documentation Suite:, SME Finance Copilot: Master Architectural Plan (`architecture.md`) (+1 more)
+
+### Community 187 - "ADR-004: LLM Gateway, Model Selection & Structured Output Contract"
+Cohesion: 0.22
+Nodes (8): 1. Context & Objective, 2. Decision: LiteLLM + Instructor Architecture, 3. Implementation Blueprint, 4. Test Mocking & Deterministic Verification, ADR-004: LLM Gateway, Model Selection & Structured Output Contract, Configuration via `.env`, Deterministic Context Injection (Brain Protocol), Unified Client Gateway (`services/llm/gateway.py`)
+
+### Community 188 - "SME Finance Copilot: Master Security Architecture (`security.md`)"
+Cohesion: 0.22
+Nodes (9): 1. Executive Security Philosophy: Provable Invariants vs. Heuristic Decay, 2. Threat Modeling & Offensive Tool Defense, 3. Automated Self-Healing & Resilience Protocol, 4. Database Defense-in-Depth, 5. LLM Connection Security & Data Privacy, 6. Secret Hygiene & Blast Radius Containment, 7. Decadal Security Blueprint (30-Year Resilience), Master Documentation Suite: (+1 more)
+
+### Community 189 - "3. Detailed Defense Mechanics"
+Cohesion: 0.20
+Nodes (9): 1. Threat Scenario: Stolen API Keys, 2. Decision: 4-Layer Key Isolation & Blast Radius Shield, 3. Detailed Defense Mechanics, ADR-006: Secret Hygiene, Key Isolation & Blast Radius Containment, Layer 1: Zero-Secret Frontend Invariant, Layer 2: Blast Radius Decoupling, Layer 3: Short-Lived Ephemeral Tokens (Workload Identity Federation), Layer 4: Egress IP Pinning & Hard Spend Quotas (+1 more)
+
+### Community 190 - "3. Defensive Implementations"
+Cohesion: 0.22
+Nodes (8): 1. Context & Threat Vectors, 2. Decision: 5-Tier LLM Connection Security Protocol, 3. Defensive Implementations, ADR-005: LLM Connection Security, Privacy & Data Exfiltration Defense, Tier 1: Zero Raw PII to External APIs (Presidio Redaction), Tier 2: Air-Gapped Local Inference (Ollama) vs. Enterprise Zero Retention, Tier 3: Secret Shielding, Tier 4 & 5: Prompt Exfiltration Defense
+
+### Community 191 - "Completing Model Templates"
+Cohesion: 0.29
+Nodes (7): Completing Model Templates, Step 1: Analyze the Template Structure, Step 2: Filling in Data Without Breaking Formulas, Step 3: Validating Formulas, Step 4: Quality Checks by Sheet, Step 5: Cross-Statement Integrity Checks, Step 6: Final Review
+
+### Community 192 - "SME Finance Copilot: Complete Architectural Plan & Governance Blueprint"
+Cohesion: 0.25
+Nodes (7): 1. Macro Architecture & Runtime Subagent Topology, 2. Invariant-Driven Threat Defense (Zero-Trust Security), 3. Automated Self-Healing & Resilience Protocol, 4. Secret Hygiene & Blast Radius Containment, 5. Decadal Security Blueprint (30-Year Resilience), 6. Phased Sprint Roadmap & Milestone Acceptance Criteria, SME Finance Copilot: Complete Architectural Plan & Governance Blueprint
+
+### Community 194 - "Credit Metrics"
+Cohesion: 0.50
+Nodes (4): Core Credit Metrics to Include, Covenant Compliance Tracking, Credit Metric Hierarchy Checks, Credit Metrics
+
+### Community 195 - "test_invariants.py"
+Cohesion: 0.16
+Nodes (15): Enum, fastapi_testclient, pytest, BaseModel, Three-Tier Security Gate and Action Intent Staging. Aligns with…, Evaluates whether an action requires Tier 3 physical biometric confirmation., requires_biometric_execution(), SecurityTier (+7 more)
+
+### Community 196 - "Model Structure"
+Cohesion: 0.50
+Nodes (4): Identifying Template Tab Organization, Model Structure, Projection Period, Understanding Template Structure
+
+### Community 198 - "main.py"
+Cohesion: 0.18
+Nodes (11): get, FastAPI Main Application Entrypoint. Configures CORS, Security Headers, and…, root(), get_health_status(), HealthStatus, BaseModel, get, System health and operational invariant status endpoint. (+3 more)
+
+### Community 199 - "Domain Alignment & Grilling Protocol"
+Cohesion: 0.50
+Nodes (3): 1. Grilling Rounds, 2. Ubiquitous Vocabulary, Domain Alignment & Grilling Protocol
+
+### Community 200 - "Master Sprint Execution Workflow (AI Agent Guardrails)"
+Cohesion: 0.50
+Nodes (4): 1. Required Reading Before Writing Any Code, 2. Parallel Track Sprints (Multi-Agent Operating Model), 3. The 5-Gate Development Protocol (Per Task), Master Sprint Execution Workflow (AI Agent Guardrails)
+
+### Community 201 - "DCF Model Builder"
+Cohesion: 0.18
+Nodes (11): Critical Constraints - Read These First, DCF Model Builder, Deliverables Structure, Excel File Creation, Final Output Checklist, Input Requirements, Minimum Required Inputs, Overview (+3 more)
+
+### Community 203 - "Excel Model Structure"
+Cohesion: 0.25
+Nodes (8): Border Standards (REQUIRED for Professional Appearance), DCF Sheet Detailed Structure, Excel Model Structure, Formatting Standards, Formula Recalculation (MANDATORY), Sensitivity Analysis (Bottom of DCF Sheet), Sheet Architecture, WACC Sheet Structure
+
+### Community 205 - "Workflow Integration"
+Cohesion: 0.40
+Nodes (5): At Start of DCF Build, Available Data Sources, Before Delivering Model (MANDATORY), During Model Construction, Workflow Integration
+
+### Community 206 - "Common Variations"
+Cohesion: 0.40
+Nodes (5): Common Variations, Cyclical Companies, High-Growth Technology Companies, Mature/Stable Companies, Multi-Segment Companies
+
+### Community 207 - "Case Selector Implementation"
+Cohesion: 0.50
+Nodes (4): Base Case, Bear Case, Bull Case, Case Selector Implementation
+
+### Community 208 - "Best Practices"
+Cohesion: 0.50
+Nodes (4): Best Practices, Documentation, Model Construction, Quality Control
 
 ## Knowledge Gaps
-- **998 isolated node(s):** `config.sh script`, `SUBAGENT_CATALOG_TTL_SECONDS`, `SUBAGENT_CATALOG_CACHE_FILE`, `SUBAGENT_CATALOG_REPO_URL`, `name` (+993 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 1158 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
-- **12 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **1173 isolated node(s):** `config.sh script`, `SUBAGENT_CATALOG_TTL_SECONDS`, `SUBAGENT_CATALOG_CACHE_FILE`, `SUBAGENT_CATALOG_REPO_URL`, `AlertSeverity` (+1168 more)
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 1317 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **20 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `DCF Process Workflow` connect `DCF Process Workflow` to `DCF Model Builder`?**
-  _High betweenness centrality (0.002) - this node is a cross-community bridge._
-- **Why does `DCF Model Builder` connect `DCF Model Builder` to `DCF Process Workflow`?**
-  _High betweenness centrality (0.001) - this node is a cross-community bridge._
+- **Why does `SME Finance Copilot: 4-Track Team Distribution & Multi-Phase Workflow Guide` connect `DCFModelValidator` to `README.md`?**
+  _High betweenness centrality (0.039) - this node is a cross-community bridge._
 - **What connects `config.sh script`, `SUBAGENT_CATALOG_TTL_SECONDS`, `SUBAGENT_CATALOG_CACHE_FILE` to the rest of the system?**
-  _998 weakly-connected nodes found - possible documentation gaps or missing edges._
-- **Should `DCF Model Builder` be split into smaller, more focused modules?**
-  _Cohesion score 0.04081632653061224 - nodes in this community are weakly interconnected._
+  _1173 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Equity Research Earnings Update` be split into smaller, more focused modules?**
   _Cohesion score 0.05 - nodes in this community are weakly interconnected._
-- **Should `3-Statement Financial Model Template Completion` be split into smaller, more focused modules?**
-  _Cohesion score 0.06666666666666667 - nodes in this community are weakly interconnected._
 - **Should `DCF Process Workflow` be split into smaller, more focused modules?**
   _Cohesion score 0.06666666666666667 - nodes in this community are weakly interconnected._
+- **Should `Report Structure and Templates` be split into smaller, more focused modules?**
+  _Cohesion score 0.06666666666666667 - nodes in this community are weakly interconnected._
+- **Should `Formula Reference` be split into smaller, more focused modules?**
+  _Cohesion score 0.13333333333333333 - nodes in this community are weakly interconnected._
+- **Should `DCFModelValidator` be split into smaller, more focused modules?**
+  _Cohesion score 0.051207729468599035 - nodes in this community are weakly interconnected._

@@ -11,7 +11,7 @@ model: inherit
 Crafts clean, professional FinTech interfaces. Rejects generic templates and ungrounded glow; enforces high-contrast data visualization and Emil Kowalski motion physics.
 
 ## Connected Skills & Squad Handoffs
-- **Primary Skills**: [`antislop`](file:///F:/SME%20Finance%20Copilot/.agent/skills/antislop), [`taste-skill`](file:///F:/SME%20Finance%20Copilot/.agent/skills/taste-skill), [`impeccable`](file:///F:/SME%20Finance%20Copilot/.agent/skills/impeccable)
+- **Primary Skills**: [`antislop`](.agent/skills/antislop), [`taste-skill`](.agent/skills/taste-skill), [`impeccable`](.agent/skills/impeccable)
 - **Supporting Collaborators**: react-specialist, nextjs-developer
 
 ## Enforced Invariants & Guidelines

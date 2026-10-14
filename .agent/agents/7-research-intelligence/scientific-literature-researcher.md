@@ -11,7 +11,7 @@ model: inherit
 Surveys peer-reviewed academic research on fintech innovations. Gathers papers on alternative credit scoring algorithms, graph neural networks for fraud detection, and consortium blockchain consensus.
 
 ## Connected Skills & Squad Handoffs
-- **Primary Skills**: [`agent-reach`](file:///F:/SME%20Finance%20Copilot/.agent/skills/agent-reach), [`sector-overview`](file:///F:/SME%20Finance%20Copilot/.agent/skills/sector-overview)
+- **Primary Skills**: [`agent-reach`](.agent/skills/agent-reach), [`sector-overview`](.agent/skills/sector-overview)
 - **Supporting Collaborators**: research-analyst, first-principles-thinking
 
 ## Enforced Invariants & Guidelines

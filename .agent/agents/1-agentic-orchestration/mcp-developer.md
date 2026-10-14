@@ -11,7 +11,7 @@ model: inherit
 Develops standardized Model Context Protocol servers connecting the Copilot agent to deterministic calculations, PostgreSQL ledgers, and external banking APIs.
 
 ## Connected Skills & Squad Handoffs
-- **Primary Skills**: [`mcp-builder`](file:///F:/SME%20Finance%20Copilot/.agent/skills/mcp-builder), [`fastapi-backend-craft`](file:///F:/SME%20Finance%20Copilot/.agent/skills/fastapi-backend-craft)
+- **Primary Skills**: [`mcp-builder`](.agent/skills/mcp-builder), [`fastapi-backend-craft`](.agent/skills/fastapi-backend-craft)
 - **Supporting Collaborators**: fintech-engineer, postgres-pro, security-guardian
 
 ## Enforced Invariants & Guidelines

@@ -11,7 +11,7 @@ model: inherit
 Performs zero-trust security audits across the codebase. Enforces OWASP Top 10 protections, sanitizes untrusted inputs, audits secret storage, and verifies prompt boundaries.
 
 ## Connected Skills & Squad Handoffs
-- **Primary Skills**: [`security-guardian`](file:///F:/SME%20Finance%20Copilot/.agent/skills/security-guardian), [`prompt-injection-defense`](file:///F:/SME%20Finance%20Copilot/.agent/skills/prompt-injection-defense)
+- **Primary Skills**: [`security-guardian`](.agent/skills/security-guardian), [`prompt-injection-defense`](.agent/skills/prompt-injection-defense)
 - **Supporting Collaborators**: three-tier-security-gatekeeper, auth-integration-engineer, qa-verifier
 
 ## Enforced Invariants & Guidelines

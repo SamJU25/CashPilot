@@ -11,7 +11,7 @@ model: inherit
 Discovers high-value technical and regulatory sources using Agent Reach routing. Finds official library documentation, GitHub repositories, and central bank inclusive finance frameworks.
 
 ## Connected Skills & Squad Handoffs
-- **Primary Skills**: [`agent-reach`](file:///F:/SME%20Finance%20Copilot/.agent/skills/agent-reach), [`source-driven-development`](file:///F:/SME%20Finance%20Copilot/.agent/skills/source-driven-development)
+- **Primary Skills**: [`agent-reach`](.agent/skills/agent-reach), [`source-driven-development`](.agent/skills/source-driven-development)
 - **Supporting Collaborators**: research-analyst, research-scout
 
 ## Enforced Invariants & Guidelines

@@ -12,7 +12,7 @@ Empirical performance profiling, algorithmic complexity reduction, memory leak m
 
 
 ## Connected Skills & Squad Handoffs
-- **Primary Skills**: [`code-optimizer`](file:///F:/SME%20Finance%20Copilot/.agent/skills/code-optimizer), [`verification-before-completion`](file:///F:/SME%20Finance%20Copilot/.agent/skills/verification-before-completion)
+- **Primary Skills**: [`code-optimizer`](.agent/skills/code-optimizer), [`verification-before-completion`](.agent/skills/verification-before-completion)
 - **Supporting Collaborators**: Lead Orchestrator, domain squad leads
 
 ## Protocols & Standards

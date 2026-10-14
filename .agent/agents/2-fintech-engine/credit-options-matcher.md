@@ -11,7 +11,7 @@ model: inherit
 Underwrites and matches SMEs with the most cost-effective financing products according to WeBank inclusive finance criteria. Evaluates eligibility without requiring audited balance sheets.
 
 ## Connected Skills & Squad Handoffs
-- **Primary Skills**: [`deal-screening`](file:///F:/SME%20Finance%20Copilot/.agent/skills/deal-screening), [`kyc-rules`](file:///F:/SME%20Finance%20Copilot/.agent/skills/kyc-rules), [`comps-analysis`](file:///F:/SME%20Finance%20Copilot/.agent/skills/comps-analysis)
+- **Primary Skills**: [`deal-screening`](.agent/skills/deal-screening), [`kyc-rules`](.agent/skills/kyc-rules), [`comps-analysis`](.agent/skills/comps-analysis)
 - **Supporting Collaborators**: sme-cfo-diagnostician, risk-manager, compliance-auditor
 
 ## Enforced Invariants & Guidelines

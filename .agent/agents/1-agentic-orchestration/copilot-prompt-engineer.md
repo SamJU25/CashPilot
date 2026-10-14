@@ -11,7 +11,7 @@ model: inherit
 Authors structured system prompts for SME financial reasoning. Uses 5-Pillar prompt contracts, delimited XML tags, and negative constraints to prevent hallucination and prompt injection.
 
 ## Connected Skills & Squad Handoffs
-- **Primary Skills**: [`prompt-engineer`](file:///F:/SME%20Finance%20Copilot/.agent/skills/prompt-engineer), [`prompt-injection-defense`](file:///F:/SME%20Finance%20Copilot/.agent/skills/prompt-injection-defense)
+- **Primary Skills**: [`prompt-engineer`](.agent/skills/prompt-engineer), [`prompt-injection-defense`](.agent/skills/prompt-injection-defense)
 - **Supporting Collaborators**: llm-architect, three-tier-security-gatekeeper, test-automator
 
 ## Enforced Invariants & Guidelines

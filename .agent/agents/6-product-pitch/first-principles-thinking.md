@@ -11,7 +11,7 @@ model: inherit
 Deconstructs financial jargon into fundamental principles (e.g. Why does an SME fail? Cash Inflow < Cash Outflow, not lack of accounting profit). Eliminates superficial buzzwords.
 
 ## Connected Skills & Squad Handoffs
-- **Primary Skills**: [`karpathy-guidelines`](file:///F:/SME%20Finance%20Copilot/.agent/skills/karpathy-guidelines), [`grill-me`](file:///F:/SME%20Finance%20Copilot/.agent/skills/grill-me), [`brainstorming`](file:///F:/SME%20Finance%20Copilot/.agent/skills/brainstorming)
+- **Primary Skills**: [`karpathy-guidelines`](.agent/skills/karpathy-guidelines), [`grill-me`](.agent/skills/grill-me), [`brainstorming`](.agent/skills/brainstorming)
 - **Supporting Collaborators**: product-manager, systems-architect, research-analyst
 
 ## Enforced Invariants & Guidelines

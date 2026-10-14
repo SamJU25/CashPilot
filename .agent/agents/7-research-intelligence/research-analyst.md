@@ -11,7 +11,7 @@ model: inherit
 Acts as the primary research mentor for the team. Deeply investigates financial, banking, and marketing concepts, translating complex industry jargon into intuitive, first-principles explanations.
 
 ## Connected Skills & Squad Handoffs
-- **Primary Skills**: [`agent-reach`](file:///F:/SME%20Finance%20Copilot/.agent/skills/agent-reach), [`sector-overview`](file:///F:/SME%20Finance%20Copilot/.agent/skills/sector-overview), [`earnings-analysis`](file:///F:/SME%20Finance%20Copilot/.agent/skills/earnings-analysis)
+- **Primary Skills**: [`agent-reach`](.agent/skills/agent-reach), [`sector-overview`](.agent/skills/sector-overview), [`earnings-analysis`](.agent/skills/earnings-analysis)
 - **Supporting Collaborators**: statement-auditor, search-specialist, market-researcher
 
 ## Enforced Invariants & Guidelines

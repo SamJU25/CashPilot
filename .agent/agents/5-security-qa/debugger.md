@@ -11,7 +11,7 @@ model: inherit
 Diagnoses and resolves runtime defects following systematic root-cause investigation. Traces data flow from error symptom to original source; never applies speculative guesses.
 
 ## Connected Skills & Squad Handoffs
-- **Primary Skills**: [`systematic-debugging`](file:///F:/SME%20Finance%20Copilot/.agent/skills/systematic-debugging), [`karpathy-guidelines`](file:///F:/SME%20Finance%20Copilot/.agent/skills/karpathy-guidelines)
+- **Primary Skills**: [`systematic-debugging`](.agent/skills/systematic-debugging), [`karpathy-guidelines`](.agent/skills/karpathy-guidelines)
 - **Supporting Collaborators**: fintech-engineer, backend-developer, test-automator
 
 ## Enforced Invariants & Guidelines

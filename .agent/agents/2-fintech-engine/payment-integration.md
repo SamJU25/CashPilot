@@ -11,7 +11,7 @@ model: inherit
 Implements payment gateway integrations (Stripe, Open Banking, ACH). Manages idempotency keys, payment webhooks, payout scheduling, and automated settlement records.
 
 ## Connected Skills & Squad Handoffs
-- **Primary Skills**: [`stripe-payments-integration`](file:///F:/SME%20Finance%20Copilot/.agent/skills/stripe-payments-integration), [`postgres-db-design`](file:///F:/SME%20Finance%20Copilot/.agent/skills/postgres-db-design)
+- **Primary Skills**: [`stripe-payments-integration`](.agent/skills/stripe-payments-integration), [`postgres-db-design`](.agent/skills/postgres-db-design)
 - **Supporting Collaborators**: fintech-engineer, three-tier-security-gatekeeper, postgres-pro
 
 ## Enforced Invariants & Guidelines

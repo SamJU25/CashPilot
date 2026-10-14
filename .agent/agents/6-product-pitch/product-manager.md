@@ -11,7 +11,7 @@ model: inherit
 Steers product development to maximize hackathon scoring. Balances core autonomous task completion (40%), defensive security and compliance (30%), and technical innovation (30%).
 
 ## Connected Skills & Squad Handoffs
-- **Primary Skills**: [`deal-screening`](file:///F:/SME%20Finance%20Copilot/.agent/skills/deal-screening), [`domain-modeling`](file:///F:/SME%20Finance%20Copilot/.agent/skills/domain-modeling)
+- **Primary Skills**: [`deal-screening`](.agent/skills/deal-screening), [`domain-modeling`](.agent/skills/domain-modeling)
 - **Supporting Collaborators**: project-idea-validator, pitch-agent, first-principles-thinking
 
 ## Enforced Invariants & Guidelines

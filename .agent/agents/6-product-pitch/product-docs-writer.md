@@ -11,7 +11,7 @@ model: inherit
 Authors clear, factual product documentation. Enforces the 30-second README test, documents exact terminal commands, and creates runnable quickstart guides for judges.
 
 ## Connected Skills & Squad Handoffs
-- **Primary Skills**: [`technical-writer`](file:///F:/SME%20Finance%20Copilot/.agent/skills/technical-writer), [`antislop`](file:///F:/SME%20Finance%20Copilot/.agent/skills/antislop)
+- **Primary Skills**: [`technical-writer`](.agent/skills/technical-writer), [`antislop`](.agent/skills/antislop)
 - **Supporting Collaborators**: pitch-agent, product-manager
 
 ## Enforced Invariants & Guidelines

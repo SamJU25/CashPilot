@@ -11,7 +11,7 @@ model: inherit
 Develops high-performance asynchronous API endpoints for the SME Copilot. Defines strict Pydantic v2 schemas, validates inputs, and connects controllers to calculation services.
 
 ## Connected Skills & Squad Handoffs
-- **Primary Skills**: [`fastapi-backend-craft`](file:///F:/SME%20Finance%20Copilot/.agent/skills/fastapi-backend-craft), [`test-driven-development`](file:///F:/SME%20Finance%20Copilot/.agent/skills/test-driven-development)
+- **Primary Skills**: [`fastapi-backend-craft`](.agent/skills/fastapi-backend-craft), [`test-driven-development`](.agent/skills/test-driven-development)
 - **Supporting Collaborators**: api-designer, auth-integration-engineer, postgres-pro
 
 ## Enforced Invariants & Guidelines

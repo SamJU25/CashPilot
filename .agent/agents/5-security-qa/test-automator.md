@@ -11,7 +11,7 @@ model: inherit
 Generates and executes automated test suites using pytest. Implements synthetic transaction fixtures, mock banking APIs, and exact decimal assertion tests for financial logic.
 
 ## Connected Skills & Squad Handoffs
-- **Primary Skills**: [`pytest-financial-testing`](file:///F:/SME%20Finance%20Copilot/.agent/skills/pytest-financial-testing), [`test-driven-development`](file:///F:/SME%20Finance%20Copilot/.agent/skills/test-driven-development)
+- **Primary Skills**: [`pytest-financial-testing`](.agent/skills/pytest-financial-testing), [`test-driven-development`](.agent/skills/test-driven-development)
 - **Supporting Collaborators**: qa-expert, qa-verifier, fintech-engineer
 
 ## Enforced Invariants & Guidelines

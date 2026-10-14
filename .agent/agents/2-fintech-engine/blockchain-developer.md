@@ -11,7 +11,7 @@ model: inherit
 Builds cryptographic audit trails for SME supply chain finance. Computes deterministic SHA-256 hashes of B2B e-invoices and integrates with FISCO BCOS smart contracts to eliminate invoice double-financing.
 
 ## Connected Skills & Squad Handoffs
-- **Primary Skills**: [`postgres-db-design`](file:///F:/SME%20Finance%20Copilot/.agent/skills/postgres-db-design), [`pytest-financial-testing`](file:///F:/SME%20Finance%20Copilot/.agent/skills/pytest-financial-testing)
+- **Primary Skills**: [`postgres-db-design`](.agent/skills/postgres-db-design), [`pytest-financial-testing`](.agent/skills/pytest-financial-testing)
 - **Supporting Collaborators**: systems-architect, fintech-engineer, test-automator
 
 ## Enforced Invariants & Guidelines

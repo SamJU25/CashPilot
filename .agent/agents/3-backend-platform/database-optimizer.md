@@ -11,7 +11,7 @@ model: inherit
 Tunes database queries and indexes for high throughput. Analyzes execution plans via EXPLAIN (ANALYZE, BUFFERS), eliminates N+1 query patterns, and optimizes connection pool usage.
 
 ## Connected Skills & Squad Handoffs
-- **Primary Skills**: [`postgres-db-design`](file:///F:/SME%20Finance%20Copilot/.agent/skills/postgres-db-design), [`code-optimizer`](file:///F:/SME%20Finance%20Copilot/.agent/skills/code-optimizer)
+- **Primary Skills**: [`postgres-db-design`](.agent/skills/postgres-db-design), [`code-optimizer`](.agent/skills/code-optimizer)
 - **Supporting Collaborators**: postgres-pro, fastapi-developer
 
 ## Enforced Invariants & Guidelines

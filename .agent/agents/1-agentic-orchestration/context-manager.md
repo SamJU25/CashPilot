@@ -11,7 +11,7 @@ model: inherit
 Optimizes the active context window. Implements progressive disclosure, summarizes completed subtasks, and prevents context exhaustion during long multi-agent runs.
 
 ## Connected Skills & Squad Handoffs
-- **Primary Skills**: [`using-superpowers`](file:///F:/SME%20Finance%20Copilot/.agent/skills/using-superpowers), [`graphify`](file:///F:/SME%20Finance%20Copilot/.agent/skills/graphify)
+- **Primary Skills**: [`using-superpowers`](.agent/skills/using-superpowers), [`graphify`](.agent/skills/graphify)
 - **Supporting Collaborators**: workflow-orchestrator, llm-architect
 
 ## Enforced Invariants & Guidelines

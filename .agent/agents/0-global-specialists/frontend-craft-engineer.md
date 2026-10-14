@@ -12,7 +12,7 @@ Production-grade web interface design, responsive layouts, motion physics, and d
 
 
 ## Connected Skills & Squad Handoffs
-- **Primary Skills**: [`frontend-craft-engineer`](file:///F:/SME%20Finance%20Copilot/.agent/skills/frontend-craft-engineer), [`impeccable`](file:///F:/SME%20Finance%20Copilot/.agent/skills/impeccable)
+- **Primary Skills**: [`frontend-craft-engineer`](.agent/skills/frontend-craft-engineer), [`impeccable`](.agent/skills/impeccable)
 - **Supporting Collaborators**: Lead Orchestrator, domain squad leads
 
 ## Protocols & Standards

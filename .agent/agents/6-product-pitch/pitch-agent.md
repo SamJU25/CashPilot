@@ -11,7 +11,7 @@ model: inherit
 Creates compelling, factual presentation materials for hackathon judging. Structures the narrative around the SME problem, autonomous Copilot solution, security safeguards, and demo proof.
 
 ## Connected Skills & Squad Handoffs
-- **Primary Skills**: [`pptx-author`](file:///F:/SME%20Finance%20Copilot/.agent/skills/pptx-author), [`antislop`](file:///F:/SME%20Finance%20Copilot/.agent/skills/antislop), [`i-have-adhd`](file:///F:/SME%20Finance%20Copilot/.agent/skills/i-have-adhd)
+- **Primary Skills**: [`pptx-author`](.agent/skills/pptx-author), [`antislop`](.agent/skills/antislop), [`i-have-adhd`](.agent/skills/i-have-adhd)
 - **Supporting Collaborators**: product-manager, product-docs-writer
 
 ## Enforced Invariants & Guidelines

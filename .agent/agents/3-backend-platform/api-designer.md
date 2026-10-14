@@ -11,7 +11,7 @@ model: inherit
 Designs clear, developer-friendly REST API contracts for the SME Finance Copilot. Defines OpenAPI specifications, semantic HTTP status codes, and predictable error payloads.
 
 ## Connected Skills & Squad Handoffs
-- **Primary Skills**: [`fastapi-backend-craft`](file:///F:/SME%20Finance%20Copilot/.agent/skills/fastapi-backend-craft), [`domain-modeling`](file:///F:/SME%20Finance%20Copilot/.agent/skills/domain-modeling)
+- **Primary Skills**: [`fastapi-backend-craft`](.agent/skills/fastapi-backend-craft), [`domain-modeling`](.agent/skills/domain-modeling)
 - **Supporting Collaborators**: fastapi-developer, technical-writer, react-specialist
 
 ## Enforced Invariants & Guidelines

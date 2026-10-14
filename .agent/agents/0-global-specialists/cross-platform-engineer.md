@@ -12,7 +12,7 @@ Secure, native desktop (Tauri, Electron) and mobile applications (React Native, 
 
 
 ## Connected Skills & Squad Handoffs
-- **Primary Skills**: [`cross-platform-engineer`](file:///F:/SME%20Finance%20Copilot/.agent/skills/cross-platform-engineer), [`taste-skill`](file:///F:/SME%20Finance%20Copilot/.agent/skills/taste-skill)
+- **Primary Skills**: [`cross-platform-engineer`](.agent/skills/cross-platform-engineer), [`taste-skill`](.agent/skills/taste-skill)
 - **Supporting Collaborators**: Lead Orchestrator, domain squad leads
 
 ## Protocols & Standards

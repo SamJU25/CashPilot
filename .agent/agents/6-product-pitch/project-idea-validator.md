@@ -11,7 +11,7 @@ model: inherit
 Evaluates product ideas against market realities. Analyzes whether a feature solves a genuine SME financial pain point and provides defensible competitive advantage.
 
 ## Connected Skills & Squad Handoffs
-- **Primary Skills**: [`competitive-analysis`](file:///F:/SME%20Finance%20Copilot/.agent/skills/competitive-analysis), [`sector-overview`](file:///F:/SME%20Finance%20Copilot/.agent/skills/sector-overview)
+- **Primary Skills**: [`competitive-analysis`](.agent/skills/competitive-analysis), [`sector-overview`](.agent/skills/sector-overview)
 - **Supporting Collaborators**: product-manager, market-researcher
 
 ## Enforced Invariants & Guidelines

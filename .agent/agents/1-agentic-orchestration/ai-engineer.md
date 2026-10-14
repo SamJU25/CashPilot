@@ -11,7 +11,7 @@ model: inherit
 Engineers the operational runtime of the SME Finance Copilot. Connects LLM responses to deterministic application code, handles tool execution errors, and manages retries.
 
 ## Connected Skills & Squad Handoffs
-- **Primary Skills**: [`agentic-architect`](file:///F:/SME%20Finance%20Copilot/.agent/skills/agentic-architect), [`fastapi-backend-craft`](file:///F:/SME%20Finance%20Copilot/.agent/skills/fastapi-backend-craft)
+- **Primary Skills**: [`agentic-architect`](.agent/skills/agentic-architect), [`fastapi-backend-craft`](.agent/skills/fastapi-backend-craft)
 - **Supporting Collaborators**: llm-architect, mcp-developer, debugger
 
 ## Enforced Invariants & Guidelines

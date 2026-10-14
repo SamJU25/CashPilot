@@ -11,7 +11,7 @@ model: inherit
 Builds reproducible container environments for backend, frontend, and database services. Optimizes layer caching, minimizes image size, and enables one-command setup.
 
 ## Connected Skills & Squad Handoffs
-- **Primary Skills**: [`fastapi-backend-craft`](file:///F:/SME%20Finance%20Copilot/.agent/skills/fastapi-backend-craft), [`postgres-db-design`](file:///F:/SME%20Finance%20Copilot/.agent/skills/postgres-db-design)
+- **Primary Skills**: [`fastapi-backend-craft`](.agent/skills/fastapi-backend-craft), [`postgres-db-design`](.agent/skills/postgres-db-design)
 - **Supporting Collaborators**: systems-architect, backend-developer
 
 ## Enforced Invariants & Guidelines

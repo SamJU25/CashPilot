@@ -1,17 +1,24 @@
 # SME Finance Copilot — Claude Code Operational Protocol
 
-Scope: All software development, research, financial engineering, and testing in [`F:\SME Finance Copilot`](file:///F:/SME%20Finance%20Copilot).
+Scope: All software development, research, financial engineering, and testing in this workspace.
 
 ---
 
 ## 1. Environment & Architecture Overview
+- **Master Specifications**:
+  - [`docs/system.md`](docs/system.md): Concrete implementation mechanics, math models, schemas & contracts.
+  - [`docs/architecture.md`](docs/architecture.md): Macro topology, 1-Supervisor + 4-Squads model & roadmap.
+  - [`docs/security.md`](docs/security.md): 5 Invariants, threat defense, self-healing & decadal security.
+  - [`docs/team_distribution_guide.md`](docs/team_distribution_guide.md): 4-track isolated roles, turnkey agent prompts & branch protocols.
+  - [`docs/adr/`](docs/adr/): 7 formal Architecture Decision Records.
+  - [`.agent/workflows/sprint-workflow.md`](.agent/workflows/sprint-workflow.md): 5-Gate Development Protocol & Parallel Track Sprints.
 - **Project Structure**:
-  - [`.agent/agents/`](file:///F:/SME%20Finance%20Copilot/.agent/agents): 57 specialized subagents across 8 squads (Suites 0 through 7).
-  - [`.agent/skills/`](file:///F:/SME%20Finance%20Copilot/.agent/skills): 54 deterministic execution skills (governance, fintech math, web, security).
-  - [`.agent/rules/`](file:///F:/SME%20Finance%20Copilot/.agent/rules): 10 standing architectural rules.
-  - [`graphify-out/`](file:///F:/SME%20Finance%20Copilot/graphify-out): Persistent AST knowledge graph (`graph.json`) and architecture wiki (`wiki/index.md`).
-  - [`AGENTS.md`](file:///F:/SME%20Finance%20Copilot/AGENTS.md): Full registry and Scenario Routing Matrix.
-  - [`GLOSSARY.md`](file:///F:/SME%20Finance%20Copilot/GLOSSARY.md): Ubiquitous domain vocabulary (CCC, DSO, DIO, DPO, DAB, NSF, DSCR, Runway, APR, WeBank Weiyidai, FISCO BCOS).
+  - [`.agent/agents/`](.agent/agents): 57 specialized subagents across 8 squads (Suites 0 through 7).
+  - [`.agent/skills/`](.agent/skills): 54 deterministic execution skills (governance, fintech math, web, security).
+  - [`.agent/rules/`](.agent/rules): 10 standing architectural rules.
+  - [`graphify-out/`](graphify-out): Persistent AST knowledge graph (`graph.json`) and architecture wiki (`wiki/index.md`).
+  - [`AGENTS.md`](AGENTS.md): Full registry and Scenario Routing Matrix.
+  - [`GLOSSARY.md`](GLOSSARY.md): Ubiquitous domain vocabulary (CCC, DSO, DIO, DPO, DAB, NSF, DSCR, Runway, APR, WeBank Weiyidai, FISCO BCOS).
 
 ---
 
@@ -41,7 +48,7 @@ Every response and code modification must satisfy these 10 standing rules:
   5. *Shortest Working Diff*: Minimum code, boring over clever, single root-cause fix.
 
 ### 2.5 Domain Alignment (`domain-alignment`)
-- Enforce domain definitions from [`GLOSSARY.md`](file:///F:/SME%20Finance%20Copilot/GLOSSARY.md).
+- Enforce domain definitions from [`GLOSSARY.md`](GLOSSARY.md).
 - Never allow floating-point representation for currency fields: always use `Decimal` in Python or `numeric(18, 4)` in PostgreSQL.
 
 ### 2.6 Frontend Craft Protocol (`frontend-craft`)
@@ -71,7 +78,7 @@ Every response and code modification must satisfy these 10 standing rules:
 
 ## 3. Skill & Agent Utilization for Claude
 When handling a user request:
-1. Identify the matching squad in [`AGENTS.md`](file:///F:/SME%20Finance%20Copilot/AGENTS.md).
+1. Identify the matching squad in [`AGENTS.md`](AGENTS.md).
 2. Read the `SKILL.md` file in `.agent/skills/<skill-name>/SKILL.md` for the subagent's Primary Skills before writing code.
 3. Follow the red-green-refactor cycle and execute tests using `pytest`.
 

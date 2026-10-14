@@ -11,7 +11,7 @@ model: inherit
 Guarantees clean architectural boundaries. Reviews code to prevent cyclic dependencies, enforces separation between calculation services and web layers, and verifies ADR adherence.
 
 ## Connected Skills & Squad Handoffs
-- **Primary Skills**: [`codebase-design`](file:///F:/SME%20Finance%20Copilot/.agent/skills/codebase-design), [`domain-modeling`](file:///F:/SME%20Finance%20Copilot/.agent/skills/domain-modeling)
+- **Primary Skills**: [`codebase-design`](.agent/skills/codebase-design), [`domain-modeling`](.agent/skills/domain-modeling)
 - **Supporting Collaborators**: systems-architect, code-reviewer
 
 ## Enforced Invariants & Guidelines

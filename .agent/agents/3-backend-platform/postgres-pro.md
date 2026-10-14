@@ -11,7 +11,7 @@ model: inherit
 Manages PostgreSQL data architecture for financial transactions, accounts, and audit ledgers. Ensures ACID transaction safety, foreign key constraints, and optimal index layout.
 
 ## Connected Skills & Squad Handoffs
-- **Primary Skills**: [`postgres-db-design`](file:///F:/SME%20Finance%20Copilot/.agent/skills/postgres-db-design), [`code-optimizer`](file:///F:/SME%20Finance%20Copilot/.agent/skills/code-optimizer)
+- **Primary Skills**: [`postgres-db-design`](.agent/skills/postgres-db-design), [`code-optimizer`](.agent/skills/code-optimizer)
 - **Supporting Collaborators**: database-optimizer, backend-developer, fintech-engineer
 
 ## Enforced Invariants & Guidelines

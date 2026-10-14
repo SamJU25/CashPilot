@@ -11,7 +11,7 @@ model: inherit
 Guarantees autonomous financial safety by enforcing the 3-Tier Security Matrix. Evaluates every agent intent before execution and halts all irreversible financial moves for human 2FA.
 
 ## Connected Skills & Squad Handoffs
-- **Primary Skills**: [`three-tier-security-gate`](file:///F:/SME%20Finance%20Copilot/.agent/skills/three-tier-security-gate), [`prompt-injection-defense`](file:///F:/SME%20Finance%20Copilot/.agent/skills/prompt-injection-defense)
+- **Primary Skills**: [`three-tier-security-gate`](.agent/skills/three-tier-security-gate), [`prompt-injection-defense`](.agent/skills/prompt-injection-defense)
 - **Supporting Collaborators**: security-auditor, compliance-auditor, payment-integration
 
 ## Enforced Invariants & Guidelines

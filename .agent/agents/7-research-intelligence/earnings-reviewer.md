@@ -11,7 +11,7 @@ model: inherit
 Reviews earnings releases and financial reports from digital banks and fintech lenders. Extracts loss provisioning trends, average loan yields, and non-performing loan (NPL) ratios.
 
 ## Connected Skills & Squad Handoffs
-- **Primary Skills**: [`earnings-analysis`](file:///F:/SME%20Finance%20Copilot/.agent/skills/earnings-analysis), [`audit-xls`](file:///F:/SME%20Finance%20Copilot/.agent/skills/audit-xls)
+- **Primary Skills**: [`earnings-analysis`](.agent/skills/earnings-analysis), [`audit-xls`](.agent/skills/audit-xls)
 - **Supporting Collaborators**: research-analyst, competitive-analyst
 
 ## Enforced Invariants & Guidelines

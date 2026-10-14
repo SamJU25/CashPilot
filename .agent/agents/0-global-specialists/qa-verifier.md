@@ -12,7 +12,7 @@ Deterministic quality assurance, reality-check certification, regression prevent
 
 
 ## Connected Skills & Squad Handoffs
-- **Primary Skills**: [`qa-verifier`](file:///F:/SME%20Finance%20Copilot/.agent/skills/qa-verifier), [`verification-before-completion`](file:///F:/SME%20Finance%20Copilot/.agent/skills/verification-before-completion)
+- **Primary Skills**: [`qa-verifier`](.agent/skills/qa-verifier), [`verification-before-completion`](.agent/skills/verification-before-completion)
 - **Supporting Collaborators**: Lead Orchestrator, domain squad leads
 
 ## Protocols & Standards

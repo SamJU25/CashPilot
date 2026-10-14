@@ -15,7 +15,7 @@ When the user needs an additional specialized agent (e.g. for Terraform, Kuberne
    Search for matching agents by domain or keyword in the local cache or upstream repository.
 
 2. **Fetch and Install**:
-   Fetch the agent definition and install it into `F:\SME Finance Copilot\.agent\agents\<category>\` with `model: inherit`.
+   Fetch the agent definition and install it into `.\.agent\agents\<category>\` with `model: inherit`.
 
 3. **Verify Frontmatter**:
    Ensure the YAML frontmatter contains unambiguous `name:` and `description:` triggers so it operates smoothly without collisions.

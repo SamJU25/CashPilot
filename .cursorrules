@@ -1,0 +1,44 @@
+# Cursor & AI Coding Agent Rules — SME Finance Copilot
+
+You are an expert FinTech AI Pair Programmer working on the Autonomous SME Finance Copilot for FinTechathon 2026 Track E (Tsinghua University PBCSF & WeBank).
+
+## 1. Master Documentation (Read Before Coding)
+Before writing or modifying any code, read the master specifications:
+- `docs/system.md`: Technical system design, math models, schemas, and smart contracts.
+- `docs/architecture.md`: Macro topology, 1-Supervisor + 4-Squads model, and roadmap.
+- `docs/security.md`: 5 Invariants, threat defense, self-healing, and decadal resilience.
+- `docs/team_distribution_guide.md`: 4-track isolated roles, turnkey agent prompts, and branch protocols.
+- `docs/adr/`: Architecture Decision Records (ADR-001 to ADR-007).
+- `.agent/workflows/sprint-workflow.md`: 5-Gate Development Protocol & Parallel Track Sprints.
+
+## 2. Non-Negotiable Engineering Invariants
+1. **0% LLM Math**: Never let an LLM calculate financial ratios, cash runway, or interest. All financial math MUST use Python `decimal.Decimal` with `ROUND_HALF_UP` in `services/calculations/`.
+2. **Three-Tier Security Gate**:
+   - Tier 1 (Observation): Read-only data ingestion and ledger queries (autonomous).
+   - Tier 2 (Staging): Proposing actions; saved to `action_intents` staging queue (no money moves).
+   - Tier 3 (Execution): Live transfers or loan commitments STRICTLY require human biometric 2FA (WebAuthn).
+3. **Strict Type Parsing**: All API schemas use Pydantic v2 (compiled in Rust) with `extra="forbid"` and strict validation.
+4. **Tenant Isolation**: PostgreSQL Row-Level Security (RLS) is mandatory. Never trust client `tenant_id` parameters; extract it from verified JWT tokens.
+5. **No AI Slop**: Never use banned words (*delve, foster, leverage, utilize, facilitate, empower, streamline, robust, cutting-edge, paradigm shift, supercharge, harness*). Write direct, factual prose.
+6. **The Ladder (Minimal Diffs)**: Minimal working code. Reuse existing helpers. Boring over clever. Fix root causes once; never patch symptoms.
+
+## 3. Parallel Track Roadmap Discipline
+Execute tasks within your designated track directory boundary on your assigned git branch:
+- Track A (Team Lead): Security Gate, LiteLLM Gateway, & APIs (`services/security/`, `services/llm/`, `api/`)
+- Track B (Frontend): Next.js 14 App Router, 4-state UI, & Charts (`frontend/`)
+- Track C (Quant / Calc): Decimal Financial Math, MAPIE Forecasting, & PuLP Matcher (`services/calculations/`, `services/risk/`, `services/matcher/`)
+- Track D (Blockchain / QA): CSV Ingestion + PII Scrubbing, FISCO BCOS Registry, & Security Pentests (`services/ingestion/`, `contracts/`, `tests/security/`)
+
+## 4. Mandatory Terminal Command After Code Changes
+After creating or modifying any code files, you MUST run:
+```powershell
+cmd /c "python -m graphify update ."
+```
+Run `pytest` to verify 100% test pass before declaring any task complete.
+
+## 5. Mandatory Agent Execution Protocol (Plan -> Build -> Verify)
+When receiving ANY task prompt, the agent MUST execute in 3 strict phases:
+1. **Phase 1 (Plan First)**: Output a concise 3-step plan identifying files to touch within your assigned track folder. Stop and confirm boundaries.
+2. **Phase 2 (Boundary Lock & Build)**: Edit code ONLY inside your track directory. Never touch or rewrite files outside your track. Follow the Ladder (minimal diffs).
+3. **Phase 3 (Verify with Evidence)**: Execute terminal verification (`pytest` or `npm test`). Require 100% passing tests before concluding.
+

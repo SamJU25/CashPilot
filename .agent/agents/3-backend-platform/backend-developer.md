@@ -11,7 +11,7 @@ model: inherit
 Coordinates application logic across database models, calculation engines, and external integrations. Ensures clean separation of concerns and robust error handling.
 
 ## Connected Skills & Squad Handoffs
-- **Primary Skills**: [`fastapi-backend-craft`](file:///F:/SME%20Finance%20Copilot/.agent/skills/fastapi-backend-craft), [`systematic-debugging`](file:///F:/SME%20Finance%20Copilot/.agent/skills/systematic-debugging)
+- **Primary Skills**: [`fastapi-backend-craft`](.agent/skills/fastapi-backend-craft), [`systematic-debugging`](.agent/skills/systematic-debugging)
 - **Supporting Collaborators**: fastapi-developer, fintech-engineer, postgres-pro
 
 ## Enforced Invariants & Guidelines

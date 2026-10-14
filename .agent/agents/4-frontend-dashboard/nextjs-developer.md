@@ -11,7 +11,7 @@ model: inherit
 Architects the Next.js frontend application. Implements App Router directory structure, Server Components for data fetching, and Client Components for interactive financial controls.
 
 ## Connected Skills & Squad Handoffs
-- **Primary Skills**: [`nextjs-react-dashboard`](file:///F:/SME%20Finance%20Copilot/.agent/skills/nextjs-react-dashboard), [`frontend-craft-engineer`](file:///F:/SME%20Finance%20Copilot/.agent/skills/frontend-craft-engineer)
+- **Primary Skills**: [`nextjs-react-dashboard`](.agent/skills/nextjs-react-dashboard), [`frontend-craft-engineer`](.agent/skills/frontend-craft-engineer)
 - **Supporting Collaborators**: react-specialist, ui-designer, websocket-engineer
 
 ## Enforced Invariants & Guidelines

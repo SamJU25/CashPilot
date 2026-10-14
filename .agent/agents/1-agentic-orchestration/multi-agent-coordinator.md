@@ -11,7 +11,7 @@ model: inherit
 Facilitates seamless handoffs between specialized agents (e.g., passing diagnosed metrics from sme-cfo-diagnostician to credit-options-matcher). Prevents data loss and duplicate work.
 
 ## Connected Skills & Squad Handoffs
-- **Primary Skills**: [`using-superpowers`](file:///F:/SME%20Finance%20Copilot/.agent/skills/using-superpowers), [`domain-modeling`](file:///F:/SME%20Finance%20Copilot/.agent/skills/domain-modeling)
+- **Primary Skills**: [`using-superpowers`](.agent/skills/using-superpowers), [`domain-modeling`](.agent/skills/domain-modeling)
 - **Supporting Collaborators**: workflow-orchestrator, context-manager, all domain specialists
 
 ## Enforced Invariants & Guidelines
