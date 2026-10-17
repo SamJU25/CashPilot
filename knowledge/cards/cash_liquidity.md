@@ -56,6 +56,14 @@
 **What to do:** Close timing gaps with receivables collection or short facilities; fix structural gaps with cost or pricing changes.
 **In the app:** Listed with the deficit warning; staging a bridge facility needs passkey approval.
 
+## What-If Cash Scenarios
+<!-- tools: tool_run_cash_scenario -->
+**What it is:** A rerun of runway and the deficit forecast on your own statement after one change: a customer invoice paid late, a monthly cost cut, a new monthly cost such as a hire, or a percentage drop in revenue.
+**Why it matters:** Most cash crunches start with one late payment or one new commitment. Testing the change before it happens shows whether reserves absorb it or the balance goes negative.
+**Healthy vs warning:** Healthy: the scenario runway stays above your alert threshold and no deficit appears. Warning: a late invoice that outlasts the reduced balance, or a new cost that pulls the deficit date inside the next payroll cycle.
+**What to do:** Run the scenario before signing a hire or a new contract, and line up collections or a short facility for any gap it shows.
+**In the app:** Ask a what-if question with the amount and timing; baseline and scenario figures come from the same engines.
+
 ## Forecast Confidence and Horizon
 <!-- tools: tool_calculate_predictive_cash -->
 **What it is:** A label for how reliable a forecast is, based on how far ahead it looks.

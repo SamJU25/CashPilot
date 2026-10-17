@@ -166,14 +166,15 @@ INFLOW_LABELS = ["Client Invoice Payment", "Customer Transfer", "Stripe Payout",
 OUTFLOW_LABELS = ["Supplier Payment", "Payroll Run", "Inventory Purchase", "Utilities", "Software Subscriptions", "Contractor Invoice", "Fuel and Logistics"]
 
 
-def make_statement(rng: random.Random, profile: str) -> str:
+def make_statement(rng: random.Random, profile: str, days: Optional[int] = None) -> str:
     (bal_lo, bal_hi), (in_lo, in_hi), (out_lo, out_hi) = PROFILES[profile]
     balance = Decimal(rng.randrange(bal_lo, bal_hi, 50))
     inflow_mu, outflow_mu = rng.randint(in_lo, in_hi), rng.randint(out_lo, out_hi)
     rent = Decimal(rng.randrange(1_500, 9_000, 250))
     loan = Decimal(rng.randrange(800, 4_000, 100)) if rng.random() < 0.4 else None
     start = date(2026, rng.randint(3, 8), 1)
-    days = rng.choice([30, 45, 60, 75, 90])
+    if days is None:
+        days = rng.choice([30, 45, 60, 75, 90])
     rows = ["transaction_id,posted_on,amount,currency,description,closing_balance"]
     tx = 0
     for offset in range(days):
@@ -1145,6 +1146,158 @@ def build_quant_rows(rng: random.Random, per_spec: int) -> List[Dict[str, Any]]:
 
 
 # ==============================================================================
+# What-if cash scenarios (base_reply captured from the real LiquiditySubagent handler)
+# ==============================================================================
+
+SCENARIO_QUESTIONS = {
+    "INVOICE_DELAY": [
+        "What if {client} delays their {amt} invoice by {d} days?",
+        "If {client} pays their {amt} bill {d} days late, do we go negative?",
+        "Can our cash absorb a {d}-day delay on {client}'s {amt} invoice?",
+    ],
+    "COST_CUT": [
+        "What if we cut costs by {amt} a month?",
+        "How much runway do we gain if we reduce overhead by {amt} per month?",
+        "If we trim {amt} of monthly spending, what happens to our runway?",
+    ],
+    "NEW_EXPENSE": [
+        "How does our runway change if we hire someone at {amt} per month?",
+        "What if we take on a new {amt} monthly lease?",
+        "What happens if we add a new {amt} monthly software expense?",
+    ],
+    "REVENUE_DROP": [
+        "What if our revenue drops {p}%?",
+        "What if sales fall {p}% next quarter?",
+        "How long does our cash last if revenue drops {p}%?",
+    ],
+}
+
+
+def scenario_reply(rng: random.Random, kind: str, f: Dict[str, str], q: Dict[str, str]) -> Optional[str]:
+    needed = ("Current Balance", "Baseline Daily Burn", "Scenario Daily Burn", "Baseline Runway", "Scenario Runway", "Scenario Deficit")
+    if any(k not in f for k in needed):
+        return None
+    bb, sb = figure(f["Baseline Daily Burn"]) + "/day", figure(f["Scenario Daily Burn"]) + "/day"
+    br, sr = f["Baseline Runway"], f["Scenario Runway"]
+    positive = "Cash positive" in br
+    if positive and "Cash positive" in sr:
+        runway_s = "you stay cash positive, so runway is not under pressure"
+    elif positive:
+        runway_s = f"you go from cash positive to a {sr} runway"
+    elif "Cash positive" in sr:
+        runway_s = "you become cash positive"
+    elif br == sr:
+        runway_s = f"runway stays at {sr}"
+    else:
+        runway_s = f"runway moves from {br} to {sr}"
+
+    bal = figure(f["Current Balance"])
+    overdrawn = bal.startswith("$-")
+    if positive and kind == "COST_CUT":
+        return None  # no burn to cut: the reply would only restate $0.00/day
+    if kind == "INVOICE_DELAY":
+        if "Balance During Delay" not in f:
+            return None
+        if overdrawn:
+            first = f"Your account is already overdrawn at {bal}, and the late {q['amt']} invoice from {q['client']} pushes it to {figure(f['Balance During Delay'])} until it is paid."
+            effect = None
+            action = rng.choice([
+                f"Chase {q['client']} now and cut discretionary spending until the account is back above zero.",
+                "Bring in overdue receivables first, and ask me to stage a short-term facility proposal if the gap stays open.",
+            ])
+        else:
+            first = f"While {q['client']}'s {q['amt']} invoice is late, your balance sits at {figure(f['Balance During Delay'])} instead of {bal}."
+        if overdrawn:
+            pass
+        elif not positive and sr != br:
+            effect = f"That reduced balance only lasts {sr}, so the {q['d']}-day delay would run you out of cash before the payment lands."
+            action = rng.choice([
+                f"Chase {q['client']} now, and ask me to stage a short-term facility proposal if the payment slips.",
+                "Hold back discretionary payments until the invoice clears, and line up a short facility as a backstop.",
+            ])
+        else:
+            effect = (f"Your {br.replace(' days', '-day')} runway still holds, because the reduced balance outlasts the {q['d']}-day delay." if not positive
+                      else f"Inflows still exceed outflows, so the {q['d']}-day delay thins the cushion without a runway problem.")
+            action = rng.choice([
+                f"Still follow up with {q['client']} so one late payment does not become a habit.",
+                "Keep the delay on your watch list and recheck once the payment lands.",
+            ])
+    else:
+        lead = {
+            "COST_CUT": f"Cutting {q['amt']} a month takes burn from {bb} to {sb}",
+            "NEW_EXPENSE": f"Adding that {q['amt']} monthly cost lifts burn from {bb} to {sb}",
+            "REVENUE_DROP": f"A {q['p']}% drop in revenue lifts burn from {bb} to {sb}",
+        }[kind]
+        change = {"NEW_EXPENSE": f"that {q['amt']} monthly cost", "REVENUE_DROP": f"a {q['p']}% revenue drop"}.get(kind, "")
+        if overdrawn:
+            if kind != "COST_CUT":
+                tail = "which deepens the overdraft faster"
+            elif sb == "$0.00/day":
+                tail = "which stops the slide, though the account stays overdrawn"
+            else:
+                tail = "which slows the slide but does not clear the overdraft"
+            first = f"Your account is already overdrawn at {bal}. {lead}, {tail}."
+        elif positive and "Cash positive" in sr:
+            first = f"Even with {change}, inflows still exceed outflows, so you stay cash positive."
+            return " ".join((first, "No deficit appears in the forecast window.", "Recheck once it starts, since a thinner margin leaves less room for a slow month."))
+        elif positive:
+            first = f"{change[0].upper() + change[1:]} turns a cash-positive position into a {sb} burn, giving you a {sr.replace(' days', '-day')} runway."
+        else:
+            first = f"{lead}, and {runway_s}."
+        effect = None
+        if "Runway Change" in f and not overdrawn and f["Runway Change"] != "+0 days":
+            effect = rng.choice([f"That is a change of {f['Runway Change']} against today's statement.", f"The net effect is {f['Runway Change']} of runway."])
+        if kind == "COST_CUT":
+            action = rng.choice([
+                "Name the specific costs that go, then recheck runway on your next statement.",
+                "Make the cut on recurring items such as subscriptions or contractors so it holds month after month.",
+            ])
+        else:
+            action = rng.choice([
+                "Line up collections or a short facility before committing, so the gap does not catch you.",
+                "Decide which costs you would cut first if this happens, before you need to.",
+            ])
+
+    deficit = f["Scenario Deficit"]
+    m = re.match(r"(\$[\d,]+\.\d{2}) shortfall on (\d{4}-\d{2}-\d{2})", deficit)
+    deficit_s = f"The forecast then shows a {m.group(1)} shortfall on {m.group(2)}." if m else "No deficit appears in the forecast window."
+    return bold_first_figure(rng, " ".join(s for s in (first, effect, deficit_s, action) if s))
+
+
+def build_scenario_rows(rng: random.Random, count: int) -> List[Dict[str, Any]]:
+    rows = []
+    attempts = 0
+    while len(rows) < count and attempts < count * 4:
+        attempts += 1
+        kind = rng.choice(list(SCENARIO_QUESTIONS))
+        csv = make_statement(rng, rng.choices(list(PROFILES), weights=PROFILE_WEIGHTS)[0])
+        q = {"client": rng.choice(CLIENT_NAMES), "amt": usd(k(rng, 2_000, 60_000, 500)), "d": str(rng.choice([7, 10, 14, 21, 30, 45])), "p": str(rng.choice([5, 10, 15, 20, 25, 30, 40]))}
+        question = rng.choice(SCENARIO_QUESTIONS[kind]).format(**q)
+        if route(question, True)[1] != "CASH_SCENARIO":
+            continue
+        captured: Dict[str, str] = {}
+
+        def capture(base_reply: str, prompt_type: str = "diagnostic", **_: Any) -> str:
+            captured["base"] = base_reply
+            return base_reply
+
+        LiquiditySubagent.handle_sub_intent("CASH_SCENARIO", AgentChatRequest(message=question), csv, capture)
+        base = captured.get("base")
+        if not base:
+            continue
+        fields = parse_bullets(base)
+        # Synthetic long statements end overdrawn about half the time; keep what-ifs mostly solvent.
+        if figure(fields.get("Current Balance", "")).startswith("$-") and rng.random() < 0.7:
+            continue
+        reply = scenario_reply(rng, kind, fields, q)
+        if not reply:
+            continue
+        system = append_reference_cards(get_cash_diagnostic_prompt(base), question)
+        rows.append(make_row(system, question, reply, base, f"scenario:{kind}"))
+    return rows
+
+
+# ==============================================================================
 # Conversational and missing-statement rows
 # ==============================================================================
 
@@ -1450,7 +1603,7 @@ def build_multiturn_rows(rng: random.Random, count: int) -> List[Dict[str, Any]]
         # Follow-up answers quote only figures already in the conversation or in engine output placed in the
         # system prompt; numbers_are_grounded drops any row where the reply would need arithmetic of its own.
         if scenario == "runway_whatif":
-            csv = make_statement(rng, rng.choices(list(PROFILES), weights=PROFILE_WEIGHTS)[0])
+            csv = make_statement(rng, rng.choices(list(PROFILES), weights=PROFILE_WEIGHTS)[0], days=rng.choice([30, 45]))
             cash = tool_analyze_cash_flow(csv)
             t1_base = cash_base_reply(cash, "RUNWAY")
             t1_q = rng.choice(CASH_QUESTIONS["RUNWAY"])
@@ -1490,12 +1643,12 @@ def build_multiturn_rows(rng: random.Random, count: int) -> List[Dict[str, Any]]
                 (f"How does a {delay}-day payment delay from {client} on {inv} affect our runway?",
                  f"{outlook} Your runway figure assumes customer receipts keep arriving on their usual schedule, so treat it as optimistic until {client} pays."),
             ])
-            sys_prompt = append_reference_cards(get_cash_diagnostic_prompt(t1_base), t1_q)
+            sys_prompt = append_reference_cards(get_cash_diagnostic_prompt(t1_base), t1_q, k=1)
             history = [{"role": "user", "content": t1_q}, {"role": "assistant", "content": t1_a}]
             rows.append(make_multiturn_row(sys_prompt, history, t2_q, t2_a, "", "multiturn:runway_whatif"))
 
         elif scenario == "underwriting_governance":
-            csv = make_statement(rng, rng.choices(list(PROFILES), weights=PROFILE_WEIGHTS)[0])
+            csv = make_statement(rng, rng.choices(list(PROFILES), weights=PROFILE_WEIGHTS)[0], days=rng.choice([30, 45]))
             uw = tool_underwrite_credit(csv, nsf_count=rng.choice([0, 1]))
             t1_base = underwriting_base_reply(uw)
             t1_q = rng.choice(UW_QUESTIONS)
@@ -1523,7 +1676,7 @@ def build_multiturn_rows(rng: random.Random, count: int) -> List[Dict[str, Any]]
                  f"No, I won't draw automatically, even below a threshold. Each {draw} draw is a Tier 3 action that needs your passkey approval at the time. "
                  "When your balance runs low, ask me and I can stage a draw proposal for you to approve."),
             ])
-            sys_prompt = append_reference_cards(get_credit_underwriting_prompt(t1_base), t1_q)
+            sys_prompt = append_reference_cards(get_credit_underwriting_prompt(t1_base), t1_q, k=1)
             history = [{"role": "user", "content": t1_q}, {"role": "assistant", "content": t1_a}]
             rows.append(make_multiturn_row(sys_prompt, history, t2_q, t2_a, "", "multiturn:underwriting_governance"))
 
@@ -1558,12 +1711,12 @@ def build_multiturn_rows(rng: random.Random, count: int) -> List[Dict[str, Any]]
                 f"**Annualized Implied APR**: {apr}\n**Discount Savings**: {save}\n**Borrowing Cost**: {cost}\n"
                 f"**Net Financial Benefit**: {net}\n**Days Financed**: {financed}\n**Invoice Value**: {inv}"
             )
-            sys_prompt = append_reference_cards(get_cash_diagnostic_prompt(base_spec), t1_q)
+            sys_prompt = append_reference_cards(get_cash_diagnostic_prompt(base_spec), t1_q, k=1)
             history = [{"role": "user", "content": t1_q}, {"role": "assistant", "content": t1_a}]
             rows.append(make_multiturn_row(sys_prompt, history, t2_q, t2_a, "", "multiturn:trade_credit"))
 
         elif scenario == "burn_rate":
-            csv = make_statement(rng, rng.choices(list(PROFILES), weights=PROFILE_WEIGHTS)[0])
+            csv = make_statement(rng, rng.choices(list(PROFILES), weights=PROFILE_WEIGHTS)[0], days=rng.choice([30, 45]))
             cash = tool_analyze_cash_flow(csv)
             t1_base = cash_base_reply(cash, "BURN")
             t1_q = rng.choice(CASH_QUESTIONS["BURN"])
@@ -1574,22 +1727,25 @@ def build_multiturn_rows(rng: random.Random, count: int) -> List[Dict[str, Any]]
             burn, out, inn = money(cash["average_daily_burn"]), money(cash["gross_outflows"]), money(cash["gross_inflows"])
             cut = money(rng.randrange(2000, 20000, 1000))
             t2_q, t2_a = rng.choice([
-                ("Which outflows are driving most of this burn rate?",
+                (f"Which outflows are driving most of this {burn}/day burn rate?",
                  f"The engine reports totals rather than a category split: {out} went out against {inn} coming in. "
                  "Sort the statement by description to see which payees dominate; payroll, rent and supplier runs usually lead."),
                 (f"If we reduce monthly overhead by {cut}, how much does that improve our daily burn?",
                  f"A {cut} monthly cut comes straight off the {out} of gross outflows behind your {burn}/day burn. "
                  "Upload the next statement once the cut takes effect and I will recompute burn and runway from actual transactions."),
-                ("How quickly can we bring our operating burn velocity down?",
+                (f"How quickly can we bring our operating burn velocity down from {burn}/day?",
                  f"Subscriptions, contractor spend and inventory purchases can fall within one billing cycle; payroll and rent move slower. "
                  f"Your {burn}/day average reflects {out} of outflows, so the first cuts should show in your next statement."),
+                (f"Can we cut back our gross outflows of {out} to slow the daily burn?",
+                 f"Target discretionary vendor spend and software tools first to reduce that {out} outflow volume. "
+                 f"Every reduction directly lowers your {burn}/day burn and protects remaining cash."),
             ])
-            sys_prompt = append_reference_cards(get_cash_diagnostic_prompt(t1_base), t1_q)
+            sys_prompt = append_reference_cards(get_cash_diagnostic_prompt(t1_base), t1_q, k=1)
             history = [{"role": "user", "content": t1_q}, {"role": "assistant", "content": t1_a}]
             rows.append(make_multiturn_row(sys_prompt, history, t2_q, t2_a, "", "multiturn:burn_rate"))
 
         elif scenario == "deficit_action":
-            csv = make_statement(rng, rng.choices(list(PROFILES), weights=PROFILE_WEIGHTS)[0])
+            csv = make_statement(rng, rng.choices(list(PROFILES), weights=PROFILE_WEIGHTS)[0], days=rng.choice([30, 45]))
             cash = tool_analyze_cash_flow(csv)
             if not cash.get("has_projected_deficit"):
                 continue
@@ -1601,20 +1757,23 @@ def build_multiturn_rows(rng: random.Random, count: int) -> List[Dict[str, Any]]
 
             short, when = money(cash["projected_shortfall_amount"]), cash.get("projected_deficit_date") or "the projected date"
             t2_q, t2_a = rng.choice([
-                ("What immediate action should we take to avoid going negative?",
+                (f"What immediate action should we take to avoid going negative by {short} around {when}?",
                  f"Your forecast shows a {short} shortfall around {when}. Collect overdue receivables first and push non-critical supplier payments past that date. "
                  "If the gap stays open, ask me to stage a line of credit or invoice factoring proposal for your review."),
-                ("Can we delay non-critical supplier payments until next month?",
+                (f"Can we delay non-critical supplier payments past {when} to avoid the shortfall?",
                  f"Moving non-critical payments past {when} keeps cash in the account when the {short} shortfall is projected. "
                  "Agree new dates with suppliers first, and keep payroll, rent and loan repayments on schedule."),
-                ("Should we explore invoice factoring to cover this projected gap?",
+                (f"Should we explore invoice factoring to cover this projected {short} gap?",
                  f"Factoring can cover a {short} gap quickly because it advances cash against invoices you have already issued. "
                  "Compare its fee with a bank line draw first, since factoring usually costs more. Tell me which you prefer and I can stage that proposal for your review."),
-                ("Can we bridge this shortfall by accelerating customer collections?",
+                (f"Can we bridge this {short} shortfall by accelerating customer collections before {when}?",
                  f"Yes, collections attack the gap directly: bringing in {short} of receivables before {when} closes the projected shortfall. "
                  "Call your largest overdue customers first and offer a small discount for payment this week."),
+                (f"How do we handle the projected {short} deficit on {when} without overdrafting?",
+                 f"Prioritize cash collections and pause discretionary purchases before {when} arrives. "
+                 f"If cash from operations cannot cover the {short} deficit, ask me to stage a working capital facility for your approval."),
             ])
-            sys_prompt = append_reference_cards(get_cash_diagnostic_prompt(t1_base), t1_q)
+            sys_prompt = append_reference_cards(get_cash_diagnostic_prompt(t1_base), t1_q, k=1)
             history = [{"role": "user", "content": t1_q}, {"role": "assistant", "content": t1_a}]
             rows.append(make_multiturn_row(sys_prompt, history, t2_q, t2_a, "", "multiturn:deficit_action"))
 
@@ -1649,14 +1808,17 @@ def build_multiturn_rows(rng: random.Random, count: int) -> List[Dict[str, Any]]
                 )
             else:
                 t2_q, t2_a = rng.choice([
-                    ("Which fixed overhead items should we audit first to lower this threshold?",
+                    (f"Which fixed overhead items should we audit first to lower this {money(fc)} threshold?",
                      f"Start with the largest recurring items inside your {money(fc)} of fixed costs: rent, salaried payroll, leases and software contracts. "
                      f"At a {margin}% margin, each dollar of fixed cost removed lowers break-even revenue by more than a dollar."),
-                    ("What happens to our break-even point if sales volume drops next quarter?",
+                    (f"What happens to our {be} break-even point if sales volume drops next quarter?",
                      f"Break-even revenue stays at {be}, because it depends on fixed costs and margin, not volume. "
                      "What shrinks is your margin of safety, so lower sales bring you closer to the loss line."),
+                    (f"If we reduce our fixed overhead of {money(fc)}, how does that lower the break-even target?",
+                     f"Cutting fixed costs below {money(fc)} directly reduces your {be} break-even revenue requirement. "
+                     f"At a {margin}% contribution margin, every thousand dollars saved in fixed costs reduces break-even by several thousand dollars."),
                 ])
-            sys_prompt = append_reference_cards(get_cash_diagnostic_prompt(base_spec), t1_q)
+            sys_prompt = append_reference_cards(get_cash_diagnostic_prompt(base_spec), t1_q, k=1)
             history = [{"role": "user", "content": t1_q}, {"role": "assistant", "content": t1_a}]
             rows.append(make_multiturn_row(sys_prompt, history, t2_q, t2_a, "", "multiturn:break_even_pricing"))
 
@@ -1690,56 +1852,133 @@ OFF_TOPIC_PROMPTS = [
     "What are your thoughts on modern political philosophy and ethics?",
 ]
 
-REFUSAL_REPLIES = [
-    "I am the Autonomous SME Finance Copilot, specialized in small business cash flow, working capital, and commercial credit. I can only assist with business finance operations. Upload a bank statement CSV or ask about your company's cash position to get started.",
-    "My focus is strictly on SME financial advisory, cash runway auditing, and credit underwriting. I cannot assist with topics outside commercial finance. Share your business bank statement or ask a finance question when you are ready.",
-    "I am an AI financial participant designed to diagnose small business cash flow, forecast overdrafts, and evaluate working capital. I cannot help with general topics or creative writing. Please ask a business finance question or upload your transaction data.",
-    "I can only help with business finance questions, cash runway audits, and commercial credit options. I cannot fulfill general queries. Let me know if you would like me to review your company's liquidity or statement data.",
-    "As an SME finance participant, I only handle business cash flow, debt underwriting, and working capital advisory. Please ask a question related to your business finances or provide a bank statement CSV to proceed.",
-    "I assist exclusively with small business financial analysis, cash burn monitoring, and commercial financing. Queries unrelated to company finances are outside my operational scope. You can provide a bank statement CSV whenever you want a financial check.",
-    "My operational parameters are restricted to commercial finance, working capital optimization, and credit diagnostics. I cannot answer general knowledge or personal queries. Feel free to ask about your cash runway, supplier terms, or loan options.",
-    "I operate solely as a business financial advisor and cash flow diagnostician. I cannot assist with non-business inquiries or creative tasks. Share your bank statement CSV to evaluate your current cash position.",
-    "This system is specialized for small enterprise liquidity, cash conversion cycles, and debt underwriting. Non-financial topics cannot be addressed. If you have questions regarding your business bank transactions or financing options, I am ready to help.",
-    "I am dedicated to corporate liquidity management, debt options, and bank statement auditing for small businesses. I do not handle non-financial requests. Upload your transaction records or ask a corporate finance question to continue.",
-    "My training and tools are dedicated to commercial cash management, burn rate auditing, and working capital facilities. Non-financial subjects fall outside my remit. Let me know if you need assistance diagnosing your cash reserves.",
-    "I only provide analysis for small business financial operations, overdraft forecasting, and commercial credit facilities. I cannot help with external non-business inquiries. Please upload your company's bank CSV or ask a financial question.",
-    "As an automated SME financial copilot, I focus strictly on working capital, cash runway, and credit matching. I am unable to respond to general queries outside business finance. Ask about your company cash flow whenever you are ready.",
-    "I do not fulfill requests outside small business treasury and commercial financing. Please submit a question regarding your company's cash flow, working capital, or bank statement data to receive an analysis.",
-    "I am built exclusively to audit small business cash flow, calculate liquidity metrics, and evaluate debt structures. General non-financial questions are unsupported. Provide your business transaction CSV to begin financial diagnostics.",
+REFUSAL_OPENERS = [
+    "I am the Autonomous SME Finance Copilot, specialized in small business cash flow and commercial credit.",
+    "I operate exclusively as an SME financial assistant and commercial treasury copilot.",
+    "My capabilities are focused strictly on small business liquidity, debt underwriting, and working capital.",
+    "I am designed specifically for small business financial diagnostics and credit facility analysis.",
+    "As an autonomous financial participant, I analyze commercial cash positions and capital planning.",
+    "I specialize strictly in business finance, cash runway monitoring, and commercial lending options.",
+    "This system is built specifically for SME cash management and commercial financing evaluation.",
+    "I serve as a dedicated copilot for small enterprise financial operations and treasury health.",
 ]
 
-GOVERNANCE_PROMPTS = [
+REFUSAL_SCOPES = [
+    "I cannot assist with queries outside commercial finance or creative writing tasks.",
+    "General knowledge, non-business inquiries, and personal tasks fall outside my operational remit.",
+    "I do not answer questions unrelated to business finance, corporate accounting, or company liquidity.",
+    "Topics outside corporate treasury, working capital, and commercial credit are unsupported.",
+    "I cannot assist with general topics, non-financial code, or creative prompts.",
+    "Queries about non-business subjects or general topics cannot be fulfilled.",
+    "I do not handle personal queries, general trivia, or non-commercial assignments.",
+    "Non-financial topics and general knowledge requests fall outside my operational scope.",
+]
+
+REFUSAL_REDIRECTS = [
+    "Upload a bank statement CSV or ask about your company's cash position to get started.",
+    "Share your business bank statement or ask a business finance question when you are ready.",
+    "Please ask a question related to your business finances or provide transaction records.",
+    "Let me know if you would like me to review your company's liquidity or bank statement.",
+    "Feel free to ask about your cash runway, supplier credit terms, or loan options.",
+    "Provide your business transaction CSV or ask a treasury question to proceed.",
+    "Upload your transaction records or ask a working capital question to continue.",
+    "Ask about your cash burn, debt options, or invoice terms whenever you are ready.",
+]
+
+
+def make_refusal_reply(rng: random.Random) -> str:
+    return f"{rng.choice(REFUSAL_OPENERS)} {rng.choice(REFUSAL_SCOPES)} {rng.choice(REFUSAL_REDIRECTS)}"
+
+
+GOVERNANCE_EXECUTION_PROMPTS = [
     "Transfer $15,000 to our equipment supplier right away.",
     "Can you automatically disburse the credit line into our bank account?",
     "I authorize you to pay all pending vendor bills without asking me each time.",
-    "Why can't the copilot just send the money without a passkey?",
     "Draw $40,000 from our working capital line and deposit it into checking.",
     "Execute the invoice factoring agreement immediately.",
-    "What is a passkey and why does the copilot require one for execution?",
     "Sign the commercial loan contract on behalf of our business.",
     "Can you execute transactions while I am away from the office?",
     "Disburse the loan proceeds into our main operating account today.",
+]
+
+GOVERNANCE_EXPLANATION_PROMPTS = [
+    "Why can't the copilot just send the money without a passkey?",
+    "What is a passkey and why does the copilot require one for execution?",
     "Why are proposals staged in Tier 2 instead of executing directly?",
     "What happens if someone tries to prompt inject the AI to send funds?",
 ]
 
-GOVERNANCE_REPLIES = [
-    "I cannot execute fund transfers or draw on credit facilities autonomously. Under our Three-Tier Security Gate, executing financial commitments is a Tier 3 action that strictly requires your explicit Human-in-the-Loop WebAuthn passkey verification on your registered device. Nothing has moved. If you want, I can stage it as a proposal for you to review and then approve with your device passkey.",
-    "Under the platform's security architecture, autonomous AI agents are restricted to Tier 1 observation and Tier 2 proposal staging. Disbursing funds or signing credit agreements is a Tier 3 action requiring your physical biometric or PIN verification. This guarantees that no fund movement can ever occur without explicit business owner authorization.",
-    "A WebAuthn passkey is required because drawing on a credit line or transferring funds is an irreversible financial commitment. The passkey uses your device's biometric authentication (fingerprint, face, or hardware security key) to cryptographically sign the single-use intent token. The copilot never holds signing authority or private keys.",
-    "Under our security protocol, Tier 2 proposals sit safely in an immutable staging ledger for your review. No money ever moves until you explicitly click approve and complete biometric passkey verification on your authorized device. This separation of powers protects your accounts from unauthorized actions.",
-    "Direct execution of monetary movements by autonomous agents is prohibited under our Three-Tier Security Gate. If you ask, the copilot can stage the transfer or credit draw as a Tier 2 proposal with all terms and fees disclosed. You must personally authorize execution using your registered WebAuthn passkey.",
-    "Executing financial transactions is strictly a Tier 3 operation requiring hardware-backed human authentication. The copilot can stage the transaction for review when you ask, but funds cannot be disbursed until you confirm it with your biometric passkey.",
-    "Autonomous fund disbursement is blocked by design to prevent prompt injection and unauthorized execution. Any credit draw or transfer you ask for can only be staged as a Tier 2 proposal. You must review the terms and supply a WebAuthn signature from your authorized device before any funds move.",
-    "Our safety framework enforces human-in-the-loop control for all Tier 3 financial actions. The copilot can calculate your capital requirement and stage a facility draw, but binding contracts or fund transfers require your physical passkey confirmation.",
-    "The copilot cannot move funds autonomously because contract execution is classified as a Tier 3 state change. If you ask me to stage it, the proposal lets you verify the provider and APR before confirming with your device passkey.",
-    "WebAuthn passkey authentication ensures cryptographic non-repudiation for all sensitive actions. The assistant can prepare a Tier 2 proposal on request, but actual disbursement requires your registered biometric token on an authorized device.",
-    "To protect your enterprise from rogue execution or model errors, irreversible actions require Tier 3 biometric authorization. The copilot can stage a credit request when you ask, but fund delivery remains locked until your passkey validates it.",
-    "Under Tier 3 governance, financial disbursement authority resides exclusively with authorized business operators. The copilot can stage the facility documentation on request, and it still needs your device passkey signature before anything executes.",
-    "Automated agents cannot initiate bank wires or draw debt facilities without human sign-off. I can stage the request as a Tier 2 proposal if you ask, so you can inspect every parameter and approve it with your device passkey.",
-    "Our Three-Tier Security Gate isolates AI reasoning from financial execution rails. Staged proposals in Tier 2 remain inactive until you review the terms and provide a cryptographic passkey signature.",
-    "Financial disbursements and credit agreements strictly require Tier 3 passkey verification. When you ask, the copilot stages a proposal so you can audit the amount and APR before approving it on your physical device.",
+GOV_EXEC_PREAMBLES = [
+    "Nothing has moved, and I cannot move money or draw on credit facilities autonomously.",
+    "I cannot disburse funds or execute agreements on your behalf.",
+    "No funds have been transferred, and I cannot initiate payments or draws directly.",
+    "Autonomous fund disbursement and agreement execution are blocked by design.",
+    "Under our architecture, I cannot execute bank transfers or sign debt contracts directly.",
+    "Nothing has been disbursed, and the copilot never holds autonomous execution authority.",
+    "I am not permitted to disburse funds, draw credit lines, or sign financial agreements.",
+    "No monetary transaction has occurred, as automated fund execution is prohibited.",
 ]
+
+GOV_EXEC_MECHANISMS = [
+    "Executing financial commitments is a Tier 3 action requiring your explicit Human-in-the-Loop WebAuthn passkey verification.",
+    "Under the Three-Tier Security Gate, all fund movements require your physical biometric or security key confirmation.",
+    "Drawing funds or committing to credit terms is strictly a Tier 3 operation that waits for your device passkey approval.",
+    "The Three-Tier Security Gate isolates AI reasoning from execution rails, requiring a hardware-backed cryptographic signature for any fund release.",
+    "All financial disbursements require Tier 3 biometric authorization on your registered device to guarantee human control.",
+    "Irreversible actions like credit draws or wire transfers require your physical WebAuthn assertion to prevent unauthorized execution.",
+    "Our security policy enforces hardware-backed cryptographic passkey sign-off before any money can move.",
+    "Tier 3 governance mandates that you personally verify and sign each monetary transaction with your registered device passkey.",
+]
+
+GOV_EXEC_STAGINGS = [
+    "If you want, I can stage this as a Tier 2 proposal so you can inspect the exact terms before approving.",
+    "Tell me if you would like me to stage a proposal for your review, and you can approve it with your passkey when ready.",
+    "If you ask, I can prepare a staged proposal in the ledger so you can verify the provider and APR before confirming.",
+    "I can stage the request for your review, allowing you to audit the payment details before completing device authorization.",
+    "Ask me to stage the transaction and you can check every fee and condition before providing your passkey.",
+    "I can place a staged proposal into the review ledger if you wish, so you can inspect the details before executing.",
+    "If you want to proceed, ask me to stage the transfer or draw so you can review and authorize it on your device.",
+    "You can ask me to stage this proposal for review, and no capital moves until you confirm it with your biometric passkey.",
+]
+
+GOV_EXPL_CONCEPTS = [
+    "A WebAuthn passkey uses your device's biometric sensor or hardware key to cryptographically sign a single-use authorization token.",
+    "Proposals are staged in Tier 2 to keep financial intents in an immutable ledger where you can audit terms before any money moves.",
+    "The Three-Tier Security Gate protects your business by strictly separating autonomous analysis from irreversible financial execution.",
+    "WebAuthn passkeys provide cryptographic non-repudiation, ensuring that only an authorized human operator can release funds.",
+    "Tier 2 staging isolates AI reasoning from bank rails, preventing model errors or prompt injection from triggering transactions.",
+    "The copilot cannot move funds without a passkey because drawing credit and wiring capital are irreversible legal commitments.",
+    "Passkeys bind each approval to a unique cryptographic challenge generated specifically for that transaction.",
+    "Holding financial commitments in Tier 2 ensures you retain full human oversight over APR, fees, and disbursement amounts.",
+]
+
+GOV_EXPL_GUARANTEES = [
+    "Even if an attacker attempts prompt injection, execution remains impossible without physical biometric verification on an authorized device.",
+    "This guarantees that no external instructions, malicious text, or model hallucinations can move enterprise capital.",
+    "The copilot never holds signing keys or disbursement credentials, eliminating automated exfiltration risks.",
+    "This ensures that a compromised session or manipulated prompt cannot trigger unauthorized fund transfers.",
+    "Hardware-backed authentication ensures that every single dollar moved has been inspected and approved by the business owner.",
+    "By enforcing physical device presence, our architecture ensures zero funds move while you are away from your console.",
+    "Cryptographic intent binding prevents replay attacks and ensures the approved parameters cannot be altered in flight.",
+    "This separation guarantees that the copilot serves only as an advisor, while legal signing authority remains exclusively with you.",
+]
+
+GOV_EXPL_GUIDANCES = [
+    "You can review staged proposals in the dashboard and approve them with a fingerprint, face scan, or security key.",
+    "Whenever you want to take action, ask me to stage a proposal and inspect the parameters before giving passkey approval.",
+    "All staged proposals remain inactive until you explicitly click approve and sign with your registered hardware key.",
+    "You maintain complete control: review the staged terms at your convenience and authorize execution on your registered device.",
+    "To complete an action, you simply review the staged offer in your ledger and confirm it using your device passkey.",
+    "You can inspect all fee disclosures and contract terms in Tier 2 before confirming the transaction on your physical device.",
+    "Once a proposal is staged, you can verify the provider and APR before completing one-touch biometric confirmation.",
+    "This protocol keeps your treasury secure while giving you a clear, verifiable staging ledger for every business action.",
+]
+
+
+def make_governance_reply(rng: random.Random, is_explanation: bool) -> str:
+    if is_explanation:
+        return f"{rng.choice(GOV_EXPL_CONCEPTS)} {rng.choice(GOV_EXPL_GUARANTEES)} {rng.choice(GOV_EXPL_GUIDANCES)}"
+    return f"{rng.choice(GOV_EXEC_PREAMBLES)} {rng.choice(GOV_EXEC_MECHANISMS)} {rng.choice(GOV_EXEC_STAGINGS)}"
 
 
 def build_refusal_rows(rng: random.Random, count: int) -> List[Dict[str, Any]]:
@@ -1747,7 +1986,7 @@ def build_refusal_rows(rng: random.Random, count: int) -> List[Dict[str, Any]]:
     base_prompt = get_conversational_system_prompt() + NO_STATEMENT_DIRECTIVE
     for _ in range(count):
         q = rng.choice(OFF_TOPIC_PROMPTS)
-        reply = rng.choice(REFUSAL_REPLIES)
+        reply = make_refusal_reply(rng)
         rows.append(make_row(base_prompt, q, reply, "", "refusal:off_topic"))
     return rows
 
@@ -1758,8 +1997,12 @@ def build_governance_rows(rng: random.Random, count: int) -> List[Dict[str, Any]
     app_safety_card = next((c for c in cards if c.title == "Three-Tier Security Gate"), None)
     base_prompt = format_reference_cards(get_conversational_system_prompt(), [app_safety_card]) if app_safety_card else get_conversational_system_prompt()
     for _ in range(count):
-        q = rng.choice(GOVERNANCE_PROMPTS)
-        reply = rng.choice(GOVERNANCE_REPLIES)
+        if rng.random() < 0.6:
+            q = rng.choice(GOVERNANCE_EXECUTION_PROMPTS)
+            reply = make_governance_reply(rng, is_explanation=False)
+        else:
+            q = rng.choice(GOVERNANCE_EXPLANATION_PROMPTS)
+            reply = make_governance_reply(rng, is_explanation=True)
         rows.append(make_row(base_prompt, q, reply, "", "governance:tier3_passkey"))
     return rows
 
@@ -1862,10 +2105,11 @@ def main() -> None:
     parser.add_argument("--underwriting-statements", type=int, default=500)
     parser.add_argument("--quant-per-intent", type=int, default=40)
     parser.add_argument("--concept-cards", type=int, default=550)
-    parser.add_argument("--multiturn", type=int, default=450)
+    parser.add_argument("--multiturn", type=int, default=320)
     parser.add_argument("--conversational", type=int, default=250)
-    parser.add_argument("--refusals", type=int, default=200)
-    parser.add_argument("--governance", type=int, default=150)
+    parser.add_argument("--refusals", type=int, default=100)
+    parser.add_argument("--governance", type=int, default=80)
+    parser.add_argument("--scenarios", type=int, default=240)
     parser.add_argument("--missing-statement", type=int, default=120)
     parser.add_argument("--output-dir", default=OUTPUT_DIR)
     args = parser.parse_args()
@@ -1875,6 +2119,7 @@ def main() -> None:
         ("cash diagnostic", lambda: build_cash_rows(rng, args.cash_statements)),
         ("credit underwriting", lambda: build_underwriting_rows(rng, args.underwriting_statements)),
         ("quantitative calculations", lambda: build_quant_rows(rng, args.quant_per_intent)),
+        ("what-if scenarios", lambda: build_scenario_rows(rng, args.scenarios)),
         ("concept knowledge", lambda: build_concept_card_rows(rng, args.concept_cards)),
         ("multiturn follow-up", lambda: build_multiturn_rows(rng, args.multiturn)),
         ("conversational", lambda: build_conversational_rows(rng, args.conversational)),
@@ -1906,6 +2151,14 @@ def main() -> None:
         # For conversational and refusals, allow modest reuse; for quant/cash/concept require uniqueness
         if kind in ("conversational", "refusal", "governance", "missing"):
             kept.append(row)
+        elif kind == "multiturn":
+            t1_q = row["messages"][1]["content"].strip().lower() if len(row["messages"]) >= 4 else ""
+            mt_key = f"{t1_q} || {q_norm}"
+            if mt_key not in seen_questions:
+                seen_questions.add(mt_key)
+                kept.append(row)
+            elif rng.random() < 0.05:
+                kept.append(row)
         elif q_norm not in seen_questions:
             seen_questions.add(q_norm)
             kept.append(row)

@@ -38,6 +38,7 @@ CALCULATION_TOOLS = {
     "BREAK_EVEN_UNITS": "tool_calculate_break_even_units",
     "CAC_PAYBACK": "tool_calculate_cac_payback",
     "CASH_DRAG": "tool_calculate_cash_drag",
+    "CASH_SCENARIO": "tool_run_cash_scenario",
     "CONCENTRATION": "tool_calculate_client_concentration",
     "CURRENCY_CONVERSION": "tool_convert_currency",
     "CURRENT_RATIO": "tool_calculate_current_ratio",
@@ -142,8 +143,8 @@ def format_reference_cards(sys_directive: str, cards: list[Card]) -> str:
     )
 
 
-def append_reference_cards(sys_directive: str, query: str) -> str:
-    return format_reference_cards(sys_directive, retrieve_cards(query))
+def append_reference_cards(sys_directive: str, query: str, k: int = TOP_K) -> str:
+    return format_reference_cards(sys_directive, retrieve_cards(query, k=k))
 
 
 def select_concept_card(cards: list[Card], calculation: Optional[str]) -> tuple[Card, bool]:

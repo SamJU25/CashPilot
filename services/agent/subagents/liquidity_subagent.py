@@ -6,6 +6,7 @@ Specializes in:
 3. Cash Conversion Cycle (CCC = DSO + DIO - DPO).
 4. Defensive Interval Ratio (DIR) & Operating Cash Flow Ratio (OCF).
 5. Natural conversational follow-ups on liquidity reserves and cash status.
+6. What-if cash scenarios (late invoice, cost cut, new cost, revenue drop) rerun on the statement.
 """
 
 from __future__ import annotations
@@ -15,6 +16,7 @@ from typing import Any, Callable, Dict, Optional
 
 from services.agent.param_extractor import (
     extract_cash_drag_params,
+    extract_cash_scenario_params,
     extract_currency_conversion_params,
     extract_current_ratio_params,
     extract_defensive_interval_params,
@@ -43,6 +45,7 @@ from services.agent.tools import (
     tool_calculate_trade_credit_apr,
     tool_calculate_wcr,
     tool_convert_currency,
+    tool_run_cash_scenario,
 )
 from services.agent.prompts import (
     get_missing_param_guidance,
@@ -515,6 +518,58 @@ class LiquiditySubagent:
 
             return CopilotResponse(
                 reply=enrich_fn(get_missing_param_guidance("FX_EXPOSURE"), prompt_type="concept", calculation="FX_EXPOSURE"),
+                intent_detected="CASH_DIAGNOSTIC",
+                requires_biometric_hitl=False,
+            )
+
+        # 12. What-if cash scenario rerun against the statement
+        if sub_intent == "CASH_SCENARIO":
+            if not effective_csv:
+                return CopilotResponse(
+                    reply=get_missing_statement_guidance("diagnostic"),
+                    intent_detected="CASH_DIAGNOSTIC",
+                    requires_biometric_hitl=False,
+                )
+            p_dict = extract_cash_scenario_params(request.message, history=request.history)
+            try:
+                res = tool_run_cash_scenario(effective_csv, **p_dict)
+            except (ValueError, TypeError):
+                return CopilotResponse(
+                    reply=enrich_fn(get_missing_param_guidance("CASH_SCENARIO"), prompt_type="concept", calculation="CASH_SCENARIO"),
+                    intent_detected="CASH_DIAGNOSTIC",
+                    requires_biometric_hitl=False,
+                )
+
+            def runway(days: Optional[int]) -> str:
+                return f"{days} days" if days is not None else "Cash positive (no burn)"
+
+            change = res["runway_change_days"]
+            change_line = f"- **Runway Change**: {change:+d} days\n" if change is not None else ""
+            delay_line = (
+                f"- **Balance During Delay**: ${float(res['balance_during_delay']):,.2f}\n"
+                if res["balance_during_delay"] is not None
+                else ""
+            )
+            if res["scenario_has_deficit"] and res["scenario_days_until_deficit"] is not None:
+                deficit = (
+                    f"${float(res['scenario_shortfall']):,.2f} shortfall on {res['scenario_deficit_date']} "
+                    f"(day {res['scenario_days_until_deficit']}, `{res['scenario_severity']}`)"
+                )
+            else:
+                deficit = "No projected deficit within the forecast horizon"
+            base_reply = (
+                f"### What-If Cash Scenario ({res['scenario'].replace('_', ' ').title()})\n\n"
+                f"- **Current Balance**: ${float(res['current_balance']):,.2f}\n"
+                f"- **Baseline Daily Burn**: ${float(res['baseline_daily_burn']):,.2f}/day\n"
+                f"- **Scenario Daily Burn**: ${float(res['scenario_daily_burn']):,.2f}/day\n"
+                f"- **Baseline Runway**: {runway(res['baseline_runway_days'])}\n"
+                f"- **Scenario Runway**: {runway(res['scenario_runway_days'])}\n"
+                f"{change_line}{delay_line}"
+                f"- **Scenario Deficit**: {deficit}\n"
+                f"- **Assumption**: {res['assumption']}"
+            )
+            return CopilotResponse(
+                reply=enrich_fn(base_reply, prompt_type="diagnostic"),
                 intent_detected="CASH_DIAGNOSTIC",
                 requires_biometric_hitl=False,
             )

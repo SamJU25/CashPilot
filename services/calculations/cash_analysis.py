@@ -32,6 +32,15 @@ class CashAnalysisResult:
     alert_boundary_date: str | None = None
 
 
+def runway_days_for(balance: Decimal, average_daily_burn: Decimal) -> int | None:
+    """Whole days the balance covers at the given burn; None when the business is not burning cash."""
+    if average_daily_burn <= 0:
+        return None
+    if balance <= 0:
+        return 0
+    return int((balance / average_daily_burn).to_integral_value(rounding=ROUND_DOWN))
+
+
 def calculate_cash_analysis(
     rows: Sequence[DemoTransaction],
     rejected_rows: Sequence[RejectedRow],
@@ -62,12 +71,7 @@ def calculate_cash_analysis(
     average_daily_burn = max(Decimal("0"), -net_period_change / Decimal(period_days))
     average_daily_burn = average_daily_burn.quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
 
-    if average_daily_burn > 0:
-        runway_days = 0 if current_balance <= 0 else int(
-            (current_balance / average_daily_burn).to_integral_value(rounding=ROUND_DOWN)
-        )
-    else:
-        runway_days = None
+    runway_days = runway_days_for(current_balance, average_daily_burn)
 
     alert_boundary_date = (last_date + timedelta(days=alert_threshold_days)).isoformat()
     if runway_days is not None:

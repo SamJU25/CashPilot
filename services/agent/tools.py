@@ -12,6 +12,7 @@ from decimal import Decimal, ROUND_HALF_UP
 from typing import Any, Dict, Optional, Sequence, Union
 
 from services.calculations.cash_analysis import calculate_cash_analysis
+from services.calculations.cash_scenario import calculate_cash_scenario as calc_cash_scenario
 from services.calculations.predictive_cash import calculate_predictive_cash
 from services.calculations.runway import calculate_cash_conversion_cycle
 from services.calculations.debt_service import (
@@ -206,6 +207,49 @@ def tool_analyze_cash_flow(
 
 
 
+def tool_run_cash_scenario(
+    csv_content: str,
+    scenario: str,
+    amount: Optional[Any] = None,
+    percent: Optional[Any] = None,
+    delay_days: Optional[int] = None,
+) -> Dict[str, Any]:
+    """Rerun runway and deficit on the statement for one what-if: INVOICE_DELAY, COST_CUT, NEW_EXPENSE or REVENUE_DROP."""
+    ingestion = parse_bank_csv(_normalize_statement_bytes(csv_content))
+    base = calculate_cash_analysis(ingestion.accepted_rows, ingestion.rejected_rows, alert_threshold_days=30)
+    res = calc_cash_scenario(
+        current_balance=base.current_balance,
+        net_period_change=base.net_period_change,
+        gross_inflows=base.gross_inflows,
+        period_days=base.period_days,
+        rows=ingestion.accepted_rows,
+        scenario=scenario,
+        amount=_to_decimal(amount) if amount is not None else None,
+        percent=_to_decimal(percent) if percent is not None else None,
+        delay_days=int(delay_days) if delay_days is not None else None,
+    )
+    scn = res.scenario_deficit
+    return {
+        "scenario": res.scenario,
+        "assumption": res.assumption,
+        "current_balance": _format_money(base.current_balance),
+        "amount": _format_money(_to_decimal(amount)) if amount is not None else None,
+        "percent": str(percent) if percent is not None else None,
+        "delay_days": delay_days,
+        "baseline_daily_burn": _format_money(res.baseline_daily_burn),
+        "scenario_daily_burn": _format_money(res.scenario_daily_burn),
+        "baseline_runway_days": res.baseline_runway_days,
+        "scenario_runway_days": res.scenario_runway_days,
+        "runway_change_days": res.runway_change_days,
+        "balance_during_delay": _format_money(res.balance_during_delay) if res.balance_during_delay is not None else None,
+        "scenario_has_deficit": scn.has_projected_deficit,
+        "scenario_days_until_deficit": scn.days_until_deficit,
+        "scenario_deficit_date": scn.projected_deficit_date,
+        "scenario_shortfall": _format_money(scn.projected_shortfall_amount),
+        "scenario_severity": scn.severity,
+    }
+
+
 def tool_underwrite_credit(csv_content: str, nsf_count: int = 0) -> Dict[str, Any]:
     """Evaluate transactional data to generate WeBank underwriting dossier and matched credit lines.
 
@@ -339,14 +383,16 @@ def tool_calculate_break_even(
         ratio = ratio / Decimal("100") if ratio > Decimal("1.00") else ratio
         cm_val = None
         rev = _to_decimal(revenue) if revenue is not None else None
+        exact_ratio = ratio
     elif revenue is not None and variable_costs is not None:
         rev = _to_decimal(revenue)
         vc = _to_decimal(variable_costs)
         cm_val, ratio = calc_cm(rev, vc)
+        exact_ratio = (rev - vc) / rev if rev > Decimal("0") else ratio
     else:
         raise ValueError("Either cm_ratio or (revenue and variable_costs) must be provided.")
 
-    be_rev = calc_break_even(fc, ratio)
+    be_rev = calc_break_even(fc, exact_ratio)
     mos_dollars, mos_pct, mos_tier = None, None, None
     if rev is not None:
         mos_dollars, mos_pct, mos_tier = calc_mos(rev, be_rev)

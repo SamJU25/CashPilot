@@ -1797,3 +1797,52 @@ def extract_fx_exposure_params(text: str, history: Optional[List[Any]] = None) -
         params = backfill_missing_params(params, history, extract_fx_exposure_params)
     return params
 
+
+
+_SCENARIO_MONEY = re.compile(r"\$\s?([0-9][0-9,]*(?:\.\d+)?[km]?)\b", re.IGNORECASE)
+_SCENARIO_PERCENT = re.compile(r"(\d+(?:\.\d+)?)\s*(?:%|percent)", re.IGNORECASE)
+_SCENARIO_DAYS = re.compile(r"(\d+)[\s-]*days?\b", re.IGNORECASE)
+_INVOICE_DELAY = re.compile(r"\b(?:delay|delays|delayed|late|slip|slips|push(?:es)?\s+back)\b", re.IGNORECASE)
+_REVENUE_DROP = re.compile(r"\b(?:revenue|sales|inflows|income)\b.*\b(?:drop|drops|fall|falls|decline|declines|decrease|decreases|down|shrinks?)\b", re.IGNORECASE)
+_COST_CUT = re.compile(r"\b(?:cut|cuts|reduce|reduces|trim|lower|save|slash)\b", re.IGNORECASE)
+_NEW_EXPENSE = re.compile(r"\b(?:hire|hiring|new\s+hire|add|adding|take\s+on|extra|additional|new)\b", re.IGNORECASE)
+
+
+def extract_cash_scenario_params(text: str, history: Optional[List[Any]] = None) -> Dict[str, Any]:
+    """Extracts a what-if scenario kind and its amount, percent or delay from a question.
+
+    History is not backfilled: a figure from an earlier, different what-if must not leak into this one.
+    """
+    money = _SCENARIO_MONEY.search(text)
+    amount = parse_numeric_token(money.group(1)) if money else None
+    pct = _SCENARIO_PERCENT.search(text)
+    days = _SCENARIO_DAYS.search(text)
+
+    scenario: Optional[str] = None
+    if _INVOICE_DELAY.search(text) and days:
+        scenario = "INVOICE_DELAY"
+    elif _REVENUE_DROP.search(text) and pct:
+        scenario = "REVENUE_DROP"
+    elif _COST_CUT.search(text):
+        scenario = "COST_CUT"
+    elif _NEW_EXPENSE.search(text):
+        scenario = "NEW_EXPENSE"
+
+    return {
+        "scenario": scenario,
+        "amount": amount,
+        "percent": Decimal(pct.group(1)) if pct else None,
+        "delay_days": int(days.group(1)) if days else None,
+    }
+
+
+def is_complete_cash_scenario(params: Dict[str, Any]) -> bool:
+    """True when a what-if names its kind and every figure that kind needs."""
+    kind = params.get("scenario")
+    if kind == "REVENUE_DROP":
+        return params.get("percent") is not None
+    if kind in ("COST_CUT", "NEW_EXPENSE"):
+        return params.get("amount") is not None
+    if kind == "INVOICE_DELAY":
+        return params.get("amount") is not None and params.get("delay_days") is not None
+    return False

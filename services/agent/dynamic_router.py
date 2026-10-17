@@ -11,6 +11,7 @@ import os
 from typing import Any, Dict, List, Optional, Tuple
 import numpy as np
 
+from services.agent.param_extractor import extract_cash_scenario_params, is_complete_cash_scenario
 from services.agent.schema import LLMConfig
 
 logger = logging.getLogger(__name__)
@@ -39,6 +40,9 @@ def _parse_intent_label(raw_output: Optional[str]) -> Optional[str]:
 
 from services.decision.policy_loader import load_semantic_prototypes
 
+# Widest prototype-score gap still routed to CASH_SCENARIO when the extractor finds a complete what-if.
+SCENARIO_MARGIN = 0.10
+
 
 class FastEmbedSemanticRouter:
     """Zero-keyword vector semantic router using on-device FastEmbed embeddings (ONNX)."""
@@ -60,7 +64,14 @@ class FastEmbedSemanticRouter:
             embeds = np.array(list(self._model.embed([self.INTENT_PROTOTYPES[k] for k in self._intent_keys])))
             self._intent_norms = embeds / np.linalg.norm(embeds, axis=1, keepdims=True)
 
-            self._sub_keys = list(self.SUB_INTENT_PROTOTYPES.keys())
+            # CASH_SCENARIO stays out of the argmax: its "what if" prototype outscores unrelated
+            # follow-ups ("and what about the options?") and would shift the history-fusion margin.
+            self._sub_keys = [k for k in self.SUB_INTENT_PROTOTYPES if k != "CASH_SCENARIO"]
+            scenario_text = self.SUB_INTENT_PROTOTYPES.get("CASH_SCENARIO")
+            self._scenario_norm = None
+            if scenario_text:
+                scenario_embed = np.array(list(self._model.embed([scenario_text])))[0]
+                self._scenario_norm = scenario_embed / np.linalg.norm(scenario_embed)
             sub_embeds = np.array(list(self._model.embed([self.SUB_INTENT_PROTOTYPES[k] for k in self._sub_keys])))
             self._sub_norms = sub_embeds / np.linalg.norm(sub_embeds, axis=1, keepdims=True)
 
@@ -181,6 +192,15 @@ class FastEmbedSemanticRouter:
                 best_sub = "GENERAL"
         else:
             best_sub = top_sub
+
+        # bge-small separates what-ifs from runway/deficit questions by under 0.02, so the deciding
+        # signal is whether the extractor finds a complete scenario (kind plus its figures).
+        if (
+            self._scenario_norm is not None
+            and is_complete_cash_scenario(extract_cash_scenario_params(m))
+            and float(np.dot(self._scenario_norm, q_norm)) >= top_sub_score - SCENARIO_MARGIN
+        ):
+            return "CASH_DIAGNOSTIC", "CASH_SCENARIO", False
 
         return best_intent, best_sub, False
 
