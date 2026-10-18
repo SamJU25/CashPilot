@@ -216,3 +216,27 @@ def test_predictive_decision_engine_expense_triage():
 
 
 
+
+
+def test_each_outflow_counts_toward_one_obligation_only():
+    rows = [
+        make_tx(1, date(2026, 1, 5), "-2000.00", desc="Equipment Lease - Caterpillar Financial"),
+        make_tx(2, date(2026, 1, 6), "-900.00", desc="Current account fee"),
+        make_tx(3, date(2026, 1, 7), "-1200.00", desc="Property tax payment"),
+        make_tx(4, date(2026, 1, 1), "-3000.00", desc="Office Rent - Landlord LLC"),
+    ]
+    assert detect_recurring_debt(rows) == Decimal("2000.00")
+    # Only the real rent: not the equipment lease, "current" fee or property tax.
+    assert detect_recurring_rent(rows) == Decimal("3000.00")
+
+
+def test_forecast_triages_each_distinct_memo_once(monkeypatch):
+    from services.decision.registry import DecisionEngineRegistry
+
+    calls = []
+    original = DecisionEngineRegistry.evaluate
+    monkeypatch.setattr(DecisionEngineRegistry, "evaluate", lambda self, req: calls.append(req) or original(self, req))
+    rows = [make_tx(i, date(2026, 1, i), "-50.00", desc="Office supplies") for i in range(1, 21)]
+    calculate_predictive_cash(Decimal("5000.00"), Decimal("50.00"), rows)
+    triage = [c for c in calls if c.domain.value == "EXPENSE_TRIAGE"]
+    assert len(triage) == 1

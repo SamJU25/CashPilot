@@ -874,8 +874,8 @@ QUANT_SPECS: List[Dict[str, Any]] = [
         "action": {"any": ["Compare the payment with your average monthly net inflow, then request staging if it fits.", "If the payment feels tight, test a longer term to lower it."]},
     },
     {
-        "sub": "FACTORING", "name": "your net cash from the advance", "head": "Net Immediate Cash Proceeds",
-        "support": [("Invoice Face Value", "invoice value"), ("Factoring Discount Fee", "fee"), ("True Annualized APR", "true APR")],
+        "sub": "FACTORING", "name": "your total net cash after collection", "head": "Total Net Proceeds After Collection",
+        "support": [("Cash Received Now", "cash received now"), ("Factoring Discount Fee", "fee"), ("True Annualized APR", "true APR")],
         "params": lambda r: {"inv": usd(k(r, 10_000, 250_000)), "adv": r.choice([75, 80, 85, 90]), "fee": r.choice([1, 2, 3, 4]), "d": r.choice([30, 45, 60, 90])},
         "questions": ["Factor a {inv} invoice with {adv}% advance, {fee}% discount fee, and {d} days collection", "What do we net if we factor a {inv} invoice at {adv}% advance with a {fee}% fee over {d} days?"],
         "meaning": {"any": "The annualized APR is the number to compare against a bank line, not the headline fee."},

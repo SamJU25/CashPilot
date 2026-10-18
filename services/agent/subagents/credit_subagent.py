@@ -248,12 +248,16 @@ class CreditSubagent:
         if sub_intent == "FACTORING":
             p_dict = extract_factoring_params(request.message, history=request.history)
             if p_dict.get("invoice_amount") and p_dict.get("advance_rate_pct"):
+                fee_given = p_dict.get("fee_rate_pct") is not None
+                days_given = p_dict.get("collection_days") is not None
                 res = tool_calculate_factoring_proceeds(
                     invoice_amount=p_dict["invoice_amount"],
                     advance_rate_pct=p_dict["advance_rate_pct"],
-                    fee_rate_pct=p_dict.get("fee_rate_pct") or Decimal("3.00"),
-                    collection_days=p_dict.get("collection_days") or 45,
+                    fee_rate_pct=p_dict["fee_rate_pct"] if fee_given else Decimal("3.00"),
+                    collection_days=p_dict["collection_days"] if days_given else 45,
                 )
+                fee_note = "" if fee_given else " (assumed 3.00% fee; tell me your factor's rate)"
+                days_note = "" if days_given else " (assumed; tell me your customer's payment terms)"
                 pred_warning = (
                     "\n\n> [!WARNING]\n> **Predatory Rate Alert**: True annualized APR exceeds 36.00% benchmark. "
                     "Evaluate alternative credit lines or commercial factoring before proceeding."
@@ -264,9 +268,10 @@ class CreditSubagent:
                     f"### Invoice Factoring Net Proceeds & True APR Analysis\n\n"
                     f"- **Invoice Face Value**: ${float(res['invoice_face_value']):,.2f}\n"
                     f"- **Advance Rate**: {res['advance_rate_percent']}% (${float(res['advance_amount']):,.2f})\n"
-                    f"- **Factoring Discount Fee**: ${float(res['factoring_fee_amount']):,.2f}\n"
-                    f"- **Net Immediate Cash Proceeds**: ${float(res['net_proceeds']):,.2f}\n"
-                    f"- **Collection Horizon**: {res['collection_days']} days\n"
+                    f"- **Factoring Discount Fee**: ${float(res['factoring_fee_amount']):,.2f}{fee_note}\n"
+                    f"- **Cash Received Now**: ${float(res['advance_amount']):,.2f}\n"
+                    f"- **Total Net Proceeds After Collection**: ${float(res['net_proceeds']):,.2f}\n"
+                    f"- **Collection Horizon**: {res['collection_days']} days{days_note}\n"
                     f"- **True Annualized APR**: {res['true_apr_percent']}%"
                     f"{pred_warning}\n\n"
                     "To prepare this invoice factoring proposal for review, request action staging."

@@ -4,6 +4,9 @@ Configures CORS, Security Headers, and Router Mounts.
 Aligns with docs/system.md Section 4 and docs/security.md Section 4.
 """
 
+import threading
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from api.routes.health import router as health_router
@@ -13,12 +16,24 @@ from api.routes.underwrite import router as underwrite_router
 from api.routes.agent import router as agent_router
 from api.routes.decision import router as decision_router
 
+@asynccontextmanager
+async def lifespan(_: FastAPI):
+    # Without this the first chat pays ~7s: registry init plus embedding every knowledge card.
+    from services.decision.registry import DecisionEngineRegistry
+    from services.agent.knowledge import retrieve_cards
+
+    DecisionEngineRegistry.get_instance()
+    threading.Thread(target=retrieve_cards, args=("cash runway",), daemon=True).start()
+    yield
+
+
 app = FastAPI(
     title="SME Finance Copilot API",
     description="Autonomous AI CFO & Financial Participant for Small & Medium Enterprises",
     version="1.0.0",
     docs_url="/docs",
-    redoc_url="/redoc"
+    redoc_url="/redoc",
+    lifespan=lifespan,
 )
 
 import os

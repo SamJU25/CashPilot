@@ -305,6 +305,10 @@ def test_agent_tool_wrappers():
     assert factor_res["advance_amount"] == "42500.00"
     assert factor_res["true_apr_percent"] == "28.63"
 
+    # 1% is a percentage, not the fraction 1.0 (which used to mean a 100% fee)
+    low_fee = tool_calculate_factoring_proceeds(invoice_amount="100000", advance_rate_pct="85", fee_rate_pct="1", collection_days=30)
+    assert low_fee["factoring_fee_amount"] == "1000.00"
+
     dir_res = tool_calculate_defensive_interval("90000", "1000")
     assert dir_res["defensive_interval_days"] == "90.00"
     assert dir_res["liquidity_tier"] == "PRIME"

@@ -515,11 +515,9 @@ def tool_calculate_factoring_proceeds(
 ) -> Dict[str, Any]:
     """Calculate invoice factoring net cash advance, discount fee, and true annualized APR."""
     inv = _to_decimal(invoice_amount)
-    raw_adv = _to_decimal(advance_rate_pct)
-    adv_rate = raw_adv / Decimal("100") if raw_adv > Decimal("1.00") else raw_adv
-
-    raw_fee = _to_decimal(fee_rate_pct)
-    fee_rate = raw_fee / Decimal("100") if raw_fee > Decimal("1.00") else raw_fee
+    # Always percentages: guessing fractions turned a 1% fee into 100%.
+    adv_rate = _to_decimal(advance_rate_pct) / Decimal("100")
+    fee_rate = _to_decimal(fee_rate_pct) / Decimal("100")
     ancillary = _to_decimal(ancillary_fees)
 
     advance, rebate, net_proceeds, apr, is_predatory = calc_factoring_proceeds(

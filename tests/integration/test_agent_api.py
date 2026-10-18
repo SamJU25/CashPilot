@@ -822,3 +822,15 @@ def test_agent_chat_dscr_parameter_inheritance():
     assert d2["intent_detected"] == "CREDIT_UNDERWRITING"
     assert "$120,000.00" in d2["reply"]
     assert "2.00x" in d2["reply"]
+
+
+def test_factoring_reply_flags_assumed_terms_and_splits_proceeds():
+    with patch("services.agent.local_transformers.LocalTransformersEngine.is_available", return_value=False):
+        res = client.post(
+            "/api/v1/agent/chat",
+            json={"message": "Factor a $100,000 invoice with 85% advance", "llm_config": {"provider": "offline"}},
+        )
+    reply = res.json()["reply"]
+    assert "assumed 3.00% fee" in reply and "days (assumed" in reply
+    assert "**Cash Received Now**: $85,000.00" in reply
+    assert "Net Immediate Cash Proceeds" not in reply

@@ -46,9 +46,12 @@ class PredictiveDeficitResult:
     explanation: str = ""
 
 
-PAYROLL_PATTERN = re.compile(r"(payroll|salary|wages|stipend|direct\s*dep|gusto|adp|paychex)", re.IGNORECASE)
-RENT_PATTERN = re.compile(r"(rent|lease|property|landlord|realty|storage)", re.IGNORECASE)
-DEBT_PATTERN = re.compile(r"(loan|principal|debt\s*service|amortization|equipment\s*lease|note\s*pay)", re.IGNORECASE)
+PAYROLL_PATTERN = re.compile(r"\b(payroll|salary|salaries|wages|stipend|direct\s*dep|gusto|adp|paychex)\b", re.IGNORECASE)
+# "property tax" and "equipment lease" are not rent; whole words keep "current"/"parent" out.
+RENT_PATTERN = re.compile(r"\b(rent|(?<!equipment\s)lease|property\s+management|landlord|realty|storage)\b", re.IGNORECASE)
+DEBT_PATTERN = re.compile(r"\b(loan|principal|debt\s*service|amortization|equipment\s*lease|note\s*pay(?:able)?)\b", re.IGNORECASE)
+# Checked in order so each outflow lands in exactly one obligation.
+OBLIGATION_PATTERNS = (("DEBT_SERVICE", DEBT_PATTERN), ("PAYROLL", PAYROLL_PATTERN), ("RENT", RENT_PATTERN))
 
 
 @dataclass(frozen=True)
@@ -58,33 +61,35 @@ class DetectedObligation:
     primary_day_of_month: int
 
 
-def _detect_obligation(
-    rows: Sequence[DemoTransaction], pattern: re.Pattern, category: str
-) -> Optional[DetectedObligation]:
-    """Identifies recurring obligation amount and primary day-of-month via pattern matching and decision engine triage."""
-    from services.decision import DecisionDomain, DecisionEngineRegistry, DecisionRequest
+def _classify_outflow(description: str, cache: dict) -> Optional[str]:
+    """One obligation category per memo: keyword patterns first, then EXPENSE_TRIAGE; cached per memo."""
+    if description in cache:
+        return cache[description]
+    category = next((name for name, pattern in OBLIGATION_PATTERNS if pattern.search(description)), None)
+    if category is None:
+        from services.decision import DecisionDomain, DecisionEngineRegistry, DecisionRequest
 
+        triage_res = DecisionEngineRegistry.get_instance().evaluate(
+            DecisionRequest(domain=DecisionDomain.EXPENSE_TRIAGE, input_state={"description": description})
+        )
+        if triage_res.confidence_score >= 0.85:
+            category = triage_res.selected_choice
+    cache[description] = category
+    return category
+
+
+def _detect_obligation(
+    rows: Sequence[DemoTransaction], category: str, cache: Optional[dict] = None
+) -> Optional[DetectedObligation]:
+    """Identifies recurring obligation amount and primary day-of-month for one category."""
+    cache = {} if cache is None else cache
     matching_amounts: list[Decimal] = []
     days_of_month: list[int] = []
-    registry = DecisionEngineRegistry.get_instance()
 
     for r in rows:
-        if r.amount < 0:
-            is_match = bool(pattern.search(r.description))
-            if not is_match:
-                # Delegate non-standard descriptions to DecisionDomain.EXPENSE_TRIAGE
-                triage_res = registry.evaluate(
-                    DecisionRequest(
-                        domain=DecisionDomain.EXPENSE_TRIAGE,
-                        input_state={"description": r.description},
-                    )
-                )
-                if triage_res.selected_choice == category and triage_res.confidence_score >= 0.85:
-                    is_match = True
-
-            if is_match:
-                matching_amounts.append(abs(r.amount))
-                days_of_month.append(r.posted_on.day)
+        if r.amount < 0 and _classify_outflow(r.description, cache) == category:
+            matching_amounts.append(abs(r.amount))
+            days_of_month.append(r.posted_on.day)
 
     if not matching_amounts:
         return None
@@ -100,19 +105,19 @@ def _detect_obligation(
 
 def detect_recurring_payroll(rows: Sequence[DemoTransaction]) -> Optional[Decimal]:
     """Identifies recurring payroll or lump-sum wage obligations from historical descriptions."""
-    ob = _detect_obligation(rows, PAYROLL_PATTERN, "PAYROLL")
+    ob = _detect_obligation(rows, "PAYROLL")
     return ob.average_amount if ob else None
 
 
 def detect_recurring_rent(rows: Sequence[DemoTransaction]) -> Optional[Decimal]:
     """Identifies recurring commercial rent or property lease obligations."""
-    ob = _detect_obligation(rows, RENT_PATTERN, "RENT")
+    ob = _detect_obligation(rows, "RENT")
     return ob.average_amount if ob else None
 
 
 def detect_recurring_debt(rows: Sequence[DemoTransaction]) -> Optional[Decimal]:
     """Identifies recurring debt service, loan amortization, or equipment financing."""
-    ob = _detect_obligation(rows, DEBT_PATTERN, "DEBT_SERVICE")
+    ob = _detect_obligation(rows, "DEBT_SERVICE")
     return ob.average_amount if ob else None
 
 
@@ -132,9 +137,10 @@ def calculate_predictive_cash(
 
     # Use the latest transaction date as anchor, or today
     latest_date = anchor_date or (max(r.posted_on for r in rows) if rows else date.today())
-    payroll_ob = _detect_obligation(rows, PAYROLL_PATTERN, "PAYROLL")
-    rent_ob = _detect_obligation(rows, RENT_PATTERN, "RENT")
-    debt_ob = _detect_obligation(rows, DEBT_PATTERN, "DEBT_SERVICE")
+    triage_cache: dict = {}
+    payroll_ob = _detect_obligation(rows, "PAYROLL", triage_cache)
+    rent_ob = _detect_obligation(rows, "RENT", triage_cache)
+    debt_ob = _detect_obligation(rows, "DEBT_SERVICE", triage_cache)
 
     payroll_estimate = payroll_ob.average_amount if payroll_ob else None
     rent_estimate = rent_ob.average_amount if rent_ob else None
