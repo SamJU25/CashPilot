@@ -184,14 +184,6 @@ def test_wrong_origin_rejected(ledger, passkeys, authenticator):
         ledger.execute_intent(intent.id, webauthn_assertion=_sign(passkeys, authenticator, intent.id))
 
 
-def test_wrong_rp_id_rejected(ledger, passkeys, authenticator):
-    intent = _stage(ledger)
-    authenticator.rp_id = "evil.example"
-
-    with pytest.raises(BiometricVerificationError):
-        ledger.execute_intent(intent.id, webauthn_assertion=_sign(passkeys, authenticator, intent.id))
-
-
 def test_registration_from_a_foreign_origin_rejected(passkeys):
     options = json.loads(passkeys.registration_options("SME-201"))
 

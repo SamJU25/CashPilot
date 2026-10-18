@@ -156,3 +156,11 @@ def test_auth_token_api_endpoints(client):
     # Forged token rejected
     bad_resp = client.get("/api/v1/auth/verify", headers={"Authorization": "Bearer invalid.token.payload"})
     assert bad_resp.status_code == 401
+
+    # Missing token rejected
+    no_token_resp = client.get("/api/v1/auth/verify")
+    assert no_token_resp.status_code == 401
+
+    # Client-asserted X-Tenant-ID without a token rejected
+    spoofed_resp = client.get("/api/v1/auth/verify", headers={"X-Tenant-ID": "SME-VERIFY-001"})
+    assert spoofed_resp.status_code == 401

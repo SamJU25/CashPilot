@@ -15,7 +15,7 @@ from services.security.tenant_token import (
     TenantTokenError,
     authorize_token_issuance,
     issue_tenant_token,
-    resolve_tenant_identity,
+    require_tenant_identity,
 )
 
 router = APIRouter(prefix="/api/v1/auth", tags=["Tenant Authentication"])
@@ -85,17 +85,16 @@ async def create_tenant_token(
 async def verify_token(
     x_tenant_token: Optional[str] = Header(default=None, alias="X-Tenant-Token"),
     authorization: Optional[str] = Header(default=None, alias="Authorization"),
-    x_tenant_id: Optional[str] = Header(default=None, alias="X-Tenant-ID"),
 ) -> VerifyResponse:
     try:
-        resolved = resolve_tenant_identity(
+        resolved = require_tenant_identity(
             x_tenant_token=x_tenant_token,
             authorization=authorization,
-            x_tenant_id=x_tenant_id,
         )
         return VerifyResponse(valid=True, tenant_id=resolved)
     except TenantTokenError as exc:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail=f"Invalid tenant authentication token: {exc}",
+            headers={"WWW-Authenticate": "Bearer"},
         )

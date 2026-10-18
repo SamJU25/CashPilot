@@ -1232,7 +1232,7 @@
   "contracts/InvoiceRegistry.sol": {
     "mtime": 1791935009.5218325,
     "seen": 1792360793.303869,
-    "ast_hash": "571b58b08346dc437d70e4123ec7925c",
+    "ast_hash": "",
     "semantic_hash": ""
   },
   ".github/workflows/ci.yml": {
@@ -1302,9 +1302,9 @@
     "semantic_hash": ""
   },
   "tests/unit/test_security_gate.py": {
-    "mtime": 1792360964.103007,
-    "seen": 1792361251.8929741,
-    "ast_hash": "e5f48818d3ab1b0f29014e7de21a6c75",
+    "mtime": 1792363105.9271846,
+    "seen": 1792363364.8376129,
+    "ast_hash": "9b5abe8f7bc5dafd5c20a56e11f8c79d",
     "semantic_hash": ""
   },
   "tests/e2e/__init__.py": {
@@ -1338,9 +1338,9 @@
     "semantic_hash": ""
   },
   "api/routes/agent.py": {
-    "mtime": 1792358877.8879237,
-    "seen": 1792360755.382731,
-    "ast_hash": "37a85ec8f944d81f99b8239ece54f739",
+    "mtime": 1792363092.721606,
+    "seen": 1792363364.810902,
+    "ast_hash": "5527f91ab5f2c2f8ac9001ea68a7f547",
     "semantic_hash": ""
   },
   "services/agent/__init__.py": {
@@ -1482,9 +1482,9 @@
     "semantic_hash": ""
   },
   "tests/integration/test_session_memory_api.py": {
-    "mtime": 1792351350.0658119,
-    "seen": 1792351439.8898635,
-    "ast_hash": "ee9682176a4f598e0b1a39f97e091a35",
+    "mtime": 1792363270.8420844,
+    "seen": 1792363364.828977,
+    "ast_hash": "da055b813a36894224eb6b71d94543fe",
     "semantic_hash": ""
   },
   "tests/unit/test_session_store.py": {
@@ -2106,9 +2106,9 @@
     "semantic_hash": ""
   },
   "api/routes/auth.py": {
-    "mtime": 1792356007.5862558,
-    "seen": 1792356390.8743358,
-    "ast_hash": "1955c8a0d2628ad8fb6cbee186ace22c",
+    "mtime": 1792363059.4914646,
+    "seen": 1792363364.8110595,
+    "ast_hash": "1ae989e61846e3dd12b25fb1a0757986",
     "semantic_hash": ""
   },
   "services/security/tenant_token.py": {
@@ -2124,9 +2124,9 @@
     "semantic_hash": ""
   },
   "tests/unit/test_tenant_token.py": {
-    "mtime": 1792358816.7178214,
-    "seen": 1792360755.3973749,
-    "ast_hash": "422f2985f33a6bbf631ab3946576f1af",
+    "mtime": 1792363119.2893994,
+    "seen": 1792363364.838056,
+    "ast_hash": "2d207daf7a96dd6bf1813ea6241574df",
     "semantic_hash": ""
   },
   "api/rate_limit.py": {

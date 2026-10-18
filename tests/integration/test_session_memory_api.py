@@ -5,6 +5,7 @@ from fastapi.testclient import TestClient
 
 from api.main import app
 from services.agent.session_store import session_store
+from tests.auth_helpers import tenant_headers
 
 client = TestClient(app)
 
@@ -24,7 +25,7 @@ def clean_sessions():
     session_store.clear_all()
 
 
-OWNER = {"X-Tenant-ID": "SME-COFFEE-001"}
+OWNER = tenant_headers(client, "SME-COFFEE-001")
 
 
 def test_session_statement_retention_across_turns():
@@ -34,7 +35,7 @@ def test_session_statement_retention_across_turns():
     # Turn 1: Upload CSV and ask for runway
     r1 = client.post(
         "/api/v1/agent/chat",
-        headers={"X-Session-ID": session_id, "X-Tenant-ID": "SME-COFFEE-001"},
+        headers={"X-Session-ID": session_id, **OWNER},
         json={
             "message": "What is my current runway and daily burn rate?",
             "csv_content": SYNTHETIC_BANK_CSV,
@@ -50,7 +51,7 @@ def test_session_statement_retention_across_turns():
     # Turn 2: Follow-up question WITHOUT any csv_content or history in request payload
     r2 = client.post(
         "/api/v1/agent/chat",
-        headers={"X-Session-ID": session_id, "X-Tenant-ID": "SME-COFFEE-001"},
+        headers={"X-Session-ID": session_id, **OWNER},
         json={
             "message": "What will our balance be in 45 days?",
             # Notice: NO csv_content provided! Session memory must supply it.
@@ -68,7 +69,7 @@ def test_session_statement_retention_across_turns():
     # Turn 3: Inquire about loan qualification WITHOUT csv_content
     r3 = client.post(
         "/api/v1/agent/chat",
-        headers={"X-Session-ID": session_id, "X-Tenant-ID": "SME-COFFEE-001"},
+        headers={"X-Session-ID": session_id, **OWNER},
         json={
             "message": "What pre-qualified loan options do we qualify for?",
             # Again, NO csv_content!
@@ -108,7 +109,7 @@ def test_clear_statement_endpoint():
 
     client.post(
         "/api/v1/agent/chat",
-        headers={"X-Session-ID": session_id, "X-Tenant-ID": "SME-COFFEE-001"},
+        headers={"X-Session-ID": session_id, **OWNER},
         json={
             "message": "Calculate my cash runway",
             "csv_content": SYNTHETIC_BANK_CSV,
@@ -137,11 +138,21 @@ def test_session_endpoints_refuse_other_tenants():
     session_id = "sess_e2e_isolation_003"
     client.post(
         "/api/v1/agent/chat",
-        headers={"X-Session-ID": session_id, "X-Tenant-ID": "SME-COFFEE-001"},
+        headers={"X-Session-ID": session_id, **OWNER},
         json={"message": "Calculate my cash runway", "csv_content": SYNTHETIC_BANK_CSV},
     )
-    intruder = {"X-Tenant-ID": "SME-OTHER-999"}
-    assert client.get(f"/api/v1/agent/session/{session_id}", headers=intruder).status_code == 404
+    # 1. Intruder attempting to spoof the owner's tenant ID without a token
+    intruder_spoof = {"X-Tenant-ID": "SME-COFFEE-001"}
+    assert client.get(f"/api/v1/agent/session/{session_id}", headers=intruder_spoof).status_code == 404
+    assert client.delete(f"/api/v1/agent/session/{session_id}", headers=intruder_spoof).json()["cleared"] is False
+
+    # 2. Intruder with a valid token for a different tenant
+    intruder_other = tenant_headers(client, "SME-OTHER-999")
+    assert client.get(f"/api/v1/agent/session/{session_id}", headers=intruder_other).status_code == 404
+    assert client.delete(f"/api/v1/agent/session/{session_id}", headers=intruder_other).json()["cleared"] is False
+
+    # 3. Anonymous caller without any headers
     assert client.get(f"/api/v1/agent/session/{session_id}").status_code == 404
-    assert client.delete(f"/api/v1/agent/session/{session_id}", headers=intruder).json()["cleared"] is False
+
+    # 4. Legitimate owner with verified token succeeds
     assert client.get(f"/api/v1/agent/session/{session_id}", headers=OWNER).json()["csv_content"]

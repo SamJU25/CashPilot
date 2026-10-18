@@ -17,6 +17,7 @@ from api.dependencies import require_tenant
 from services.agent.llm_bridge import fetch_remote_models, test_llm_connection
 from services.security.tenant_token import (
     TenantTokenError,
+    require_tenant_identity,
     resolve_tenant_identity,
     resolve_verified_tenant,
 )
@@ -113,14 +114,16 @@ def _resolve_agent_tenant(
     x_tenant_id: Optional[str] = None,
     fallback_id: Optional[str] = None,
 ) -> str:
-    try:
-        return resolve_tenant_identity(
-            x_tenant_token=x_tenant_token,
-            authorization=authorization,
-            x_tenant_id=x_tenant_id or fallback_id,
-        )
-    except TenantTokenError as exc:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=str(exc))
+    # A signed token is authoritative and verifies the identity.
+    # An invalid or expired token raises 401. Unverified requests strictly fall back
+    # to SME-DEFAULT to prevent session hijacking via spoofed X-Tenant-ID headers.
+    has_token = bool((x_tenant_token and x_tenant_token.strip()) or (authorization and authorization.strip()))
+    if has_token:
+        try:
+            return require_tenant_identity(x_tenant_token=x_tenant_token, authorization=authorization)
+        except TenantTokenError as exc:
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=str(exc))
+    return "SME-DEFAULT"
 
 
 @router.get(
