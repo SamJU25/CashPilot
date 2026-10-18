@@ -1332,9 +1332,9 @@
     "semantic_hash": ""
   },
   "docker-compose.yml": {
-    "mtime": 1792360621.6911397,
-    "seen": 1792360755.4146187,
-    "ast_hash": "8c889593761bc57c244a8d5465ea422f",
+    "mtime": 1792363678.9201193,
+    "seen": 1792363751.4610379,
+    "ast_hash": "f3d38fe0317f724acd17c23caefc93e8",
     "semantic_hash": ""
   },
   "api/routes/agent.py": {
