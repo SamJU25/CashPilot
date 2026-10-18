@@ -1404,9 +1404,9 @@
     "semantic_hash": ""
   },
   "services/agent/tools.py": {
-    "mtime": 1792278034.9135132,
-    "seen": 1792279612.9247942,
-    "ast_hash": "a7d57fa85ec24dd581cba87622375b96",
+    "mtime": 1792279658.153995,
+    "seen": 1792281449.5317726,
+    "ast_hash": "d73cff98209adbf88b97c7b8ccfd0ada",
     "semantic_hash": ""
   },
   "tests/integration/test_agent_api.py": {
