@@ -45,6 +45,13 @@ from services.decision.policy_loader import load_semantic_prototypes
 SCENARIO_MARGIN = 0.10
 IN_DOMAIN_CARD_SIMILARITY = 0.64
 WHAT_IF = re.compile(r"\s*what\s+(?:if|happens\s+if)\b", re.IGNORECASE)
+_FOLLOW_UP_OPENER = re.compile(r"\s*(?:and|what\s+about|how\s+about|instead|same\s+but|also|now|then|ok(?:ay)?,?\s+(?:and|what\s+about))\b", re.IGNORECASE)
+
+
+def is_elliptical_follow_up(text: str) -> bool:
+    """A short turn that only changes a figure ("and at 6%?", "what about 60 months?")."""
+    # Needs a figure: "and what about the options?" names its own topic and routes on its own.
+    return len(text.split()) <= 6 and bool(_FOLLOW_UP_OPENER.match(text)) and any(c.isdigit() for c in text)
 
 
 class FastEmbedSemanticRouter:
@@ -117,14 +124,15 @@ class FastEmbedSemanticRouter:
         second_sub_score = float(sub_sims[sorted_sub_idx[1]])
         sub_margin = top_sub_score - second_sub_score
 
-        # 2. Contextual fusion: if query has low sub-intent separation (< 0.03) and history exists,
-        # resolve ambiguous conversational follow-ups using semantic antecedent
-        if history and sub_margin < 0.03:
+        # 2. Contextual fusion: resolve a follow-up with its antecedent when the query alone is ambiguous
+        # (< 0.03 separation) or elliptical ("and at 6%?" alone once routed a loan follow-up to CAC payback).
+        if history and (sub_margin < 0.03 or is_elliptical_follow_up(m)):
             last_user_msg = ""
             for item in reversed(history):
                 role = getattr(item, "role", "") if hasattr(item, "role") else (item.get("role", "") if isinstance(item, dict) else "")
                 txt = (getattr(item, "text", "") if hasattr(item, "text") else (item.get("text", "") if isinstance(item, dict) else "")).strip()
-                if role == "user" and not last_user_msg:
+                # Skip earlier elliptical turns: "what about 60 months?" names no calculation either.
+                if role == "user" and txt and not is_elliptical_follow_up(txt):
                     last_user_msg = txt
                     break
 

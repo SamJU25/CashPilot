@@ -24,6 +24,9 @@ def clean_sessions():
     session_store.clear_all()
 
 
+OWNER = {"X-Tenant-ID": "SME-COFFEE-001"}
+
+
 def test_session_statement_retention_across_turns():
     """Verify that statement uploaded in Turn 1 is cached in session memory and available for Turn 2 without resending CSV."""
     session_id = "sess_e2e_memory_001"
@@ -80,7 +83,7 @@ def test_session_statement_retention_across_turns():
     assert len(d3["matched_options"]) >= 1
 
     # Turn 4: Query session inspection endpoint GET /api/v1/agent/session/{session_id}
-    r_sess = client.get(f"/api/v1/agent/session/{session_id}")
+    r_sess = client.get(f"/api/v1/agent/session/{session_id}", headers=OWNER)
     assert r_sess.status_code == 200
     sess_data = r_sess.json()
     assert sess_data["session_id"] == session_id
@@ -90,12 +93,12 @@ def test_session_statement_retention_across_turns():
     assert sess_data["financial_facts"]["current_balance"] == "7500.00"
 
     # Turn 5: Clear session via DELETE /api/v1/agent/session/{session_id}
-    r_del = client.delete(f"/api/v1/agent/session/{session_id}")
+    r_del = client.delete(f"/api/v1/agent/session/{session_id}", headers=OWNER)
     assert r_del.status_code == 200
     assert r_del.json()["cleared"] is True
 
     # Confirm session is gone
-    r_check = client.get(f"/api/v1/agent/session/{session_id}")
+    r_check = client.get(f"/api/v1/agent/session/{session_id}", headers=OWNER)
     assert r_check.status_code == 404
 
 
@@ -113,18 +116,32 @@ def test_clear_statement_endpoint():
     )
 
     # Verify statement is cached
-    sess_before = client.get(f"/api/v1/agent/session/{session_id}").json()
+    sess_before = client.get(f"/api/v1/agent/session/{session_id}", headers=OWNER).json()
     assert sess_before["csv_content"] is not None
     assert len(sess_before["messages"]) == 2
 
     # Clear statement only
-    r_clear = client.delete(f"/api/v1/agent/session/{session_id}/statement")
+    r_clear = client.delete(f"/api/v1/agent/session/{session_id}/statement", headers=OWNER)
     assert r_clear.status_code == 200
     assert r_clear.json()["statement_cleared"] is True
 
     # Verify statement is gone but conversation messages remain
-    sess_after = client.get(f"/api/v1/agent/session/{session_id}").json()
+    sess_after = client.get(f"/api/v1/agent/session/{session_id}", headers=OWNER).json()
     assert sess_after["csv_content"] is None
     assert sess_after["cached_dossier"] is None
     assert "current_balance" not in sess_after["financial_facts"]
     assert len(sess_after["messages"]) == 2
+
+
+def test_session_endpoints_refuse_other_tenants():
+    session_id = "sess_e2e_isolation_003"
+    client.post(
+        "/api/v1/agent/chat",
+        headers={"X-Session-ID": session_id, "X-Tenant-ID": "SME-COFFEE-001"},
+        json={"message": "Calculate my cash runway", "csv_content": SYNTHETIC_BANK_CSV},
+    )
+    intruder = {"X-Tenant-ID": "SME-OTHER-999"}
+    assert client.get(f"/api/v1/agent/session/{session_id}", headers=intruder).status_code == 404
+    assert client.get(f"/api/v1/agent/session/{session_id}").status_code == 404
+    assert client.delete(f"/api/v1/agent/session/{session_id}", headers=intruder).json()["cleared"] is False
+    assert client.get(f"/api/v1/agent/session/{session_id}", headers=OWNER).json()["csv_content"]

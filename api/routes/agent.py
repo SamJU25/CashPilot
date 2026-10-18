@@ -104,9 +104,13 @@ async def agent_delete_model(
     summary="Retrieve Active Agent Session",
     description="Fetches full session history, cached transactional dossier, and episodic memory facts.",
 )
-async def get_session(session_id: str) -> Optional[SessionRecord]:
+async def get_session(
+    session_id: str,
+    x_tenant_id: Optional[str] = Header(default=None, alias="X-Tenant-ID"),
+) -> Optional[SessionRecord]:
     """Retrieves session record from the persistent store."""
-    rec = session_store.get(session_id)
+    # The record holds the raw statement: another tenant gets the same 404 as a missing session.
+    rec = session_store.get_for_tenant(session_id, x_tenant_id or "SME-DEFAULT")
     if not rec:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -121,9 +125,13 @@ async def get_session(session_id: str) -> Optional[SessionRecord]:
     summary="Clear Active Agent Session",
     description="Wipes session conversation history, statement cache, and episodic facts from memory and disk.",
 )
-async def clear_session(session_id: str) -> dict:
+async def clear_session(
+    session_id: str,
+    x_tenant_id: Optional[str] = Header(default=None, alias="X-Tenant-ID"),
+) -> dict:
     """Clears session record from memory and removes serialized disk cache."""
-    removed = session_store.clear(session_id)
+    owned = session_store.get_for_tenant(session_id, x_tenant_id or "SME-DEFAULT") is not None
+    removed = session_store.clear(session_id) if owned else False
     return {"session_id": session_id, "cleared": removed}
 
 
@@ -133,9 +141,13 @@ async def clear_session(session_id: str) -> dict:
     summary="Clear Statement from Active Session",
     description="Purges uploaded CSV statement and cached calculations from the session while preserving conversation history.",
 )
-async def clear_session_statement(session_id: str) -> dict:
+async def clear_session_statement(
+    session_id: str,
+    x_tenant_id: Optional[str] = Header(default=None, alias="X-Tenant-ID"),
+) -> dict:
     """Clears statement CSV and cached calculation metrics for the session."""
-    rec = session_store.clear_statement(session_id)
+    owned = session_store.get_for_tenant(session_id, x_tenant_id or "SME-DEFAULT") is not None
+    rec = session_store.clear_statement(session_id) if owned else None
     return {"session_id": session_id, "statement_cleared": rec is not None}
 
 

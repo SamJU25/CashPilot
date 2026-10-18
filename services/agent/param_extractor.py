@@ -39,6 +39,11 @@ def backfill_missing_params(
         return params
 
     for entry in reversed(history):
+        role = getattr(entry, "role", None) if hasattr(entry, "role") else (entry.get("role") if isinstance(entry, dict) else None)
+        # Figures come from the owner; agent replies are full of derived numbers (APR, fees, payments)
+        # that other extractors misread, e.g. a loan reply's principal read back as a CAC.
+        if role not in (None, "user", "human"):
+            continue
         txt = (
             getattr(entry, "text", "")
             if hasattr(entry, "text")
@@ -249,22 +254,27 @@ def extract_factoring_params(text: str, history: Optional[List[Any]] = None) -> 
         if val and val >= Decimal("100"):
             inv_amount = val
 
-    # Advance rate: e.g. "85% advance", "advance 80%"
-    adv_m = re.search(r"(\d+(?:\.\d+)?)\s*%\s*(?:advance|advance\s+rate)?", text, re.IGNORECASE)
-    # Fee rate: e.g. "3% fee", "fee of 2.5%"
-    fee_m = re.search(r"(\d+(?:\.\d+)?)\s*%\s*(?:fee|discount|factor\s+fee|rate)?", text, re.IGNORECASE)
+    # Labelled rates first ("85% advance", "advance of 80%", "3% fee", "fee is 2%"). The old advance
+    # pattern had an optional label, so "what if the fee is 3%?" set a 3% advance.
+    adv_m = re.search(r"(\d+(?:\.\d+)?)\s*%\s*advance\b", text, re.IGNORECASE) or re.search(
+        rf"\badvance(?:\s+rate)?{_NEAR}(\d+(?:\.\d+)?)\s*%", text, re.IGNORECASE
+    )
+    fee_m = re.search(r"(\d+(?:\.\d+)?)\s*%\s*(?:discount\s+|factor(?:ing)?\s+)?fee\b", text, re.IGNORECASE) or re.search(
+        rf"\b(?:fee|discount)(?:\s+rate)?{_NEAR}(\d+(?:\.\d+)?)\s*%", text, re.IGNORECASE
+    )
     # Days: e.g. "45 days", "in 30 days"
     day_m = re.search(r"(\d+)\s*(?:day|days)\b", text, re.IGNORECASE)
 
     if adv_m:
-        try:
-            advance_pct = Decimal(adv_m.group(1))
-        except Exception:
-            pass
+        advance_pct = Decimal(adv_m.group(1))
+    if fee_m:
+        fee_pct = Decimal(fee_m.group(1))
 
-    # Look specifically for fee % if distinct from advance %
+    # Unlabelled percentages only: the higher is the advance (75-90%), the lower the fee (1-5%)
     pcts = re.findall(r"(\d+(?:\.\d+)?)\s*%", text)
-    if len(pcts) >= 2:
+    if adv_m or fee_m:
+        pass
+    elif len(pcts) >= 2:
         try:
             val1 = Decimal(pcts[0])
             val2 = Decimal(pcts[1])

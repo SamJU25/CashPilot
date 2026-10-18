@@ -15,7 +15,7 @@ import re
 from decimal import Decimal
 from typing import Any, Dict, Optional
 
-from services.agent.llm_bridge import query_external_llm
+from services.agent.llm_bridge import mask_pii, query_external_llm
 from services.agent.local_slm import LocalSLMEngine, generate_local_reply
 from services.agent.local_transformers import LocalTransformersEngine
 from services.agent.subagents import (
@@ -250,12 +250,17 @@ def run_copilot_supervisor(
     effective_config = llm_config or request.llm_config
 
     session_rec = session_store.get_or_create(effective_session, tenant_id=effective_tenant)
+    # A session id owned by another tenant comes back as a new session; answer under that id.
+    effective_session = session_rec.session_id
 
     effective_csv = request.csv_content
+    # What history keeps of this message: a pasted statement would otherwise be replayed every turn.
+    stored_message = request.message
     if not effective_csv and request.message and "transaction_id" in request.message and "amount" in request.message:
         csv_start = request.message.find("transaction_id")
         if csv_start != -1:
             effective_csv = request.message[csv_start:].strip()
+            stored_message = f"{request.message[:csv_start].strip()} [bank statement attached]".strip()
 
     # Statement Memory: Persist if provided; restore if omitted in follow-up turns
     if effective_csv:
@@ -278,9 +283,15 @@ def run_copilot_supervisor(
 
     def _finalize(resp: CopilotResponse) -> CopilotResponse:
         resp.session_id = effective_session
+        # Blocked injections never re-enter history (it is replayed to the model); keys and account
+        # numbers are masked before the turn is written to disk.
+        if resp.intent_detected == "SECURITY_DEFENSE_TRIGGERED":
+            user_text = "[message withheld: blocked prompt-injection attempt]"
+        else:
+            user_text = mask_pii(stored_message)
         session_store.append_turn(
             effective_session,
-            user_text=request.message,
+            user_text=user_text,
             agent_text=resp.reply,
             tenant_id=effective_tenant,
         )

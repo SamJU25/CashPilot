@@ -125,3 +125,42 @@ def test_session_clear_statement():
     assert cleared_rec.financial_facts.get("custom_note") == "keep_me"
     # Conversation messages must be preserved
     assert len(cleared_rec.messages) == 2
+
+
+def test_session_id_presented_by_another_tenant_gets_a_fresh_session():
+    store = SessionStore.get_instance()
+    store.update_statement("sess_owned", "csv-of-tenant-a", tenant_id="TENANT-A")
+    other = store.get_or_create("sess_owned", tenant_id="TENANT-B")
+    assert other.session_id != "sess_owned" and other.csv_content is None
+    assert store.get("sess_owned").tenant_id == "TENANT-A"
+    assert store.get_for_tenant("sess_owned", "TENANT-B") is None
+
+
+def test_new_statement_drops_facts_from_the_old_one():
+    store = SessionStore.get_instance()
+    store.update_statement("sess_swap", "statement-one")
+    store.set_financial_fact("sess_swap", "current_balance", "-25204.00")
+    store.set_financial_fact("sess_swap", "loan_amount", "50000")
+    store.update_statement("sess_swap", "statement-two")
+    facts = store.get_financial_facts("sess_swap")
+    assert "current_balance" not in facts and facts["loan_amount"] == "50000"
+
+
+def test_facts_stay_on_a_tenant_session():
+    store = SessionStore.get_instance()
+    store.get_or_create("sess_tenant_facts", tenant_id="TENANT-A")
+    store.set_financial_fact("sess_tenant_facts", "runway_days", 12)
+    assert store.get_financial_facts("sess_tenant_facts") == {"runway_days": 12}
+    assert len([f for f in os.listdir(SESSION_CACHE_DIR) if f.endswith(".json")]) == 1
+
+
+def test_expired_sessions_are_deleted_on_load():
+    store = SessionStore.get_instance()
+    stale = SessionRecord(session_id="sess_stale", updated_at="2020-01-01T00:00:00+00:00", csv_content="old statement")
+    with open(os.path.join(SESSION_CACHE_DIR, "sess_stale.json"), "w", encoding="utf-8") as f:
+        f.write(stale.model_dump_json())
+    store.append_turn("sess_fresh", user_text="hi", agent_text="hello")
+    reloaded = SessionStore()
+    assert reloaded.get("sess_stale") is None and reloaded.get("sess_fresh") is not None
+    assert not os.path.exists(os.path.join(SESSION_CACHE_DIR, "sess_stale.json"))
+    assert not [f for f in os.listdir(SESSION_CACHE_DIR) if f.endswith(".tmp")]

@@ -1231,8 +1231,8 @@
   },
   "contracts/InvoiceRegistry.sol": {
     "mtime": 1791935009.5218325,
-    "seen": 1792262515.3124626,
-    "ast_hash": "",
+    "seen": 1792349334.565087,
+    "ast_hash": "571b58b08346dc437d70e4123ec7925c",
     "semantic_hash": ""
   },
   ".github/workflows/ci.yml": {
