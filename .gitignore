@@ -53,6 +53,7 @@ temp/
 .freebuff/
 graphify-out/cache/ast/
 graphify-out/cache/*.tmp
+graphify-out/.pending_changes
 
 # Internal Team Notes & Informal Materials
 TEAM_CHEAT_SHEET*
