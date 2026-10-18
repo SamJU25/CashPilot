@@ -2490,7 +2490,7 @@
       "file_type": "code",
       "norm_label": "test_api_delete_model_route()",
       "source_file": "tests/unit/test_download_model.py",
-      "source_location": "L177"
+      "source_location": "L178"
     },
     {
       "id": "tests_unit_test_download_model_test_api_download_model_route",
@@ -7125,18 +7125,6 @@
       "source_location": "L369"
     },
     {
-      "id": "tests_integration_test_agent_api_test_agent_chat_break_even_calculation",
-      "label": "test_agent_chat_break_even_calculation()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 226,
-      "community_name": "test_agent_api.py",
-      "file_type": "code",
-      "norm_label": "test_agent_chat_break_even_calculation()",
-      "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L560"
-    },
-    {
       "id": "tests_integration_test_agent_api_test_agent_chat_break_even_parameter_inheritance",
       "label": "test_agent_chat_break_even_parameter_inheritance()",
       "_callable": true,
@@ -7146,7 +7134,7 @@
       "file_type": "code",
       "norm_label": "test_agent_chat_break_even_parameter_inheritance()",
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L766"
+      "source_location": "L770"
     },
     {
       "id": "tests_integration_test_agent_api_test_agent_chat_fccr",
@@ -7158,7 +7146,19 @@
       "file_type": "code",
       "norm_label": "test_agent_chat_fccr()",
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L636"
+      "source_location": "L640"
+    },
+    {
+      "id": "tests_integration_test_agent_api_test_agent_chat_with_header_llm_config",
+      "label": "test_agent_chat_with_header_llm_config()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 226,
+      "community_name": "test_agent_api.py",
+      "file_type": "code",
+      "norm_label": "test_agent_chat_with_header_llm_config()",
+      "source_file": "tests/integration/test_agent_api.py",
+      "source_location": "L230"
     },
     {
       "id": "tests_integration_test_agent_api_test_agent_credit_underwriting_flow",
@@ -7170,19 +7170,7 @@
       "file_type": "code",
       "norm_label": "test_agent_credit_underwriting_flow()",
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L82"
-    },
-    {
-      "id": "tests_integration_test_agent_api_test_agent_test_connection_offline",
-      "label": "test_agent_test_connection_offline()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 226,
-      "community_name": "test_agent_api.py",
-      "file_type": "code",
-      "norm_label": "test_agent_test_connection_offline()",
-      "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L191"
+      "source_location": "L84"
     },
     {
       "id": "services_ingestion_pdf_validator_validate_pdf_statement",
@@ -10338,7 +10326,7 @@
       "file_type": "code",
       "norm_label": "test_adapter_loads_onto_the_base_it_was_trained_on()",
       "source_file": "tests/unit/test_download_model.py",
-      "source_location": "L201"
+      "source_location": "L202"
     },
     {
       "id": "tests_unit_test_download_model_test_canonical_model_resolution",
@@ -10362,7 +10350,7 @@
       "file_type": "code",
       "norm_label": "test_legacy_base_aliases_still_resolve()",
       "source_file": "tests/unit/test_download_model.py",
-      "source_location": "L217"
+      "source_location": "L218"
     },
     {
       "id": "services_matcher_liquidity_matcher_calculate_inflow_volatility",
@@ -10665,6 +10653,18 @@
       "source_location": "L47"
     },
     {
+      "id": "tests_integration_test_agent_api_test_agent_test_connection_offline",
+      "label": "test_agent_test_connection_offline()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 281,
+      "community_name": "test_agent_test_connection_offline",
+      "file_type": "code",
+      "norm_label": "test_agent_test_connection_offline()",
+      "source_file": "tests/integration/test_agent_api.py",
+      "source_location": "L193"
+    },
+    {
       "id": "services_calculations_liquidity_score_calculate_continuous_liquidity_score",
       "label": "calculate_continuous_liquidity_score()",
       "_callable": true,
@@ -10686,7 +10686,19 @@
       "file_type": "code",
       "norm_label": "test_agent_action_staging_flow()",
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L107"
+      "source_location": "L109"
+    },
+    {
+      "id": "tests_integration_test_agent_api_test_agent_chat_break_even_calculation",
+      "label": "test_agent_chat_break_even_calculation()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 288,
+      "community_name": "test_agent_chat_break_even_calculation",
+      "file_type": "code",
+      "norm_label": "test_agent_chat_break_even_calculation()",
+      "source_file": "tests/integration/test_agent_api.py",
+      "source_location": "L564"
     },
     {
       "id": "api_routes_agent_clear_session",
@@ -11490,7 +11502,7 @@
       "file_type": "code",
       "norm_label": "test_agent_missing_csv_returns_guidance()",
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L135"
+      "source_location": "L137"
     },
     {
       "id": "services_decision_adapters_fallback_adapter_fallbackruleadapter_engine_id",
@@ -11922,7 +11934,7 @@
       "file_type": "code",
       "norm_label": "test_agent_fetch_models_custom_missing_base_url()",
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L285"
+      "source_location": "L288"
     },
     {
       "id": "services_ingestion_pdf_parser_parse_pdf_statement",
@@ -11994,7 +12006,7 @@
       "file_type": "code",
       "norm_label": "test_agent_chat_target_horizon_field_in_request()",
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L341"
+      "source_location": "L344"
     },
     {
       "id": "services_agent_param_extractor_extract_cash_drag_params",
@@ -12318,7 +12330,7 @@
       "file_type": "code",
       "norm_label": "test_agent_chat_client_concentration_with_csv()",
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L600"
+      "source_location": "L604"
     },
     {
       "id": "tests_integration_test_agent_api_test_agent_test_connection_custom_missing_base_url",
@@ -12330,7 +12342,7 @@
       "file_type": "code",
       "norm_label": "test_agent_test_connection_custom_missing_base_url()",
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L215"
+      "source_location": "L218"
     },
     {
       "id": "tests_integration_test_decision_api_test_evaluate_adverse_action_underwriting_api",
@@ -12522,19 +12534,7 @@
       "file_type": "code",
       "norm_label": "test_agent_chat_working_capital_requirement()",
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L664"
-    },
-    {
-      "id": "tests_integration_test_agent_api_test_agent_chat_with_header_llm_config",
-      "label": "test_agent_chat_with_header_llm_config()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 314,
-      "community_name": "test_agent_chat_with_header_llm_config",
-      "file_type": "code",
-      "norm_label": "test_agent_chat_with_header_llm_config()",
-      "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L227"
+      "source_location": "L668"
     },
     {
       "id": "tests_integration_test_agent_api_test_pii_masking_defense",
@@ -12546,7 +12546,7 @@
       "file_type": "code",
       "norm_label": "test_pii_masking_defense()",
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L243"
+      "source_location": "L246"
     },
     {
       "id": "tests_integration_test_agent_api_test_agent_chat_customer_attrition_impact",
@@ -12558,7 +12558,7 @@
       "file_type": "code",
       "norm_label": "test_agent_chat_customer_attrition_impact()",
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L706"
+      "source_location": "L710"
     },
     {
       "id": "scripts_verify_dataset_health_audit_file",
@@ -13194,7 +13194,7 @@
       "file_type": "code",
       "norm_label": "test_agent_fetch_models_offline()",
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L258"
+      "source_location": "L261"
     },
     {
       "id": "tests_integration_test_agent_api_test_agent_general_assistance",
@@ -13206,7 +13206,7 @@
       "file_type": "code",
       "norm_label": "test_agent_general_assistance()",
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L27"
+      "source_location": "L29"
     },
     {
       "id": "tests_integration_test_agent_api_test_agent_cash_diagnostic_predictive_early_warning",
@@ -13218,7 +13218,7 @@
       "file_type": "code",
       "norm_label": "test_agent_cash_diagnostic_predictive_early_warning()",
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L298"
+      "source_location": "L301"
     },
     {
       "id": "tests_integration_test_agent_api_test_agent_cash_diagnostic_dynamic_custom_days",
@@ -13230,7 +13230,7 @@
       "file_type": "code",
       "norm_label": "test_agent_cash_diagnostic_dynamic_custom_days()",
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L321"
+      "source_location": "L324"
     },
     {
       "id": "tests_integration_test_agent_api_test_agent_chat_horizon_capped_at_365_days",
@@ -13242,7 +13242,7 @@
       "file_type": "code",
       "norm_label": "test_agent_chat_horizon_capped_at_365_days()",
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L360"
+      "source_location": "L363"
     },
     {
       "id": "api_routes_agent_get_session",
@@ -13266,7 +13266,7 @@
       "file_type": "code",
       "norm_label": "test_agent_header_tenant_isolation_overrides_body()",
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L148"
+      "source_location": "L150"
     },
     {
       "id": "tests_integration_test_agent_api_test_agent_prompt_injection_defense",
@@ -13278,7 +13278,7 @@
       "file_type": "code",
       "norm_label": "test_agent_prompt_injection_defense()",
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L174"
+      "source_location": "L176"
     },
     {
       "id": "tests_integration_test_agent_api_test_agent_test_connection_missing_api_key",
@@ -13290,7 +13290,7 @@
       "file_type": "code",
       "norm_label": "test_agent_test_connection_missing_api_key()",
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L203"
+      "source_location": "L206"
     },
     {
       "id": "services_decision_base_abstractdecisionengine_can_evaluate",
@@ -13506,7 +13506,7 @@
       "file_type": "code",
       "norm_label": "test_agent_chat_handles_natural_followup_balance_and_borrowing()",
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L417"
+      "source_location": "L420"
     },
     {
       "id": "tests_integration_test_agent_api_test_agent_greeting_zero_hallucination",
@@ -13518,7 +13518,7 @@
       "file_type": "code",
       "norm_label": "test_agent_greeting_zero_hallucination()",
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L42"
+      "source_location": "L44"
     },
     {
       "id": "tests_integration_test_agent_api_test_agent_chat_handles_natural_followup_days_left",
@@ -13530,7 +13530,7 @@
       "file_type": "code",
       "norm_label": "test_agent_chat_handles_natural_followup_days_left()",
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L401"
+      "source_location": "L404"
     },
     {
       "id": "tests_integration_test_agent_api_test_agent_fetch_models_missing_key",
@@ -13542,7 +13542,7 @@
       "file_type": "code",
       "norm_label": "test_agent_fetch_models_missing_key()",
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L272"
+      "source_location": "L275"
     },
     {
       "id": "tests_integration_test_agent_api_test_agent_chat_contextual_history_followup",
@@ -13554,7 +13554,7 @@
       "file_type": "code",
       "norm_label": "test_agent_chat_contextual_history_followup()",
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L444"
+      "source_location": "L447"
     },
     {
       "id": "tests_integration_test_agent_api_test_agent_chat_sub_intent_deficit_warning",
@@ -13566,7 +13566,7 @@
       "file_type": "code",
       "norm_label": "test_agent_chat_sub_intent_deficit_warning()",
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L493"
+      "source_location": "L496"
     },
     {
       "id": "tests_integration_test_agent_api_test_agent_chat_sub_intent_burn_rate",
@@ -13578,7 +13578,7 @@
       "file_type": "code",
       "norm_label": "test_agent_chat_sub_intent_burn_rate()",
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L461"
+      "source_location": "L464"
     },
     {
       "id": "tests_integration_test_agent_api_test_agent_chat_working_capital_cycle_detection",
@@ -13590,7 +13590,7 @@
       "file_type": "code",
       "norm_label": "test_agent_chat_working_capital_cycle_detection()",
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L381"
+      "source_location": "L384"
     },
     {
       "id": "tests_integration_test_agent_api_test_agent_chat_sub_intent_cfo_advice",
@@ -13602,7 +13602,7 @@
       "file_type": "code",
       "norm_label": "test_agent_chat_sub_intent_cfo_advice()",
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L477"
+      "source_location": "L480"
     },
     {
       "id": "tests_integration_test_agent_api_test_agent_offline_lora_connection_and_discovery",
@@ -13614,7 +13614,7 @@
       "file_type": "code",
       "norm_label": "test_agent_offline_lora_connection_and_discovery()",
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L508"
+      "source_location": "L511"
     },
     {
       "id": "tests_integration_test_agent_api_test_agent_chat_dscr_calculation",
@@ -13626,7 +13626,7 @@
       "file_type": "code",
       "norm_label": "test_agent_chat_dscr_calculation()",
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L546"
+      "source_location": "L550"
     },
     {
       "id": "tests_integration_test_agent_api_test_agent_chat_loan_amortization_calculation",
@@ -13638,7 +13638,7 @@
       "file_type": "code",
       "norm_label": "test_agent_chat_loan_amortization_calculation()",
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L531"
+      "source_location": "L535"
     },
     {
       "id": "tests_integration_test_agent_api_test_agent_chat_factoring_proceeds_and_predatory_warning",
@@ -13650,7 +13650,7 @@
       "file_type": "code",
       "norm_label": "test_agent_chat_factoring_proceeds_and_predatory_warning()",
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L574"
+      "source_location": "L578"
     },
     {
       "id": "tests_integration_test_agent_api_test_agent_chat_invoice_hash_verification",
@@ -13662,7 +13662,7 @@
       "file_type": "code",
       "norm_label": "test_agent_chat_invoice_hash_verification()",
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L720"
+      "source_location": "L724"
     },
     {
       "id": "tests_integration_test_agent_api_test_agent_cash_diagnostic_flow",
@@ -13674,7 +13674,7 @@
       "file_type": "code",
       "norm_label": "test_agent_cash_diagnostic_flow()",
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L60"
+      "source_location": "L62"
     },
     {
       "id": "services_calculations_cash_analysis_calculate_cash_analysis",
@@ -13806,7 +13806,7 @@
       "file_type": "code",
       "norm_label": "test_agent_chat_defensive_interval_ratio()",
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L618"
+      "source_location": "L622"
     },
     {
       "id": "tests_integration_test_agent_api_test_agent_chat_break_even_units",
@@ -13818,7 +13818,7 @@
       "file_type": "code",
       "norm_label": "test_agent_chat_break_even_units()",
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L692"
+      "source_location": "L696"
     },
     {
       "id": "tests_passkey_authenticator_softauthenticator_client_data",
@@ -13902,7 +13902,7 @@
       "file_type": "code",
       "norm_label": "test_agent_chat_prudent_debt_capacity()",
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L650"
+      "source_location": "L654"
     },
     {
       "id": "tests_integration_test_agent_api_test_agent_chat_amortization_parameter_inheritance",
@@ -13914,7 +13914,7 @@
       "file_type": "code",
       "norm_label": "test_agent_chat_amortization_parameter_inheritance()",
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L735"
+      "source_location": "L739"
     },
     {
       "id": "tests_integration_test_agent_api_test_agent_chat_operating_cash_flow_ratio",
@@ -13926,7 +13926,7 @@
       "file_type": "code",
       "norm_label": "test_agent_chat_operating_cash_flow_ratio()",
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L678"
+      "source_location": "L682"
     },
     {
       "id": "tests_integration_test_agent_api_test_agent_chat_dscr_parameter_inheritance",
@@ -13938,7 +13938,7 @@
       "file_type": "code",
       "norm_label": "test_agent_chat_dscr_parameter_inheritance()",
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L796"
+      "source_location": "L800"
     },
     {
       "id": "services_ingestion_invoice_parser_invoiceingestionerror_init",
@@ -15965,7 +15965,7 @@
       "source_location": "L162"
     },
     {
-      "id": "tests_unit_test_download_model_rationale_178",
+      "id": "tests_unit_test_download_model_rationale_179",
       "label": "Verifies POST /api/v1/agent/delete-model endpoint.",
       "_origin": "ast",
       "community": 106,
@@ -15973,7 +15973,7 @@
       "file_type": "rationale",
       "norm_label": "verifies post /api/v1/agent/delete-model endpoint.",
       "source_file": "tests/unit/test_download_model.py",
-      "source_location": "L178"
+      "source_location": "L179"
     },
     {
       "id": "tests_unit_test_download_model_rationale_47",
@@ -29922,29 +29922,18 @@
       "source_location": "L1"
     },
     {
-      "id": "tests_integration_test_agent_api_rationale_192",
-      "label": "Verify offline provider connection probe succeeds immediately with 0ms latency.",
+      "id": "tests_integration_test_agent_api_rationale_231",
+      "label": "Verify chat route parses X-LLM-Config header and maintains deterministic\u2026",
       "_origin": "ast",
       "community": 226,
       "community_name": "test_agent_api.py",
       "file_type": "rationale",
-      "norm_label": "verify offline provider connection probe succeeds immediately with 0ms latency.",
+      "norm_label": "verify chat route parses x-llm-config header and maintains deterministic...",
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L192"
+      "source_location": "L231"
     },
     {
-      "id": "tests_integration_test_agent_api_rationale_561",
-      "label": "Verify chat agent computes break-even sales revenue threshold.",
-      "_origin": "ast",
-      "community": 226,
-      "community_name": "test_agent_api.py",
-      "file_type": "rationale",
-      "norm_label": "verify chat agent computes break-even sales revenue threshold.",
-      "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L561"
-    },
-    {
-      "id": "tests_integration_test_agent_api_rationale_637",
+      "id": "tests_integration_test_agent_api_rationale_641",
       "label": "Verify Fixed Charge Coverage Ratio calculation and underwriting approval tier.",
       "_origin": "ast",
       "community": 226,
@@ -29952,10 +29941,10 @@
       "file_type": "rationale",
       "norm_label": "verify fixed charge coverage ratio calculation and underwriting approval tier.",
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L637"
+      "source_location": "L641"
     },
     {
-      "id": "tests_integration_test_agent_api_rationale_767",
+      "id": "tests_integration_test_agent_api_rationale_771",
       "label": "Verify follow-up query inherits fixed operating costs when contribution margin\u2026",
       "_origin": "ast",
       "community": 226,
@@ -29963,10 +29952,10 @@
       "file_type": "rationale",
       "norm_label": "verify follow-up query inherits fixed operating costs when contribution margin...",
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L767"
+      "source_location": "L771"
     },
     {
-      "id": "tests_integration_test_agent_api_rationale_83",
+      "id": "tests_integration_test_agent_api_rationale_85",
       "label": "Verify agent invokes digital underwriting and pre-qualified matching with true\u2026",
       "_origin": "ast",
       "community": 226,
@@ -29974,7 +29963,7 @@
       "file_type": "rationale",
       "norm_label": "verify agent invokes digital underwriting and pre-qualified matching with true...",
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L83"
+      "source_location": "L85"
     },
     {
       "id": "pdfreader",
@@ -35683,6 +35672,17 @@
       "source_location": "L172"
     },
     {
+      "id": "tests_integration_test_agent_api_rationale_194",
+      "label": "Verify offline provider connection probe succeeds immediately with 0ms latency.",
+      "_origin": "ast",
+      "community": 281,
+      "community_name": "test_agent_test_connection_offline",
+      "file_type": "rationale",
+      "norm_label": "verify offline provider connection probe succeeds immediately with 0ms latency.",
+      "source_file": "tests/integration/test_agent_api.py",
+      "source_location": "L194"
+    },
+    {
       "id": "services_calculations_liquidity_score",
       "label": "liquidity_score.py",
       "_origin": "ast",
@@ -35727,7 +35727,7 @@
       "source_location": "L21"
     },
     {
-      "id": "tests_integration_test_agent_api_rationale_108",
+      "id": "tests_integration_test_agent_api_rationale_110",
       "label": "Verify agent stages financial intents into Tier 2 and enforces biometric\u2026",
       "_origin": "ast",
       "community": 283,
@@ -35735,7 +35735,7 @@
       "file_type": "rationale",
       "norm_label": "verify agent stages financial intents into tier 2 and enforces biometric...",
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L108"
+      "source_location": "L110"
     },
     {
       "id": "contracts_decision_tables_semantic_intent_prototypes",
@@ -36241,6 +36241,17 @@
       "norm_label": "for key metrics:",
       "source_file": ".agent/skills/earnings-analysis/references/report-structure.md",
       "source_location": "L360"
+    },
+    {
+      "id": "tests_integration_test_agent_api_rationale_565",
+      "label": "Verify chat agent computes break-even sales revenue threshold.",
+      "_origin": "ast",
+      "community": 288,
+      "community_name": "test_agent_chat_break_even_calculation",
+      "file_type": "rationale",
+      "norm_label": "verify chat agent computes break-even sales revenue threshold.",
+      "source_file": "tests/integration/test_agent_api.py",
+      "source_location": "L565"
     },
     {
       "id": "api_routes_agent_py_delete",
@@ -36828,7 +36839,7 @@
       "source_location": "L6"
     },
     {
-      "id": "tests_integration_test_agent_api_rationale_136",
+      "id": "tests_integration_test_agent_api_rationale_138",
       "label": "Verify agent prompts for statement CSV when diagnostic inquiry lacks\u2026",
       "_origin": "ast",
       "community": 295,
@@ -36836,7 +36847,7 @@
       "file_type": "rationale",
       "norm_label": "verify agent prompts for statement csv when diagnostic inquiry lacks...",
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L136"
+      "source_location": "L138"
     },
     {
       "id": "docs_team_distribution_guide_1_operating_model_lead_architect_ai_specialist_squads",
@@ -37581,7 +37592,7 @@
       "source_location": "L6"
     },
     {
-      "id": "tests_integration_test_agent_api_rationale_286",
+      "id": "tests_integration_test_agent_api_rationale_289",
       "label": "Verify custom provider without base URL returns empty models list.",
       "_origin": "ast",
       "community": 300,
@@ -37589,7 +37600,7 @@
       "file_type": "rationale",
       "norm_label": "verify custom provider without base url returns empty models list.",
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L286"
+      "source_location": "L289"
     },
     {
       "id": "services_ingestion_pdf_parser_rationale_343",
@@ -37614,7 +37625,7 @@
       "source_location": "L18"
     },
     {
-      "id": "tests_integration_test_agent_api_rationale_342",
+      "id": "tests_integration_test_agent_api_rationale_345",
       "label": "Verify explicit target_horizon_days in payload overrides or sets dynamic\u2026",
       "_origin": "ast",
       "community": 302,
@@ -37622,7 +37633,7 @@
       "file_type": "rationale",
       "norm_label": "verify explicit target_horizon_days in payload overrides or sets dynamic...",
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L342"
+      "source_location": "L345"
     },
     {
       "id": "tests_unit_test_treasury_dupont_lease",
@@ -38059,7 +38070,7 @@
       "source_location": "L30"
     },
     {
-      "id": "tests_integration_test_agent_api_rationale_601",
+      "id": "tests_integration_test_agent_api_rationale_605",
       "label": "Verify customer revenue concentration audit across statement CSV counterparties.",
       "_origin": "ast",
       "community": 310,
@@ -38067,10 +38078,10 @@
       "file_type": "rationale",
       "norm_label": "verify customer revenue concentration audit across statement csv counterparties.",
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L601"
+      "source_location": "L605"
     },
     {
-      "id": "tests_integration_test_agent_api_rationale_216",
+      "id": "tests_integration_test_agent_api_rationale_219",
       "label": "Verify custom provider validation flags missing Base URL before network\u2026",
       "_origin": "ast",
       "community": 311,
@@ -38078,7 +38089,7 @@
       "file_type": "rationale",
       "norm_label": "verify custom provider validation flags missing base url before network...",
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L216"
+      "source_location": "L219"
     },
     {
       "id": "tests_integration_test_decision_api",
@@ -38147,7 +38158,7 @@
       "source_location": "L28"
     },
     {
-      "id": "tests_integration_test_agent_api_rationale_665",
+      "id": "tests_integration_test_agent_api_rationale_669",
       "label": "Verify Working Capital Requirement (WCR) calculation and liquidity posture.",
       "_origin": "ast",
       "community": 313,
@@ -38155,21 +38166,10 @@
       "file_type": "rationale",
       "norm_label": "verify working capital requirement (wcr) calculation and liquidity posture.",
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L665"
+      "source_location": "L669"
     },
     {
-      "id": "tests_integration_test_agent_api_rationale_228",
-      "label": "Verify chat route parses X-LLM-Config header and maintains deterministic\u2026",
-      "_origin": "ast",
-      "community": 314,
-      "community_name": "test_agent_chat_with_header_llm_config",
-      "file_type": "rationale",
-      "norm_label": "verify chat route parses x-llm-config header and maintains deterministic...",
-      "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L228"
-    },
-    {
-      "id": "tests_integration_test_agent_api_rationale_244",
+      "id": "tests_integration_test_agent_api_rationale_247",
       "label": "Verify PII sanitization removes account numbers, SSNs, and emails before\u2026",
       "_origin": "ast",
       "community": 315,
@@ -38177,10 +38177,10 @@
       "file_type": "rationale",
       "norm_label": "verify pii sanitization removes account numbers, ssns, and emails before...",
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L244"
+      "source_location": "L247"
     },
     {
-      "id": "tests_integration_test_agent_api_rationale_707",
+      "id": "tests_integration_test_agent_api_rationale_711",
       "label": "Verify customer churn revenue attrition stress testing on annual cash burn.",
       "_origin": "ast",
       "community": 316,
@@ -38188,7 +38188,7 @@
       "file_type": "rationale",
       "norm_label": "verify customer churn revenue attrition stress testing on annual cash burn.",
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L707"
+      "source_location": "L711"
     },
     {
       "id": "scripts_verify_dataset_health",
@@ -38345,7 +38345,7 @@
       "source_location": "L346"
     },
     {
-      "id": "tests_integration_test_agent_api_rationale_259",
+      "id": "tests_integration_test_agent_api_rationale_262",
       "label": "Verify offline provider returns deterministic local model catalog immediately.",
       "_origin": "ast",
       "community": 319,
@@ -38353,7 +38353,7 @@
       "file_type": "rationale",
       "norm_label": "verify offline provider returns deterministic local model catalog immediately.",
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L259"
+      "source_location": "L262"
     },
     {
       "id": "agent_skills_agent_reach_skill_en",
@@ -38514,7 +38514,7 @@
       "source_location": "L1"
     },
     {
-      "id": "tests_integration_test_agent_api_rationale_28",
+      "id": "tests_integration_test_agent_api_rationale_30",
       "label": "Verify general assistance returns domain orientation without tool execution.",
       "_origin": "ast",
       "community": 320,
@@ -38522,10 +38522,10 @@
       "file_type": "rationale",
       "norm_label": "verify general assistance returns domain orientation without tool execution.",
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L28"
+      "source_location": "L30"
     },
     {
-      "id": "tests_integration_test_agent_api_rationale_299",
+      "id": "tests_integration_test_agent_api_rationale_302",
       "label": "Verify agent cash diagnostic surfaces forward-looking deficit metrics and\u2026",
       "_origin": "ast",
       "community": 321,
@@ -38533,10 +38533,10 @@
       "file_type": "rationale",
       "norm_label": "verify agent cash diagnostic surfaces forward-looking deficit metrics and...",
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L299"
+      "source_location": "L302"
     },
     {
-      "id": "tests_integration_test_agent_api_rationale_322",
+      "id": "tests_integration_test_agent_api_rationale_325",
       "label": "Verify natural language query asking for arbitrary days (e.g. 42 days) computes\u2026",
       "_origin": "ast",
       "community": 322,
@@ -38544,10 +38544,10 @@
       "file_type": "rationale",
       "norm_label": "verify natural language query asking for arbitrary days (e.g. 42 days) computes...",
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L322"
+      "source_location": "L325"
     },
     {
-      "id": "tests_integration_test_agent_api_rationale_361",
+      "id": "tests_integration_test_agent_api_rationale_364",
       "label": "Verify chat request asking for days beyond 365 is capped with advisory note.",
       "_origin": "ast",
       "community": 323,
@@ -38555,7 +38555,7 @@
       "file_type": "rationale",
       "norm_label": "verify chat request asking for days beyond 365 is capped with advisory note.",
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L361"
+      "source_location": "L364"
     },
     {
       "id": "docs_sme_finance_copilot_complete_architecture_and_beginner_guide_6_consortium_blockchain_double_financing_defense",
@@ -38628,7 +38628,7 @@
       "source_location": "L105"
     },
     {
-      "id": "tests_integration_test_agent_api_rationale_149",
+      "id": "tests_integration_test_agent_api_rationale_151",
       "label": "Verify X-Tenant-ID header authoritatively overrides client-supplied body\u2026",
       "_origin": "ast",
       "community": 326,
@@ -38636,10 +38636,10 @@
       "file_type": "rationale",
       "norm_label": "verify x-tenant-id header authoritatively overrides client-supplied body...",
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L149"
+      "source_location": "L151"
     },
     {
-      "id": "tests_integration_test_agent_api_rationale_175",
+      "id": "tests_integration_test_agent_api_rationale_177",
       "label": "Verify adversarial prompt injection attempts are intercepted and neutralized\u2026",
       "_origin": "ast",
       "community": 327,
@@ -38647,10 +38647,10 @@
       "file_type": "rationale",
       "norm_label": "verify adversarial prompt injection attempts are intercepted and neutralized...",
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L175"
+      "source_location": "L177"
     },
     {
-      "id": "tests_integration_test_agent_api_rationale_204",
+      "id": "tests_integration_test_agent_api_rationale_207",
       "label": "Verify cloud provider validation flags missing API key before network attempts.",
       "_origin": "ast",
       "community": 328,
@@ -38658,7 +38658,7 @@
       "file_type": "rationale",
       "norm_label": "verify cloud provider validation flags missing api key before network attempts.",
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L204"
+      "source_location": "L207"
     },
     {
       "id": "abc",
@@ -39169,7 +39169,7 @@
       "source_location": "L8"
     },
     {
-      "id": "tests_integration_test_agent_api_rationale_418",
+      "id": "tests_integration_test_agent_api_rationale_421",
       "label": "Verify natural phrasing for balance and borrowing limits.",
       "_origin": "ast",
       "community": 330,
@@ -39177,10 +39177,10 @@
       "file_type": "rationale",
       "norm_label": "verify natural phrasing for balance and borrowing limits.",
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L418"
+      "source_location": "L421"
     },
     {
-      "id": "tests_integration_test_agent_api_rationale_43",
+      "id": "tests_integration_test_agent_api_rationale_45",
       "label": "Verify casual greetings return clean institutional CFO introduction with zero\u2026",
       "_origin": "ast",
       "community": 331,
@@ -39188,10 +39188,10 @@
       "file_type": "rationale",
       "norm_label": "verify casual greetings return clean institutional cfo introduction with zero...",
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L43"
+      "source_location": "L45"
     },
     {
-      "id": "tests_integration_test_agent_api_rationale_402",
+      "id": "tests_integration_test_agent_api_rationale_405",
       "label": "Verify natural phrasing 'how many days left' routes to cash diagnostic and\u2026",
       "_origin": "ast",
       "community": 332,
@@ -39199,10 +39199,10 @@
       "file_type": "rationale",
       "norm_label": "verify natural phrasing 'how many days left' routes to cash diagnostic and...",
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L402"
+      "source_location": "L405"
     },
     {
-      "id": "tests_integration_test_agent_api_rationale_273",
+      "id": "tests_integration_test_agent_api_rationale_276",
       "label": "Verify missing API key returns empty models list without hardcoded fallback.",
       "_origin": "ast",
       "community": 333,
@@ -39210,10 +39210,10 @@
       "file_type": "rationale",
       "norm_label": "verify missing api key returns empty models list without hardcoded fallback.",
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L273"
+      "source_location": "L276"
     },
     {
-      "id": "tests_integration_test_agent_api_rationale_445",
+      "id": "tests_integration_test_agent_api_rationale_448",
       "label": "Verify supervisor uses conversation history to resolve contextual follow-ups.",
       "_origin": "ast",
       "community": 334,
@@ -39221,10 +39221,10 @@
       "file_type": "rationale",
       "norm_label": "verify supervisor uses conversation history to resolve contextual follow-ups.",
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L445"
+      "source_location": "L448"
     },
     {
-      "id": "tests_integration_test_agent_api_rationale_494",
+      "id": "tests_integration_test_agent_api_rationale_497",
       "label": "Verify deficit query cleanly triggers early-warning check.",
       "_origin": "ast",
       "community": 335,
@@ -39232,10 +39232,10 @@
       "file_type": "rationale",
       "norm_label": "verify deficit query cleanly triggers early-warning check.",
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L494"
+      "source_location": "L497"
     },
     {
-      "id": "tests_integration_test_agent_api_rationale_462",
+      "id": "tests_integration_test_agent_api_rationale_465",
       "label": "Verify semantic sub-intent router correctly isolates burn rate queries.",
       "_origin": "ast",
       "community": 336,
@@ -39243,10 +39243,10 @@
       "file_type": "rationale",
       "norm_label": "verify semantic sub-intent router correctly isolates burn rate queries.",
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L462"
+      "source_location": "L465"
     },
     {
-      "id": "tests_integration_test_agent_api_rationale_382",
+      "id": "tests_integration_test_agent_api_rationale_385",
       "label": "Verify chat agent detects customer DSO and vendor DPO to compute CCC.",
       "_origin": "ast",
       "community": 337,
@@ -39254,10 +39254,10 @@
       "file_type": "rationale",
       "norm_label": "verify chat agent detects customer dso and vendor dpo to compute ccc.",
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L382"
+      "source_location": "L385"
     },
     {
-      "id": "tests_integration_test_agent_api_rationale_478",
+      "id": "tests_integration_test_agent_api_rationale_481",
       "label": "Verify strategic CFO advice is generated dynamically without hardcoded keywords.",
       "_origin": "ast",
       "community": 338,
@@ -39265,10 +39265,10 @@
       "file_type": "rationale",
       "norm_label": "verify strategic cfo advice is generated dynamically without hardcoded keywords.",
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L478"
+      "source_location": "L481"
     },
     {
-      "id": "tests_integration_test_agent_api_rationale_509",
+      "id": "tests_integration_test_agent_api_rationale_512",
       "label": "Verify local fine-tuned LoRA model is detected and test-connection succeeds.",
       "_origin": "ast",
       "community": 339,
@@ -39276,7 +39276,7 @@
       "file_type": "rationale",
       "norm_label": "verify local fine-tuned lora model is detected and test-connection succeeds.",
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L509"
+      "source_location": "L512"
     },
     {
       "id": "agent_skills_code_reviewer_skill",
@@ -39391,7 +39391,7 @@
       "source_location": "L8"
     },
     {
-      "id": "tests_integration_test_agent_api_rationale_547",
+      "id": "tests_integration_test_agent_api_rationale_551",
       "label": "Verify chat agent calculates Debt Service Coverage Ratio (DSCR) and assigns\u2026",
       "_origin": "ast",
       "community": 340,
@@ -39399,10 +39399,10 @@
       "file_type": "rationale",
       "norm_label": "verify chat agent calculates debt service coverage ratio (dscr) and assigns...",
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L547"
+      "source_location": "L551"
     },
     {
-      "id": "tests_integration_test_agent_api_rationale_532",
+      "id": "tests_integration_test_agent_api_rationale_536",
       "label": "Verify chat agent calculates commercial loan amortization schedule with\u2026",
       "_origin": "ast",
       "community": 341,
@@ -39410,7 +39410,7 @@
       "file_type": "rationale",
       "norm_label": "verify chat agent calculates commercial loan amortization schedule with...",
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L532"
+      "source_location": "L536"
     },
     {
       "id": "docs_sme_finance_copilot_complete_architecture_and_beginner_guide_8_system_architecture_subagent_specialist_execution_guide",
@@ -39449,7 +39449,7 @@
       "source_location": "L725"
     },
     {
-      "id": "tests_integration_test_agent_api_rationale_575",
+      "id": "tests_integration_test_agent_api_rationale_579",
       "label": "Verify factoring proceeds calculation and predatory APR (>36%) flagging.",
       "_origin": "ast",
       "community": 343,
@@ -39457,10 +39457,10 @@
       "file_type": "rationale",
       "norm_label": "verify factoring proceeds calculation and predatory apr (>36%) flagging.",
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L575"
+      "source_location": "L579"
     },
     {
-      "id": "tests_integration_test_agent_api_rationale_721",
+      "id": "tests_integration_test_agent_api_rationale_725",
       "label": "Verify consortium blockchain SHA-256 invoice hashing and unencumbered asset\u2026",
       "_origin": "ast",
       "community": 344,
@@ -39468,10 +39468,10 @@
       "file_type": "rationale",
       "norm_label": "verify consortium blockchain sha-256 invoice hashing and unencumbered asset...",
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L721"
+      "source_location": "L725"
     },
     {
-      "id": "tests_integration_test_agent_api_rationale_61",
+      "id": "tests_integration_test_agent_api_rationale_63",
       "label": "Verify agent invokes cash analysis tool and returns exact decimal runway\u2026",
       "_origin": "ast",
       "community": 345,
@@ -39479,7 +39479,7 @@
       "file_type": "rationale",
       "norm_label": "verify agent invokes cash analysis tool and returns exact decimal runway...",
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L61"
+      "source_location": "L63"
     },
     {
       "id": "services_calculations_cash_analysis",
@@ -39785,7 +39785,7 @@
       "source_location": "L75"
     },
     {
-      "id": "tests_integration_test_agent_api_rationale_619",
+      "id": "tests_integration_test_agent_api_rationale_623",
       "label": "Verify Defensive Interval Ratio (DIR) computation from loaded bank statement.",
       "_origin": "ast",
       "community": 349,
@@ -39793,7 +39793,7 @@
       "file_type": "rationale",
       "norm_label": "verify defensive interval ratio (dir) computation from loaded bank statement.",
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L619"
+      "source_location": "L623"
     },
     {
       "id": "agent_skills_frontend_craft_engineer_skill",
@@ -39908,7 +39908,7 @@
       "source_location": "L8"
     },
     {
-      "id": "tests_integration_test_agent_api_rationale_693",
+      "id": "tests_integration_test_agent_api_rationale_697",
       "label": "Verify unit-level break-even volume calculation with contribution margin.",
       "_origin": "ast",
       "community": 350,
@@ -39916,10 +39916,10 @@
       "file_type": "rationale",
       "norm_label": "verify unit-level break-even volume calculation with contribution margin.",
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L693"
+      "source_location": "L697"
     },
     {
-      "id": "tests_integration_test_agent_api_rationale_651",
+      "id": "tests_integration_test_agent_api_rationale_655",
       "label": "Verify maximum prudent debt capacity calculation with target DSCR covenant.",
       "_origin": "ast",
       "community": 352,
@@ -39927,10 +39927,10 @@
       "file_type": "rationale",
       "norm_label": "verify maximum prudent debt capacity calculation with target dscr covenant.",
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L651"
+      "source_location": "L655"
     },
     {
-      "id": "tests_integration_test_agent_api_rationale_736",
+      "id": "tests_integration_test_agent_api_rationale_740",
       "label": "Verify follow-up query inherits principal and term from prior turn when\u2026",
       "_origin": "ast",
       "community": 353,
@@ -39938,10 +39938,10 @@
       "file_type": "rationale",
       "norm_label": "verify follow-up query inherits principal and term from prior turn when...",
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L736"
+      "source_location": "L740"
     },
     {
-      "id": "tests_integration_test_agent_api_rationale_679",
+      "id": "tests_integration_test_agent_api_rationale_683",
       "label": "Verify Operating Cash Flow (OCF) ratio assessment and solvency classification.",
       "_origin": "ast",
       "community": 354,
@@ -39949,7 +39949,7 @@
       "file_type": "rationale",
       "norm_label": "verify operating cash flow (ocf) ratio assessment and solvency classification.",
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L679"
+      "source_location": "L683"
     },
     {
       "id": "knowledge_cards_financing",
@@ -40156,7 +40156,7 @@
       "source_location": "L107"
     },
     {
-      "id": "tests_integration_test_agent_api_rationale_797",
+      "id": "tests_integration_test_agent_api_rationale_801",
       "label": "Verify follow-up query inherits Net Operating Income when annual debt service\u2026",
       "_origin": "ast",
       "community": 356,
@@ -40164,7 +40164,7 @@
       "file_type": "rationale",
       "norm_label": "verify follow-up query inherits net operating income when annual debt service...",
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L797"
+      "source_location": "L801"
     },
     {
       "id": "knowledge_cards_working_capital",
@@ -48302,18 +48302,6 @@
       "type": "external"
     },
     {
-      "id": "unittest_mock",
-      "label": "unittest_mock",
-      "_origin": "semantic",
-      "community": 173,
-      "community_name": "test_context_summarizer.py",
-      "external": true,
-      "file_type": "concept",
-      "norm_label": "unittest_mock",
-      "source_file": "",
-      "type": "external"
-    },
-    {
       "id": "json",
       "label": "json",
       "_origin": "semantic",
@@ -48502,6 +48490,18 @@
       "external": true,
       "file_type": "concept",
       "norm_label": "urllib_request",
+      "source_file": "",
+      "type": "external"
+    },
+    {
+      "id": "unittest_mock",
+      "label": "unittest_mock",
+      "_origin": "semantic",
+      "community": 226,
+      "community_name": "test_agent_api.py",
+      "external": true,
+      "file_type": "concept",
+      "norm_label": "unittest_mock",
       "source_file": "",
       "type": "external"
     },
@@ -60768,7 +60768,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L248",
+      "source_location": "L251",
       "weight": 1.0
     },
     {
@@ -63468,7 +63468,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "tests/unit/test_download_model.py",
-      "source_location": "L211",
+      "source_location": "L212",
       "weight": 1.0
     },
     {
@@ -63480,7 +63480,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "tests/unit/test_download_model.py",
-      "source_location": "L212",
+      "source_location": "L213",
       "weight": 1.0
     },
     {
@@ -63492,7 +63492,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "tests/unit/test_download_model.py",
-      "source_location": "L213",
+      "source_location": "L214",
       "weight": 1.0
     },
     {
@@ -63636,7 +63636,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "tests/unit/test_download_model.py",
-      "source_location": "L218",
+      "source_location": "L219",
       "weight": 1.0
     },
     {
@@ -80400,7 +80400,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L245",
+      "source_location": "L248",
       "weight": 1.0
     },
     {
@@ -81684,7 +81684,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "tests/unit/test_download_model.py",
-      "source_location": "L203",
+      "source_location": "L204",
       "weight": 1.0
     },
     {
@@ -81696,7 +81696,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "tests/unit/test_download_model.py",
-      "source_location": "L203",
+      "source_location": "L204",
       "weight": 1.0
     },
     {
@@ -81708,7 +81708,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "tests/unit/test_download_model.py",
-      "source_location": "L203",
+      "source_location": "L204",
       "weight": 1.0
     },
     {
@@ -88604,7 +88604,7 @@
     },
     {
       "source": "tests_integration_test_agent_api",
-      "target": "fastapi_testclient",
+      "target": "unittest_mock",
       "relation": "imports_from",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -88616,7 +88616,7 @@
     },
     {
       "source": "tests_integration_test_agent_api",
-      "target": "api_main",
+      "target": "fastapi_testclient",
       "relation": "imports_from",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -88628,6 +88628,18 @@
     },
     {
       "source": "tests_integration_test_agent_api",
+      "target": "api_main",
+      "relation": "imports_from",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "tests/integration/test_agent_api.py",
+      "source_location": "L15",
+      "weight": 1.0
+    },
+    {
+      "source": "tests_integration_test_agent_api",
       "target": "services_security_staging_ledger",
       "relation": "imports_from",
       "_origin": "ast",
@@ -88635,7 +88647,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L14",
+      "source_location": "L16",
       "weight": 1.0
     },
     {
@@ -116828,7 +116840,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L107",
+      "source_location": "L109",
       "weight": 1.0
     },
     {
@@ -116839,7 +116851,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L135",
+      "source_location": "L137",
       "weight": 1.0
     },
     {
@@ -116850,7 +116862,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L148",
+      "source_location": "L150",
       "weight": 1.0
     },
     {
@@ -116861,7 +116873,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L174",
+      "source_location": "L176",
       "weight": 1.0
     },
     {
@@ -116872,7 +116884,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L191",
+      "source_location": "L193",
       "weight": 1.0
     },
     {
@@ -116883,7 +116895,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L203",
+      "source_location": "L206",
       "weight": 1.0
     },
     {
@@ -116894,7 +116906,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L215",
+      "source_location": "L218",
       "weight": 1.0
     },
     {
@@ -116905,7 +116917,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L227",
+      "source_location": "L230",
       "weight": 1.0
     },
     {
@@ -116916,7 +116928,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L243",
+      "source_location": "L246",
       "weight": 1.0
     },
     {
@@ -116927,18 +116939,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L258",
-      "weight": 1.0
-    },
-    {
-      "source": "tests_integration_test_agent_api",
-      "target": "tests_integration_test_agent_api_test_agent_general_assistance",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L27",
+      "source_location": "L261",
       "weight": 1.0
     },
     {
@@ -116949,7 +116950,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L272",
+      "source_location": "L275",
       "weight": 1.0
     },
     {
@@ -116960,7 +116961,18 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L285",
+      "source_location": "L288",
+      "weight": 1.0
+    },
+    {
+      "source": "tests_integration_test_agent_api",
+      "target": "tests_integration_test_agent_api_test_agent_general_assistance",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "tests/integration/test_agent_api.py",
+      "source_location": "L29",
       "weight": 1.0
     },
     {
@@ -116971,7 +116983,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L298",
+      "source_location": "L301",
       "weight": 1.0
     },
     {
@@ -116982,7 +116994,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L321",
+      "source_location": "L324",
       "weight": 1.0
     },
     {
@@ -116993,7 +117005,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L341",
+      "source_location": "L344",
       "weight": 1.0
     },
     {
@@ -117004,7 +117016,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L360",
+      "source_location": "L363",
       "weight": 1.0
     },
     {
@@ -117015,7 +117027,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L381",
+      "source_location": "L384",
       "weight": 1.0
     },
     {
@@ -117026,7 +117038,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L401",
+      "source_location": "L404",
       "weight": 1.0
     },
     {
@@ -117037,7 +117049,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L417",
+      "source_location": "L420",
       "weight": 1.0
     },
     {
@@ -117048,7 +117060,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L42",
+      "source_location": "L44",
       "weight": 1.0
     },
     {
@@ -117059,7 +117071,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L444",
+      "source_location": "L447",
       "weight": 1.0
     },
     {
@@ -117070,7 +117082,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L461",
+      "source_location": "L464",
       "weight": 1.0
     },
     {
@@ -117081,7 +117093,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L477",
+      "source_location": "L480",
       "weight": 1.0
     },
     {
@@ -117092,7 +117104,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L493",
+      "source_location": "L496",
       "weight": 1.0
     },
     {
@@ -117103,7 +117115,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L508",
+      "source_location": "L511",
       "weight": 1.0
     },
     {
@@ -117114,7 +117126,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L531",
+      "source_location": "L535",
       "weight": 1.0
     },
     {
@@ -117125,7 +117137,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L546",
+      "source_location": "L550",
       "weight": 1.0
     },
     {
@@ -117136,7 +117148,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L560",
+      "source_location": "L564",
       "weight": 1.0
     },
     {
@@ -117147,18 +117159,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L574",
-      "weight": 1.0
-    },
-    {
-      "source": "tests_integration_test_agent_api",
-      "target": "tests_integration_test_agent_api_test_agent_cash_diagnostic_flow",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L60",
+      "source_location": "L578",
       "weight": 1.0
     },
     {
@@ -117169,7 +117170,18 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L600",
+      "source_location": "L604",
+      "weight": 1.0
+    },
+    {
+      "source": "tests_integration_test_agent_api",
+      "target": "tests_integration_test_agent_api_test_agent_cash_diagnostic_flow",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "tests/integration/test_agent_api.py",
+      "source_location": "L62",
       "weight": 1.0
     },
     {
@@ -117180,7 +117192,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L618",
+      "source_location": "L622",
       "weight": 1.0
     },
     {
@@ -117191,7 +117203,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L636",
+      "source_location": "L640",
       "weight": 1.0
     },
     {
@@ -117202,7 +117214,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L650",
+      "source_location": "L654",
       "weight": 1.0
     },
     {
@@ -117213,7 +117225,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L664",
+      "source_location": "L668",
       "weight": 1.0
     },
     {
@@ -117224,7 +117236,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L678",
+      "source_location": "L682",
       "weight": 1.0
     },
     {
@@ -117235,7 +117247,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L692",
+      "source_location": "L696",
       "weight": 1.0
     },
     {
@@ -117246,7 +117258,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L706",
+      "source_location": "L710",
       "weight": 1.0
     },
     {
@@ -117257,7 +117269,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L720",
+      "source_location": "L724",
       "weight": 1.0
     },
     {
@@ -117268,7 +117280,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L735",
+      "source_location": "L739",
       "weight": 1.0
     },
     {
@@ -117279,7 +117291,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L766",
+      "source_location": "L770",
       "weight": 1.0
     },
     {
@@ -117290,7 +117302,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L796",
+      "source_location": "L800",
       "weight": 1.0
     },
     {
@@ -117301,7 +117313,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L82",
+      "source_location": "L84",
       "weight": 1.0
     },
     {
@@ -119270,7 +119282,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/unit/test_download_model.py",
-      "source_location": "L177",
+      "source_location": "L178",
       "weight": 1.0
     },
     {
@@ -119281,7 +119293,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/unit/test_download_model.py",
-      "source_location": "L201",
+      "source_location": "L202",
       "weight": 1.0
     },
     {
@@ -119292,7 +119304,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/unit/test_download_model.py",
-      "source_location": "L217",
+      "source_location": "L218",
       "weight": 1.0
     },
     {
@@ -130250,487 +130262,487 @@
       "weight": 1.0
     },
     {
-      "source": "tests_integration_test_agent_api_rationale_108",
+      "source": "tests_integration_test_agent_api_rationale_110",
       "target": "tests_integration_test_agent_api_test_agent_action_staging_flow",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L108",
+      "source_location": "L110",
       "weight": 1.0
     },
     {
-      "source": "tests_integration_test_agent_api_rationale_136",
+      "source": "tests_integration_test_agent_api_rationale_138",
       "target": "tests_integration_test_agent_api_test_agent_missing_csv_returns_guidance",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L136",
+      "source_location": "L138",
       "weight": 1.0
     },
     {
-      "source": "tests_integration_test_agent_api_rationale_149",
+      "source": "tests_integration_test_agent_api_rationale_151",
       "target": "tests_integration_test_agent_api_test_agent_header_tenant_isolation_overrides_body",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L149",
+      "source_location": "L151",
       "weight": 1.0
     },
     {
-      "source": "tests_integration_test_agent_api_rationale_175",
+      "source": "tests_integration_test_agent_api_rationale_177",
       "target": "tests_integration_test_agent_api_test_agent_prompt_injection_defense",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L175",
+      "source_location": "L177",
       "weight": 1.0
     },
     {
-      "source": "tests_integration_test_agent_api_rationale_192",
+      "source": "tests_integration_test_agent_api_rationale_194",
       "target": "tests_integration_test_agent_api_test_agent_test_connection_offline",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L192",
+      "source_location": "L194",
       "weight": 1.0
     },
     {
-      "source": "tests_integration_test_agent_api_rationale_204",
+      "source": "tests_integration_test_agent_api_rationale_207",
       "target": "tests_integration_test_agent_api_test_agent_test_connection_missing_api_key",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L204",
+      "source_location": "L207",
       "weight": 1.0
     },
     {
-      "source": "tests_integration_test_agent_api_rationale_216",
+      "source": "tests_integration_test_agent_api_rationale_219",
       "target": "tests_integration_test_agent_api_test_agent_test_connection_custom_missing_base_url",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L216",
+      "source_location": "L219",
       "weight": 1.0
     },
     {
-      "source": "tests_integration_test_agent_api_rationale_228",
+      "source": "tests_integration_test_agent_api_rationale_231",
       "target": "tests_integration_test_agent_api_test_agent_chat_with_header_llm_config",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L228",
+      "source_location": "L231",
       "weight": 1.0
     },
     {
-      "source": "tests_integration_test_agent_api_rationale_244",
+      "source": "tests_integration_test_agent_api_rationale_247",
       "target": "tests_integration_test_agent_api_test_pii_masking_defense",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L244",
+      "source_location": "L247",
       "weight": 1.0
     },
     {
-      "source": "tests_integration_test_agent_api_rationale_259",
+      "source": "tests_integration_test_agent_api_rationale_262",
       "target": "tests_integration_test_agent_api_test_agent_fetch_models_offline",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L259",
+      "source_location": "L262",
       "weight": 1.0
     },
     {
-      "source": "tests_integration_test_agent_api_rationale_273",
+      "source": "tests_integration_test_agent_api_rationale_276",
       "target": "tests_integration_test_agent_api_test_agent_fetch_models_missing_key",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L273",
+      "source_location": "L276",
       "weight": 1.0
     },
     {
-      "source": "tests_integration_test_agent_api_rationale_28",
-      "target": "tests_integration_test_agent_api_test_agent_general_assistance",
-      "relation": "rationale_for",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L28",
-      "weight": 1.0
-    },
-    {
-      "source": "tests_integration_test_agent_api_rationale_286",
+      "source": "tests_integration_test_agent_api_rationale_289",
       "target": "tests_integration_test_agent_api_test_agent_fetch_models_custom_missing_base_url",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L286",
+      "source_location": "L289",
       "weight": 1.0
     },
     {
-      "source": "tests_integration_test_agent_api_rationale_299",
+      "source": "tests_integration_test_agent_api_rationale_30",
+      "target": "tests_integration_test_agent_api_test_agent_general_assistance",
+      "relation": "rationale_for",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "tests/integration/test_agent_api.py",
+      "source_location": "L30",
+      "weight": 1.0
+    },
+    {
+      "source": "tests_integration_test_agent_api_rationale_302",
       "target": "tests_integration_test_agent_api_test_agent_cash_diagnostic_predictive_early_warning",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L299",
+      "source_location": "L302",
       "weight": 1.0
     },
     {
-      "source": "tests_integration_test_agent_api_rationale_322",
+      "source": "tests_integration_test_agent_api_rationale_325",
       "target": "tests_integration_test_agent_api_test_agent_cash_diagnostic_dynamic_custom_days",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L322",
+      "source_location": "L325",
       "weight": 1.0
     },
     {
-      "source": "tests_integration_test_agent_api_rationale_342",
+      "source": "tests_integration_test_agent_api_rationale_345",
       "target": "tests_integration_test_agent_api_test_agent_chat_target_horizon_field_in_request",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L342",
+      "source_location": "L345",
       "weight": 1.0
     },
     {
-      "source": "tests_integration_test_agent_api_rationale_361",
+      "source": "tests_integration_test_agent_api_rationale_364",
       "target": "tests_integration_test_agent_api_test_agent_chat_horizon_capped_at_365_days",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L361",
+      "source_location": "L364",
       "weight": 1.0
     },
     {
-      "source": "tests_integration_test_agent_api_rationale_382",
+      "source": "tests_integration_test_agent_api_rationale_385",
       "target": "tests_integration_test_agent_api_test_agent_chat_working_capital_cycle_detection",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L382",
+      "source_location": "L385",
       "weight": 1.0
     },
     {
-      "source": "tests_integration_test_agent_api_rationale_402",
+      "source": "tests_integration_test_agent_api_rationale_405",
       "target": "tests_integration_test_agent_api_test_agent_chat_handles_natural_followup_days_left",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L402",
+      "source_location": "L405",
       "weight": 1.0
     },
     {
-      "source": "tests_integration_test_agent_api_rationale_418",
+      "source": "tests_integration_test_agent_api_rationale_421",
       "target": "tests_integration_test_agent_api_test_agent_chat_handles_natural_followup_balance_and_borrowing",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L418",
+      "source_location": "L421",
       "weight": 1.0
     },
     {
-      "source": "tests_integration_test_agent_api_rationale_43",
-      "target": "tests_integration_test_agent_api_test_agent_greeting_zero_hallucination",
-      "relation": "rationale_for",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L43",
-      "weight": 1.0
-    },
-    {
-      "source": "tests_integration_test_agent_api_rationale_445",
+      "source": "tests_integration_test_agent_api_rationale_448",
       "target": "tests_integration_test_agent_api_test_agent_chat_contextual_history_followup",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L445",
+      "source_location": "L448",
       "weight": 1.0
     },
     {
-      "source": "tests_integration_test_agent_api_rationale_462",
+      "source": "tests_integration_test_agent_api_rationale_45",
+      "target": "tests_integration_test_agent_api_test_agent_greeting_zero_hallucination",
+      "relation": "rationale_for",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "tests/integration/test_agent_api.py",
+      "source_location": "L45",
+      "weight": 1.0
+    },
+    {
+      "source": "tests_integration_test_agent_api_rationale_465",
       "target": "tests_integration_test_agent_api_test_agent_chat_sub_intent_burn_rate",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L462",
+      "source_location": "L465",
       "weight": 1.0
     },
     {
-      "source": "tests_integration_test_agent_api_rationale_478",
+      "source": "tests_integration_test_agent_api_rationale_481",
       "target": "tests_integration_test_agent_api_test_agent_chat_sub_intent_cfo_advice",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L478",
+      "source_location": "L481",
       "weight": 1.0
     },
     {
-      "source": "tests_integration_test_agent_api_rationale_494",
+      "source": "tests_integration_test_agent_api_rationale_497",
       "target": "tests_integration_test_agent_api_test_agent_chat_sub_intent_deficit_warning",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L494",
+      "source_location": "L497",
       "weight": 1.0
     },
     {
-      "source": "tests_integration_test_agent_api_rationale_509",
+      "source": "tests_integration_test_agent_api_rationale_512",
       "target": "tests_integration_test_agent_api_test_agent_offline_lora_connection_and_discovery",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L509",
+      "source_location": "L512",
       "weight": 1.0
     },
     {
-      "source": "tests_integration_test_agent_api_rationale_532",
+      "source": "tests_integration_test_agent_api_rationale_536",
       "target": "tests_integration_test_agent_api_test_agent_chat_loan_amortization_calculation",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L532",
+      "source_location": "L536",
       "weight": 1.0
     },
     {
-      "source": "tests_integration_test_agent_api_rationale_547",
+      "source": "tests_integration_test_agent_api_rationale_551",
       "target": "tests_integration_test_agent_api_test_agent_chat_dscr_calculation",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L547",
+      "source_location": "L551",
       "weight": 1.0
     },
     {
-      "source": "tests_integration_test_agent_api_rationale_561",
+      "source": "tests_integration_test_agent_api_rationale_565",
       "target": "tests_integration_test_agent_api_test_agent_chat_break_even_calculation",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L561",
+      "source_location": "L565",
       "weight": 1.0
     },
     {
-      "source": "tests_integration_test_agent_api_rationale_575",
+      "source": "tests_integration_test_agent_api_rationale_579",
       "target": "tests_integration_test_agent_api_test_agent_chat_factoring_proceeds_and_predatory_warning",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L575",
+      "source_location": "L579",
       "weight": 1.0
     },
     {
-      "source": "tests_integration_test_agent_api_rationale_601",
+      "source": "tests_integration_test_agent_api_rationale_605",
       "target": "tests_integration_test_agent_api_test_agent_chat_client_concentration_with_csv",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L601",
+      "source_location": "L605",
       "weight": 1.0
     },
     {
-      "source": "tests_integration_test_agent_api_rationale_61",
-      "target": "tests_integration_test_agent_api_test_agent_cash_diagnostic_flow",
-      "relation": "rationale_for",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L61",
-      "weight": 1.0
-    },
-    {
-      "source": "tests_integration_test_agent_api_rationale_619",
+      "source": "tests_integration_test_agent_api_rationale_623",
       "target": "tests_integration_test_agent_api_test_agent_chat_defensive_interval_ratio",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L619",
+      "source_location": "L623",
       "weight": 1.0
     },
     {
-      "source": "tests_integration_test_agent_api_rationale_637",
+      "source": "tests_integration_test_agent_api_rationale_63",
+      "target": "tests_integration_test_agent_api_test_agent_cash_diagnostic_flow",
+      "relation": "rationale_for",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "tests/integration/test_agent_api.py",
+      "source_location": "L63",
+      "weight": 1.0
+    },
+    {
+      "source": "tests_integration_test_agent_api_rationale_641",
       "target": "tests_integration_test_agent_api_test_agent_chat_fccr",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L637",
+      "source_location": "L641",
       "weight": 1.0
     },
     {
-      "source": "tests_integration_test_agent_api_rationale_651",
+      "source": "tests_integration_test_agent_api_rationale_655",
       "target": "tests_integration_test_agent_api_test_agent_chat_prudent_debt_capacity",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L651",
+      "source_location": "L655",
       "weight": 1.0
     },
     {
-      "source": "tests_integration_test_agent_api_rationale_665",
+      "source": "tests_integration_test_agent_api_rationale_669",
       "target": "tests_integration_test_agent_api_test_agent_chat_working_capital_requirement",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L665",
+      "source_location": "L669",
       "weight": 1.0
     },
     {
-      "source": "tests_integration_test_agent_api_rationale_679",
+      "source": "tests_integration_test_agent_api_rationale_683",
       "target": "tests_integration_test_agent_api_test_agent_chat_operating_cash_flow_ratio",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L679",
+      "source_location": "L683",
       "weight": 1.0
     },
     {
-      "source": "tests_integration_test_agent_api_rationale_693",
+      "source": "tests_integration_test_agent_api_rationale_697",
       "target": "tests_integration_test_agent_api_test_agent_chat_break_even_units",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L693",
+      "source_location": "L697",
       "weight": 1.0
     },
     {
-      "source": "tests_integration_test_agent_api_rationale_707",
+      "source": "tests_integration_test_agent_api_rationale_711",
       "target": "tests_integration_test_agent_api_test_agent_chat_customer_attrition_impact",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L707",
+      "source_location": "L711",
       "weight": 1.0
     },
     {
-      "source": "tests_integration_test_agent_api_rationale_721",
+      "source": "tests_integration_test_agent_api_rationale_725",
       "target": "tests_integration_test_agent_api_test_agent_chat_invoice_hash_verification",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L721",
+      "source_location": "L725",
       "weight": 1.0
     },
     {
-      "source": "tests_integration_test_agent_api_rationale_736",
+      "source": "tests_integration_test_agent_api_rationale_740",
       "target": "tests_integration_test_agent_api_test_agent_chat_amortization_parameter_inheritance",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L736",
+      "source_location": "L740",
       "weight": 1.0
     },
     {
-      "source": "tests_integration_test_agent_api_rationale_767",
+      "source": "tests_integration_test_agent_api_rationale_771",
       "target": "tests_integration_test_agent_api_test_agent_chat_break_even_parameter_inheritance",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L767",
+      "source_location": "L771",
       "weight": 1.0
     },
     {
-      "source": "tests_integration_test_agent_api_rationale_797",
+      "source": "tests_integration_test_agent_api_rationale_801",
       "target": "tests_integration_test_agent_api_test_agent_chat_dscr_parameter_inheritance",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L797",
+      "source_location": "L801",
       "weight": 1.0
     },
     {
-      "source": "tests_integration_test_agent_api_rationale_83",
+      "source": "tests_integration_test_agent_api_rationale_85",
       "target": "tests_integration_test_agent_api_test_agent_credit_underwriting_flow",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/integration/test_agent_api.py",
-      "source_location": "L83",
+      "source_location": "L85",
       "weight": 1.0
     },
     {
@@ -131152,14 +131164,14 @@
       "weight": 1.0
     },
     {
-      "source": "tests_unit_test_download_model_rationale_178",
+      "source": "tests_unit_test_download_model_rationale_179",
       "target": "tests_unit_test_download_model_test_api_delete_model_route",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/unit/test_download_model.py",
-      "source_location": "L178",
+      "source_location": "L179",
       "weight": 1.0
     },
     {
@@ -136049,7 +136061,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.95,
       "source_file": "tests/unit/test_download_model.py",
-      "source_location": "L180",
+      "source_location": "L181",
       "weight": 0.8
     },
     {
@@ -136527,5 +136539,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "d353b354623ee318338e1e5c0ec2b67aca5ac235"
+  "built_at_commit": "5d1ed20ef954c6ffa1fca8860f7a0c5f7097ea01"
 }

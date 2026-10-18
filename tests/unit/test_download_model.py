@@ -14,6 +14,7 @@ from fastapi.testclient import TestClient
 
 from api.main import app
 from services.agent.local_transformers import (
+    BASE_MODEL_DIR,
     LocalTransformersEngine,
     SUPPORTED_LOCAL_MODELS,
     resolve_canonical_model_name,
@@ -105,7 +106,7 @@ def test_download_model_saves_into_folder():
     """Verifies download_model passes local_dir to snapshot_download to store weights inside project models folder."""
     engine = LocalTransformersEngine.get_instance()
     with patch("huggingface_hub.snapshot_download") as mock_snapshot:
-        mock_snapshot.return_value = "F:/SME Finance Copilot/models/base/Qwen3-4B-Instruct-2507"
+        mock_snapshot.return_value = BASE_MODEL_DIR
         res = engine.download_model("sme-finance-lora")
         assert res["success"] is True
         mock_snapshot.assert_called_once()
