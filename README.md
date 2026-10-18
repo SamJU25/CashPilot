@@ -4,7 +4,7 @@
 > *FinTechathon 2026 Topic E: AI as a Financial Participant | Tsinghua University PBCSF & WeBank*
 
 [![CI](https://github.com/SamJU25/F-SME-Finance-Copilot/actions/workflows/ci.yml/badge.svg)](https://github.com/SamJU25/F-SME-Finance-Copilot/actions/workflows/ci.yml)
-[![Tests](https://img.shields.io/badge/pytest-823_passed-brightgreen.svg)](tests/)
+[![Tests](https://img.shields.io/badge/pytest-862_passed-brightgreen.svg)](tests/)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.115+-009688.svg)](https://fastapi.tiangolo.com/)
 [![Next.js 14](https://img.shields.io/badge/Next.js-14_App_Router-black.svg)](https://nextjs.org/)
@@ -12,7 +12,7 @@
 [![Solidity 0.8.20](https://img.shields.io/badge/Solidity-0.8.20-363636.svg)](contracts/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-**Audited Technical Baseline (2026-10-19)**: **823 automated tests passing** across multi-format statement ingestion (CSV and PDF), 25+ deterministic financial engines in pure Python `decimal.Decimal`, dynamic semantic intent routing (FastEmbed ONNX), on-device local SLM inference (fine-tuned Qwen3-4B LoRA, optional dependencies), Universal Cloud LLM Bridge with live dynamic model discovery, Three-Tier Security Gate with hardware WebAuthn passkeys, and hardened rootless Docker Compose orchestration.
+**Audited Technical Baseline (2026-10-19)**: **862 automated tests passing (1 POSIX-only skip)** across multi-format statement ingestion (CSV and PDF), 25+ deterministic financial engines in pure Python `decimal.Decimal`, dynamic semantic intent routing (FastEmbed ONNX), on-device local SLM inference (fine-tuned Qwen3-4B LoRA, optional dependencies), Universal Cloud LLM Bridge with live dynamic model discovery, Three-Tier Security Gate with hardware WebAuthn passkeys, and hardened rootless Docker Compose orchestration.
 
 ---
 
@@ -155,8 +155,8 @@ All monetary values across JSON API boundaries are serialized as decimal strings
 | `POST` | `/api/v1/actions/stage` | Stages financing proposal into the tenant's queue | Tier 2 (Staging, signed token) | JSON action intent |
 | `POST` | `/api/v1/actions/{id}/execute` | Executes staged action with WebAuthn passkey assertion | Tier 3 (HITL 2FA, signed token) | JSON WebAuthn assertion |
 | `POST` | `/api/v1/agent/chat` | AI CFO dialogue with semantic routing & dynamic bridge | Tier 1 (Read-Only) | JSON message + provider |
-| `POST` | `/api/v1/agent/test-connection` | Verifies LLM provider credentials and endpoint connectivity | Tier 1 (Read-Only) | JSON credentials |
-| `POST` | `/api/v1/agent/fetch-models` | Dynamically discovers available models from target provider | Tier 1 (Read-Only) | JSON credentials |
+| `POST` | `/api/v1/agent/test-connection` | Verifies LLM provider credentials and endpoint connectivity | Tenant token required | JSON credentials |
+| `POST` | `/api/v1/agent/fetch-models` | Dynamically discovers available models from target provider | Tenant token required | JSON credentials |
 
 ---
 
@@ -178,6 +178,12 @@ docker compose up --build -d
 - **Frontend Dashboard**: Open <http://localhost:3000>
 - **FastAPI Backend**: Open <http://localhost:8000/api/v1/health>
 - **Interactive OpenAPI Docs**: Open <http://localhost:8000/docs>
+
+State lives in three named volumes: `copilot-data` (staging ledger, passkeys, invoice registry and sessions under `/app/.data`), `copilot-models` (downloaded base weights) and `copilot-hf-cache` (Hugging Face cache).
+
+Token issuance is fail-closed, so copy `.env.example` to `.env` and set `TENANT_ENROLLMENT_KEY` together with `TENANT_ENROLLMENT_TENANT_ID` (or the per-tenant `TENANT_ENROLLMENT_KEYS` map) before signing in; without them `/api/v1/auth/token` returns 503. Setting `COPILOT_DATA_KEY` encrypts the persisted stores at rest and is **required** when `COPILOT_ENV` is `production` or `staging` — the API refuses to start without it.
+
+The `containers` job in [`.github/workflows/ci.yml`](.github/workflows/ci.yml) builds both images and smoke-tests this stack (healthcheck, token issuance, anonymous-staging refusal, authenticated staging, sealed ledger, dashboard response).
 
 ```bash
 # View live container logs
@@ -231,7 +237,7 @@ Open <http://127.0.0.1:3000> in your browser. Download the sample bank statement
 Run the full verification suite from the repository root with the virtual environment active:
 
 ```bash
-# Run backend test suite (823 tests)
+# Run backend test suite (862 tests, 1 POSIX-only skip)
 python -m pytest -q
 
 # Run frontend type checking
@@ -243,11 +249,11 @@ npm run build
 
 ### Verified Test Breakdown
 ```
-tests/unit/            705 passed   (Ingestion, Pure Decimal Math, Underwriting, Decision Tables, Session Store)
-tests/integration/      85 passed   (FastAPI Endpoints, LLM Bridge, Model Discovery, WebAuthn, Session Memory)
-tests/security/         31 passed   (Three-Tier Gate Invariants, PII Sanitization, Tampering)
-tests/e2e/               2 passed   (Full Statement Ingestion to WebAuthn Execution Flows)
-============================= 823 passed in 29.41s =============================
+tests/unit/            716 passed            (Ingestion, Pure Decimal Math, Underwriting, Decision Tables, Session Store)
+tests/integration/      86 passed            (FastAPI Endpoints, LLM Bridge, Model Discovery, WebAuthn, Session Memory)
+tests/security/         58 passed, 1 skipped (Three-Tier Gate Invariants, PII Sanitization, Tampering, Hardening, Encryption)
+tests/e2e/               2 passed            (Full Statement Ingestion to WebAuthn Execution Flows)
+========================= 862 passed, 1 skipped in 47.20s =========================
 ```
 
 ---

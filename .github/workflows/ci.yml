@@ -43,3 +43,66 @@ jobs:
         run: npm run type-check
       - name: Build frontend
         run: npm run build
+
+  containers:
+    name: Container build and compose smoke test
+    runs-on: ubuntu-latest
+    env:
+      # Deployed label makes the missing-key check fail closed; the key is generated below.
+      COPILOT_ENV: production
+      TENANT_ENROLLMENT_KEY: ci-enrollment-key
+      TENANT_ENROLLMENT_TENANT_ID: SME-CI
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Validate compose configuration
+        run: docker compose config --quiet
+      - name: Generate a data encryption key
+        run: echo "COPILOT_DATA_KEY=$(openssl rand -base64 32 | tr '+/' '-_')" >> "$GITHUB_ENV"
+      - name: Build images
+        run: docker compose build
+      - name: Start the stack
+        run: docker compose up -d
+      - name: Wait for the backend healthcheck
+        run: |
+          status="unknown"
+          for attempt in $(seq 1 36); do
+            status=$(docker inspect --format '{{.State.Health.Status}}' sme-finance-copilot-api 2>/dev/null || echo missing)
+            echo "attempt ${attempt}: backend=${status}"
+            if [ "$status" = "healthy" ]; then break; fi
+            sleep 5
+          done
+          if [ "$status" != "healthy" ]; then docker compose logs --no-color backend; exit 1; fi
+      - name: Probe auth, staging and encryption paths
+        run: |
+          curl -fsS http://localhost:8000/api/v1/health
+
+          token=$(curl -fsS -X POST http://localhost:8000/api/v1/auth/token \
+            -H 'Content-Type: application/json' \
+            -H "X-Enrollment-Key: ${TENANT_ENROLLMENT_KEY}" \
+            -d '{"tenant_id":"SME-CI"}' | jq -r '.access_token')
+          test -n "$token"
+
+          stage_body='{"message":"stage a draw of $5,000 for payroll","staged_action_type":"DRAW_CREDIT_LINE","staged_amount_cents":500000,"staged_target":"FACILITY-CI"}'
+
+          # Anonymous staging must be refused with no ledger write.
+          curl -fsS -X POST http://localhost:8000/api/v1/agent/chat \
+            -H 'Content-Type: application/json' -d "$stage_body" | jq -e '.staged_action == null'
+
+          # Authenticated staging must produce a proposal.
+          curl -fsS -X POST http://localhost:8000/api/v1/agent/chat \
+            -H 'Content-Type: application/json' -H "Authorization: Bearer ${token}" \
+            -d "$stage_body" | jq -e '.staged_action != null'
+
+          # The persisted ledger must be sealed rather than plaintext.
+          head=$(docker compose exec -T backend head -c 7 /app/.data/staged_intents.json)
+          test "$head" = "enc:v1:"
+
+          # The containerized frontend must serve the dashboard.
+          test "$(curl -fsS -o /dev/null -w '%{http_code}' http://localhost:3000/)" = "200"
+      - name: Container logs on failure
+        if: failure()
+        run: docker compose logs --no-color
+      - name: Tear down
+        if: always()
+        run: docker compose down -v

@@ -1,7 +1,7 @@
 # SME Finance Copilot: Master System Design (`system.md`)
 
 - **Document Role**: Concrete Technical Specifications, Schemas, Algorithms & Code Contracts
-- **Status**: Active Technical Blueprint & Contract (Verified Baseline: 823 Passed Tests)
+- **Status**: Active Technical Blueprint & Contract (Verified Baseline: 862 Passed Tests, 1 Skipped)
 - **Date**: 2026-10-17
 - **Competition Target**: FinTechathon 2026 Track E (Tsinghua University PBCSF & WeBank)
 
@@ -205,12 +205,16 @@ class ActionIntent(BaseModel):
 - `GET /` & `GET /health`: Service health and version status.
 - `POST /api/v1/analyze`: Ingests transactions and returns deterministic CFO metrics.
 - `POST /api/v1/underwrite`: Evaluates SME credit profile and produces financing offers.
-- `POST /api/v1/auth/token`: Issues a signed tenant token; requires `X-Enrollment-Key` matching `TENANT_ENROLLMENT_KEY` (or the per-tenant map).
+- `POST /api/v1/auth/token`: Issues a signed tenant token; requires `X-Enrollment-Key` matching `TENANT_ENROLLMENT_KEYS` (preferred, per tenant) or a `TENANT_ENROLLMENT_KEY` bound with `TENANT_ENROLLMENT_TENANT_ID`. An unbound single key is fail-closed unless `TENANT_ENROLLMENT_ALLOW_ANY_TENANT=1` is set for local development.
 - `POST /api/v1/actions/stage`: Stages a proposed financial action for the authenticated tenant (Tier 2).
 - `POST /api/v1/actions/{id}/execute`: Executes a Tier 3 action via WebAuthn passkey assertion; Tier 2 proposals return 409.
-- `POST /api/v1/agent/chat`: Dynamic neural CFO chat grounded in pre-calculated context.
-- `POST /api/v1/agent/test-connection`: Tests connectivity and latency for selected LLM provider.
-- `POST /api/v1/agent/fetch-models`: Discovers active models from local or cloud providers.
+- `POST /api/v1/agent/chat`: Dynamic neural CFO chat grounded in pre-calculated context. Anonymous callers get read-only analysis; staging a proposal requires a signed tenant token, and the staged proposal always belongs to the token's tenant.
+- `POST /api/v1/agent/test-connection`: Tests connectivity and latency for selected LLM provider; requires a signed tenant token.
+- `POST /api/v1/agent/fetch-models`: Discovers active models from local or cloud providers; requires a signed tenant token.
+- `POST /api/v1/agent/download-model`: Explicitly downloads local model weights; requires a signed tenant token.
+- `POST /api/v1/agent/delete-model`: Deletes downloaded base weights (fine-tuned adapter is protected); requires a signed tenant token.
+- `POST /api/v1/decision/evaluate`: Evaluates a JDM decision table; failures return a generic 500 without internal exception text.
+- `POST /api/v1/decision/reload`: Hot-reloads all decision tables; operator-only via `X-Admin-Key` matching `DECISION_ADMIN_KEY`, and returns 503 when that key is unset.
 
 ---
 

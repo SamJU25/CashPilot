@@ -1,7 +1,7 @@
 # SME Finance Copilot: Master Architectural Plan (`architecture.md`)
 
 - **Document Role**: Macro Architecture, Multi-Agent Topology, Governance & Verified Technical Baseline
-- **Status**: Active Architecture Blueprint & Technical Contract (Verified Baseline: 823 Passed Tests)
+- **Status**: Active Architecture Blueprint & Technical Contract (Verified Baseline: 862 Passed Tests, 1 Skipped)
 - **Date**: 2026-10-17
 - **Competition Target**: FinTechathon 2026 Track E (Tsinghua University PBCSF & WeBank)
 
@@ -168,10 +168,10 @@ For runtime request handling, specialized specialists collaborate across 4 funct
 ## 3. Database & Agent Memory Architectural Decision
 
 ### 3.1 Database Selection: PostgreSQL 16 (+ SQLite for Local Dev)
-- **Current implementation**: no relational database is wired yet. The staging ledger, passkey registry and invoice registry persist to JSON files under `COPILOT_LEDGER_DIR` (default `.data/`) using process-local locks and atomic file replacement. This is adequate for the single-process demo and is not safe for multi-worker scaling.
+- **Current implementation**: no relational database is wired yet. The staging ledger, passkey registry and invoice registry persist to JSON files under `COPILOT_LEDGER_DIR` (default `.data/`), and session statements under `COPILOT_SESSION_DIR` (default `.sessions/`, set to `/app/.data/sessions` in containers so it shares the persisted volume), using process-local locks and atomic file replacement. This is adequate for the single-process demo and is not safe for multi-worker scaling.
 - **Why PostgreSQL (target)**: ACID transactional consistency, kernel-level Row-Level Security (RLS), native JSONB staging, and banking industry standard.
 - **Why Alternatives Were Rejected**: NoSQL (MongoDB) lacks double-entry atomicity; pure vector databases cannot manage financial ledgers.
-- **Local Dev & Testing**: Automated test suite (`pytest -q`) runs 823 deterministic tests against isolated test storage.
+- **Local Dev & Testing**: Automated test suite (`pytest -q`) runs 862 deterministic tests (plus one POSIX-only skip) against isolated test storage.
 
 ### 3.2 Agent Memory Architecture: Zero Cognitive Graph Bloat
 - **Autonomous Vector Memory Rejected**: Autonomous agent memory introduces prompt poisoning risks, token bloat (>15s latency), and arithmetic hallucinations.
@@ -183,10 +183,10 @@ For runtime request handling, specialized specialists collaborate across 4 funct
 
 ## 4. Phased Sprint Roadmap & Verified Milestones
 
-All 6 development sprints are complete and verified against the test suite (**823 passed tests**):
+All 6 development sprints are complete and verified against the test suite (**862 passed tests, 1 skipped**):
 
 ```
-Sprint 1: Deterministic Math Core (services/calculations/) — VERIFIED (823 Tests Passing)
+Sprint 1: Deterministic Math Core (services/calculations/) — VERIFIED (862 Tests Passing)
   • Scope: 25+ pure Python decimal.Decimal financial routines: DAB carry-forward, cash analysis,
     overdraft forecasting, weekly volatility CV, CCC, DSCR/FCCR, Altman Z', DuPont ROE,
     ROIC/EVA, DCF/WACC, SaaS metrics, trade credit APR, currency conversion for 160+ ISO currencies.

@@ -36,8 +36,14 @@ COPY --chown=appuser:appgroup data /app/data
 
 # Persistence directory must exist and be writable by the runtime user, otherwise the staging
 # ledger and passkey registry fall back to memory-only and silently lose state on restart.
-RUN mkdir -p /app/.data && chown -R appuser:appgroup /app/.data
-ENV COPILOT_LEDGER_DIR=/app/.data
+# Sessions hold raw statements, so they belong in the same persisted volume rather than
+# defaulting to /app/.sessions, which is discarded with the container.
+# Named volumes inherit the ownership of the directory they mount over, so the mount points for
+# downloaded weights and the Hugging Face cache must exist and belong to the runtime user.
+RUN mkdir -p /app/.data/sessions /app/models /home/appuser/.cache && \
+    chown -R appuser:appgroup /app/.data /app/models /home/appuser/.cache
+ENV COPILOT_LEDGER_DIR=/app/.data \
+    COPILOT_SESSION_DIR=/app/.data/sessions
 
 USER appuser
 

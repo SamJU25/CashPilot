@@ -14,7 +14,9 @@ services:
     environment:
       - HOST=0.0.0.0
       - PORT=8000
+      - COPILOT_ENV=${COPILOT_ENV:-local}
       - COPILOT_LEDGER_DIR=/app/.data
+      - COPILOT_SESSION_DIR=/app/.data/sessions
       - MAX_ANALYSIS_UPLOAD_BYTES=${MAX_ANALYSIS_UPLOAD_BYTES:-1048576}
       - ALLOWED_ORIGINS=${ALLOWED_ORIGINS:-http://localhost:3000,http://127.0.0.1:3000}
       - WEBAUTHN_ORIGINS=${WEBAUTHN_ORIGINS:-http://localhost:3000}
@@ -27,11 +29,21 @@ services:
       - TENANT_TOKEN_SECRET=${TENANT_TOKEN_SECRET:-}
       - TENANT_ENROLLMENT_KEY=${TENANT_ENROLLMENT_KEY:-}
       - TENANT_ENROLLMENT_KEYS=${TENANT_ENROLLMENT_KEYS:-}
+      - TENANT_ENROLLMENT_TENANT_ID=${TENANT_ENROLLMENT_TENANT_ID:-}
+      - TENANT_ENROLLMENT_ALLOW_ANY_TENANT=${TENANT_ENROLLMENT_ALLOW_ANY_TENANT:-}
+      - COPILOT_DATA_KEY=${COPILOT_DATA_KEY:-}
+      - DECISION_ADMIN_KEY=${DECISION_ADMIN_KEY:-}
       - RATE_LIMIT_PER_MINUTE=${RATE_LIMIT_PER_MINUTE:-60}
+      - TRUSTED_PROXY_HOPS=${TRUSTED_PROXY_HOPS:-0}
+      - STAGED_INTENT_TTL_HOURS=${STAGED_INTENT_TTL_HOURS:-72}
+      - STAGED_INTENT_DEDUPE_SECONDS=${STAGED_INTENT_DEDUPE_SECONDS:-300}
       - LLM_ALLOW_LOOPBACK_ENDPOINTS=${LLM_ALLOW_LOOPBACK_ENDPOINTS:-0}
       - LLM_ALLOW_PRIVATE_ENDPOINTS=${LLM_ALLOW_PRIVATE_ENDPOINTS:-0}
     volumes:
       - copilot-data:/app/.data
+      # Downloaded base weights and the Hugging Face cache are multi-GB; keep them across restarts.
+      - copilot-models:/app/models
+      - copilot-hf-cache:/home/appuser/.cache
     healthcheck:
       test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/v1/health')\""]
       interval: 15s
@@ -76,3 +88,5 @@ networks:
 
 volumes:
   copilot-data:
+  copilot-models:
+  copilot-hf-cache:
