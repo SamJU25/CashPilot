@@ -163,6 +163,27 @@ def is_question(text: str) -> bool:
     return first in _QUESTION_OPENERS
 
 
+_STAGE_VERB = re.compile(r"\b(stage|prepare|submit|request|draw|drawdown|borrow|tap|apply|initiate)\b", re.IGNORECASE)
+_CREDIT_LINE = re.compile(r"\b(credit\s+line|line\s+of\s+credit|(?:the|our|a|working\s+capital)\s+line|revolver|draw\s+line)\b", re.IGNORECASE)
+_FACTORING = re.compile(r"\b(factor(?:ing)?|invoice\s+advance)\b", re.IGNORECASE)
+_EXPLICIT_STAGE = re.compile(r"\b(stage|prepare|submit)\b", re.IGNORECASE)
+
+
+def staging_action_from_text(text: str) -> Optional[str]:
+    """
+    The action a chat instruction names, or None. Staging needs both an action verb and an action
+    type; the semantic router alone once staged a credit draw from "LTV ... CAC $0".
+    "Factor a $X invoice" stays a calculation, so factoring stages only on stage/prepare/submit.
+    """
+    if is_question(text):
+        return None
+    if _CREDIT_LINE.search(text) and _STAGE_VERB.search(text):
+        return "DRAW_CREDIT_LINE"
+    if _FACTORING.search(text) and _EXPLICIT_STAGE.search(text):
+        return "FACTOR_INVOICE"
+    return None
+
+
 def resolve_subagent_routing(sub_intent: str) -> str:
     """Resolves target specialist subagent for a financial sub-intent by reference via JDM decision table."""
     payload = evaluate_persona_policy(prompt_type="SUBAGENT_ROUTING", sub_intent=sub_intent)

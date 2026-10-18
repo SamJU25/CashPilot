@@ -65,7 +65,7 @@ class SystemOneModelAdapter(AbstractDecisionEngine):
         has_csv = bool(request.input_state.get("has_csv", False))
 
         if request.input_state.get("classify_sub_intent_only"):
-            sub_intent = self._router.classify_sub_intent(query, history=history)
+            sub_intent = self._router.classify_sub_intent(query, history=history, has_csv=has_csv)
             return DecisionResult(
                 domain=DecisionDomain.INTENT_ROUTING,
                 selected_choice=sub_intent,

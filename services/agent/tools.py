@@ -209,6 +209,26 @@ def tool_analyze_cash_flow(
     }
 
 
+def tool_annualized_statement_flows(csv_content: str) -> Dict[str, Any]:
+    """
+    Statement inflows, outflows and net cash flow scaled to a year by the statement's own period.
+    A proxy for revenue, NOI or EBIT when the owner gives none; replies must show `note` beside it.
+    """
+    res = tool_analyze_cash_flow(csv_content)
+    days = int(res.get("period_days") or 0)
+    if days <= 0:
+        raise ValueError("the statement covers no days")
+    factor = Decimal("365") / Decimal(days)
+    inflows = Decimal(str(res["gross_inflows"]))
+    outflows = Decimal(str(res["gross_outflows"]))
+    return {
+        "inflows": (inflows * factor).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP),
+        "outflows": (outflows * factor).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP),
+        "net": (max(Decimal("0.00"), inflows - outflows) * factor).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP),
+        "period_days": days,
+        "note": f" (estimated from {days} days of your bank statement, annualized; give the real figure for a precise result)",
+    }
+
 
 def tool_run_cash_scenario(
     csv_content: str,
@@ -1138,13 +1158,16 @@ def tool_calculate_dcf_valuation(
 
 
 def tool_calculate_ltv_cac(
-    arpu: Any,
-    gross_margin_pct: Any,
-    churn_rate_pct: Any,
-    cac: Any,
+    arpu: Any = None,
+    gross_margin_pct: Any = None,
+    churn_rate_pct: Any = None,
+    cac: Any = None,
     period: str = "ANNUAL",
+    ltv: Any = None,
 ) -> Dict[str, Any]:
     """Calculate Customer Lifetime Value (LTV) and LTV to CAC Ratio for subscription and recurring SME business models."""
+    if ltv is not None:
+        return calc_ltv_cac(cac=_to_decimal(cac), lifetime_value=_to_decimal(ltv))
     arpu_dec = _to_decimal(arpu)
     if period.upper() == "MONTHLY":
         annual_arpu = arpu_dec * Decimal("12")

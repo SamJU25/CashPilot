@@ -31,6 +31,7 @@ from services.agent.schema import (
     CopilotResponse,
 )
 from services.agent.tools import (
+    tool_annualized_statement_flows,
     tool_analyze_cash_flow,
     tool_calculate_break_even,
     tool_calculate_break_even_units,
@@ -79,14 +80,13 @@ class RiskManagerSubagent:
             rev = p_dict.get("revenue")
             vc = p_dict.get("variable_costs")
 
+            est_note = ""
             if fc is None and effective_csv:
                 try:
-                    cash_res = tool_analyze_cash_flow(effective_csv)
-                    outflows = Decimal(str(cash_res.get("gross_outflows") or "0"))
-                    inflows = Decimal(str(cash_res.get("gross_inflows") or "0"))
-                    fc = outflows * Decimal("4")
-                    rev = inflows * Decimal("4")
-                except Exception:
+                    flows = tool_annualized_statement_flows(effective_csv)
+                    fc, rev = flows["outflows"], flows["inflows"]
+                    est_note = flows["note"]
+                except (ValueError, ArithmeticError):  # includes CSVIngestionError
                     pass
 
             if fc is not None and (cm_ratio is not None or (rev is not None and vc is not None)):
@@ -105,7 +105,7 @@ class RiskManagerSubagent:
                     )
                 base_reply = (
                     f"### Break-Even & Margin of Safety Analysis\n\n"
-                    f"- **Fixed Operating Overhead**: ${float(res['fixed_costs']):,.2f}\n"
+                    f"- **Fixed Operating Overhead**: ${float(res['fixed_costs']):,.2f}{est_note}\n"
                     f"- **Contribution Margin Ratio**: {cm_pct}\n"
                     f"- **Break-Even Revenue Requirement**: ${float(res['break_even_revenue']):,.2f}"
                     f"{mos_snippet}\n\n"
@@ -202,14 +202,14 @@ class RiskManagerSubagent:
             lost = p_dict["lost_client_annual_revenue"]
             metrics = None
 
+            est_note = ""
             if (rev is None or burn is None) and effective_csv:
                 try:
-                    cash_res = tool_analyze_cash_flow(effective_csv)
-                    if rev is None and cash_res.get("gross_inflows"):
-                        rev = Decimal(str(cash_res["gross_inflows"])) * Decimal("4")
-                    if burn is None and cash_res.get("gross_outflows"):
-                        burn = Decimal(str(cash_res["gross_outflows"])) * Decimal("4")
-                except Exception:
+                    flows = tool_annualized_statement_flows(effective_csv)
+                    rev = rev if rev is not None else flows["inflows"]
+                    burn = burn if burn is not None else flows["outflows"]
+                    est_note = flows["note"]
+                except (ValueError, ArithmeticError):  # includes CSVIngestionError
                     pass
 
             if rev is not None and burn is not None and lost is not None:
@@ -220,7 +220,7 @@ class RiskManagerSubagent:
                 )
                 base_reply = (
                     f"### Client Revenue Attrition & Cash Flow Stress Test\n\n"
-                    f"- **Current Annual Inflows**: ${float(res['current_annual_revenue']):,.2f}\n"
+                    f"- **Current Annual Inflows**: ${float(res['current_annual_revenue']):,.2f}{est_note}\n"
                     f"- **Lost Client Annual Share**: ${float(res['lost_client_annual_revenue']):,.2f} ({res['lost_revenue_share_percent']}% of revenue)\n"
                     f"- **Baseline Annual Operating Outflows**: ${float(res['current_annual_burn']):,.2f}\n"
                     f"- **Projected Net Deficit Under Loss**: ${float(res['projected_annual_burn']):,.2f}/year\n"
@@ -413,6 +413,23 @@ class RiskManagerSubagent:
             churn = p_dict["churn_rate_pct"]
             cac = p_dict["cac"]
             period = p_dict["period"]
+            ltv = p_dict.get("ltv")
+
+            if ltv is not None and cac is not None:
+                res = tool_calculate_ltv_cac(ltv=ltv, cac=cac)
+                base_reply = (
+                    f"### LTV to CAC Audit\n\n"
+                    f"- **Customer Lifetime Value (LTV)**: ${float(res['lifetime_value']):,.2f}\n"
+                    f"- **Customer Acquisition Cost (CAC)**: ${float(res['cac']):,.2f}\n"
+                    f"- **LTV to CAC Ratio**: **{res['ltv_to_cac_ratio']}x**\n"
+                    f"- **Unit Economics Tier**: `{res['unit_economics_tier']}`\n"
+                    f"- **Acquisition Efficiency Assessment**: {res['recommendation']}"
+                )
+                return CopilotResponse(
+                    reply=enrich_fn(base_reply, prompt_type="diagnostic"),
+                    intent_detected="CASH_DIAGNOSTIC",
+                    requires_biometric_hitl=False,
+                )
 
             if arpu is not None and margin is not None and churn is not None and cac is not None:
                 res = tool_calculate_ltv_cac(

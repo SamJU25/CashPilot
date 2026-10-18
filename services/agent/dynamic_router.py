@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import logging
 import os
+import re
 from typing import Any, Dict, List, Optional, Tuple
 import numpy as np
 
@@ -42,6 +43,8 @@ from services.decision.policy_loader import load_semantic_prototypes
 
 # Widest prototype-score gap still routed to CASH_SCENARIO when the extractor finds a complete what-if.
 SCENARIO_MARGIN = 0.10
+IN_DOMAIN_CARD_SIMILARITY = 0.64
+WHAT_IF = re.compile(r"\s*what\s+(?:if|happens\s+if)\b", re.IGNORECASE)
 
 
 class FastEmbedSemanticRouter:
@@ -151,8 +154,13 @@ class FastEmbedSemanticRouter:
             elif greet_score < 0.42:
                 is_off_topic = True
 
+        # Bare acronyms ("What is WACC?") score low on the broad intent prototypes; a close
+        # concept-card match proves the question is in domain. Off-topic queries peak near 0.62.
         if is_off_topic:
-            return "GENERAL_ASSISTANCE", "OFF_TOPIC", True
+            from services.agent.knowledge import retrieve_cards
+
+            if not retrieve_cards(m, k=1, min_similarity=IN_DOMAIN_CARD_SIMILARITY):
+                return "GENERAL_ASSISTANCE", "OFF_TOPIC", True
 
         # Rank financial & conversational intents
         ranked = sorted(
@@ -195,9 +203,11 @@ class FastEmbedSemanticRouter:
 
         # bge-small separates what-ifs from runway/deficit questions by under 0.02, so the deciding
         # signal is whether the extractor finds a complete scenario (kind plus its figures).
+        # A "what if ..." naming a scenario kind also routes here: the handler asks for the missing figure.
+        scenario_params = extract_cash_scenario_params(m)
         if (
             self._scenario_norm is not None
-            and is_complete_cash_scenario(extract_cash_scenario_params(m))
+            and (is_complete_cash_scenario(scenario_params) or (scenario_params.get("scenario") and WHAT_IF.match(m)))
             and float(np.dot(self._scenario_norm, q_norm)) >= top_sub_score - SCENARIO_MARGIN
         ):
             return "CASH_DIAGNOSTIC", "CASH_SCENARIO", False
@@ -218,9 +228,9 @@ class FastEmbedSemanticRouter:
         sim = float(np.dot(self._disclaimer_norm, q_norm))
         return sim >= 0.55
 
-    def classify_sub_intent(self, message: str, history: Optional[List[Any]] = None) -> str:
+    def classify_sub_intent(self, message: str, history: Optional[List[Any]] = None, has_csv: bool = False) -> str:
         """Classifies cash diagnostic sub-intent via semantic prototype matching."""
-        _, sub, _ = self.classify(message, history=history)
+        _, sub, _ = self.classify(message, history=history, has_csv=has_csv)
         return sub
 
 
@@ -336,7 +346,7 @@ def classify_intent_dynamic(
     return decision_res.selected_choice
 
 
-def classify_sub_intent_dynamic(message: str, history: Optional[List[Any]] = None) -> str:
+def classify_sub_intent_dynamic(message: str, history: Optional[List[Any]] = None, has_csv: bool = False) -> str:
     """Classifies cash diagnostic sub-intent dynamically by reference via DecisionEngineRegistry."""
     from services.decision import DecisionDomain, DecisionEngineRegistry, DecisionRequest
 
@@ -345,6 +355,8 @@ def classify_sub_intent_dynamic(message: str, history: Optional[List[Any]] = Non
         input_state={
             "query": message.strip(),
             "history": history,
+            # Without it a loaded statement is ignored and the strict no-statement cut-off applies.
+            "has_csv": has_csv,
             "classify_sub_intent_only": True,
         },
         execution_mode="AUTO",

@@ -171,6 +171,11 @@ def extract_dscr_params(text: str, history: Optional[List[Any]] = None) -> Dict[
     return params
 
 
+# The figure must sit right after its label: a lazy \D*? let "break-even revenue with fixed costs
+# $30,000" read revenue as $30,000.
+_NEAR = r"\s*(?:of|is|are|was|were|at|around|about|totaling|totalling|=|:)?\s*\$?"
+
+
 def extract_break_even_params(text: str, history: Optional[List[Any]] = None) -> Dict[str, Any]:
     """Extracts fixed costs, contribution margin ratio, revenue, and variable costs."""
     fc: Optional[Decimal] = None
@@ -179,7 +184,7 @@ def extract_break_even_params(text: str, history: Optional[List[Any]] = None) ->
     vc: Optional[Decimal] = None
 
     fc_match = re.search(
-        r"(?:fixed\s+costs?|overhead|fixed\s+expenses?)\D*?\$?([0-9]{1,3}(?:,[0-9]{3})*(?:\.[0-9]{2})?|\d+[km]?)\b",
+        rf"(?:fixed\s+costs?|overhead|fixed\s+expenses?){_NEAR}([0-9]{{1,3}}(?:,[0-9]{{3}})*(?:\.[0-9]{{2}})?|\d+[km]?)\b",
         text,
         re.IGNORECASE,
     )
@@ -198,7 +203,7 @@ def extract_break_even_params(text: str, history: Optional[List[Any]] = None) ->
             pass
 
     rev_match = re.search(
-        r"(?:revenue|sales|annual\s+revenue)\D*?\$?([0-9]{1,3}(?:,[0-9]{3})*(?:\.[0-9]{2})?|\d+[km]?)\b",
+        rf"(?:revenue|sales|annual\s+revenue){_NEAR}([0-9]{{1,3}}(?:,[0-9]{{3}})*(?:\.[0-9]{{2}})?|\d+[km]?)\b",
         text,
         re.IGNORECASE,
     )
@@ -206,7 +211,7 @@ def extract_break_even_params(text: str, history: Optional[List[Any]] = None) ->
         rev = parse_numeric_token(rev_match.group(1))
 
     vc_match = re.search(
-        r"(?:variable\s+costs?|cogs|operating\s+costs?)\D*?\$?([0-9]{1,3}(?:,[0-9]{3})*(?:\.[0-9]{2})?|\d+[km]?)\b",
+        rf"(?:variable\s+costs?|cogs|operating\s+costs?){_NEAR}([0-9]{{1,3}}(?:,[0-9]{{3}})*(?:\.[0-9]{{2}})?|\d+[km]?)\b",
         text,
         re.IGNORECASE,
     )
@@ -1498,6 +1503,16 @@ def extract_ltv_cac_params(text: str, history: Optional[List[Any]] = None) -> Di
     if re.search(r"\bmonthly\b", clean_text, re.IGNORECASE):
         period = "MONTHLY"
 
+    # An LTV stated outright ("LTV $9,000"); "LTV to CAC" names the ratio, not a value.
+    ltv: Optional[Decimal] = None
+    ltv_m = re.search(
+        rf"\b(?:ltv|lifetime\s+value)\b(?!\s*(?:to|/)\s*cac){_NEAR}([0-9]{{1,3}}(?:,[0-9]{{3}})*(?:\.[0-9]{{2}})?|\d+[km]?)\b",
+        text,
+        re.IGNORECASE,
+    )
+    if ltv_m:
+        ltv = parse_numeric_token(ltv_m.group(1))
+
     arpu_m = re.search(r"\b(?:arpu|revenue\s+per\s+user|average\s+revenue|acv|mrr)\b\D*?\$?([0-9]{1,3}(?:,[0-9]{3})*(?:\.[0-9]{2})?|\d+[km]?)\b", clean_text, re.IGNORECASE)
     if arpu_m:
         arpu = parse_numeric_token(arpu_m.group(1))
@@ -1506,11 +1521,18 @@ def extract_ltv_cac_params(text: str, history: Optional[List[Any]] = None) -> Di
     if cac_m:
         cac = parse_numeric_token(cac_m.group(1))
 
-    margin_m = re.search(r"\b(?:gross\s+margin|margin|gross\s+profit\s+margin)\D*?(\d+(?:\.\d+)?)\s*%", clean_text, re.IGNORECASE)
+    # "80% margin" or "margin of 80%": a lazy \D*? read "80% margin, 10% churn" as a 10% margin.
+    margin_label = r"(?:gross\s+profit\s+margin|gross\s+margin|margin)"
+    margin_m = re.search(rf"(\d+(?:\.\d+)?)\s*%\s*{margin_label}\b", clean_text, re.IGNORECASE) or re.search(
+        rf"\b{margin_label}{_NEAR}(\d+(?:\.\d+)?)\s*%", clean_text, re.IGNORECASE
+    )
     if margin_m:
         margin = Decimal(margin_m.group(1))
 
-    churn_m = re.search(r"\b(?:churn(?:\s+rate)?|attrition(?:\s+rate)?)\D*?(\d+(?:\.\d+)?)\s*%", clean_text, re.IGNORECASE)
+    churn_label = r"(?:churn(?:\s+rate)?|attrition(?:\s+rate)?)"
+    churn_m = re.search(rf"(\d+(?:\.\d+)?)\s*%\s*(?:annual\s+|monthly\s+)?{churn_label}\b", clean_text, re.IGNORECASE) or re.search(
+        rf"\b{churn_label}{_NEAR}(\d+(?:\.\d+)?)\s*%", clean_text, re.IGNORECASE
+    )
     if churn_m:
         churn = Decimal(churn_m.group(1))
 
@@ -1523,7 +1545,7 @@ def extract_ltv_cac_params(text: str, history: Optional[List[Any]] = None) -> Di
             churn = Decimal(pcts[1])
 
     # Dollar fallback for ARPU and CAC
-    if arpu is None or cac is None:
+    if ltv is None and (arpu is None or cac is None):
         tokens = [parse_numeric_token(t) for t in re.findall(r"\b\$?([0-9]{1,3}(?:,[0-9]{3})*(?:\.[0-9]{2})?|\d+[km]?)\b", clean_text)]
         valid = [t for t in tokens if t is not None and t > Decimal("0")]
         if len(valid) >= 2:
@@ -1536,6 +1558,7 @@ def extract_ltv_cac_params(text: str, history: Optional[List[Any]] = None) -> Di
         "churn_rate_pct": churn,
         "cac": cac,
         "period": period,
+        "ltv": ltv,
     }
     if history:
         params = backfill_missing_params(params, history, extract_ltv_cac_params)

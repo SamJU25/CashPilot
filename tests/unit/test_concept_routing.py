@@ -142,3 +142,117 @@ def test_calculation_without_cards_keeps_steps():
     cards = retrieve_cards("What is enterprise value?")
     _, include_steps = select_concept_card(cards, "ENTERPRISE_VALUE")
     assert include_steps
+
+
+@pytest.mark.parametrize(
+    "message",
+    [
+        "LTV to CAC with LTV $9,000 and CAC $0",
+        "Factor a $100,000 invoice with 85% advance, 2% fee, 30 days",
+        "Calculate monthly payment for a $120,000 loan at 9% over 60 months",
+    ],
+)
+def test_messages_without_a_named_action_never_stage(message):
+    staging_ledger.clear()
+    resp = run_copilot_supervisor(AgentChatRequest(message=message))
+    assert resp.staged_action is None
+    assert staging_ledger.list_intents() == []
+
+
+@pytest.mark.parametrize(
+    "message,cents",
+    [("Draw $20,000 from our credit line", 2_000_000), ("Draw down $7,500 on the line", 750_000)],
+)
+def test_credit_line_draw_command_stages_that_draw(message, cents):
+    staging_ledger.clear()
+    resp = run_copilot_supervisor(AgentChatRequest(message=message))
+    assert resp.intent_detected == "ACTION_STAGING"
+    assert resp.staged_action.action_type == "DRAW_CREDIT_LINE"
+    assert resp.staged_action.amount_cents == cents
+
+
+@pytest.mark.parametrize(
+    "message,fragment",
+    [
+        ("Factor a $100,000 invoice with 85% advance, 2% fee, 0 days collection", "collection_days must be greater than zero"),
+        ("Break-even with fixed costs $30,000, revenue $100,000, variable costs $120,000", "could not run that calculation"),
+    ],
+)
+def test_impossible_inputs_get_a_reply_not_an_error(message, fragment):
+    resp = run_copilot_supervisor(AgentChatRequest(message=message))
+    assert fragment in resp.reply
+
+
+STATEMENT = open("data/samples/deficit_statement.csv", encoding="utf-8").read()
+
+
+@pytest.mark.parametrize(
+    "message,expected_tool_text",
+    [
+        ("Will we go negative in the next 90 days?", "Deficit Early-Warning"),
+        ("Where is our money going?", "Outflow Breakdown"),
+        ("What if our biggest customer pays 30 days late?", "customer invoice paid late"),
+    ],
+)
+def test_statement_questions_reach_their_tool(message, expected_tool_text):
+    resp = run_copilot_supervisor(AgentChatRequest(message=message, csv_content=STATEMENT))
+    assert expected_tool_text in resp.reply
+
+
+@pytest.mark.parametrize("csv", [None, STATEMENT])
+def test_finance_acronym_is_answered_not_refused(csv):
+    resp = run_copilot_supervisor(AgentChatRequest(message="What is WACC?", csv_content=csv))
+    assert "hurdle rate" in resp.reply or "blended yearly cost" in resp.reply
+
+
+def test_greeting_still_gets_the_introduction():
+    resp = run_copilot_supervisor(AgentChatRequest(message="Hello Copilot, how can you assist our coffee roastery with cash management?"))
+    assert "Autonomous SME Finance Copilot" in resp.reply
+
+
+def test_ltv_given_directly_is_used():
+    resp = run_copilot_supervisor(AgentChatRequest(message="LTV to CAC with LTV $9,000 and CAC $3,000"))
+    assert "**3.00x**" in resp.reply
+
+
+def test_number_before_label_is_read_for_margin_and_churn():
+    from services.agent.param_extractor import extract_ltv_cac_params
+
+    p = extract_ltv_cac_params("LTV to CAC with ARPU $1,200, 80% margin, 10% churn and CAC $2,400")
+    assert (p["gross_margin_pct"], p["churn_rate_pct"]) == (80, 10)
+
+
+def test_zero_liabilities_ratio_is_not_shown_as_999x():
+    resp = run_copilot_supervisor(
+        AgentChatRequest(message="Current ratio with current assets $200,000 and current liabilities $0")
+    )
+    assert "999" not in resp.reply and "Not meaningful" in resp.reply
+
+
+def test_fccr_flags_estimated_ebitda_and_assumed_charges():
+    resp = run_copilot_supervisor(
+        AgentChatRequest(message="What is our FCCR with total debt service $50,000?", csv_content=STATEMENT)
+    )
+    assert "FCCR Metric" in resp.reply
+    assert "estimated from 89 days" in resp.reply and "assumed none" in resp.reply
+
+
+def test_dscr_flags_noi_estimated_from_the_statement():
+    resp = run_copilot_supervisor(
+        AgentChatRequest(message="What is our DSCR with annual debt service $50,000?", csv_content=STATEMENT)
+    )
+    assert "DSCR Metric" in resp.reply and "estimated from 89 days" in resp.reply
+
+
+def test_underwriting_failure_does_not_echo_exception_text(monkeypatch):
+    import services.agent.subagents.credit_subagent as credit
+
+    def boom(*_a, **_k):
+        raise RuntimeError("secret internal detail")
+
+    monkeypatch.setattr(credit, "tool_underwrite_credit", boom)
+    resp = credit.CreditSubagent.handle_underwriting_evaluation(
+        AgentChatRequest(message="What credit line can we get?"), STATEMENT, lambda base, **_: base
+    )
+    assert "secret internal detail" not in resp.reply
+    assert "could not be completed" in resp.reply

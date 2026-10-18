@@ -834,3 +834,27 @@ def test_factoring_reply_flags_assumed_terms_and_splits_proceeds():
     assert "assumed 3.00% fee" in reply and "days (assumed" in reply
     assert "**Cash Received Now**: $85,000.00" in reply
     assert "Net Immediate Cash Proceeds" not in reply
+
+
+def test_break_even_reads_each_figure_from_its_own_label():
+    with patch("services.agent.local_transformers.LocalTransformersEngine.is_available", return_value=False):
+        res = client.post(
+            "/api/v1/agent/chat",
+            json={
+                "message": "Break-even revenue with fixed costs $30,000, revenue $100,000, variable costs $40,000",
+                "llm_config": {"provider": "offline"},
+            },
+        )
+    assert res.status_code == 200
+    # 30,000 / (1 - 40,000/100,000) = 50,000
+    assert "50,000.00" in res.json()["reply"]
+
+
+def test_malformed_llm_config_header_is_rejected_without_echo():
+    res = client.post(
+        "/api/v1/agent/chat",
+        json={"message": "Hello"},
+        headers={"X-LLM-Config": '{"provider": "openai", "api_key": "sk-leak-me", "bogus": 1}'},
+    )
+    assert res.status_code == 400
+    assert "sk-leak-me" not in res.text

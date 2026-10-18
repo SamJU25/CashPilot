@@ -10,6 +10,7 @@ Specializes in:
 
 from __future__ import annotations
 
+import logging
 from decimal import Decimal
 from typing import Any, Callable, Dict, Optional
 
@@ -37,7 +38,7 @@ from services.agent.schema import (
     CopilotResponse,
 )
 from services.agent.tools import (
-    tool_analyze_cash_flow,
+    tool_annualized_statement_flows,
     tool_calculate_altman_z_score,
     tool_calculate_dcf_valuation,
     tool_calculate_debt_service_burden,
@@ -56,12 +57,16 @@ from services.agent.tools import (
     tool_verify_invoice_hash,
 )
 
+from services.agent.session_store import session_store
+from services.ingestion.csv_parser import CSVIngestionError
 from services.agent.prompts import (
     get_missing_param_guidance,
     get_missing_statement_guidance,
     resolve_subagent_routing,
 )
 
+
+logger = logging.getLogger(__name__)
 
 class CreditSubagent:
     """Specialist subagent for debt affordability, credit underwriting, and financing options."""
@@ -89,17 +94,16 @@ class CreditSubagent:
             fc = p_dict["fixed_charges"]
             ds = p_dict["total_debt_service"]
 
+            eb_note = fc_note = ""
             if (eb is None or ds is None) and effective_csv:
                 try:
-                    cash_res = tool_analyze_cash_flow(effective_csv)
-                    inflows = Decimal(str(cash_res.get("gross_inflows") or "0"))
-                    outflows = Decimal(str(cash_res.get("gross_outflows") or "0"))
-                    quarterly_net = max(Decimal("0.00"), inflows - outflows)
+                    flows = tool_annualized_statement_flows(effective_csv)
                     if eb is None:
-                        eb = quarterly_net * Decimal("4")
+                        eb, eb_note = flows["net"], flows["note"]
                     if fc is None:
                         fc = Decimal("0.00")
-                except Exception:
+                        fc_note = " (assumed none; tell me your rent and lease payments)"
+                except (ValueError, ArithmeticError):  # includes CSVIngestionError
                     pass
 
             if eb is not None and fc is not None and ds is not None:
@@ -107,8 +111,8 @@ class CreditSubagent:
                 rationale_txt = res.get("assessment") or res.get("rationale") or ""
                 base_reply = (
                     f"### Fixed Charge Coverage Ratio (FCCR) Audit\n\n"
-                    f"- **Annual EBITDA**: ${float(res['ebitda']):,.2f}\n"
-                    f"- **Fixed Operational Charges**: ${float(res['fixed_charges']):,.2f}\n"
+                    f"- **Annual EBITDA**: ${float(res['ebitda']):,.2f}{eb_note}\n"
+                    f"- **Fixed Operational Charges**: ${float(res['fixed_charges']):,.2f}{fc_note}\n"
                     f"- **Total Annual Debt Service**: ${float(res['total_debt_service']):,.2f}\n"
                     f"- **FCCR Metric**: {res['fccr']}x\n"
                     f"- **Covenant Approval Tier**: `{res['underwriting_tier']}`\n"
@@ -132,14 +136,13 @@ class CreditSubagent:
             noi = p_dict["net_operating_income"]
             metrics = None
 
+            est_note = ""
             if noi is None and effective_csv:
                 try:
-                    cash_res = tool_analyze_cash_flow(effective_csv)
-                    inflows = Decimal(str(cash_res.get("gross_inflows") or "0"))
-                    outflows = Decimal(str(cash_res.get("gross_outflows") or "0"))
-                    quarterly_net = max(Decimal("0.00"), inflows - outflows)
-                    noi = quarterly_net * Decimal("4")
-                except Exception:
+                    flows = tool_annualized_statement_flows(effective_csv)
+                    noi = flows["net"]
+                    est_note = flows["note"]
+                except (ValueError, ArithmeticError):  # includes CSVIngestionError
                     pass
 
             if noi is not None and noi > Decimal("0.00"):
@@ -151,7 +154,7 @@ class CreditSubagent:
                 )
                 base_reply = (
                     f"### Prudent Debt Capacity & Borrowing Limit\n\n"
-                    f"- **Net Operating Income (NOI)**: ${float(res['net_operating_income']):,.2f}\n"
+                    f"- **Net Operating Income (NOI)**: ${float(res['net_operating_income']):,.2f}{est_note}\n"
                     f"- **Target DSCR Covenant**: {res['target_dscr']}x\n"
                     f"- **Assumed Facility APR**: {res['annual_interest_rate_pct']}%\n"
                     f"- **Facility Term**: {res['term_years']} years\n"
@@ -178,14 +181,13 @@ class CreditSubagent:
             noi = p_dict["net_operating_income"]
             ads = p_dict.get("total_debt_service") or p_dict.get("annual_debt_service")
 
+            est_note = ""
             if noi is None and effective_csv:
                 try:
-                    cash_res = tool_analyze_cash_flow(effective_csv)
-                    inflows = Decimal(str(cash_res.get("gross_inflows") or "0"))
-                    outflows = Decimal(str(cash_res.get("gross_outflows") or "0"))
-                    quarterly_net = max(Decimal("0.00"), inflows - outflows)
-                    noi = quarterly_net * Decimal("4")
-                except Exception:
+                    flows = tool_annualized_statement_flows(effective_csv)
+                    noi = flows["net"]
+                    est_note = flows["note"]
+                except (ValueError, ArithmeticError):  # includes CSVIngestionError
                     pass
 
             if noi is not None and ads is not None:
@@ -194,7 +196,7 @@ class CreditSubagent:
                 analysis_txt = res.get("interpretation") or res.get("rationale") or ""
                 base_reply = (
                     f"### Debt Service Coverage Ratio (DSCR) Assessment\n\n"
-                    f"- **Net Operating Income (NOI)**: ${float(res['net_operating_income']):,.2f}\n"
+                    f"- **Net Operating Income (NOI)**: ${float(res['net_operating_income']):,.2f}{est_note}\n"
                     f"- **Annual Debt Service**: ${float(debt_service_amt):,.2f}\n"
                     f"- **DSCR Metric**: {res['dscr']}x\n"
                     f"- **Underwriting Status**: `{res['underwriting_status']}`\n"
@@ -358,21 +360,20 @@ class CreditSubagent:
             ebit = p_dict["ebit"]
             interest = p_dict["interest_expense"]
 
-            if (ebit is None) and effective_csv:
+            est_note = ""
+            if ebit is None and effective_csv:
                 try:
-                    cash_res = tool_analyze_cash_flow(effective_csv)
-                    inflows = Decimal(str(cash_res.get("gross_inflows") or "0"))
-                    outflows = Decimal(str(cash_res.get("gross_outflows") or "0"))
-                    quarterly_net = max(Decimal("0.00"), inflows - outflows)
-                    ebit = quarterly_net * Decimal("4")
-                except Exception:
+                    flows = tool_annualized_statement_flows(effective_csv)
+                    ebit = flows["net"]
+                    est_note = flows["note"]
+                except (ValueError, ArithmeticError):  # includes CSVIngestionError
                     pass
 
             if ebit is not None and interest is not None:
                 res = tool_calculate_interest_coverage(ebit=ebit, interest_expense=interest)
                 base_reply = (
                     f"### Interest Coverage Ratio (TIE) Audit\n\n"
-                    f"- **Operating Income (EBIT)**: ${float(res['ebit']):,.2f}\n"
+                    f"- **Operating Income (EBIT)**: ${float(res['ebit']):,.2f}{est_note}\n"
                     f"- **Annual Interest Expense**: ${float(res['interest_expense']):,.2f}\n"
                     f"- **Interest Coverage Ratio**: {res['interest_coverage_ratio']}x\n"
                     f"- **Covenant Health Tier**: `{res['covenant_tier']}`\n"
@@ -531,13 +532,13 @@ class CreditSubagent:
             svc = p_dict["annual_debt_service"]
             rev = p_dict["gross_revenue"]
 
-            if (svc is None or rev is None) and effective_csv:
+            est_note = ""
+            if rev is None and effective_csv:
                 try:
-                    cash_res = tool_analyze_cash_flow(effective_csv)
-                    inflows = Decimal(str(cash_res.get("gross_inflows") or "0"))
-                    if rev is None:
-                        rev = inflows * Decimal("4")
-                except Exception:
+                    flows = tool_annualized_statement_flows(effective_csv)
+                    rev = flows["inflows"]
+                    est_note = flows["note"]
+                except (ValueError, ArithmeticError):  # includes CSVIngestionError
                     pass
 
             if svc is not None and rev is not None:
@@ -553,7 +554,7 @@ class CreditSubagent:
                 base_reply = (
                     f"### Debt Service Burden Audit\n\n"
                     f"- **Annual Debt Service Obligations**: ${float(res['annual_debt_service']):,.2f}\n"
-                    f"- **Gross Commercial Revenue**: ${float(rev_val):,.2f}\n"
+                    f"- **Gross Commercial Revenue**: ${float(rev_val):,.2f}{est_note}\n"
                     f"- **Debt Service Burden**: **{burden_val}%** of revenue\n"
                     f"- **Debt Service Tier**: `{tier_val}`\n"
                     f"- **Credit Covenant Status**: `{status_val}`\n"
@@ -713,6 +714,8 @@ class CreditSubagent:
         request: AgentChatRequest,
         effective_csv: Optional[str],
         enrich_fn: Callable[[str, str], str],
+        session_id: Optional[str] = None,
+        tenant_id: str = "SME-DEFAULT",
     ) -> CopilotResponse:
         """Runs full digital underwriting dossier generation and financing options matching."""
         if not effective_csv:
@@ -723,49 +726,61 @@ class CreditSubagent:
             )
 
         try:
-            underwrite_result = tool_underwrite_credit(effective_csv, nsf_count=request.nsf_count)
-            dossier = underwrite_result["dossier"]
-            matched_raw = underwrite_result["matched_options"]
+            uw_result = tool_underwrite_credit(effective_csv, nsf_count=request.nsf_count)
+            if session_id:
+                session_store.update_statement(
+                    session_id,
+                    effective_csv,
+                    dossier=uw_result.get("dossier"),
+                    tenant_id=tenant_id,
+                )
+
+            dossier = uw_result["dossier"]
+            matched_opts = [AgentMatchedOption(**opt) for opt in uw_result["matched_options"]]
 
             metrics = AgentMetricsSummary(
                 daily_average_balance=dossier["daily_average_balance"],
                 risk_tier=dossier["risk_tier"],
-                max_qualified_limit=dossier.get("max_qualified_limit") or dossier.get("recommended_credit_limit"),
+                max_qualified_limit=dossier["max_qualified_limit"],
                 revenue_volatility_cv=dossier.get("revenue_volatility_cv"),
                 volatility_tier=dossier.get("volatility_tier"),
             )
 
-            matched_responses = [AgentMatchedOption(**opt) for opt in matched_raw]
-
-            options_summary = "\n".join(
-                f"- **{opt.provider} ({opt.facility_name})**: Up to ${float(opt.max_amount):,.2f} at {opt.apr_percent}% APR (~{opt.turnaround_days} day funding)"
-                for opt in matched_responses
+            top_option = matched_opts[0] if matched_opts else None
+            opt_summary = (
+                f"Top matched facility is {top_option.facility_name} from {top_option.provider} "
+                f"at {top_option.apr_percent}% APR (Max: ${float(top_option.max_amount):,.2f})."
+                if top_option
+                else "No non-predatory credit facilities currently meet the underwriting criteria."
             )
 
-            score_line = f"\n- **Liquidity Health Score**: **{dossier['liquidity_score']}/100** ({dossier.get('score_tier', 'PRIME')})" if dossier.get("liquidity_score") is not None else ""
-            proposal_line = f"\n- **Smart Conditional Proposal**: {dossier['conditional_proposal']}" if dossier.get("conditional_proposal") else ""
-
-            base_reply = (
-                f"Underwriting evaluation complete for your business profile:\n\n"
-                f"- **Risk Classification**: `{dossier['risk_tier']}`{score_line}\n"
+            reply = (
+                f"### Credit Underwriting Assessment\n\n"
+                f"- **Underwriting evaluation complete**. Classification: `{dossier['risk_tier']}`\n"
                 f"- **Daily Average Balance (DAB)**: ${float(dossier['daily_average_balance']):,.2f}\n"
-                f"- **Inflow Volatility Tier**: `{dossier.get('volatility_tier', 'LOW')}` (CV: {dossier.get('revenue_volatility_cv', '0.00')})\n"
-                f"- **Recommended Prudent Limit**: ${float(metrics.max_qualified_limit or '0'):,.2f}"
-                f"{proposal_line}\n\n"
-                f"### Matched Pre-Qualified Facilities:\n{options_summary}\n\n"
-                "To stage an application for one of these options, confirm which facility you would like to prepare."
+                f"- **Maximum Qualified Limit**: ${float(dossier['max_qualified_limit']):,.2f}\n"
+                f"- **Matched Facility**: {opt_summary}\n\n"
+                "To apply, request staging for the chosen facility."
+            )
+        except CSVIngestionError as exc:
+            return CopilotResponse(
+                reply=f"Statement ingestion failed: {exc.code} - {exc}",
+                intent_detected="CREDIT_UNDERWRITING",
+                requires_biometric_hitl=False,
+            )
+        except Exception:
+            # Internal failure: log the trace, never echo exception text to the owner.
+            logger.exception("Underwriting failed")
+            return CopilotResponse(
+                reply="Underwriting could not be completed for this statement. Please check the file and try again.",
+                intent_detected="CREDIT_UNDERWRITING",
+                requires_biometric_hitl=False,
             )
 
-            return CopilotResponse(
-                reply=enrich_fn(base_reply, prompt_type="underwriting"),
-                intent_detected="CREDIT_UNDERWRITING",
-                metrics=metrics,
-                matched_options=matched_responses,
-                requires_biometric_hitl=False,
-            )
-        except Exception as e:
-            return CopilotResponse(
-                reply=f"Unable to process statement for underwriting: {str(e)}",
-                intent_detected="CREDIT_UNDERWRITING",
-                requires_biometric_hitl=False,
-            )
+        return CopilotResponse(
+            reply=enrich_fn(reply, prompt_type="underwriting"),
+            intent_detected="CREDIT_UNDERWRITING",
+            metrics=metrics,
+            matched_options=matched_opts,
+            requires_biometric_hitl=False,
+        )

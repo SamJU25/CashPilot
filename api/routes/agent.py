@@ -6,6 +6,8 @@ and multi-provider LLM bridge support.
 
 from __future__ import annotations
 
+import logging
+
 import json
 from typing import Optional
 from fastapi import APIRouter, Header, HTTPException, status
@@ -29,6 +31,7 @@ from services.agent.supervisor import run_copilot_supervisor
 
 from services.agent.session_store import session_store, SessionRecord
 
+logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/v1/agent", tags=["Autonomous Agent"])
 
 
@@ -160,10 +163,14 @@ async def agent_chat(
 
         if x_llm_config:
             try:
-                parsed = json.loads(x_llm_config)
-                effective_llm_config = LLMConfig(**parsed)
-            except Exception:
-                pass
+                effective_llm_config = LLMConfig(**json.loads(x_llm_config))
+            except (ValueError, TypeError):
+                # Silently ignoring it used to answer from a different provider than the user chose.
+                # The detail never echoes the header: it can carry an API key.
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="X-LLM-Config header is not valid JSON matching the provider settings schema.",
+                )
 
         response = await run_in_threadpool(
             run_copilot_supervisor,
@@ -174,10 +181,12 @@ async def agent_chat(
         )
         response.session_id = effective_session_id
         return response
-    except Exception as exc:
-        import traceback
-        traceback.print_exc()
+    except HTTPException:
+        raise
+    except Exception:
+        # Full trace goes to the server log; the client never sees internal exception text.
+        logger.exception("Agent chat failed")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Agent reasoning error: {str(exc)}",
+            detail="The copilot hit an internal error answering that message. Please try again.",
         )

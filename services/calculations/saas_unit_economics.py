@@ -35,14 +35,15 @@ Enforces pure Python decimal.Decimal arithmetic with ROUND_HALF_UP.
 from __future__ import annotations
 
 from decimal import Decimal, ROUND_HALF_UP
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 
 
 def calculate_ltv_cac(
-    annual_arpu: Decimal,
-    gross_margin_pct: Decimal,
-    annual_churn_rate_pct: Decimal,
-    cac: Decimal,
+    annual_arpu: Optional[Decimal] = None,
+    gross_margin_pct: Optional[Decimal] = None,
+    annual_churn_rate_pct: Optional[Decimal] = None,
+    cac: Decimal = Decimal("0.00"),
+    lifetime_value: Optional[Decimal] = None,
 ) -> Dict[str, Any]:
     """Calculate Customer Lifetime Value (LTV) and LTV/CAC ratio.
 
@@ -52,24 +53,31 @@ def calculate_ltv_cac(
         annual_churn_rate_pct: Annual customer churn rate percentage (e.g. 10.0 for 10%).
         cac: Fully loaded Customer Acquisition Cost (sales + marketing / new accounts).
 
+        lifetime_value: An LTV the owner already knows; replaces the ARPU, margin and churn inputs.
+
     Returns:
         Structured dictionary containing gross LTV, LTV/CAC ratio, efficiency tier, and guidance.
     """
-    if annual_arpu <= Decimal("0.00"):
-        raise ValueError("annual_arpu must be strictly positive.")
-    if gross_margin_pct <= Decimal("0.00") or gross_margin_pct > Decimal("100.00"):
-        raise ValueError("gross_margin_pct must be between 0 and 100.")
-    if annual_churn_rate_pct <= Decimal("0.00"):
-        raise ValueError("annual_churn_rate_pct must be strictly positive.")
     if cac <= Decimal("0.00"):
         raise ValueError("cac must be strictly positive.")
 
-    gm_dec = gross_margin_pct / Decimal("100.00")
-    churn_dec = annual_churn_rate_pct / Decimal("100.00")
+    if lifetime_value is not None:
+        if lifetime_value <= Decimal("0.00"):
+            raise ValueError("lifetime_value must be strictly positive.")
+        ltv = lifetime_value.quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+    else:
+        if annual_arpu is None or annual_arpu <= Decimal("0.00"):
+            raise ValueError("annual_arpu must be strictly positive.")
+        if gross_margin_pct is None or gross_margin_pct <= Decimal("0.00") or gross_margin_pct > Decimal("100.00"):
+            raise ValueError("gross_margin_pct must be between 0 and 100.")
+        if annual_churn_rate_pct is None or annual_churn_rate_pct <= Decimal("0.00"):
+            raise ValueError("annual_churn_rate_pct must be strictly positive.")
 
-    # LTV = (ARPU * Gross Margin) / Churn Rate
-    annual_margin_contribution = annual_arpu * gm_dec
-    ltv = (annual_margin_contribution / churn_dec).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+        # LTV = (ARPU * Gross Margin) / Churn Rate
+        annual_margin_contribution = annual_arpu * (gross_margin_pct / Decimal("100.00"))
+        ltv = (annual_margin_contribution / (annual_churn_rate_pct / Decimal("100.00"))).quantize(
+            Decimal("0.01"), rounding=ROUND_HALF_UP
+        )
 
     # LTV / CAC
     ltv_cac_ratio = (ltv / cac).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
@@ -111,9 +119,9 @@ def calculate_ltv_cac(
     policy_status = decision_res.selected_choice
 
     return {
-        "annual_arpu": str(annual_arpu),
-        "gross_margin_pct": str(gross_margin_pct),
-        "annual_churn_rate_pct": str(annual_churn_rate_pct),
+        "annual_arpu": None if annual_arpu is None else str(annual_arpu),
+        "gross_margin_pct": None if gross_margin_pct is None else str(gross_margin_pct),
+        "annual_churn_rate_pct": None if annual_churn_rate_pct is None else str(annual_churn_rate_pct),
         "cac": str(cac),
         "lifetime_value": str(ltv),
         "ltv_to_cac_ratio": str(ltv_cac_ratio),

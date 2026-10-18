@@ -9,6 +9,7 @@ Enforces:
 
 from __future__ import annotations
 
+import logging
 import os
 import re
 from decimal import Decimal
@@ -56,11 +57,11 @@ from services.agent.prompts import (
     is_question,
     numbers_are_grounded,
     sanitize_cfo_reply,
+    staging_action_from_text,
 )
 from services.agent.schema import (
     AgentActionProposal,
     AgentChatRequest,
-    AgentMatchedOption,
     AgentMetricsSummary,
     CopilotResponse,
     LLMConfig,
@@ -81,7 +82,6 @@ from services.agent.tools import (
     tool_calculate_revenue_attrition_impact,
     tool_calculate_wcr,
     tool_stage_financial_action,
-    tool_underwrite_credit,
     tool_verify_invoice_hash,
 )
 from services.ingestion.csv_parser import CSVIngestionError
@@ -89,6 +89,10 @@ from services.ingestion.csv_parser import CSVIngestionError
 
 from services.decision.policy_loader import load_security_policy_config
 
+logger = logging.getLogger(__name__)
+DEFINITION_QUESTION = re.compile(
+    r"\s*(?:what\s+(?:is|are|does)\s+(?!my\b|our\b|your\b)|define\b|explain\b|meaning\s+of\b)", re.IGNORECASE
+)
 _inj_pattern, _cred_pattern, _staging_defaults = load_security_policy_config()
 
 
@@ -124,6 +128,7 @@ def inspect_for_api_key(text: str) -> bool:
 
 
 from services.agent.dynamic_router import (
+    IN_DOMAIN_CARD_SIMILARITY,
     classify_intent_dynamic,
     classify_sub_intent_dynamic,
     is_ai_disclaimer,
@@ -180,10 +185,12 @@ def detect_intent(message: str, request: AgentChatRequest, config: Optional[LLMC
         has_csv=has_statement,
         config=config,
     )
-    # A question asks for information; staging a financial proposal requires an instruction
-    # in chat or an explicit staged_action_type from the UI (checked above).
-    if intent == "ACTION_STAGING" and is_question(eval_message):
-        return "GENERAL_ASSISTANCE"
+    # Staging needs an instruction naming the action ("draw $20k from the credit line"), or an
+    # explicit staged_action_type from the UI (checked above). The router's guess alone never stages.
+    if staging_action_from_text(eval_message):
+        return "ACTION_STAGING"
+    if intent == "ACTION_STAGING":
+        return "CASH_DIAGNOSTIC" if has_statement and not is_question(eval_message) else "GENERAL_ASSISTANCE"
     return intent
 
 
@@ -463,7 +470,11 @@ def run_copilot_supervisor(
         res_defaults = DecisionEngineRegistry.get_instance().evaluate(req_defaults)
         defaults_payload = res_defaults.output_payload
 
-        action_type = request.staged_action_type or str(defaults_payload.get("default_action_type", "DRAW_CREDIT_LINE"))
+        action_type = (
+            request.staged_action_type
+            or staging_action_from_text(request.message)
+            or str(defaults_payload.get("default_action_type", "DRAW_CREDIT_LINE"))
+        )
         amount_cents = request.staged_amount_cents or int(defaults_payload.get("default_amount_cents", 2500000))
         target = request.staged_target or str(defaults_payload.get("default_target_identifier", "SME-LIQUIDITY-FACILITY"))
 
@@ -508,14 +519,26 @@ def run_copilot_supervisor(
         ))
 
     # 1b. Deterministic Quantitative Financial Calculations
-    sub_intent = classify_sub_intent_dynamic(request.message, history=request.history)
-    quant_resp = _handle_quantitative_calculation(
-        sub_intent=sub_intent,
-        request=request,
-        effective_csv=effective_csv,
-        effective_config=effective_config,
-        enrich_fn=_enrich_reply,
-    )
+    sub_intent = classify_sub_intent_dynamic(request.message, history=request.history, has_csv=bool(effective_csv))
+    try:
+        quant_resp = _handle_quantitative_calculation(
+            sub_intent=sub_intent,
+            request=request,
+            effective_csv=effective_csv,
+            effective_config=effective_config,
+            enrich_fn=_enrich_reply,
+        )
+    except (ValueError, ArithmeticError) as exc:
+        # Calculators reject impossible inputs (0 collection days, negative margin); answer instead of a 500.
+        logger.info("Calculation rejected inputs for %s: %s", sub_intent, exc)
+        return _finalize(CopilotResponse(
+            reply=(
+                f"I could not run that calculation with the figures given: {exc} "
+                "Check the numbers in your message and try again."
+            ),
+            intent_detected=intent,
+            requires_biometric_hitl=False,
+        ))
     if quant_resp is not None:
         return _finalize(quant_resp)
 
@@ -558,54 +581,12 @@ def run_copilot_supervisor(
                 intent_detected=intent,
             ))
 
-        try:
-            uw_result = tool_underwrite_credit(effective_csv, nsf_count=request.nsf_count)
-            session_store.update_statement(
-                effective_session,
-                effective_csv,
-                dossier=uw_result.get("dossier"),
-                tenant_id=effective_tenant,
-            )
-        except CSVIngestionError as exc:
-            return _finalize(CopilotResponse(
-                reply=f"Statement ingestion failed: {exc.code} - {str(exc)}",
-                intent_detected=intent,
-            ))
-
-        dossier = uw_result["dossier"]
-        matched_opts = [AgentMatchedOption(**opt) for opt in uw_result["matched_options"]]
-
-        metrics = AgentMetricsSummary(
-            daily_average_balance=dossier["daily_average_balance"],
-            risk_tier=dossier["risk_tier"],
-            max_qualified_limit=dossier["max_qualified_limit"],
-            revenue_volatility_cv=dossier.get("revenue_volatility_cv"),
-            volatility_tier=dossier.get("volatility_tier"),
-        )
-
-        top_option = matched_opts[0] if matched_opts else None
-        opt_summary = (
-            f"Top matched facility is {top_option.facility_name} from {top_option.provider} "
-            f"at {top_option.apr_percent}% APR (Max: ${float(top_option.max_amount):,.2f})."
-            if top_option
-            else "No non-predatory credit facilities currently meet the underwriting criteria."
-        )
-
-        reply = (
-            f"### Credit Underwriting Assessment\n\n"
-            f"- **Underwriting evaluation complete**. Classification: `{dossier['risk_tier']}`\n"
-            f"- **Daily Average Balance (DAB)**: ${float(dossier['daily_average_balance']):,.2f}\n"
-            f"- **Maximum Qualified Limit**: ${float(dossier['max_qualified_limit']):,.2f}\n"
-            f"- **Matched Facility**: {opt_summary}\n\n"
-            "To apply, request staging for the chosen facility."
-        )
-
-        return _finalize(CopilotResponse(
-            reply=_enrich_reply(reply, prompt_type="underwriting"),
-            intent_detected=intent,
-            metrics=metrics,
-            matched_options=matched_opts,
-            requires_biometric_hitl=False,
+        return _finalize(CreditSubagent.handle_underwriting_evaluation(
+            request,
+            effective_csv,
+            _enrich_reply,
+            session_id=effective_session,
+            tenant_id=effective_tenant,
         ))
 
     # 3. Cash Flow Diagnostic Flow
@@ -742,7 +723,7 @@ def run_copilot_supervisor(
         if cash_result.get("cash_conversion_cycle_days") is not None:
             wc_snippet = f" Working Capital: Cash Conversion Cycle is {cash_result['cash_conversion_cycle_days']} days ({cash_result.get('working_capital_status')}). {cash_result.get('working_capital_rationale', '')}"
 
-        sub_intent = classify_sub_intent_dynamic(request.message)
+        sub_intent = classify_sub_intent_dynamic(request.message, has_csv=True)
 
         if sub_intent == "RUNWAY":
             headline = f"You have {runway_desc} of cash runway remaining at an average daily burn of ${float(cash_result['average_daily_burn']):,.2f}/day (current balance: ${float(cash_result['current_balance']):,.2f}, Status: {cash_result['cash_status']})."
@@ -897,6 +878,20 @@ def run_copilot_supervisor(
                     intent_detected="GENERAL_ASSISTANCE",
                     requires_biometric_hitl=False,
                 ))
+
+    # No model answered: a definition question ("What is WACC?") still gets its card instead of a greeting.
+    # Card similarity alone also matches "how can you assist us", so the phrasing gates it.
+    concept = (
+        retrieve_cards(request.message, k=1, min_similarity=IN_DOMAIN_CARD_SIMILARITY)
+        if DEFINITION_QUESTION.match(request.message)
+        else []
+    )
+    if concept:
+        return _finalize(CopilotResponse(
+            reply=card_summary(concept[0]),
+            intent_detected="GENERAL_ASSISTANCE",
+            requires_biometric_hitl=False,
+        ))
 
     if effective_csv:
         general_reply = evaluate_persona_policy(prompt_type="GENERAL_STATEMENT_LOADED").get("guidance_text") or (

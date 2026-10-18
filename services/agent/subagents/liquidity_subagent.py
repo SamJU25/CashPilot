@@ -60,6 +60,11 @@ from services.agent.prompts import (
 )
 
 
+def _ratio_display(ratio: str) -> str:
+    # Calculators return 999.00 when liabilities are zero; "999.00x" reads as a real ratio.
+    return "Not meaningful (no current liabilities)" if str(ratio) == "999.00" else f"{ratio}x"
+
+
 class LiquiditySubagent:
     """Specialist subagent for working capital, operational cash flows, and liquidity diagnostics."""
 
@@ -229,7 +234,7 @@ class LiquiditySubagent:
                     f"### Current Ratio Liquidity Audit\n\n"
                     f"- **Current Assets**: ${float(res['current_assets']):,.2f}\n"
                     f"- **Current Liabilities**: ${float(res['current_liabilities']):,.2f}\n"
-                    f"- **Current Ratio**: {res['current_ratio']}x\n"
+                    f"- **Current Ratio**: {_ratio_display(res['current_ratio'])}\n"
                     f"- **Working Capital Solvency**: `{res['liquidity_tier']}`\n"
                     f"- **Evaluation**: {res['rationale']}"
                 )
@@ -273,7 +278,7 @@ class LiquiditySubagent:
                     f"- **Inventory Excluded**: ${float(res['inventory']):,.2f}\n"
                     f"- **Quick Liquid Assets**: ${float(res['quick_assets']):,.2f}\n"
                     f"- **Current Liabilities**: ${float(res['current_liabilities']):,.2f}\n"
-                    f"- **Quick Ratio**: {res['quick_ratio']}x\n"
+                    f"- **Quick Ratio**: {_ratio_display(res['quick_ratio'])}\n"
                     f"- **Immediate Liquidity Tier**: `{res['liquidity_tier']}`\n"
                     f"- **Acid-Test Assessment**: {res['rationale']}"
                 )
