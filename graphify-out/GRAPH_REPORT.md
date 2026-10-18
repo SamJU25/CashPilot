@@ -1,7 +1,7 @@
 # Graph Report - SME Finance Copilot  (2026-10-19)
 
 ## Corpus Check
-- 345 files · ~248,366 words
+- 345 files · ~248,370 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 27 file(s) not represented in the graph (top: .csv 13, (none) 6, .ipynb 2)
 
@@ -11,7 +11,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `8be11c07`
+- Built from commit: `8463b992`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -165,7 +165,7 @@
 - Using Superpowers
 - Verification Before Completion
 - Writing Plans
-- calculate_altman_z_score
+- BankPDFParser
 - Brainstorming Ideas Into Designs
 - Codebase Design
 - Frameworks Reference
@@ -189,7 +189,7 @@
 - 2. Mandatory Invariants (Strict Enforcement)
 - SME Finance Copilot
 - workflows/graphify.md
-- generate_deterministic_summary
+- calculate_altman_z_score
 - .evaluate
 - 3. The 5 Defensive Invariants
 - test_calculations.py
@@ -211,7 +211,7 @@
 - mask_pii
 - 3-statement-model/SKILL.md
 - Credit Metrics
-- BankPDFParser
+- Instructions
 - Model Structure
 - test_matcher.py
 - compilerOptions
@@ -225,7 +225,7 @@
 - Common Variations
 - Case Selector Implementation
 - Best Practices
-- Instructions
+- generate_deterministic_summary
 - services/__init__.py
 - tests/__init__.py
 - tests/security/__init__.py
@@ -983,9 +983,9 @@ Nodes (3): The Gate Protocol, The Iron Law, Verification Before Completion
 Cohesion: 0.50
 Nodes (3): Overview, Structure, Writing Plans
 
-### Community 149 - "calculate_altman_z_score"
-Cohesion: 0.20
-Nodes (10): calculate_altman_z_score(), calculate_debt_service_burden(), calculate_net_debt_to_ebitda(), Any, Decimal, Calculate Net Debt to EBITDA commercial leverage covenant ratio. Args:…, Calculate Debt Service Burden (% of annual gross revenue claimed by debt…, Calculate Altman Z'-Score for private non-public SME enterprises. Args:… (+2 more)
+### Community 149 - "BankPDFParser"
+Cohesion: 0.14
+Nodes (12): BankPDFParser, PDFStatementResult, Any, Decimal, Determines if extracted line cluster contains minimal transaction elements., Extracts valid monetary amount tokens from text segment with financial…, Removes matched amount tokens from text to isolate vendor description., Sanitizes transaction description and removes extraneous whitespace. (+4 more)
 
 ### Community 153 - "Section 11: Formulas Reference Guide"
 Cohesion: 0.67
@@ -1039,9 +1039,9 @@ Nodes (24): 0. Project Truth & Instruction Precedence, 1. Environment & Architec
 Cohesion: 0.10
 Nodes (20): 1. Backend Setup, 1. Problem Statement: The 75-Day Working Capital Gap, 2.1 Multi-Format Statement Ingestion Engine (`services/ingestion/`), 2.2 Deterministic FinTech Engine (25+ Core Routines in `services/calculations/`), 2.3 Universal Dynamic AI Bridge & Local SLM (`services/agent/`), 2.4 Three-Tier Security Gate & WebAuthn Passkeys (`services/security/`), 2.5 Consortium Blockchain Double-Pledge Defense (`contracts/`), 2. Core Subsystems (+12 more)
 
-### Community 173 - "generate_deterministic_summary"
-Cohesion: 0.22
-Nodes (9): generate_deterministic_summary(), Any, Condenses older conversation turns into an objective narrative summary without…, Confirms empty message list returns empty string or existing summary., Verifies that key user financial inquiries and copilot responses are captured…, Confirms summary length is strictly bounded to prevent prompt context bloat., test_deterministic_summary_caps_length(), test_deterministic_summary_extracts_key_topics() (+1 more)
+### Community 173 - "calculate_altman_z_score"
+Cohesion: 0.20
+Nodes (10): calculate_altman_z_score(), calculate_debt_service_burden(), calculate_net_debt_to_ebitda(), Any, Decimal, Calculate Net Debt to EBITDA commercial leverage covenant ratio. Args:…, Calculate Debt Service Burden (% of annual gross revenue claimed by debt…, Calculate Altman Z'-Score for private non-public SME enterprises. Args:… (+2 more)
 
 ### Community 174 - ".evaluate"
 Cohesion: 0.13
@@ -1123,9 +1123,9 @@ Nodes (9): mask_pii(), Sanitizes sensitive identifiers before external transmiss
 Cohesion: 0.50
 Nodes (4): Core Credit Metrics to Include, Covenant Compliance Tracking, Credit Metric Hierarchy Checks, Credit Metrics
 
-### Community 195 - "BankPDFParser"
-Cohesion: 0.14
-Nodes (12): BankPDFParser, PDFStatementResult, Any, Decimal, Determines if extracted line cluster contains minimal transaction elements., Extracts valid monetary amount tokens from text segment with financial…, Removes matched amount tokens from text to isolate vendor description., Sanitizes transaction description and removes extraneous whitespace. (+4 more)
+### Community 195 - "Instructions"
+Cohesion: 0.22
+Nodes (7): Input: $ARGUMENTS, Instructions, Step 1: Source config, Step 2: Invalidate (and optionally refresh), Step 3: Confirm, Subagent Catalog - Invalidate, When to use
 
 ### Community 196 - "Model Structure"
 Cohesion: 0.50
@@ -1179,9 +1179,9 @@ Nodes (4): Base Case, Bear Case, Bull Case, Case Selector Implementation
 Cohesion: 0.50
 Nodes (4): Best Practices, Documentation, Model Construction, Quality Control
 
-### Community 209 - "Instructions"
+### Community 209 - "generate_deterministic_summary"
 Cohesion: 0.22
-Nodes (7): Input: $ARGUMENTS, Instructions, Step 1: Source config, Step 2: Invalidate (and optionally refresh), Step 3: Confirm, Subagent Catalog - Invalidate, When to use
+Nodes (9): generate_deterministic_summary(), Any, Condenses older conversation turns into an objective narrative summary without…, Confirms empty message list returns empty string or existing summary., Verifies that key user financial inquiries and copilot responses are captured…, Confirms summary length is strictly bounded to prevent prompt context bloat., test_deterministic_summary_caps_length(), test_deterministic_summary_extracts_key_topics() (+1 more)
 
 ### Community 215 - "tools.py"
 Cohesion: 0.06
@@ -1504,7 +1504,7 @@ _Questions this graph is uniquely positioned to answer:_
 - **Why does `Verified repository baseline (checked 2026-10-19)` connect `test_matcher.py` to `2. Subagent Suites Directory (57 Specialized Subagents)`, `calculate_cash_analysis`, `LocalTransformersEngine`, `test_calculations.py`?**
   _High betweenness centrality (0.089) - this node is a cross-community bridge._
 - **Why does `0. Project Truth, Instruction Precedence & Current Baseline` connect `2. Subagent Suites Directory (57 Specialized Subagents)` to `test_matcher.py`?**
-  _High betweenness centrality (0.088) - this node is a cross-community bridge._
+  _High betweenness centrality (0.089) - this node is a cross-community bridge._
 - **Are the 9 inferred relationships involving `DecisionRequest` (e.g. with `FallbackRuleAdapter` and `SystemOneModelAdapter`) actually correct?**
   _`DecisionRequest` has 9 INFERRED edges - model-reasoned connections that need verification._
 - **Are the 6 inferred relationships involving `run_copilot_supervisor()` (e.g. with `agent_chat()` and `LocalSLMEngine`) actually correct?**
