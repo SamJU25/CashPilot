@@ -1,12 +1,16 @@
 import type { Metadata } from 'next';
-import '../frontend/src/app/globals.css';
+import './globals.css';
 
 export const metadata: Metadata = {
   title: 'SME Finance Copilot',
-  description: 'Autonomous financial participant for SME cash runway diagnostics and working capital.',
+  description: 'Autonomous AI CFO and Financial Participant for Small & Medium Enterprises',
 };
 
-export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
   return (
     <html lang="en">
       <head>

@@ -924,15 +924,15 @@
     "semantic_hash": ""
   },
   "AGENTS.md": {
-    "mtime": 1792266851.7439377,
-    "seen": 1792273602.9822721,
-    "ast_hash": "d3fdd3da39bb94253a39ccf0f24b8b01",
+    "mtime": 1792342673.2729738,
+    "seen": 1792342842.1916902,
+    "ast_hash": "0f2b56bfea5ac8e63982887a9b003470",
     "semantic_hash": ""
   },
   "GEMINI.md": {
-    "mtime": 1792229274.723184,
-    "seen": 1792229779.8419816,
-    "ast_hash": "262e242f2ea14e4f2844a5a5714b7614",
+    "mtime": 1792342769.227988,
+    "seen": 1792342842.1916945,
+    "ast_hash": "0539bc9ed3d77c31d999835221e48733",
     "semantic_hash": ""
   },
   "GLOSSARY.md": {
@@ -978,15 +978,15 @@
     "semantic_hash": ""
   },
   "CLAUDE.md": {
-    "mtime": 1792249061.5547233,
-    "seen": 1792249072.7529635,
-    "ast_hash": "c2bb2b41cb504a5ce4202879f3f89f67",
+    "mtime": 1792342757.0659716,
+    "seen": 1792342842.191693,
+    "ast_hash": "a27fd12fe8608dc49fc03ac98f9cd499",
     "semantic_hash": ""
   },
   "README.md": {
-    "mtime": 1792282732.697268,
-    "seen": 1792283384.136671,
-    "ast_hash": "ac3b34fa78ac820e76ba0bb74c78cb07",
+    "mtime": 1792342699.623138,
+    "seen": 1792342842.1918054,
+    "ast_hash": "0817480e2832d11c26228f87a5b6f005",
     "semantic_hash": ""
   },
   "requirements.txt": {
@@ -1044,33 +1044,27 @@
     "semantic_hash": ""
   },
   "docs/architecture.md": {
-    "mtime": 1792266851.745544,
-    "seen": 1792273602.9835947,
-    "ast_hash": "3968e9f7bb01952b38bec1e361ab6094",
+    "mtime": 1792342713.0755935,
+    "seen": 1792342842.192672,
+    "ast_hash": "1138a3c7588f84033be43e296b688984",
     "semantic_hash": ""
   },
   "docs/security.md": {
-    "mtime": 1792266851.7460766,
-    "seen": 1792273602.9835968,
-    "ast_hash": "bcfd41dca0a287f2d036ad163ab377c9",
+    "mtime": 1792342733.3033683,
+    "seen": 1792342842.1926744,
+    "ast_hash": "30615ed52e2a103acc6f546d0d819c12",
     "semantic_hash": ""
   },
   "docs/system.md": {
-    "mtime": 1792266851.7466118,
-    "seen": 1792273602.983599,
-    "ast_hash": "21480d2e51640f9ad427797557169b5b",
+    "mtime": 1792342744.3195014,
+    "seen": 1792342842.192676,
+    "ast_hash": "9d3504b218630bb449328dfc5e8b0ded",
     "semantic_hash": ""
   },
   ".agent/workflows/sprint-workflow.md": {
-    "mtime": 1792229202.080492,
-    "seen": 1792229779.8418689,
-    "ast_hash": "06fb03c5ee03ee9682b8bc23930c76c3",
-    "semantic_hash": ""
-  },
-  "docs/team_distribution_guide.md": {
-    "mtime": 1792229217.31329,
-    "seen": 1792229779.8437035,
-    "ast_hash": "5cc637da1ed5e1ad6774f90eedcea897",
+    "mtime": 1792342788.1558433,
+    "seen": 1792342842.191574,
+    "ast_hash": "4647857a801688817ad86aa70fb35b42",
     "semantic_hash": ""
   },
   "api/__init__.py": {
@@ -1173,12 +1167,6 @@
     "mtime": 1792048927.8042786,
     "seen": 1792049031.805451,
     "ast_hash": "edef98b43c36079853a79f465f539109",
-    "semantic_hash": ""
-  },
-  "docs/team_execution_plan.md": {
-    "mtime": 1792266851.7471533,
-    "seen": 1792273602.9837332,
-    "ast_hash": "992984b6d58cd8e58ad700cd785357c5",
     "semantic_hash": ""
   },
   "api/routes/analyze.py": {
