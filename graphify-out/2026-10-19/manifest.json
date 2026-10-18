@@ -924,9 +924,9 @@
     "semantic_hash": ""
   },
   "AGENTS.md": {
-    "mtime": 1792356249.9242043,
-    "seen": 1792356390.9117348,
-    "ast_hash": "60bcfea10ff891479563ffd8a2c85ffe",
+    "mtime": 1792356489.2759864,
+    "seen": 1792356509.6383529,
+    "ast_hash": "3f4c1055df909ca300f6ec3b0f879f7f",
     "semantic_hash": ""
   },
   "GEMINI.md": {
@@ -1231,8 +1231,8 @@
   },
   "contracts/InvoiceRegistry.sol": {
     "mtime": 1791935009.5218325,
-    "seen": 1792351569.838204,
-    "ast_hash": "",
+    "seen": 1792356469.2220109,
+    "ast_hash": "571b58b08346dc437d70e4123ec7925c",
     "semantic_hash": ""
   },
   ".github/workflows/ci.yml": {
