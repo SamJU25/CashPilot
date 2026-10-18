@@ -21,3 +21,10 @@ tests
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+models
+.sessions
+dataset
+kaggle
+notebooks
+docs
+*.tsbuildinfo

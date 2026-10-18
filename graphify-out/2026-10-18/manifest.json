@@ -941,12 +941,6 @@
     "ast_hash": "5eea6556c7170fc1d89f9fcdddf1c7ef",
     "semantic_hash": ""
   },
-  "SME_Finance_Copilot_Deep_Dive_Report.pdf": {
-    "mtime": 1791824635.3478448,
-    "seen": 1791903716.1691465,
-    "ast_hash": "e258c21f723bf4e8c5e4b3483cabfc15",
-    "semantic_hash": ""
-  },
   ".agent/agents/1-agentic-orchestration/copilot-prompt-engineer.md": {
     "mtime": 1791933301.2369835,
     "seen": 1791933341.121984,
@@ -1854,9 +1848,9 @@
     "semantic_hash": ""
   },
   "tests/unit/test_download_model.py": {
-    "mtime": 1792340579.2218473,
-    "seen": 1792340649.9753623,
-    "ast_hash": "0cd73f3c6d45a569f77a346c9201996f",
+    "mtime": 1792341159.1874273,
+    "seen": 1792341382.0499609,
+    "ast_hash": "64c8c4e445f7ca1be2f72aa967accc9d",
     "semantic_hash": ""
   },
   "contracts/decision_tables/bank_statement_profile_policy.json": {
@@ -2115,6 +2109,12 @@
     "mtime": 1792291712.8778355,
     "seen": 1792291771.0716019,
     "ast_hash": "9da1ec1d3eba86ab1265bd5f27154acb",
+    "semantic_hash": ""
+  },
+  "docs/SME_Finance_Copilot_Deep_Dive_Report.pdf": {
+    "mtime": 1791824635.3478448,
+    "seen": 1792341382.0734282,
+    "ast_hash": "e258c21f723bf4e8c5e4b3483cabfc15",
     "semantic_hash": ""
   }
 }

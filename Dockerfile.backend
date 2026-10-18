@@ -27,16 +27,18 @@ RUN groupadd -g 10001 appgroup && \
 # Copy installed python wheels from builder
 COPY --from=builder /root/.local /home/appuser/.local
 
-# Copy application source code
+# Copy application source code & decision rules
 COPY --chown=appuser:appgroup api /app/api
 COPY --chown=appuser:appgroup services /app/services
 COPY --chown=appuser:appgroup contracts /app/contracts
+COPY --chown=appuser:appgroup knowledge /app/knowledge
+COPY --chown=appuser:appgroup data /app/data
 
 USER appuser
 
 EXPOSE ${PORT}
 
 HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 \
-    CMD python -c "import urllib.request, os; port=os.environ.get('PORT', '8000'); urllib.request.urlopen(f'http://127.0.0.1:{port}/health')" || exit 1
+    CMD python -c "import urllib.request, os; port=os.environ.get('PORT', '8000'); urllib.request.urlopen(f'http://127.0.0.1:{port}/api/v1/health')" || exit 1
 
 CMD ["sh", "-c", "uvicorn api.main:app --host ${HOST} --port ${PORT}"]

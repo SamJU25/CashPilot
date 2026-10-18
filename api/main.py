@@ -48,6 +48,15 @@ app.include_router(agent_router)
 app.include_router(decision_router)
 
 
+from api.routes.health import get_health_status
+
+
+@app.get("/health", include_in_schema=False)
+async def health_alias():
+    """Root health probe alias for standard container orchestrators."""
+    return await get_health_status()
+
+
 @app.get("/")
 async def root():
     return {
