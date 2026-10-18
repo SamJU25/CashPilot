@@ -164,6 +164,7 @@ def test_delete_model_protects_adapters(tmp_path):
     engine = LocalTransformersEngine.get_instance()
 
     # Confirm the adapter folder exists and is never deleted
+    os.makedirs(LORA_MODEL_DIR, exist_ok=True)
     assert os.path.exists(LORA_MODEL_DIR)
 
     with patch("shutil.rmtree") as mock_rmtree:

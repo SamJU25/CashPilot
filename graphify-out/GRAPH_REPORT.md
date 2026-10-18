@@ -1,17 +1,17 @@
 # Graph Report - SME Finance Copilot  (2026-10-18)
 
 ## Corpus Check
-- 348 files · ~262,650 words
+- 348 files · ~262,662 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 26 file(s) not represented in the graph (top: .csv 12, (none) 6, .ipynb 2)
 
 ## Summary
-- 4079 nodes · 7635 edges · 362 communities (295 shown, 67 thin omitted)
+- 4079 nodes · 7636 edges · 363 communities (295 shown, 68 thin omitted)
 - Extraction: 97% EXTRACTED · 3% INFERRED · 0% AMBIGUOUS · INFERRED: 237 edges (avg confidence: 0.94)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `d353b354`
+- Built from commit: `5d1ed20e`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -294,12 +294,14 @@
 - os
 - Critical Requirements
 - High-Level Workflow
+- test_agent_test_connection_offline
 - liquidity_score.py
 - test_agent_action_staging_flow
 - semantic_intent_prototypes.json
 - FORMATTING REQUIREMENTS
 - Cash & Liquidity
 - Citation Examples for Specific Content
+- test_agent_chat_break_even_calculation
 - clear_session
 - decision.py
 - 小红书 / XiaoHongShu（多后端）
@@ -323,7 +325,6 @@
 - test_agent_test_connection_custom_missing_base_url
 - pytest
 - test_agent_chat_working_capital_requirement
-- test_agent_chat_with_header_llm_config
 - test_pii_masking_defense
 - test_agent_chat_customer_attrition_impact
 - verify_dataset_health.py
@@ -402,7 +403,7 @@
 ## Import Cycles
 - None detected.
 
-## Communities (362 total, 67 thin omitted)
+## Communities (363 total, 68 thin omitted)
 
 ### Community 0 - "DCF Model Troubleshooting Guide"
 Cohesion: 0.17
@@ -1053,8 +1054,8 @@ Cohesion: 0.08
 Nodes (24): 1. Executive Summary & Problem Statement, 2.1 Deterministic CFO Financial Health Diagnostics, 2.2 Predictive Cash Crunch Early-Warning Engine, 2.3 Transactional Digital Underwriting & Financing Matcher, 2.4 Consortium Blockchain Invoice Double-Pledge Prevention, 2. Core Capabilities & Product Features, 3. Provable Reliability, Security & Trust, 4.1 Form Factor Decision: Responsive Web + Progressive Web App (PWA) (+16 more)
 
 ### Community 173 - "test_context_summarizer.py"
-Cohesion: 0.13
-Nodes (17): model_validator, generate_deterministic_summary(), Any, Rolling conversation summarizer for multi-turn SME Finance Copilot sessions.…, Condenses older conversation turns into an objective narrative summary without…, ChatHistoryItem, In-memory and persistent session store for Autonomous SME Finance Copilot.…, Unit tests for the Hierarchical Rolling Conversation Summarizer. Verifies: 1.… (+9 more)
+Cohesion: 0.14
+Nodes (16): model_validator, generate_deterministic_summary(), Any, Rolling conversation summarizer for multi-turn SME Finance Copilot sessions.…, Condenses older conversation turns into an objective narrative summary without…, ChatHistoryItem, In-memory and persistent session store for Autonomous SME Finance Copilot.…, Unit tests for the Hierarchical Rolling Conversation Summarizer. Verifies: 1.… (+8 more)
 
 ### Community 174 - "prompts.py"
 Cohesion: 0.14
@@ -1241,8 +1242,8 @@ Cohesion: 0.40
 Nodes (5): Connected Skills & Squad Handoffs, Enforced Invariants & Guidelines, fintech-engineer (Suite: 2-fintech-engine), Mission & Domain Focus, Operational Workflow
 
 ### Community 226 - "test_agent_api.py"
-Cohesion: 0.17
-Nodes (11): Integration tests for the Autonomous SME Finance Copilot Agent API. Verifies:…, Verify offline provider connection probe succeeds immediately with 0ms latency., Verify chat agent computes break-even sales revenue threshold., Verify Fixed Charge Coverage Ratio calculation and underwriting approval tier., Verify follow-up query inherits fixed operating costs when contribution margin…, Verify agent invokes digital underwriting and pre-qualified matching with true…, test_agent_chat_break_even_calculation(), test_agent_chat_break_even_parameter_inheritance() (+3 more)
+Cohesion: 0.18
+Nodes (10): Integration tests for the Autonomous SME Finance Copilot Agent API. Verifies:…, Verify chat route parses X-LLM-Config header and maintains deterministic…, Verify Fixed Charge Coverage Ratio calculation and underwriting approval tier., Verify follow-up query inherits fixed operating costs when contribution margin…, Verify agent invokes digital underwriting and pre-qualified matching with true…, test_agent_chat_break_even_parameter_inheritance(), test_agent_chat_fccr(), test_agent_chat_with_header_llm_config() (+2 more)
 
 ### Community 227 - "validate_pdf_statement"
 Cohesion: 0.33
@@ -1587,7 +1588,7 @@ Nodes (74): Risk Manager & Unit Economics Subagent. Specializes in: 1. Break-Eve
 ## Knowledge Gaps
 - **1398 isolated node(s):** `config.sh script`, `SUBAGENT_CATALOG_TTL_SECONDS`, `SUBAGENT_CATALOG_CACHE_FILE`, `SUBAGENT_CATALOG_REPO_URL`, `metadata` (+1393 more)
   These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 2274 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
-- **67 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **68 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_

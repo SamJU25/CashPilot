@@ -8,6 +8,8 @@ Verifies:
 5. Ingestion error handling and parameter boundaries.
 """
 
+from unittest.mock import patch
+
 from fastapi.testclient import TestClient
 
 from api.main import app
@@ -190,14 +192,15 @@ def test_agent_prompt_injection_defense():
 
 def test_agent_test_connection_offline():
     """Verify offline provider connection probe succeeds immediately with 0ms latency."""
-    response = client.post(
-        "/api/v1/agent/test-connection",
-        json={"provider": "offline"},
-    )
-    assert response.status_code == 200
-    data = response.json()
-    assert data["success"] is True
-    assert "local ai model ready" in data["message"].lower() or "ready" in data["message"].lower() or "on-device" in data["message"].lower()
+    with patch("services.agent.local_transformers.LocalTransformersEngine.is_available", return_value=True):
+        response = client.post(
+            "/api/v1/agent/test-connection",
+            json={"provider": "offline"},
+        )
+        assert response.status_code == 200
+        data = response.json()
+        assert data["success"] is True
+        assert "local ai model ready" in data["message"].lower() or "ready" in data["message"].lower() or "on-device" in data["message"].lower()
 
 
 def test_agent_test_connection_missing_api_key():
@@ -507,25 +510,26 @@ def test_agent_chat_sub_intent_deficit_warning():
 
 def test_agent_offline_lora_connection_and_discovery():
     """Verify local fine-tuned LoRA model is detected and test-connection succeeds."""
-    res_test = client.post(
-        "/api/v1/agent/test-connection",
-        json={"provider": "offline", "model_name": "sme-finance-lora"},
-    )
-    assert res_test.status_code == 200
-    data_test = res_test.json()
-    assert data_test["success"] is True
-    assert "Local AI model ready" in data_test["message"]
+    with patch("services.agent.local_transformers.LocalTransformersEngine.is_available", return_value=True):
+        res_test = client.post(
+            "/api/v1/agent/test-connection",
+            json={"provider": "offline", "model_name": "sme-finance-lora"},
+        )
+        assert res_test.status_code == 200
+        data_test = res_test.json()
+        assert data_test["success"] is True
+        assert "Local AI model ready" in data_test["message"]
 
-    res_models = client.post(
-        "/api/v1/agent/fetch-models",
-        json={"provider": "offline"},
-    )
-    assert res_models.status_code == 200
-    data_models = res_models.json()
-    assert data_models["success"] is True
-    model_ids = [m["id"] for m in data_models["models"]]
-    assert "sme-finance-lora" in model_ids
-    assert "deterministic-v1" not in model_ids
+        res_models = client.post(
+            "/api/v1/agent/fetch-models",
+            json={"provider": "offline"},
+        )
+        assert res_models.status_code == 200
+        data_models = res_models.json()
+        assert data_models["success"] is True
+        model_ids = [m["id"] for m in data_models["models"]]
+        assert "sme-finance-lora" in model_ids
+        assert "deterministic-v1" not in model_ids
 
 
 def test_agent_chat_loan_amortization_calculation():
