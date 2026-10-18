@@ -184,3 +184,42 @@ def test_tool_evaluate_financial_math():
         tool_evaluate_financial_math("__import__('os').system('dir')")
 
 
+
+
+@pytest.fixture
+def offline_fx(monkeypatch):
+    import services.calculations.fx_rate_service as fx
+
+    monkeypatch.setattr(fx, "_fetch_rates_from_api", lambda base: None)
+    monkeypatch.setattr(fx, "_RATE_CACHE", {})
+
+
+def test_offline_fallback_refuses_currency_without_offline_rate(offline_fx):
+    with pytest.raises(ValueError, match="no offline rate for NGN"):
+        get_live_exchange_rate("USD", "NGN")
+
+
+def test_offline_fallback_still_quotes_listed_currency_as_not_live(offline_fx):
+    info = get_live_exchange_rate("USD", "EUR")
+    assert info["source"] == "FALLBACK_CROSS_RATE"
+    assert info["is_live_market"] is False
+
+
+def test_offline_explicit_rate_works_for_unlisted_currency(offline_fx):
+    info = get_live_exchange_rate("USD", "NGN", explicit_rate=Decimal("1500"))
+    assert info["spot_rate_decimal"] == Decimal("1500.0000")
+
+
+def test_conversion_handler_asks_for_rate_and_suggested_phrasing_converts(offline_fx):
+    from services.agent.schema import AgentChatRequest
+    from services.agent.subagents.liquidity_subagent import LiquiditySubagent
+
+    def handle(message):
+        return LiquiditySubagent.handle_sub_intent(
+            "CURRENCY_CONVERSION", AgentChatRequest(message=message), None, lambda base, **_: base
+        ).reply
+
+    ask = handle("Convert 5,000 USD to NGN")
+    assert "Tell me the rate to use" in ask
+    suggested = ask.split("for example '")[1].rstrip("'.")
+    assert "Net Converted Proceeds" in handle(suggested)

@@ -112,6 +112,14 @@
 **What to do:** Keep an operating buffer that covers your runway target, then move the surplus to a safe, accessible interest-bearing account.
 **In the app:** Calculated by the cash drag tool.
 
+## Currency Conversion & FX Exposure
+<!-- tools: tool_convert_currency, tool_calculate_fx_exposure -->
+**What it is:** Currency conversion turns an amount into another currency at the spot rate, minus the bank's spread. FX exposure is the gap between receivables and payables held in a foreign currency, and how much cash an adverse rate move would cost.
+**Why it matters:** A business that invoices in one currency and pays suppliers in another can lose margin on a rate move alone, even when sales and costs hold steady.
+**Healthy vs warning:** Healthy: foreign receivables and payables roughly offset, or the open position is hedged. Warning: a large one-sided position where a 5% shock would wipe out a month of profit.
+**What to do:** Match foreign inflows with foreign costs where you can, and consider a forward contract for large one-sided positions. Treat any rate marked as an offline fallback as indicative only, and confirm the live rate with your bank before you transact.
+**In the app:** Live rates come from an open market feed; when it is unreachable, an offline rate is used only for major currencies and flagged as not live. For other currencies the app asks you for the rate to use.
+
 ## Liquidity Score
 <!-- tools: tool_underwrite_credit -->
 **What it is:** A 0 to 100 score combining Daily Average Balance, revenue volatility, NSF history and transaction activity.

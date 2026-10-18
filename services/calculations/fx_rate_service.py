@@ -148,9 +148,16 @@ def get_live_exchange_rate(
             "is_live_market": True,
         }
 
-    # 4. Fallback cross-rate calculation via USD
-    from_usd = _FALLBACK_USD_RATES.get(from_code, 1.0)
-    to_usd = _FALLBACK_USD_RATES.get(to_code, 1.0)
+    # 4. Fallback cross-rate calculation via USD; an unlisted currency has no safe offline rate.
+    missing = [code for code in (from_code, to_code) if code not in _FALLBACK_USD_RATES]
+    if missing:
+        raise ValueError(
+            f"No live {from_code}/{to_code} rate is available right now and there is no offline rate for "
+            f"{' or '.join(missing)}. Tell me the rate to use, for example "
+            f"'convert 5,000 {from_code} to {to_code} at rate 1.25'."
+        )
+    from_usd = _FALLBACK_USD_RATES[from_code]
+    to_usd = _FALLBACK_USD_RATES[to_code]
     # rate = (1 / from_usd) * to_usd = to_usd / from_usd
     fallback_rate = _format_spot_rate(Decimal(str(to_usd)) / Decimal(str(from_usd)))
 

@@ -451,13 +451,17 @@ class LiquiditySubagent:
             spread = p_dict["spread_bps"]
 
             if amt is not None:
-                res = tool_convert_currency(
-                    amount=amt,
-                    from_currency=from_ccy,
-                    to_currency=to_ccy,
-                    exchange_rate=ex_rate,
-                    spread_bps=spread,
-                )
+                try:
+                    res = tool_convert_currency(
+                        amount=amt,
+                        from_currency=from_ccy,
+                        to_currency=to_ccy,
+                        exchange_rate=ex_rate,
+                        spread_bps=spread,
+                    )
+                except ValueError as exc:
+                    # No live rate and no offline rate for this currency: ask for one instead of guessing.
+                    return CopilotResponse(reply=str(exc), intent_detected="CASH_DIAGNOSTIC", requires_biometric_hitl=False)
                 base_reply = (
                     f"### Multi-Currency Conversion Audit\n\n"
                     f"- **Original Amount**: {res['from_symbol']}{float(res['original_amount']):,.2f} ({res['from_currency_name']})\n"
@@ -491,14 +495,18 @@ class LiquiditySubagent:
             shock = p_dict["adverse_shock_pct"]
 
             if rec is not None:
-                res = tool_calculate_fx_exposure(
-                    foreign_receivables=rec,
-                    foreign_payables=pay,
-                    base_currency=base_ccy,
-                    foreign_currency=foreign_ccy,
-                    current_spot_rate=spot,
-                    adverse_shock_pct=shock,
-                )
+                try:
+                    res = tool_calculate_fx_exposure(
+                        foreign_receivables=rec,
+                        foreign_payables=pay,
+                        base_currency=base_ccy,
+                        foreign_currency=foreign_ccy,
+                        current_spot_rate=spot,
+                        adverse_shock_pct=shock,
+                    )
+                except ValueError as exc:
+                    # No live rate and no offline rate for this currency: ask for one instead of guessing.
+                    return CopilotResponse(reply=str(exc), intent_detected="CASH_DIAGNOSTIC", requires_biometric_hitl=False)
                 hedge_note = "Forward contract hedge recommended." if res.get("recommend_forward_contract_hedge") else "Exposure within unhedged operating buffer."
                 base_reply = (
                     f"### Foreign Exchange (FX) Exposure & VaR Audit\n\n"
