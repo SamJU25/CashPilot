@@ -10,7 +10,10 @@ from fastapi import APIRouter, Header, HTTPException, status
 from pydantic import BaseModel, ConfigDict, Field
 
 from services.security.tenant_token import (
+    TenantIssuanceDeniedError,
+    TenantIssuanceUnavailableError,
     TenantTokenError,
+    authorize_token_issuance,
     issue_tenant_token,
     resolve_tenant_identity,
 )
@@ -46,9 +49,22 @@ class VerifyResponse(BaseModel):
     response_model=TokenResponse,
     status_code=status.HTTP_200_OK,
     summary="Issue Signed Tenant Token",
-    description="Generates an HMAC-SHA256 signed identity token for authenticated SME tenant session scoping.",
+    description=(
+        "Generates an HMAC-SHA256 signed identity token. Requires the tenant's enrollment key "
+        "(X-Enrollment-Key) so identities cannot be self-asserted."
+    ),
 )
-async def create_tenant_token(request: TokenRequest) -> TokenResponse:
+async def create_tenant_token(
+    request: TokenRequest,
+    x_enrollment_key: Optional[str] = Header(default=None, alias="X-Enrollment-Key"),
+) -> TokenResponse:
+    try:
+        authorize_token_issuance(request.tenant_id, x_enrollment_key)
+    except TenantIssuanceDeniedError as exc:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=str(exc))
+    except TenantIssuanceUnavailableError as exc:
+        raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail=str(exc))
+
     ttl = request.ttl_seconds or (86400 * 30)
     token = issue_tenant_token(tenant_id=request.tenant_id, ttl_seconds=ttl)
     return TokenResponse(

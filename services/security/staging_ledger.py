@@ -52,7 +52,9 @@ class BiometricVerificationError(StagingLedgerError):
 class StagingRequest(BaseModel):
     model_config = ConfigDict(extra="forbid", strict=True)
 
-    tenant_id: str
+    # Optional so the API layer can supply the verified tenant identity from a signed token.
+    # When present it must match that identity; the route rejects mismatches.
+    tenant_id: Optional[str] = Field(default=None, description="Must match the authenticated tenant")
     action_type: str = Field(description="FACTOR_INVOICE, DRAW_CREDIT_LINE, TRANSFER, or PLEDGE_INVOICE")
     amount_cents: int = Field(gt=0, description="Exact integer amount in minor currency units (cents)")
     target_identifier: str = Field(min_length=1, description="Account, invoice ID, or facility ID")
@@ -109,11 +111,14 @@ class StagingLedger:
 
     def stage_intent(self, request: StagingRequest) -> StagedActionIntent:
         """Stages an action proposal in Tier 2. No money moves."""
+        tenant_id = (request.tenant_id or "").strip()
+        if not tenant_id:
+            raise ValueError("A verified tenant identity is required to stage an action")
         intent_id = f"intent-{uuid.uuid4().hex[:12]}"
         now = datetime.now(timezone.utc)
         intent = StagedActionIntent(
             id=intent_id,
-            tenant_id=request.tenant_id,
+            tenant_id=tenant_id,
             action_type=request.action_type,
             amount_cents=request.amount_cents,
             target_identifier=request.target_identifier,
@@ -157,18 +162,24 @@ class StagingLedger:
             if intent.status != ActionStatus.STAGED_PENDING_HITL.value:
                 raise IntentStateError(f"Cannot execute intent in status {intent.status}")
 
-            proof = None
-            if requires_biometric_execution(intent.action_type):
-                if not webauthn_assertion:
-                    raise BiometricVerificationError(
-                        f"Tier 3 action '{intent.action_type}' requires biometric passkey verification."
-                    )
-                try:
-                    proof = self._passkeys.verify_assertion(intent.tenant_id, intent_id, webauthn_assertion)
-                except PasskeyError as exc:
-                    raise BiometricVerificationError(
-                        f"Tier 3 action '{intent.action_type}' biometric passkey verification failed: {exc}"
-                    ) from exc
+            # Tier 2 proposals are queue-only by construction: nothing may move capital without
+            # a Tier 3 biometric authorization. This blocks execution of any action type that the
+            # security-gate policy does not require a passkey for.
+            if not requires_biometric_execution(intent.action_type):
+                raise IntentStateError(
+                    f"Action '{intent.action_type}' is a Tier 2 proposal and cannot be executed"
+                )
+
+            if not webauthn_assertion:
+                raise BiometricVerificationError(
+                    f"Tier 3 action '{intent.action_type}' requires biometric passkey verification."
+                )
+            try:
+                proof = self._passkeys.verify_assertion(intent.tenant_id, intent_id, webauthn_assertion)
+            except PasskeyError as exc:
+                raise BiometricVerificationError(
+                    f"Tier 3 action '{intent.action_type}' biometric passkey verification failed: {exc}"
+                ) from exc
 
             executed_intent = intent.model_copy(
                 update={

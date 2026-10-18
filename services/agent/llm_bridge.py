@@ -25,6 +25,7 @@ from services.agent.schema import (
     TestConnectionRequest,
     TestConnectionResponse,
 )
+from services.agent.url_guard import BlockedEndpointError, validate_llm_endpoint
 
 # Pre-compiled PII Sanitization Patterns
 RE_ACCOUNT = re.compile(r"\b(?:\d{4}[-\s]?){3}\d{4}\b|\b\d{9,18}\b")
@@ -99,6 +100,10 @@ PROVIDER_DEFAULTS = {
 def _resolve_endpoint(provider: str, base_url: Optional[str], model: Optional[str]) -> Tuple[str, str]:
     """Resolves target endpoint URL and model identifier for a given provider."""
     p_lower = (provider or "offline").lower()
+
+    # Caller-supplied endpoints are untrusted: validate before any outbound request.
+    if base_url and base_url.strip():
+        validate_llm_endpoint(base_url)
     defaults = PROVIDER_DEFAULTS.get(p_lower, {})
     model_name = model or defaults.get("model", "custom-model")
 
@@ -193,7 +198,16 @@ def test_llm_connection(req: TestConnectionRequest) -> TestConnectionResponse:
             latency_ms=None,
         )
 
-    endpoint, model = _resolve_endpoint(provider, base_url, req.model_name)
+    try:
+        endpoint, model = _resolve_endpoint(provider, base_url, req.model_name)
+    except BlockedEndpointError as exc:
+        return TestConnectionResponse(
+            success=False,
+            message=f"Endpoint blocked by the outbound connection policy: {exc}",
+            provider=provider,
+            model_name=req.model_name or "custom-model",
+            latency_ms=None,
+        )
     probe_prompt = "Hello. Respond with the single word 'READY'."
     start_time = time.perf_counter()
 
@@ -259,9 +273,11 @@ def test_llm_connection(req: TestConnectionRequest) -> TestConnectionResponse:
                     latency_ms=latency_ms,
                 )
             else:
+                # Never reflect the upstream body: it can leak internal service responses back
+                # to whoever supplied the endpoint URL.
                 return TestConnectionResponse(
                     success=False,
-                    message=f"Provider returned error HTTP {res.status_code}: {res.text[:150]}",
+                    message=f"Provider returned error HTTP {res.status_code}.",
                     provider=provider,
                     model_name=model,
                     latency_ms=latency_ms,
@@ -316,7 +332,10 @@ def query_external_llm(
 
     api_key = (config.api_key or "").strip() if config.api_key else None
     base_url = (config.base_url or "").strip() if config.base_url else None
-    endpoint, model = _resolve_endpoint(provider, base_url, config.model_name)
+    try:
+        endpoint, model = _resolve_endpoint(provider, base_url, config.model_name)
+    except BlockedEndpointError:
+        return None
 
     try:
         with httpx.Client(timeout=10.0) as client:
@@ -497,6 +516,17 @@ def fetch_remote_models(req: FetchModelsRequest) -> FetchModelsResponse:
             models=[],
             message="Base URL required to fetch custom models.",
         )
+
+    if base_url:
+        try:
+            validate_llm_endpoint(base_url)
+        except BlockedEndpointError as exc:
+            return FetchModelsResponse(
+                success=False,
+                provider=provider,
+                models=[],
+                message=f"Endpoint blocked by the outbound connection policy: {exc}",
+            )
 
     try:
         with httpx.Client(timeout=6.0) as client:

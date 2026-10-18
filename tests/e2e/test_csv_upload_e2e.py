@@ -12,6 +12,7 @@ from io import BytesIO
 from fastapi.testclient import TestClient
 from api.main import app
 from services.security.staging_ledger import staging_ledger
+from tests.auth_helpers import tenant_headers
 from tests.passkey_authenticator import execute_with_passkey
 
 client = TestClient(app)
@@ -28,6 +29,8 @@ SYNTHETIC_BANK_CSV = (
 
 def test_complete_sme_copilot_user_journey():
     staging_ledger.clear()
+    tenant = "SME-COFFEE-001"
+    headers = tenant_headers(client, tenant)
 
     # Step 1: Upload CSV and trigger Cash Analysis with 30-day alert threshold
     response = client.post(
@@ -75,11 +78,12 @@ def test_complete_sme_copilot_user_journey():
     stage_response = client.post(
         "/api/v1/actions/stage",
         json={
-            "tenant_id": "SME-COFFEE-001",
+            "tenant_id": tenant,
             "action_type": "DRAW_CREDIT_LINE",
             "amount_cents": 2500000,
             "target_identifier": top_facility["provider"],
         },
+        headers=headers,
     )
     assert stage_response.status_code == 201
     stage_data = stage_response.json()
@@ -89,12 +93,12 @@ def test_complete_sme_copilot_user_journey():
 
     # Step 6: Tier 3 Execution Security Barrier (Requires Passkey/Biometric)
     # Attempt execution without valid biometric signature -> Returns HTTP 403 Forbidden
-    unauthorized_exec = client.post(f"/api/v1/actions/{intent_id}/execute", json={})
+    unauthorized_exec = client.post(f"/api/v1/actions/{intent_id}/execute", json={}, headers=headers)
     assert unauthorized_exec.status_code == 403
     assert "biometric" in unauthorized_exec.json()["detail"].lower()
 
     # Attempt execution with validated biometric passkey -> Succeeds HTTP 200 OK
-    authorized_exec = execute_with_passkey(client, intent_id)
+    authorized_exec = execute_with_passkey(client, intent_id, tenant)
     assert authorized_exec.status_code == 200
     exec_data = authorized_exec.json()
     assert exec_data["status"] == "EXECUTED"
@@ -111,6 +115,8 @@ def test_complete_conversational_agent_user_journey():
     5. Tier 3 security gatekeeper verification (HTTP 403 without passkey, HTTP 200 with passkey).
     """
     staging_ledger.clear()
+    tenant = "SME-COFFEE-001"
+    headers = tenant_headers(client, tenant)
     csv_str = SYNTHETIC_BANK_CSV.decode("utf-8")
 
     # Step 1: Onboarding dialogue inquiry
@@ -184,12 +190,14 @@ def test_complete_conversational_agent_user_journey():
 
     # Step 5: Enforce Tier 3 security gatekeeper on the agent-staged proposal
     # 5a. Unauthorized execution without passkey -> 403 Forbidden
-    unauthorized = client.post(f"/api/v1/actions/{staged_intent_id}/execute", json={})
+    unauthorized = client.post(
+        f"/api/v1/actions/{staged_intent_id}/execute", json={}, headers=headers
+    )
     assert unauthorized.status_code == 403
     assert "biometric" in unauthorized.json()["detail"].lower()
 
     # 5b. Authorized execution with WebAuthn biometric passkey -> 200 OK
-    authorized = execute_with_passkey(client, staged_intent_id)
+    authorized = execute_with_passkey(client, staged_intent_id, tenant)
     assert authorized.status_code == 200
     auth_data = authorized.json()
     assert auth_data["status"] == "EXECUTED"

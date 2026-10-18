@@ -24,7 +24,7 @@ The repository's contract and baseline source of truth is [`AGENTS.md`](../../AG
 
 ## 3. Terminal Verification
 
-1. Run the full test suite: `pytest -q` (all 416+ tests must pass).
+1. Run the full test suite: `pytest -q` (all 823 tests must pass per 2026-10-19 baseline).
 2. For frontend modifications, run `npm run type-check` and `npm run build`.
 3. Never claim a feature is active or fixed without running the terminal command and inspecting output evidence.
 

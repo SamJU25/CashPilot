@@ -34,6 +34,11 @@ COPY --chown=appuser:appgroup contracts /app/contracts
 COPY --chown=appuser:appgroup knowledge /app/knowledge
 COPY --chown=appuser:appgroup data /app/data
 
+# Persistence directory must exist and be writable by the runtime user, otherwise the staging
+# ledger and passkey registry fall back to memory-only and silently lose state on restart.
+RUN mkdir -p /app/.data && chown -R appuser:appgroup /app/.data
+ENV COPILOT_LEDGER_DIR=/app/.data
+
 USER appuser
 
 EXPOSE ${PORT}

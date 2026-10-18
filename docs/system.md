@@ -1,7 +1,7 @@
 # SME Finance Copilot: Master System Design (`system.md`)
 
 - **Document Role**: Concrete Technical Specifications, Schemas, Algorithms & Code Contracts
-- **Status**: Active Technical Blueprint & Contract (Verified Baseline: 416 Passed Tests)
+- **Status**: Active Technical Blueprint & Contract (Verified Baseline: 823 Passed Tests)
 - **Date**: 2026-10-17
 - **Competition Target**: FinTechathon 2026 Track E (Tsinghua University PBCSF & WeBank)
 
@@ -127,7 +127,8 @@ Evaluates continuous score across weighted sub-components (DAB stability 35%, Ru
 ## 3. Frontend Backbone Specification
 
 ### 3.1 Technology Stack & Rendering
-- **Framework**: Next.js 14 App Router with React Server Components (RSC) (`frontend/src/app/` and root `app/`).
+- **Implementation status**: the shipped frontend is a single Next.js canvas at root `app/` that probes `/api/v1/health` and lists the API surface. The components described in 3.1–3.3 are the target specification, not current behaviour.
+- **Framework**: Next.js 14 App Router with React Server Components (RSC) (root `app/`).
 - **Typography**: Monospace tabular formatting for numerical values:
   ```css
   .tabular-nums {
@@ -136,8 +137,8 @@ Evaluates continuous score across weighted sub-components (DAB stability 35%, Ru
   }
   ```
 - **Motion Physics**: Emil Kowalski spring transitions ($\le 280\text{ms}$ duration, tension: 170, friction: 26).
-- **In-App AI Provider Settings Modal**: Allows configuration of active provider (Local LoRA 3B, Gemini, Claude, OpenAI, DeepSeek, Groq, Ollama), base URL, API keys with client-side `localStorage` encryption, and live connection test.
-- **Dynamic Model Discovery**: Fetches available models live from provider endpoint.
+- **In-App AI Provider Settings Modal** *(planned)*: Allows configuration of active provider (Local LoRA 3B, Gemini, Claude, OpenAI, DeepSeek, Groq, Ollama), base URL, API keys with client-side `localStorage` storage, and live connection test. The backend endpoints (`test-connection`, `fetch-models`) are implemented and tested; the modal is not.
+- **Dynamic Model Discovery**: `POST /api/v1/agent/fetch-models` queries the provider's live `/models` endpoint (subject to the SSRF guard).
 
 ### 3.2 Four-State Component Protocol
 All UI components implement 4 strict states:
@@ -146,9 +147,9 @@ All UI components implement 4 strict states:
 3. **Error State**: Non-blocking banner with deterministic failure reason and retry button.
 4. **Populated State**: Monospace numerical display with percentage variance indicators.
 
-### 3.3 Real-Time Streaming & Live Alerts
-- **WebSocket Route**: `/ws/v1/live-alerts`
-- Emits structured cash crunch alerts and agent execution progress updates directly to the executive dashboard.
+### 3.3 Real-Time Streaming & Live Alerts *(planned)*
+- No WebSocket route is implemented in the current build; the dashboard polls `/api/v1/health`.
+- Target: `/ws/v1/live-alerts` emitting structured cash crunch alerts and agent execution progress updates.
 
 ---
 
@@ -157,7 +158,7 @@ All UI components implement 4 strict states:
 ### 4.1 Application Server Architecture
 - **Runtime**: Python 3.12+ with FastAPI (Asynchronous ASGI).
 - **Validation**: Pydantic v2 (Rust-compiled) with `ConfigDict(extra="forbid", strict=True)`.
-- **Tenant Isolation**: Ingress middleware enforces `X-Tenant-ID` header validation.
+- **Tenant Isolation**: Action and passkey routes require a signed HMAC tenant token (`X-Tenant-Token` or `Authorization: Bearer`) resolved by `require_tenant_identity`; the client-asserted `X-Tenant-ID` header is never trusted for these routes. Tier 1 analysis/chat routes still accept the header for scoping read-only requests.
 
 ### 4.2 Multi-Format Statement Ingestion
 Ingests both bank CSVs and PDF statements (`services/ingestion/statement_parser.py`, `pdf_parser.py`, `csv_parser.py`):
@@ -204,8 +205,9 @@ class ActionIntent(BaseModel):
 - `GET /` & `GET /health`: Service health and version status.
 - `POST /api/v1/analyze`: Ingests transactions and returns deterministic CFO metrics.
 - `POST /api/v1/underwrite`: Evaluates SME credit profile and produces financing offers.
-- `POST /api/v1/actions`: Stages a proposed financial action into the staging ledger (Tier 2).
-- `POST /api/v1/actions/{id}/execute`: Confirms and executes action via WebAuthn passkey (Tier 3).
+- `POST /api/v1/auth/token`: Issues a signed tenant token; requires `X-Enrollment-Key` matching `TENANT_ENROLLMENT_KEY` (or the per-tenant map).
+- `POST /api/v1/actions/stage`: Stages a proposed financial action for the authenticated tenant (Tier 2).
+- `POST /api/v1/actions/{id}/execute`: Executes a Tier 3 action via WebAuthn passkey assertion; Tier 2 proposals return 409.
 - `POST /api/v1/agent/chat`: Dynamic neural CFO chat grounded in pre-calculated context.
 - `POST /api/v1/agent/test-connection`: Tests connectivity and latency for selected LLM provider.
 - `POST /api/v1/agent/fetch-models`: Discovers active models from local or cloud providers.
@@ -222,7 +224,7 @@ Intent classification uses FastEmbed ONNX (`BAAI/bge-small-en-v1.5`) vector embe
 
 ### 5.2 Local SLM Inference Engine
 `LocalTransformersEngine` (`services/agent/local_transformers.py`) provides local, air-gapped inference via PyTorch CUDA:
-- **Flagship 3B Model**: `models/sme-finance-lora` (Qwen2.5-3B-Instruct base + LoRA adapter) for deep financial analysis and tool calling.
+- **Flagship Model**: `models/sme-finance-lora` (Qwen3-4B-Instruct-2507 base + LoRA adapter) for deep financial analysis and tool calling. Requires the optional stack in `requirements-local.txt` and the base weights on disk under `models/base/`.
 
 ### 5.3 Universal LLM Bridge
 `services/agent/llm_bridge.py` routes prompts to cloud or local providers:
@@ -235,7 +237,7 @@ Intent classification uses FastEmbed ONNX (`BAAI/bge-small-en-v1.5`) vector embe
                                │
                                ▼
                    [ Pre-Flight PII Redaction ]
-                   (Presidio: Names, Accounts, Phones)
+                   (regex scrubber in llm_bridge.mask_pii)
                                │
                                ▼
                    [ Universal LLM Bridge ]

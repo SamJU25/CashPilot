@@ -60,6 +60,12 @@ origins = (
     else ["http://localhost:3000", "http://127.0.0.1:3000"]
 )
 
+from api.rate_limit import TokenBucketRateLimiter
+
+# Per-IP token bucket (60 req/min by default). Set RATE_LIMIT_PER_MINUTE=0 to disable.
+# Registered before CORS so CORS stays outermost and 429 responses still carry CORS headers.
+app.add_middleware(TokenBucketRateLimiter)
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,

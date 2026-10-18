@@ -10,9 +10,13 @@ import base64
 import hashlib
 import hmac
 import json
+import logging
 import os
+import secrets
 import time
 from typing import Optional
+
+logger = logging.getLogger(__name__)
 
 
 class TenantTokenError(Exception):
@@ -27,7 +31,86 @@ class TenantTokenInvalidError(TenantTokenError):
     """Raised when a tenant token has an invalid signature or structure."""
 
 
-DEFAULT_SECRET = os.getenv("TENANT_TOKEN_SECRET", "sme-copilot-dev-secret-key-32bytes!")
+class TenantAuthenticationRequiredError(TenantTokenError):
+    """Raised when a protected operation receives no signed tenant credential."""
+
+
+class TenantIssuanceDeniedError(TenantTokenError):
+    """Raised when a token request does not present the tenant's enrollment key."""
+
+
+class TenantIssuanceUnavailableError(TenantTokenError):
+    """Raised when the server has no enrollment key configured, so issuance is closed."""
+
+
+_EPHEMERAL_SECRET: Optional[bytes] = None
+
+
+def _signing_secret(secret: Optional[str] = None) -> bytes:
+    """
+    Resolves the HMAC signing secret.
+
+    TENANT_TOKEN_SECRET is required in any shared or deployed environment. When it is absent
+    (local single-process runs), a random per-process secret is generated so tokens can never be
+    forged with a value published in the repository. Tokens then stop verifying after a restart,
+    which is the safe failure direction.
+    """
+    if secret:
+        return secret.encode("utf-8")
+
+    configured = os.getenv("TENANT_TOKEN_SECRET", "").strip()
+    if configured:
+        return configured.encode("utf-8")
+
+    global _EPHEMERAL_SECRET
+    if _EPHEMERAL_SECRET is None:
+        _EPHEMERAL_SECRET = secrets.token_bytes(32)
+        logger.warning(
+            "TENANT_TOKEN_SECRET is not set; using a random per-process signing secret. "
+            "Set TENANT_TOKEN_SECRET for tokens that survive restarts."
+        )
+    return _EPHEMERAL_SECRET
+
+
+def authorize_token_issuance(tenant_id: str, enrollment_key: Optional[str]) -> None:
+    """
+    Authorizes issuing a tenant token.
+
+    TENANT_ENROLLMENT_KEYS (JSON map of tenant_id -> key) takes precedence for multi-tenant
+    deployments; TENANT_ENROLLMENT_KEY is the single-operator fallback. With neither set,
+    issuance is closed rather than open, so an unauthenticated caller can never mint a token
+    for an arbitrary tenant.
+    """
+    clean_tenant = (tenant_id or "").strip()
+    if not clean_tenant:
+        raise TenantIssuanceDeniedError("tenant_id is required")
+
+    provided = (enrollment_key or "").strip()
+    per_tenant_raw = os.getenv("TENANT_ENROLLMENT_KEYS", "").strip()
+    single_key = os.getenv("TENANT_ENROLLMENT_KEY", "").strip()
+
+    if per_tenant_raw:
+        try:
+            per_tenant = json.loads(per_tenant_raw)
+        except ValueError as exc:
+            raise TenantIssuanceUnavailableError("TENANT_ENROLLMENT_KEYS is not valid JSON") from exc
+        if not isinstance(per_tenant, dict):
+            raise TenantIssuanceUnavailableError("TENANT_ENROLLMENT_KEYS must be a JSON object")
+        expected = per_tenant.get(clean_tenant)
+        if not expected:
+            raise TenantIssuanceDeniedError(f"Tenant {clean_tenant} is not enrolled")
+        if not provided or not hmac.compare_digest(provided, str(expected)):
+            raise TenantIssuanceDeniedError("Invalid enrollment key")
+        return
+
+    if single_key:
+        if not provided or not hmac.compare_digest(provided, single_key):
+            raise TenantIssuanceDeniedError("Invalid enrollment key")
+        return
+
+    raise TenantIssuanceUnavailableError(
+        "Token issuance is disabled: set TENANT_ENROLLMENT_KEY or TENANT_ENROLLMENT_KEYS"
+    )
 
 
 def _b64url_encode(data: bytes) -> str:
@@ -51,7 +134,7 @@ def issue_tenant_token(
     if not clean_tenant:
         raise ValueError("tenant_id cannot be empty")
 
-    signing_secret = (secret or DEFAULT_SECRET).encode("utf-8")
+    signing_secret = _signing_secret(secret)
     now = int(time.time())
     payload = {
         "tenant_id": clean_tenant,
@@ -80,7 +163,7 @@ def verify_tenant_token(token: str, secret: Optional[str] = None) -> str:
         raise TenantTokenInvalidError("Malformed tenant token format")
 
     b64_payload, b64_signature = parts
-    signing_secret = (secret or DEFAULT_SECRET).encode("utf-8")
+    signing_secret = _signing_secret(secret)
 
     expected_sig = hmac.new(signing_secret, b64_payload.encode("utf-8"), hashlib.sha256).digest()
     b64_expected_sig = _b64url_encode(expected_sig)
@@ -128,3 +211,28 @@ def resolve_tenant_identity(
         return x_tenant_id.strip()
 
     return "SME-DEFAULT"
+
+
+def require_tenant_identity(
+    x_tenant_token: Optional[str] = None,
+    authorization: Optional[str] = None,
+) -> str:
+    """
+    Resolves a *verified* tenant identity for protected operations.
+
+    Unlike resolve_tenant_identity, this never falls back to the client-asserted X-Tenant-ID
+    header or a shared default tenant. Callers must present a signed tenant token.
+    """
+    if x_tenant_token and x_tenant_token.strip():
+        return verify_tenant_token(x_tenant_token.strip())
+
+    if authorization and authorization.strip():
+        auth = authorization.strip()
+        if auth.lower().startswith("bearer "):
+            bearer_token = auth[7:].strip()
+            if bearer_token:
+                return verify_tenant_token(bearer_token)
+
+    raise TenantAuthenticationRequiredError(
+        "A signed tenant token is required (X-Tenant-Token or Authorization: Bearer)."
+    )

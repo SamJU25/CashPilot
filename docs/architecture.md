@@ -1,7 +1,7 @@
 # SME Finance Copilot: Master Architectural Plan (`architecture.md`)
 
 - **Document Role**: Macro Architecture, Multi-Agent Topology, Governance & Verified Technical Baseline
-- **Status**: Active Architecture Blueprint & Technical Contract (Verified Baseline: 416 Passed Tests)
+- **Status**: Active Architecture Blueprint & Technical Contract (Verified Baseline: 823 Passed Tests)
 - **Date**: 2026-10-17
 - **Competition Target**: FinTechathon 2026 Track E (Tsinghua University PBCSF & WeBank)
 
@@ -29,8 +29,8 @@ The architecture decouples **Untrusted Conversational Reasoning** from **Determi
 ┌────────────────────────────────────────────────────────────────────────┐
 │ LAYER 1: CLIENT PRESENTATION (Next.js 14 App Router + PWA)             │
 │ • Desktop: Multi-column ledger tables, predictive cash crunch cards    │
-│ • In-App AI Provider Settings Modal with live test & dynamic models    │
-│ • Mobile PWA: Push alerts & 1-touch FaceID/TouchID passkey approvals   │
+│ • Current build: health probe + API reference canvas (root app/)       │
+│ • Target: provider settings modal, deficit cards, passkey ceremony UI  │
 │ • Monospace tabular numbers (font-variant-numeric: tabular-nums)       │
 │ • Emil Kowalski spring motion (<280ms transitions)                     │
 │ • Zero API keys, zero client-side financial calculation authority      │
@@ -39,8 +39,8 @@ The architecture decouples **Untrusted Conversational Reasoning** from **Determi
                                     ▼
 ┌────────────────────────────────────────────────────────────────────────┐
 │ LAYER 2: API GATEWAY & SECURITY INGRESS (FastAPI + Nginx)              │
-│ • Token-bucket rate limiting (60 req/min per IP)                       │
-│ • Tenant isolation middleware via X-Tenant-ID header                   │
+│ • Token-bucket rate limiting (60 req/min per IP, api/rate_limit.py)    │
+│ • Signed tenant tokens on action/passkey routes (X-Tenant-Token/Bearer) │
 │ • Rust-compiled Pydantic v2 strict type validation (extra="forbid")    │
 │ • Automated 422 drop for malformed payloads before execution          │
 └───────────────────────────────────┬────────────────────────────────────┘
@@ -77,10 +77,10 @@ The architecture decouples **Untrusted Conversational Reasoning** from **Determi
                                     │
                                     ▼
 ┌────────────────────────────────────────────────────────────────────────┐
-│ LAYER 5: STORAGE & DATA SECURITY (PostgreSQL 16 + RLS / SQLite Test)   │
-│ • Isolated Private VPC Subnet (No public IP assigned to port 5432)     │
-│ • Kernel Row-Level Security: SET LOCAL app.current_tenant_id           │
-│ • Event Sourcing: Immutable ledger_entries (UPDATE/DELETE forbidden)  │
+│ LAYER 5: STORAGE & DATA SECURITY (current: JSON store under .data/)    │
+│ • Staging ledger + passkey registry persisted with atomic file replace │
+│ • Tenant scoping enforced in the API layer (signed tokens), not SQL RLS │
+│ • PostgreSQL 16 + RLS remains the production target (not yet built)    │
 │ • Staging Ledger: action_intents awaiting WebAuthn physical signature  │
 └───────────────────────────────────┬────────────────────────────────────┘
                                     │
@@ -141,7 +141,7 @@ For runtime request handling, specialized specialists collaborate across 4 funct
   ├──────────────┤   ├──────────────┤     ├──────────────┤   ├──────────────┤
   │ CSV/PDF OCR  │   │ Pure Python  │     │ Predictive   │   │ Continuous   │
   │ Tie-out      │   │ Decimal math │     │ Overdraft    │   │ 0-100 Score  │
-  │ Presidio PII │   │ DAB, CCC, ROE│     │ Inflow CV    │   │ ZenEngine DT │
+  │ Regex PII    │   │ DAB, CCC, ROE│     │ Inflow CV    │   │ ZenEngine DT │
   └──────────────┘   └──────────────┘     └──────────────┘   └──────────────┘
          │                  │                    │                  │
          └──────────────────┴──────────────┬─────┴──────────────────┘
@@ -168,9 +168,10 @@ For runtime request handling, specialized specialists collaborate across 4 funct
 ## 3. Database & Agent Memory Architectural Decision
 
 ### 3.1 Database Selection: PostgreSQL 16 (+ SQLite for Local Dev)
-- **Why PostgreSQL**: ACID transactional consistency, kernel-level Row-Level Security (RLS), native JSONB staging, and banking industry standard.
+- **Current implementation**: no relational database is wired yet. The staging ledger, passkey registry and invoice registry persist to JSON files under `COPILOT_LEDGER_DIR` (default `.data/`) using process-local locks and atomic file replacement. This is adequate for the single-process demo and is not safe for multi-worker scaling.
+- **Why PostgreSQL (target)**: ACID transactional consistency, kernel-level Row-Level Security (RLS), native JSONB staging, and banking industry standard.
 - **Why Alternatives Were Rejected**: NoSQL (MongoDB) lacks double-entry atomicity; pure vector databases cannot manage financial ledgers.
-- **Local Dev & Testing**: Automated test suite (`pytest -q`) runs 416 deterministic tests against isolated test storage.
+- **Local Dev & Testing**: Automated test suite (`pytest -q`) runs 823 deterministic tests against isolated test storage.
 
 ### 3.2 Agent Memory Architecture: Zero Cognitive Graph Bloat
 - **Autonomous Vector Memory Rejected**: Autonomous agent memory introduces prompt poisoning risks, token bloat (>15s latency), and arithmetic hallucinations.
@@ -182,10 +183,10 @@ For runtime request handling, specialized specialists collaborate across 4 funct
 
 ## 4. Phased Sprint Roadmap & Verified Milestones
 
-All 6 development sprints are complete and verified against the test suite (**416 passed tests**):
+All 6 development sprints are complete and verified against the test suite (**823 passed tests**):
 
 ```
-Sprint 1: Deterministic Math Core (services/calculations/) — VERIFIED (416 Tests Passing)
+Sprint 1: Deterministic Math Core (services/calculations/) — VERIFIED (823 Tests Passing)
   • Scope: 25+ pure Python decimal.Decimal financial routines: DAB carry-forward, cash analysis,
     overdraft forecasting, weekly volatility CV, CCC, DSCR/FCCR, Altman Z', DuPont ROE,
     ROIC/EVA, DCF/WACC, SaaS metrics, trade credit APR, currency conversion for 160+ ISO currencies.
@@ -209,8 +210,10 @@ Sprint 5: Consortium Blockchain Anchor (contracts/ & services/blockchain/) — V
   • Scope: InvoiceRegistry.sol on FISCO BCOS + canonical SHA-256 invoice hashing.
   • Status: Second concurrent pledge reverts with ERR_INVOICE_ALREADY_PLEDGED.
 
-Sprint 6: Next.js Executive Dashboard & Universal LLM Bridge (frontend/ & services/agent/) — VERIFIED
-  • Scope: Next.js 14 App Router, In-App AI Provider Settings Modal, dynamic model discovery,
-    FastEmbed ONNX semantic router, Local SLM (Flagship 3B LoRA), and live connection testing.
-  • Status: Responsive dashboard, live WebSocket alerts, tabular-nums typography, 4-state components.
+Sprint 6: Next.js Dashboard shell & Universal LLM Bridge (app/ & services/agent/) — PARTIAL
+  • Scope: Next.js 14 App Router shell, dynamic model discovery, FastEmbed ONNX semantic router,
+    local SLM loader, and live connection testing.
+  • Status: API bridge and semantic routing verified by tests. Dashboard UI (settings modal, deficit
+    cards, chat, passkey ceremony) and WebSocket alerts are not implemented; local SLM needs an
+    installed base model plus optional torch/transformers dependencies (requirements-local.txt).
 ```

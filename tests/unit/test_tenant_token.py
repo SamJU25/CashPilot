@@ -8,6 +8,7 @@ import pytest
 from fastapi.testclient import TestClient
 
 from api.main import app
+from tests.auth_helpers import ENROLLMENT_KEY
 from services.security.tenant_token import (
     TenantTokenError,
     TenantTokenExpiredError,
@@ -81,8 +82,12 @@ def test_resolve_tenant_identity_precedence():
 
 
 def test_auth_token_api_endpoints(client):
-    # Issue token
-    issue_resp = client.post("/api/v1/auth/token", json={"tenant_id": "SME-VERIFY-001"})
+    # Issue token (issuance requires the tenant enrollment key)
+    issue_resp = client.post(
+        "/api/v1/auth/token",
+        json={"tenant_id": "SME-VERIFY-001"},
+        headers={"X-Enrollment-Key": ENROLLMENT_KEY},
+    )
     assert issue_resp.status_code == 200
     data = issue_resp.json()
     assert data["tenant_id"] == "SME-VERIFY-001"

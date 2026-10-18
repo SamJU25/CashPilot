@@ -14,6 +14,7 @@ services:
     environment:
       - HOST=0.0.0.0
       - PORT=8000
+      - COPILOT_LEDGER_DIR=/app/.data
       - MAX_ANALYSIS_UPLOAD_BYTES=${MAX_ANALYSIS_UPLOAD_BYTES:-1048576}
       - ALLOWED_ORIGINS=${ALLOWED_ORIGINS:-http://localhost:3000,http://127.0.0.1:3000}
       - WEBAUTHN_ORIGINS=${WEBAUTHN_ORIGINS:-http://localhost:3000}
@@ -23,6 +24,14 @@ services:
       - OPENAI_API_KEY=${OPENAI_API_KEY:-}
       - DEEPSEEK_API_KEY=${DEEPSEEK_API_KEY:-}
       - GROQ_API_KEY=${GROQ_API_KEY:-}
+      - TENANT_TOKEN_SECRET=${TENANT_TOKEN_SECRET:-}
+      - TENANT_ENROLLMENT_KEY=${TENANT_ENROLLMENT_KEY:-}
+      - TENANT_ENROLLMENT_KEYS=${TENANT_ENROLLMENT_KEYS:-}
+      - RATE_LIMIT_PER_MINUTE=${RATE_LIMIT_PER_MINUTE:-60}
+      - LLM_ALLOW_LOOPBACK_ENDPOINTS=${LLM_ALLOW_LOOPBACK_ENDPOINTS:-0}
+      - LLM_ALLOW_PRIVATE_ENDPOINTS=${LLM_ALLOW_PRIVATE_ENDPOINTS:-0}
+    volumes:
+      - copilot-data:/app/.data
     healthcheck:
       test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/v1/health')\""]
       interval: 15s
@@ -64,3 +73,6 @@ services:
 networks:
   copilot-net:
     driver: bridge
+
+volumes:
+  copilot-data:

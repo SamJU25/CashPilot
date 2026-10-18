@@ -1,0 +1,12 @@
+# Optional dependencies for on-device SLM inference (services/agent/local_transformers.py).
+# Install on top of requirements.txt only when you want local Qwen inference:
+#   python -m pip install -r requirements-local.txt
+# You also need the base model on disk (models/base/<repo name>) plus the LoRA adapter in
+# models/sme-finance-lora. `scripts/download_model.py` fetches the base weights.
+
+torch>=2.4.0
+transformers>=4.44.0
+peft>=0.12.0
+accelerate>=0.33.0
+bitsandbytes>=0.43.0; platform_system != "Darwin"
+sentencepiece>=0.2.0

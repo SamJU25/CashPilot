@@ -1,7 +1,7 @@
 # SME Finance Copilot: Master Security Architecture (`security.md`)
 
 - **Document Role**: Threat Modeling, Defense-in-Depth, Self-Healing & Decadal Security
-- **Status**: Active Security Architecture & Technical Contract (Verified Baseline: 416 Passed Tests)
+- **Status**: Active Security Architecture & Technical Contract (Verified Baseline: 823 Passed Tests)
 - **Date**: 2026-10-17
 - **Competition Target**: FinTechathon 2026 Track E (Tsinghua University PBCSF & WeBank)
 
@@ -26,7 +26,7 @@ Our architecture relies on **Provable Invariants**: mathematical, kernel-enforce
 │                            THE 5 INVARIANTS                            │
 ├────────────────────────┬───────────────────────────────────────────────┤
 │ 1. Type Boundary       │ Rust Pydantic v2 drops 422 on extra/bad keys  │
-│ 2. Storage Boundary    │ PostgreSQL Kernel RLS + X-Tenant-ID ingress   │
+│ 2. Storage Boundary    │ Signed tenant tokens + per-tenant JSON store  │
 │ 3. Air-Gap Boundary    │ Zero banking credentials for AI agents        │
 │ 4. Atomicity Boundary  │ Row locks + FISCO BCOS PBFT double-pledge stop│
 │ 5. Hardware Boundary   │ WebAuthn FIDO2 passkey biometric confirmation │
@@ -82,7 +82,8 @@ Security is designed to withstand both automated AI attacks and specialized pene
 |---|---|---|
 | **Prompt Injection (PyRIT, Garak)** | Malicious instructions hidden in CSV/PDF statement counterparty descriptions | FastEmbed ONNX vector triage routes intent before prompt assembly. Pre-flight PII redaction strips adversarial payloads. The LLM has zero bank API credentials and zero write access to financial database columns. It can only emit a proposal into `action_intents` with status `STAGED_PENDING_HITL`. |
 | **SQL Injection (SQLmap)** | Malformed query parameters to extract ledgers | Payloads are strictly parsed by Pydantic v2 (compiled in Rust). Database drivers use binary parameterized prepared statements (`asyncpg`); SQL command syntax and parameter values travel across separate binary channels. |
-| **BOLA / IDOR / Tenant Hop** | Tampering with `tenant_id` to steal records | Ingress middleware validates `X-Tenant-ID` against cryptographic JWT claims. PostgreSQL enforces Row-Level Security (`SET LOCAL app.current_tenant_id`) at the disk layer; cross-tenant queries physically return 0 rows. |
+| **BOLA / IDOR / Tenant Hop** | Tampering with `tenant_id` to steal records | Action and passkey routes require an HMAC-signed tenant token (`require_tenant_identity` in `services/security/tenant_token.py`) and ignore the client-asserted `X-Tenant-ID`; every intent lookup checks ownership and returns 404 on mismatch. Token issuance is gated by an enrollment key so identities cannot be self-asserted. PostgreSQL RLS is the target storage-layer defence, not yet built. |
+| **SSRF via LLM endpoint** | Supplying a `base_url` aimed at loopback, RFC 1918 or cloud metadata hosts | `services/agent/url_guard.py` rejects non-http(s) schemes, embedded credentials, link-local/metadata addresses, and (by default) loopback and private ranges. Upstream error bodies are no longer reflected. |
 | **Race Conditions (Turbo Intruder)** | Single-packet bursts attempting duplicate loan draws | Transactions execute `SELECT ... FOR UPDATE` (pessimistic row locks). Pledging invoices across lenders is anchored on FISCO BCOS via `InvoiceRegistry.sol`; PBFT consensus guarantees only the first pledge succeeds. |
 | **Client Hooking (REA, Frida)** | Client-side memory tampering & variable hooking | Zero financial calculation or approval logic executes in the browser. The frontend is treated as an untrusted display terminal; the backend validates 100% of state deterministically. |
 

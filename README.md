@@ -4,7 +4,7 @@
 > *FinTechathon 2026 Topic E: AI as a Financial Participant | Tsinghua University PBCSF & WeBank*
 
 [![CI](https://github.com/SamJU25/F-SME-Finance-Copilot/actions/workflows/ci.yml/badge.svg)](https://github.com/SamJU25/F-SME-Finance-Copilot/actions/workflows/ci.yml)
-[![Tests](https://img.shields.io/badge/pytest-788_passed-brightgreen.svg)](tests/)
+[![Tests](https://img.shields.io/badge/pytest-823_passed-brightgreen.svg)](tests/)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.115+-009688.svg)](https://fastapi.tiangolo.com/)
 [![Next.js 14](https://img.shields.io/badge/Next.js-14_App_Router-black.svg)](https://nextjs.org/)
@@ -12,7 +12,7 @@
 [![Solidity 0.8.20](https://img.shields.io/badge/Solidity-0.8.20-363636.svg)](contracts/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-**Audited Technical Baseline (2026-10-19)**: **788 automated tests passing** across multi-format statement ingestion (CSV and PDF), 25+ deterministic financial engines in pure Python `decimal.Decimal`, dynamic semantic intent routing (FastEmbed ONNX), on-device local SLM inference (fine-tuned Qwen 3B LoRA), Universal Cloud LLM Bridge with live dynamic model discovery, Three-Tier Security Gate with hardware WebAuthn passkeys, and hardened rootless Docker Compose orchestration.
+**Audited Technical Baseline (2026-10-19)**: **823 automated tests passing** across multi-format statement ingestion (CSV and PDF), 25+ deterministic financial engines in pure Python `decimal.Decimal`, dynamic semantic intent routing (FastEmbed ONNX), on-device local SLM inference (fine-tuned Qwen3-4B LoRA, optional dependencies), Universal Cloud LLM Bridge with live dynamic model discovery, Three-Tier Security Gate with hardware WebAuthn passkeys, and hardened rootless Docker Compose orchestration.
 
 ---
 
@@ -68,7 +68,7 @@ Traditional banks require 4 to 8 weeks to underwrite working capital loans and r
 │  • DSCR, FCCR & Burn rate  │  • Shortfall pinpointing   │  • Predatory APR flag (>36%)  │
 ├────────────────────────────┼────────────────────────────┼───────────────────────────────┤
 │   4. Universal AI Bridge   │   5. Three-Tier Gate       │   6. Consortium Blockchain    │
-│  • Local Qwen 3B LoRA      │  • Tier 1: Read-only auto  │  • FISCO BCOS smart contract  │
+│  • Local Qwen3-4B LoRA      │  • Tier 1: Read-only auto  │  • FISCO BCOS smart contract  │
 │  • 7 Cloud LLM Providers   │  • Tier 2: Proposal staging│  • Canonical SHA-256 hashing  │
 │  • Dynamic model discovery │  • Tier 3: WebAuthn 2FA    │  • Double-pledge prevention   │
 └────────────────────────────┴────────────────────────────┴───────────────────────────────┘
@@ -110,6 +110,8 @@ All monetary calculations execute in pure Python `decimal.Decimal` with `ROUND_H
 - **Pre-Flight Privacy Shield**: PII scrubbing redacting IBANs, bank routing numbers, and contact details before data enters LLM context.
 
 ### 2.4 Three-Tier Security Gate & WebAuthn Passkeys (`services/security/`)
+
+Every action endpoint is scoped to a **verified tenant identity**: callers mint a signed tenant token at `POST /api/v1/auth/token` with their enrollment key, and the ledger never trusts a client-supplied `tenant_id` or `X-Tenant-ID` header. Tier 2 proposals are queue-only (execution is refused), and every capital-moving action type — including invoice factoring — requires a Tier 3 passkey assertion.
 Every autonomous action is gated by the Three-Tier Security Matrix:
 
 ```mermaid
@@ -149,8 +151,9 @@ All monetary values across JSON API boundaries are serialized as decimal strings
 | `GET` | `/api/v1/health` | Service health status and uptime probe | Public | JSON status |
 | `POST` | `/api/v1/analyze` | Ingests CSV or PDF statement; runs tie-out and runway math | Tier 1 (Read-Only) | Multipart form (`file`) |
 | `POST` | `/api/v1/underwrite` | Evaluates transactional metrics against underwriting rules | Tier 1 (Read-Only) | JSON financial metrics |
-| `POST` | `/api/v1/actions` | Stages financing proposal into staging queue | Tier 2 (Staging) | JSON action intent |
-| `POST` | `/api/v1/actions/{id}/execute` | Executes staged action with WebAuthn passkey assertion | Tier 3 (HITL 2FA) | JSON WebAuthn assertion |
+| `POST` | `/api/v1/auth/token` | Issues a signed tenant token; requires `X-Enrollment-Key` | Enrollment | JSON tenant request |
+| `POST` | `/api/v1/actions/stage` | Stages financing proposal into the tenant's queue | Tier 2 (Staging, signed token) | JSON action intent |
+| `POST` | `/api/v1/actions/{id}/execute` | Executes staged action with WebAuthn passkey assertion | Tier 3 (HITL 2FA, signed token) | JSON WebAuthn assertion |
 | `POST` | `/api/v1/agent/chat` | AI CFO dialogue with semantic routing & dynamic bridge | Tier 1 (Read-Only) | JSON message + provider |
 | `POST` | `/api/v1/agent/test-connection` | Verifies LLM provider credentials and endpoint connectivity | Tier 1 (Read-Only) | JSON credentials |
 | `POST` | `/api/v1/agent/fetch-models` | Dynamically discovers available models from target provider | Tier 1 (Read-Only) | JSON credentials |
@@ -228,7 +231,7 @@ Open <http://127.0.0.1:3000> in your browser. Download the sample bank statement
 Run the full verification suite from the repository root with the virtual environment active:
 
 ```bash
-# Run backend test suite (788 tests)
+# Run backend test suite (823 tests)
 python -m pytest -q
 
 # Run frontend type checking
@@ -240,11 +243,11 @@ npm run build
 
 ### Verified Test Breakdown
 ```
-tests/unit/            697 passed   (Ingestion, Pure Decimal Math, Underwriting, Decision Tables, Session Store)
+tests/unit/            705 passed   (Ingestion, Pure Decimal Math, Underwriting, Decision Tables, Session Store)
 tests/integration/      85 passed   (FastAPI Endpoints, LLM Bridge, Model Discovery, WebAuthn, Session Memory)
-tests/security/          4 passed   (Three-Tier Gate Invariants, PII Sanitization, Tampering)
+tests/security/         31 passed   (Three-Tier Gate Invariants, PII Sanitization, Tampering)
 tests/e2e/               2 passed   (Full Statement Ingestion to WebAuthn Execution Flows)
-============================= 788 passed in 25.20s =============================
+============================= 823 passed in 29.41s =============================
 ```
 
 ---
@@ -254,8 +257,8 @@ tests/e2e/               2 passed   (Full Statement Ingestion to WebAuthn Execut
 | Evaluation Criteria | Weight | Implementation Evidence |
 |---|---|---|
 | **Task Completion** | **40%** | Full transactional bank statement ingestion (CSV and PDF), 25+ pure Decimal financial calculation routines, 30/60/90-day predictive cash deficit forecasting, and automated credit facility matching. |
-| **Defensive Security & Governance** | **30%** | Three-Tier Security Gate isolating autonomous analysis from capital execution, cryptographically verified WebAuthn hardware biometric passkeys (`py_webauthn`), pre-flight Presidio PII redaction, and strict Pydantic v2 schemas. |
-| **Technical Innovation** | **30%** | Transaction-stream digital underwriting (WeBank model), on-device local SLM inference (Qwen 3B LoRA), dynamic live model discovery across 7 LLM providers, FastEmbed semantic vector intent routing, and consortium blockchain invoice double-pledging defense (FISCO BCOS). |
+| **Defensive Security & Governance** | **30%** | Three-Tier Security Gate isolating autonomous analysis from capital execution, cryptographically verified WebAuthn hardware biometric passkeys (`py_webauthn`), pre-flight regex PII redaction, and strict Pydantic v2 schemas. |
+| **Technical Innovation** | **30%** | Transaction-stream digital underwriting (WeBank model), on-device local SLM inference (Qwen3-4B LoRA), dynamic live model discovery across 7 LLM providers, FastEmbed semantic vector intent routing, and consortium blockchain invoice double-pledging defense (FISCO BCOS). |
 
 ---
 

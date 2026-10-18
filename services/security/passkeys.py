@@ -60,13 +60,14 @@ class PasskeyNotRegisteredError(PasskeyError):
 class PasskeyOptionsRequest(BaseModel):
     model_config = ConfigDict(extra="forbid", strict=True)
 
-    tenant_id: str = Field(min_length=1)
+    # Optional: the API layer supplies the verified tenant from the signed token.
+    tenant_id: Optional[str] = Field(default=None, min_length=1)
 
 
 class PasskeyRegistrationRequest(BaseModel):
     model_config = ConfigDict(extra="forbid", strict=True)
 
-    tenant_id: str = Field(min_length=1)
+    tenant_id: Optional[str] = Field(default=None, min_length=1)
     credential: dict[str, Any] = Field(description="PublicKeyCredential JSON from navigator.credentials.create()")
 
 

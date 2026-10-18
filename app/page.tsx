@@ -56,7 +56,7 @@ export default function HomePage() {
             {healthStatus === 'healthy' && (
               <>
                 <span className="w-2 h-2 rounded-full bg-emerald-500" />
-                <span className="text-emerald-700 font-semibold">Backend 788/788 OK</span>
+                <span className="text-emerald-700 font-semibold">Backend Healthy</span>
               </>
             )}
             {healthStatus === 'offline' && (
@@ -111,12 +111,16 @@ export default function HomePage() {
               <p className="text-slate-600 font-sans mt-0.5">Digital credit underwriting &amp; liquidity match</p>
             </div>
             <div className="p-3 bg-slate-50 border border-slate-200 rounded-lg">
-              <span className="font-semibold text-emerald-700">POST /api/v1/actions</span>
-              <p className="text-slate-600 font-sans mt-0.5">Stages Tier 2 intent proposals to ledger</p>
+              <span className="font-semibold text-emerald-700">POST /api/v1/actions/stage</span>
+              <p className="text-slate-600 font-sans mt-0.5">Stages Tier 2 proposals (signed tenant token required)</p>
             </div>
             <div className="p-3 bg-slate-50 border border-slate-200 rounded-lg">
               <span className="font-semibold text-emerald-700">POST /api/v1/actions/:id/execute</span>
               <p className="text-slate-600 font-sans mt-0.5">Executes Tier 3 intent with WebAuthn passkey</p>
+            </div>
+            <div className="p-3 bg-slate-50 border border-slate-200 rounded-lg">
+              <span className="font-semibold text-emerald-700">POST /api/v1/auth/token</span>
+              <p className="text-slate-600 font-sans mt-0.5">Issues a signed tenant token (enrollment key required)</p>
             </div>
             <div className="p-3 bg-slate-50 border border-slate-200 rounded-lg">
               <span className="font-semibold text-emerald-700">POST /api/v1/agent/chat</span>

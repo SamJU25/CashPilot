@@ -84,25 +84,34 @@ class SoftAuthenticator:
         }
 
 
-def execute_with_passkey(client, intent_id: str):
-    """Runs the full API passkey ceremony (register, challenge, sign, execute) for one intent."""
-    from services.security.passkeys import passkey_registry
+def execute_with_passkey(client, intent_id: str, tenant_id: str):
+    """Runs the full API passkey ceremony (register, challenge, sign, execute) for one intent.
 
-    tenant_id = client.get(f"/api/v1/actions/{intent_id}").json()["tenant_id"]
+    The action gate now requires a signed tenant token, so the caller passes the owning tenant
+    and this helper authenticates as that tenant.
+    """
+    from services.security.passkeys import passkey_registry
+    from tests.auth_helpers import tenant_headers
+
+    headers = tenant_headers(client, tenant_id)
     passkey_registry.clear()
     authenticator = SoftAuthenticator()
 
-    reg_options = client.post("/api/v1/actions/passkeys/register/options", json={"tenant_id": tenant_id})
+    reg_options = client.post(
+        "/api/v1/actions/passkeys/register/options", json={"tenant_id": tenant_id}, headers=headers
+    )
     assert reg_options.status_code == 200, reg_options.text
     registered = client.post(
         "/api/v1/actions/passkeys/register",
         json={"tenant_id": tenant_id, "credential": authenticator.create(reg_options.json())},
+        headers=headers,
     )
     assert registered.status_code == 201, registered.text
 
-    auth_options = client.post(f"/api/v1/actions/{intent_id}/passkey-options")
+    auth_options = client.post(f"/api/v1/actions/{intent_id}/passkey-options", headers=headers)
     assert auth_options.status_code == 200, auth_options.text
     return client.post(
         f"/api/v1/actions/{intent_id}/execute",
         json={"webauthn_assertion": authenticator.get(auth_options.json())},
+        headers=headers,
     )

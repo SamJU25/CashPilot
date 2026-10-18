@@ -42,15 +42,15 @@
         "rules": [
           {
             "_id": "rule_tier_3",
-            "_description": "Irreversible financial disbursements require strict Tier 3 biometric authorization",
-            "in_act": "'TRANSFER', 'DRAW_CREDIT_LINE', 'PLEDGE_INVOICE'",
+            "_description": "Irreversible financial disbursements and receivable sales require strict Tier 3 biometric authorization",
+            "in_act": "'TRANSFER', 'DRAW_CREDIT_LINE', 'PLEDGE_INVOICE', 'FACTOR_INVOICE'",
             "out_tier": "'TIER_3_EXECUTION'",
             "out_bio": "true"
           },
           {
             "_id": "rule_tier_2",
             "_description": "Staging intent into audit ledger without fund movement",
-            "in_act": "'STAGE_TRANSFER', 'FACTOR_INVOICE', 'PREPARE_APPLICATION'",
+            "in_act": "'STAGE_TRANSFER', 'PREPARE_APPLICATION', 'LOG_OBSERVATION'",
             "out_tier": "'TIER_2_STAGING'",
             "out_bio": "false"
           },

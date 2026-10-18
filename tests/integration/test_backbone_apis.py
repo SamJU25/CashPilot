@@ -7,6 +7,7 @@ Integration tests for new Backbone APIs:
 from fastapi.testclient import TestClient
 from api.main import app
 from services.security.staging_ledger import staging_ledger
+from tests.auth_helpers import tenant_headers
 from tests.passkey_authenticator import execute_with_passkey
 
 client = TestClient(app)
@@ -20,8 +21,9 @@ CSV_PAYLOAD = (
 
 def test_actions_staging_and_tier_3_execution_flow():
     staging_ledger.clear()
+    headers = tenant_headers(client, "SME-CORP-101")
 
-    # 1. Stage an intent (Tier 2)
+    # 1. Stage an intent (Tier 2) as the authenticated tenant
     stage_resp = client.post(
         "/api/v1/actions/stage",
         json={
@@ -30,6 +32,7 @@ def test_actions_staging_and_tier_3_execution_flow():
             "amount_cents": 500000,
             "target_identifier": "ACC-PAYROLL-01",
         },
+        headers=headers,
     )
     assert stage_resp.status_code == 201
     intent = stage_resp.json()
@@ -37,15 +40,15 @@ def test_actions_staging_and_tier_3_execution_flow():
     assert intent["status"] == "STAGED_PENDING_HITL"
     assert intent["amount_cents"] == 500000
 
-    # 2. List intents
-    list_resp = client.get("/api/v1/actions?tenant_id=SME-CORP-101")
+    # 2. List intents (scoped by the signed token, not a query parameter)
+    list_resp = client.get("/api/v1/actions", headers=headers)
     assert list_resp.status_code == 200
     intents = list_resp.json()
     assert len(intents) == 1
     assert intents[0]["id"] == intent_id
 
     # 3. Attempt Tier 3 execution without biometric token -> HTTP 403 Forbidden
-    unauth_resp = client.post(f"/api/v1/actions/{intent_id}/execute", json={})
+    unauth_resp = client.post(f"/api/v1/actions/{intent_id}/execute", json={}, headers=headers)
     assert unauth_resp.status_code == 403
     assert "biometric" in unauth_resp.json()["detail"].lower()
 
@@ -53,11 +56,12 @@ def test_actions_staging_and_tier_3_execution_flow():
     forged = client.post(
         f"/api/v1/actions/{intent_id}/execute",
         json={"webauthn_assertion": {"id": "webauthn_passkey_signed_9921"}},
+        headers=headers,
     )
     assert forged.status_code == 403
 
     # 5. Execute with a signed passkey assertion -> HTTP 200 OK
-    auth_resp = execute_with_passkey(client, intent_id)
+    auth_resp = execute_with_passkey(client, intent_id, "SME-CORP-101")
     assert auth_resp.status_code == 200
     executed = auth_resp.json()
     assert executed["status"] == "EXECUTED"
@@ -66,6 +70,7 @@ def test_actions_staging_and_tier_3_execution_flow():
 
 def test_actions_reject_flow():
     staging_ledger.clear()
+    headers = tenant_headers(client, "SME-CORP-101")
     stage_resp = client.post(
         "/api/v1/actions/stage",
         json={
@@ -74,10 +79,11 @@ def test_actions_reject_flow():
             "amount_cents": 200000,
             "target_identifier": "INV-8899",
         },
+        headers=headers,
     )
     intent_id = stage_resp.json()["id"]
 
-    reject_resp = client.post(f"/api/v1/actions/{intent_id}/reject")
+    reject_resp = client.post(f"/api/v1/actions/{intent_id}/reject", headers=headers)
     assert reject_resp.status_code == 200
     assert reject_resp.json()["status"] == "REJECTED"
 
@@ -121,8 +127,10 @@ def test_underwrite_api_rejects_malformed_csv():
     assert response.json()["error"]["code"] == "INVALID_HEADER"
 
 
-def test_actions_tenant_header_isolation():
+def test_actions_tenant_token_isolation():
     staging_ledger.clear()
+    alpha = tenant_headers(client, "TENANT-ALPHA")
+    beta = tenant_headers(client, "TENANT-BETA")
 
     # Stage intent for tenant Alpha
     stage_resp = client.post(
@@ -133,30 +141,31 @@ def test_actions_tenant_header_isolation():
             "amount_cents": 100000,
             "target_identifier": "ACC-ALPHA-01",
         },
+        headers=alpha,
     )
     assert stage_resp.status_code == 201
     intent_id = stage_resp.json()["id"]
 
-    # Alpha sees it via X-Tenant-ID
-    list_alpha = client.get("/api/v1/actions", headers={"X-Tenant-ID": "TENANT-ALPHA"})
+    # Alpha sees it
+    list_alpha = client.get("/api/v1/actions", headers=alpha)
     assert list_alpha.status_code == 200
     assert len(list_alpha.json()) == 1
 
-    # Beta sees an empty list via X-Tenant-ID
-    list_beta = client.get("/api/v1/actions", headers={"X-Tenant-ID": "TENANT-BETA"})
+    # Beta sees an empty list
+    list_beta = client.get("/api/v1/actions", headers=beta)
     assert list_beta.status_code == 200
     assert len(list_beta.json()) == 0
 
     # Beta cannot retrieve Alpha's intent -> HTTP 404
-    get_beta = client.get(f"/api/v1/actions/{intent_id}", headers={"X-Tenant-ID": "TENANT-BETA"})
+    get_beta = client.get(f"/api/v1/actions/{intent_id}", headers=beta)
     assert get_beta.status_code == 404
 
     # Beta cannot request passkey options for Alpha's intent -> HTTP 404
-    opts_beta = client.post(f"/api/v1/actions/{intent_id}/passkey-options", headers={"X-Tenant-ID": "TENANT-BETA"})
+    opts_beta = client.post(f"/api/v1/actions/{intent_id}/passkey-options", headers=beta)
     assert opts_beta.status_code == 404
 
     # Beta cannot execute Alpha's intent -> HTTP 404
-    exec_beta = client.post(f"/api/v1/actions/{intent_id}/execute", headers={"X-Tenant-ID": "TENANT-BETA"}, json={})
+    exec_beta = client.post(f"/api/v1/actions/{intent_id}/execute", headers=beta, json={})
     assert exec_beta.status_code == 404
 
 
