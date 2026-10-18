@@ -2,8 +2,7 @@
 
 from decimal import Decimal
 from functools import lru_cache
-import random
-import sys
+from pathlib import Path
 
 import pytest
 
@@ -53,15 +52,10 @@ def test_no_shortfall_needs_no_plan():
 
 @lru_cache(maxsize=1)
 def _deficit_statement() -> str:
-    sys.path.insert(0, "scripts")
-    import generate_finetune_dataset as g
-
-    for seed in range(200):
-        csv = g.make_statement(random.Random(seed), "slow_burn")
-        res = tool_build_bridge_plan(csv)
-        if res["has_shortfall"] and any(leg["action"] == "DRAW_CREDIT_LINE" for leg in res["legs"]):
-            return csv
-    pytest.skip("no synthetic statement produced a shortfall with a matched credit line")
+    path = Path(__file__).resolve().parents[2] / "data" / "samples" / "deficit_statement.csv"
+    if not path.is_file():
+        pytest.skip("deficit_statement.csv sample fixture not found")
+    return path.read_text(encoding="utf-8")
 
 
 def test_tool_question_mode_stages_nothing():

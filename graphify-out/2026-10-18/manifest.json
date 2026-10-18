@@ -2116,11 +2116,5 @@
     "seen": 1792291771.0716019,
     "ast_hash": "9da1ec1d3eba86ab1265bd5f27154acb",
     "semantic_hash": ""
-  },
-  "scripts/patch_kaggle_notebook.py": {
-    "mtime": 1792300781.9164958,
-    "seen": 1792300801.2044358,
-    "ast_hash": "7ba97a5be8c64d7b96c125dfb7406c56",
-    "semantic_hash": ""
   }
 }
