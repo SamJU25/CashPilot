@@ -66,7 +66,7 @@ def calculate_receivables_ageing(
 
     Args:
         invoices: List of InvoiceRecord dataclasses or raw invoice dicts.
-        as_of_date: Snapshot audit date. If None, uses max due date or date.today().
+        as_of_date: Snapshot audit date. If None, defaults to date.today().
     """
     normalized_invoices: List[InvoiceRecord] = []
     for inv in invoices:
@@ -81,7 +81,7 @@ def calculate_receivables_ageing(
     # Filter to only open/unpaid receivables
     open_invoices = [inv for inv in normalized_invoices if inv.open_amount > Decimal("0.00")]
 
-    # Determine snapshot date
+    # Determine snapshot date: default to today so future due dates are not treated as overdue
     snapshot: date
     if as_of_date is not None:
         if isinstance(as_of_date, str):
@@ -89,8 +89,6 @@ def calculate_receivables_ageing(
             snapshot = _parse_universal_date(as_of_date)
         else:
             snapshot = as_of_date
-    elif open_invoices:
-        snapshot = max(inv.due_date for inv in open_invoices)
     else:
         snapshot = date.today()
 

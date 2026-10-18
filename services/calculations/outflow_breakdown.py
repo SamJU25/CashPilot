@@ -17,35 +17,35 @@ from services.ingestion.csv_parser import DemoTransaction
 CENT = Decimal("0.01")
 PERCENT = Decimal("0.1")
 
-# Standard operational expense category patterns
+# Standard operational expense category patterns with word boundaries and disambiguation
 CATEGORY_PATTERNS = [
     (
         "Payroll & Wages",
-        re.compile(r"(payroll|salary|salaries|wages|direct\s*deposit|gusto|adp|paychex|rippling|compensation)", re.IGNORECASE),
-    ),
-    (
-        "Facilities & Rent",
-        re.compile(r"(rent|lease|property|landlord|realty|storage|mortgage|facility|office\s*space)", re.IGNORECASE),
+        re.compile(r"\b(payroll|salary|salaries|wages|direct\s*dep(?:osit)?|dir\s*dep|ach\s*payroll|gusto|adp|paychex|rippling|compensation|stipend)\b", re.IGNORECASE),
     ),
     (
         "Debt Service & Loans",
-        re.compile(r"(loan|principal|debt\s*service|amortization|equipment\s*lease|note\s*pay|interest\s*charge|line\s*of\s*credit)", re.IGNORECASE),
+        re.compile(r"\b(loan|principal|debt\s*service|amortization|equipment\s*lease|equipment\s*financing|vehicle\s*lease|note\s*pay|interest\s*(?:charge|payment|expense)?|line\s*of\s*credit|credit\s*card\s*pay(?:ment)?|amex\s*epayment|chase\s*card|citi\s*card|capital\s*one|mortgage|sba\s*loan|term\s*loan)\b", re.IGNORECASE),
     ),
     (
-        "Suppliers & Inventory",
-        re.compile(r"(supplier|vendor|inventory|wholesale|materials|parts|logistics|freight|shipping|packaging|steel|ingredient|raw\s*material)", re.IGNORECASE),
-    ),
-    (
-        "Software & Utilities",
-        re.compile(r"(software|subscription|saas|aws|google|microsoft|azure|slack|zoom|utilities|electric|water|gas|internet|telecom|phone|hosting)", re.IGNORECASE),
+        "Facilities & Rent",
+        re.compile(r"\b(rent|office\s*rent|building\s*rent|property\s*lease|landlord|realty|storage|facility|office\s*space|building\s*lease)\b", re.IGNORECASE),
     ),
     (
         "Taxes & Government",
-        re.compile(r"(tax|irs|hmrc|revenue\s*service|vat|state\s*tax|corp\s*tax|sales\s*tax|withholding)", re.IGNORECASE),
+        re.compile(r"\b(tax|taxes|irs|hmrc|revenue\s*service|vat|state\s*tax|corp\s*tax|sales\s*tax|withholding|franchise\s*tax)\b", re.IGNORECASE),
+    ),
+    (
+        "Suppliers & Inventory",
+        re.compile(r"\b(supplier|suppliers|vendor|vendors|inventory|wholesale|materials|parts|logistics|freight|shipping|packaging|steel|ingredient|raw\s*material|fedex|ups|usps|dhl)\b", re.IGNORECASE),
+    ),
+    (
+        "Software & Utilities",
+        re.compile(r"\b(software|subscription|subscriptions|saas|aws|google(?!\s*ads)|microsoft|azure|slack|zoom|utilities|electric|electricity|water|gas\s*(?:utility|bill|co|service)?|internet|telecom|phone|hosting|quickbooks|intuit|xero|salesforce|hubspot|docusign|github|canva|adobe|figma|mailchimp|notion|dropbox|atlassian|jira|trello|shopify)\b", re.IGNORECASE),
     ),
     (
         "Professional Services",
-        re.compile(r"(legal|accounting|consulting|contractor|audit|retainer|advisory|attorney|cpa)", re.IGNORECASE),
+        re.compile(r"\b(legal|accounting|consulting|contractor|contractors|audit|retainer|advisory|attorney|cpa|marketing\s*agency|advertising|seo)\b", re.IGNORECASE),
     ),
 ]
 

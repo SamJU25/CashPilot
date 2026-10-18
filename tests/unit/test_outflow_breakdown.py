@@ -31,6 +31,16 @@ def test_categorize_descriptions():
     assert categorize_transaction_description("Legal Counsel Retainer Fee") == "Professional Services"
     assert categorize_transaction_description("Random Coffee Shop") == "Operations & Other"
 
+    # Anti-misfiling regression checks: ensure substrings don't match without word boundaries
+    assert categorize_transaction_description("Equipment Lease Payment") == "Debt Service & Loans"
+    assert categorize_transaction_description("Parent Company Transfer") == "Operations & Other"
+    assert categorize_transaction_description("Current Account Sweep") == "Operations & Other"
+    assert categorize_transaction_description("Private Cloud Hosting") == "Software & Utilities"
+    assert categorize_transaction_description("Software License Activation") == "Software & Utilities"
+    assert categorize_transaction_description("QuickBooks Online Subscription") == "Software & Utilities"
+    assert categorize_transaction_description("FedEx Freight Delivery") == "Suppliers & Inventory"
+
+
 
 def test_outflow_breakdown_multi_category():
     rows = [

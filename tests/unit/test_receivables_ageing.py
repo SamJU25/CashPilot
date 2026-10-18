@@ -160,3 +160,22 @@ def test_api_analyze_invoices_invalid_upload():
     response = client.post("/api/v1/analyze/invoices", files=files)
     assert response.status_code == 422
     assert response.json()["error"]["code"] == "EMPTY_FILE"
+
+
+def test_receivables_ageing_future_due_dates_not_overdue():
+    from datetime import timedelta
+    today = date.today()
+    invoices = [
+        {"customer": "Future Client A", "amount": "5000.00", "due_date": today + timedelta(days=7)},
+        {"customer": "Future Client B", "amount": "10000.00", "due_date": today + timedelta(days=30)},
+        {"customer": "Overdue Client C", "amount": "2000.00", "due_date": today - timedelta(days=10)},
+    ]
+    # When as_of_date is omitted, must snapshot to date.today() rather than max(due_date)
+    res = calculate_receivables_ageing(invoices)
+    assert res.as_of_date == today
+    assert res.total_ar == Decimal("17000.00")
+    assert res.total_overdue == Decimal("2000.00")
+    assert res.current_amount == Decimal("15000.00")
+    assert res.buckets["CURRENT"].amount == Decimal("15000.00")
+    assert res.buckets["1_30"].amount == Decimal("2000.00")
+

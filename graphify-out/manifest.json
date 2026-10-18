@@ -2058,15 +2058,15 @@
     "semantic_hash": ""
   },
   "services/calculations/outflow_breakdown.py": {
-    "mtime": 1792282355.028707,
-    "seen": 1792283384.1081114,
-    "ast_hash": "2a02af9a42cf720959f79117735e93c1",
+    "mtime": 1792283935.8353305,
+    "seen": 1792284077.6626396,
+    "ast_hash": "616e5fb6f8f53d76b08daa922c775577",
     "semantic_hash": ""
   },
   "services/calculations/receivables_ageing.py": {
-    "mtime": 1792283248.177621,
-    "seen": 1792283384.1082287,
-    "ast_hash": "029ad88ce1cc347473c955d80b233438",
+    "mtime": 1792283999.618814,
+    "seen": 1792284077.6627572,
+    "ast_hash": "2575c739bce606bd838bccc7de1760da",
     "semantic_hash": ""
   },
   "services/ingestion/invoice_parser.py": {
@@ -2082,15 +2082,15 @@
     "semantic_hash": ""
   },
   "tests/unit/test_outflow_breakdown.py": {
-    "mtime": 1792282601.9258459,
-    "seen": 1792283384.115277,
-    "ast_hash": "4235fdb703823b8eb84990b9a711f6be",
+    "mtime": 1792283963.1292932,
+    "seen": 1792284077.6701462,
+    "ast_hash": "903627028a6500dccfbcf0c594a43e22",
     "semantic_hash": ""
   },
   "tests/unit/test_receivables_ageing.py": {
-    "mtime": 1792283232.9683821,
-    "seen": 1792283384.1158822,
-    "ast_hash": "faec479ffe48e78e9f1688d37e8dda66",
+    "mtime": 1792284015.013534,
+    "seen": 1792284077.6707473,
+    "ast_hash": "6a2a0db1091a88973ddb28feda533ae2",
     "semantic_hash": ""
   }
 }
