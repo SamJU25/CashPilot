@@ -924,9 +924,9 @@
     "semantic_hash": ""
   },
   "AGENTS.md": {
-    "mtime": 1792360733.9844358,
-    "seen": 1792360755.4143207,
-    "ast_hash": "47c07d930cf744e30bee0404ca069a63",
+    "mtime": 1792361219.0182579,
+    "seen": 1792361251.8931873,
+    "ast_hash": "6151013a4b46c8b63ffb6ec8b827b686",
     "semantic_hash": ""
   },
   "GEMINI.md": {
@@ -984,9 +984,9 @@
     "semantic_hash": ""
   },
   "README.md": {
-    "mtime": 1792360734.0085442,
-    "seen": 1792360755.4146166,
-    "ast_hash": "3d6a441c135f8aa5c8e34fee9c46a016",
+    "mtime": 1792361227.5409813,
+    "seen": 1792361251.8931925,
+    "ast_hash": "9870e11b9f55c5f3691cec9b95625560",
     "semantic_hash": ""
   },
   "requirements.txt": {
@@ -1044,9 +1044,9 @@
     "semantic_hash": ""
   },
   "docs/architecture.md": {
-    "mtime": 1792360734.177167,
-    "seen": 1792360755.415336,
-    "ast_hash": "331e8d1cffd56118805706d6740eafdf",
+    "mtime": 1792361483.6503687,
+    "seen": 1792361494.5104375,
+    "ast_hash": "518577704de9100d665a9a58eaea6476",
     "semantic_hash": ""
   },
   "docs/security.md": {
@@ -1302,9 +1302,9 @@
     "semantic_hash": ""
   },
   "tests/unit/test_security_gate.py": {
-    "mtime": 1792360602.7197921,
-    "seen": 1792360755.3971798,
-    "ast_hash": "cb76bc656a0616ea74afe6d975a3fc1f",
+    "mtime": 1792360964.103007,
+    "seen": 1792361251.8929741,
+    "ast_hash": "e5f48818d3ab1b0f29014e7de21a6c75",
     "semantic_hash": ""
   },
   "tests/e2e/__init__.py": {
