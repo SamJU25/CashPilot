@@ -11,6 +11,8 @@
     "graph:update": "python -m graphify update .",
     "test:backend": "pytest",
     "test:e2e": "pytest tests/e2e",
+    "eval": "python scripts/run_deterministic_eval.py",
+    "eval:benchmark": "python scripts/eval_model.py --mock",
     "docker:build": "docker compose build",
     "docker:up": "docker compose up -d",
     "docker:down": "docker compose down",

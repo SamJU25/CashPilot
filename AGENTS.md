@@ -31,7 +31,7 @@ Read only the specification sections needed for the task. Before using a skill, 
 - **Three-Tier Security Gate**: Tier 1 Read-only -> Tier 2 Staging Ledger -> Tier 3 WebAuthn passkey verification via py_webauthn (`services/security/passkeys.py`: user-verified ES256/RS256 assertion over a single-use, intent-bound challenge; trust-on-first-use registration per tenant; in-memory store) at `POST /api/v1/actions/{id}/execute` + SHA-256 consortium invoice double-financing prevention.
 - **FastAPI Endpoints**: Root, health, `POST /api/v1/analyze`, `POST /api/v1/underwrite`, `POST /api/v1/actions`, `POST /api/v1/agent/chat`, `POST /api/v1/agent/test-connection`, and `POST /api/v1/agent/fetch-models`.
 - **Frontend Dashboard**: Next.js 14 App Router (`frontend/src/app/` and root `app/`) with In-App AI Provider Settings Modal, dynamic model selector, predictive deficit early-warning cards, live connection test, `localStorage` persistence, and Tier 3 WebAuthn passkey confirmation.
-- **AST Knowledge Graph**: `graphify` updated at **3,966 nodes / 7,528 edges / 352 communities**.
+- **AST Knowledge Graph**: `graphify` updated at **3,980 nodes / 7,555 edges / 349 communities**.
 - This file is the shared cross-agent instruction entrypoint; `CLAUDE.md`, `GEMINI.md`, and `.cursorrules` link back here for precedence and baseline.
 
 ---

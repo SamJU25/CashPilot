@@ -924,9 +924,9 @@
     "semantic_hash": ""
   },
   "AGENTS.md": {
-    "mtime": 1792349481.8816967,
-    "seen": 1792351439.9113693,
-    "ast_hash": "c9a910001b2717ebb932c1285e05a6ef",
+    "mtime": 1792351907.4109037,
+    "seen": 1792352071.264179,
+    "ast_hash": "129a91201e94eb8969c8a4f20b5533b4",
     "semantic_hash": ""
   },
   "GEMINI.md": {
@@ -984,9 +984,9 @@
     "semantic_hash": ""
   },
   "README.md": {
-    "mtime": 1792349538.3232656,
-    "seen": 1792351439.9116905,
-    "ast_hash": "47177dd9d6681f3af1af12e7fe8ca467",
+    "mtime": 1792352005.6630447,
+    "seen": 1792352071.264516,
+    "ast_hash": "55e5f5a94b1970985462667292cb7e3c",
     "semantic_hash": ""
   },
   "requirements.txt": {
@@ -1176,9 +1176,9 @@
     "semantic_hash": ""
   },
   "app/page.tsx": {
-    "mtime": 1792349550.364185,
-    "seen": 1792351439.8783674,
-    "ast_hash": "0ae841e3a7f0988d781dc96feeba1953",
+    "mtime": 1792351991.7069666,
+    "seen": 1792352071.2277246,
+    "ast_hash": "067fb47770e1a67497d6b566f0834344",
     "semantic_hash": ""
   },
   "next-env.d.ts": {
@@ -1232,7 +1232,7 @@
   "contracts/InvoiceRegistry.sol": {
     "mtime": 1791935009.5218325,
     "seen": 1792351569.838204,
-    "ast_hash": "571b58b08346dc437d70e4123ec7925c",
+    "ast_hash": "",
     "semantic_hash": ""
   },
   ".github/workflows/ci.yml": {
