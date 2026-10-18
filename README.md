@@ -4,7 +4,7 @@
 > *FinTechathon 2026 Topic E: AI as a Financial Participant | Tsinghua University PBCSF & WeBank*
 
 [![CI](https://github.com/SamJU25/F-SME-Finance-Copilot/actions/workflows/ci.yml/badge.svg)](https://github.com/SamJU25/F-SME-Finance-Copilot/actions/workflows/ci.yml)
-[![Tests](https://img.shields.io/badge/pytest-756_passed-brightgreen.svg)](tests/)
+[![Tests](https://img.shields.io/badge/pytest-779_passed-brightgreen.svg)](tests/)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.115+-009688.svg)](https://fastapi.tiangolo.com/)
 [![Next.js 14](https://img.shields.io/badge/Next.js-14_App_Router-black.svg)](https://nextjs.org/)
@@ -12,7 +12,7 @@
 [![Solidity 0.8.20](https://img.shields.io/badge/Solidity-0.8.20-363636.svg)](contracts/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-**Audited Technical Baseline (2026-10-19)**: **756 automated tests passing** across multi-format statement ingestion (CSV and PDF), 25+ deterministic financial engines in pure Python `decimal.Decimal`, dynamic semantic intent routing (FastEmbed ONNX), on-device local SLM inference (fine-tuned Qwen 3B LoRA), Universal Cloud LLM Bridge with live dynamic model discovery, Three-Tier Security Gate with hardware WebAuthn passkeys, and hardened rootless Docker Compose orchestration.
+**Audited Technical Baseline (2026-10-19)**: **779 automated tests passing** across multi-format statement ingestion (CSV and PDF), 25+ deterministic financial engines in pure Python `decimal.Decimal`, dynamic semantic intent routing (FastEmbed ONNX), on-device local SLM inference (fine-tuned Qwen 3B LoRA), Universal Cloud LLM Bridge with live dynamic model discovery, Three-Tier Security Gate with hardware WebAuthn passkeys, and hardened rootless Docker Compose orchestration.
 
 ---
 
@@ -228,7 +228,7 @@ Open <http://127.0.0.1:3000> in your browser. Download the sample bank statement
 Run the full verification suite from the repository root with the virtual environment active:
 
 ```bash
-# Run backend test suite (756 tests)
+# Run backend test suite (779 tests)
 python -m pytest -q
 
 # Run frontend type checking
@@ -240,11 +240,11 @@ npm run build
 
 ### Verified Test Breakdown
 ```
-tests/unit/            484 passed   (Ingestion, Pure Decimal Math, Underwriting, Decision Tables)
-tests/integration/     188 passed   (FastAPI Endpoints, LLM Bridge, Model Discovery, WebAuthn)
-tests/security/         46 passed   (Three-Tier Gate Invariants, PII Sanitization, Tampering)
-tests/e2e/              38 passed   (Full Statement Ingestion to WebAuthn Execution Flows)
-============================= 756 passed in 22.86s =============================
+tests/unit/            691 passed   (Ingestion, Pure Decimal Math, Underwriting, Decision Tables)
+tests/integration/      48 passed   (FastAPI Endpoints, LLM Bridge, Model Discovery, WebAuthn)
+tests/security/         26 passed   (Three-Tier Gate Invariants, PII Sanitization, Tampering)
+tests/e2e/              14 passed   (Full Statement Ingestion to WebAuthn Execution Flows)
+============================= 779 passed in 24.30s =============================
 ```
 
 ---

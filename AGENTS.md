@@ -19,7 +19,7 @@ Use this order when project documents disagree:
 Read only the specification sections needed for the task. Before using a skill, read its exact `SKILL.md` and resolve referenced resources relative to that skill directory; account-synced skills may be outside this checkout and must not be assumed to mirror `.agent/skills/`.
 
 ### Verified repository baseline (checked 2026-10-19)
-- `pytest -q`: **756 passed** in 22.86s on 2026-10-19.
+- `pytest -q`: **779 passed** in 24.30s on 2026-10-19.
 - **Statement Ingestion**: Multi-format ingestion supporting both UTF-8 CSV and PDF bank statements (`services/ingestion/statement_parser.py`, `services/ingestion/pdf_parser.py`, `services/ingestion/csv_parser.py`) with line-item extraction, balance tie-out, and row-level error provenance codes (`INVALID_ROW_SHAPE`, `INVALID_DATE`, `INVALID_AMOUNT`, `INVALID_CURRENCY`, `DUPLICATE_TRANSACTION_ID`, `OUT_OF_ORDER_DATE`).
 - **Deterministic FinTech Engines (25+ Core Routines)**: Pure Python `decimal.Decimal` calculations across banking-grade calendar carry-forward Daily Average Balance (`calculate_dab_from_transactions`), gross inflow/outflow flow decomposition (`calculate_cash_analysis`), predictive cash crunch overdraft pinpointing (`services/calculations/predictive_cash.py`), weekly revenue volatility index CV and volatility tiers (`calculate_inflow_volatility`), working capital Cash Conversion Cycle (`calculate_cash_conversion_cycle`), DSCR, FCCR, Altman Z'-score, DuPont ROE 3-stage, ROIC/EVA, DCF/WACC, SaaS unit economics, trade credit APR, currency conversion & registry for 160+ ISO currencies.
 - **Continuous Liquidity Scoring**: 0–100 continuous score with gray-zone triage for Prime vs. Conditional financing proposals (`services/matcher/liquidity_matcher.py`).

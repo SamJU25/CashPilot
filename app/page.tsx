@@ -56,7 +56,7 @@ export default function HomePage() {
             {healthStatus === 'healthy' && (
               <>
                 <span className="w-2 h-2 rounded-full bg-emerald-500" />
-                <span className="text-emerald-700 font-semibold">Backend 756/756 OK</span>
+                <span className="text-emerald-700 font-semibold">Backend 779/779 OK</span>
               </>
             )}
             {healthStatus === 'offline' && (

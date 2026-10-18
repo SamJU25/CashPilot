@@ -1,12 +1,12 @@
 # Graph Report - SME Finance Copilot  (2026-10-19)
 
 ## Corpus Check
-- 344 files · ~247,598 words
+- 344 files · ~247,460 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 27 file(s) not represented in the graph (top: .csv 13, (none) 6, .ipynb 2)
 
 ## Summary
-- 3951 nodes · 7493 edges · 357 communities (285 shown, 72 thin omitted)
+- 3951 nodes · 7491 edges · 358 communities (286 shown, 72 thin omitted)
 - Extraction: 97% EXTRACTED · 3% INFERRED · 0% AMBIGUOUS · INFERRED: 231 edges (avg confidence: 0.94)
 - Token cost: 0 input · 0 output
 
@@ -241,7 +241,7 @@
 - SystemOneModelAdapter
 - fintech-engineer (Suite: 2-fintech-engine)
 - test_agent_api.py
-- test_enterprise_finance_tools.py
+- calculate_cac_payback
 - .get_instance
 - liquidity_matcher.py
 - ADR-001: Runtime Multi-Agent Topology & Isolation Protocol
@@ -265,7 +265,7 @@
 - test_analyze_api.py
 - typing
 - main.py
-- param_extractor.py
+- test_enterprise_finance_tools.py
 - first-principles-thinking (Suite: 6-product-pitch)
 - calculate_dupont_roe
 - Docker Patterns for SME Finance Copilot
@@ -280,7 +280,7 @@
 - liquidity_score.py
 - DemoTransaction
 - test_prompts.py
-- supervisor.py
+- .handle_sub_intent
 - V2EX (公开 API)
 - Marketing Economics & Business Strategy
 - calculate_trade_credit_apr
@@ -335,6 +335,7 @@
 - test_agent_cash_diagnostic_predictive_early_warning
 - test_agent_credit_underwriting_flow
 - test_agent_chat_horizon_capped_at_365_days
+- extract_net_debt_ebitda_params
 - test_agent_header_tenant_isolation_overrides_body
 - test_agent_prompt_injection_defense
 - test_agent_test_connection_missing_api_key
@@ -370,7 +371,7 @@
 
 ## God Nodes (most connected - your core abstractions)
 1. `DecisionRequest` - 156 edges
-2. `run_copilot_supervisor()` - 100 edges
+2. `run_copilot_supervisor()` - 99 edges
 3. `AgentChatRequest` - 94 edges
 4. `DecisionEngineRegistry` - 58 edges
 5. `DecisionDomain` - 58 edges
@@ -395,7 +396,7 @@
 ## Import Cycles
 - None detected.
 
-## Communities (357 total, 72 thin omitted)
+## Communities (358 total, 72 thin omitted)
 
 ### Community 0 - "DCF Model Troubleshooting Guide"
 Cohesion: 0.17
@@ -1190,8 +1191,8 @@ Cohesion: 0.22
 Nodes (4): Calculate implied Annual Percentage Rate (APR) of early payment trade terms…, tool_calculate_trade_credit_apr(), Verifies typed tool wrappers in services/agent/tools.py., TestToolWrappers
 
 ### Community 215 - "tools.py"
-Cohesion: 0.06
-Nodes (86): Credit and Debt Options Matcher Subagent. Specializes in: 1. Debt Service…, Dispatches quantitative debt calculation requests to specialized tools., Dispatches risk and unit economics calculations to specialized tools., _format_money(), _normalize_statement_bytes(), Any, Decimal, Typed deterministic tool wrappers for the Autonomous AI Copilot Agent. Adheres… (+78 more)
+Cohesion: 0.07
+Nodes (76): Credit and Debt Options Matcher Subagent. Specializes in: 1. Debt Service…, Dispatches quantitative debt calculation requests to specialized tools., Agentic Supervisor for the Autonomous SME Finance Copilot. Enforces: 1. Pure…, _format_money(), _normalize_statement_bytes(), Any, Decimal, Typed deterministic tool wrappers for the Autonomous AI Copilot Agent. Adheres… (+68 more)
 
 ### Community 216 - "page.tsx"
 Cohesion: 0.40
@@ -1237,9 +1238,9 @@ Nodes (5): Connected Skills & Squad Handoffs, Enforced Invariants & Guidelines, 
 Cohesion: 0.17
 Nodes (8): Integration tests for the Autonomous SME Finance Copilot Agent API. Verifies:…, Verify natural language query asking for arbitrary days (e.g. 42 days) computes…, Verify chat agent computes break-even sales revenue threshold., Verify follow-up query inherits fixed operating costs when contribution margin…, test_agent_cash_diagnostic_dynamic_custom_days(), test_agent_chat_break_even_calculation(), test_agent_chat_break_even_parameter_inheritance(), unittest_mock
 
-### Community 227 - "test_enterprise_finance_tools.py"
-Cohesion: 0.08
-Nodes (30): Calculate Return on Invested Capital (ROIC) assessing operating return vs total…, Calculate Free Cash Flow to Firm (FCFF) and Free Cash Flow to Equity (FCFE)., Calculate Net Revenue Retention (NRR) and Gross Revenue Retention (GRR) cohorts., tool_calculate_free_cash_flow(), tool_calculate_nrr(), tool_calculate_roic(), calculate_eva(), calculate_roa() (+22 more)
+### Community 227 - "calculate_cac_payback"
+Cohesion: 0.21
+Nodes (10): calculate_cac_payback(), calculate_ltv_cac(), calculate_net_revenue_retention(), Any, Decimal, Calculate CAC Payback Period in months. Args: monthly_arpu: Average Monthly…, Calculate Net Revenue Retention (NRR) and Gross Revenue Retention (GRR). Args:…, Calculate Customer Lifetime Value (LTV) and LTV/CAC ratio. Args: annual_arpu:… (+2 more)
 
 ### Community 228 - ".get_instance"
 Cohesion: 0.13
@@ -1317,9 +1318,9 @@ Nodes (30): ABC, DCF Model Validation Script Validates Excel DCF models for form
 Cohesion: 0.17
 Nodes (14): health_alias(), lifespan(), get, FastAPI Main Application Entrypoint. Configures CORS, Security Headers, and…, Root health probe alias for standard container orchestrators., root(), get_health_status(), HealthStatus (+6 more)
 
-### Community 252 - "param_extractor.py"
-Cohesion: 0.07
-Nodes (59): backfill_missing_params(), extract_altman_z_params(), extract_amortization_params(), extract_attrition_params(), extract_break_even_params(), extract_break_even_units_params(), extract_cac_payback_params(), extract_dcf_params() (+51 more)
+### Community 252 - "test_enterprise_finance_tools.py"
+Cohesion: 0.05
+Nodes (87): backfill_missing_params(), extract_altman_z_params(), extract_amortization_params(), extract_attrition_params(), extract_break_even_params(), extract_break_even_units_params(), extract_cac_payback_params(), extract_dcf_params() (+79 more)
 
 ### Community 253 - "first-principles-thinking (Suite: 6-product-pitch)"
 Cohesion: 0.40
@@ -1369,9 +1370,9 @@ Nodes (28): DemoTransaction, IngestionResult, NormalizedTransaction, parse_bank_
 Cohesion: 0.06
 Nodes (48): Match, compute_ngram_overlap(), evaluate_response(), main(), MockModel, Automated Evaluation Runner for SME Finance Copilot. Benchmarks any local,…, Intelligent mock model for verifying evaluation suite mechanics across all 6…, Computes the fraction of n-grams in text that occur verbatim in source. (+40 more)
 
-### Community 267 - "supervisor.py"
+### Community 267 - ".handle_sub_intent"
 Cohesion: 0.06
-Nodes (57): extract_cash_scenario_params(), extract_currency_conversion_params(), extract_free_cash_flow_params(), extract_fx_exposure_params(), extract_receivables_ageing_params(), Extracts OCF, CapEx, interest, tax rate, and net debt issued for FCFF and FCFE…, Extracts amount, from_currency, to_currency, exchange_rate, and spread_bps for…, Extracts foreign receivables, foreign payables, base currency, foreign… (+49 more)
+Nodes (55): extract_cash_scenario_params(), extract_currency_conversion_params(), extract_fx_exposure_params(), extract_receivables_ageing_params(), Extracts amount, from_currency, to_currency, exchange_rate, and spread_bps for…, Extracts foreign receivables, foreign payables, base currency, foreign…, Extracts a what-if scenario kind and its amount, percent or delay from a…, Extracts snapshot date and any inline invoice records from text. (+47 more)
 
 ### Community 269 - "V2EX (公开 API)"
 Cohesion: 0.29
@@ -1486,8 +1487,8 @@ Cohesion: 0.24
 Nodes (7): calculate_lease_vs_buy(), Any, Decimal, Deterministic Commercial Equipment Lease vs Buy Net Present Value (NPV) Engine.…, Calculate Net Present Value trade-off between leasing vs purchasing commercial…, Test suite for Commercial Equipment Lease vs. Buy Net Present Value (NPV)., TestLeaseVsBuyCalculations
 
 ### Community 303 - "decimal"
-Cohesion: 0.12
-Nodes (12): decimal, extract_cash_drag_params(), extract_dupont_params(), extract_lease_vs_buy_params(), Extracts current balance, monthly burn, benchmark yield %, and reserve target…, Extracts net income, revenue, total assets, and total equity for 3-Stage DuPont…, Extracts purchase price, lease payment, term years, discount rate, tax rate,…, Unit tests for Treasury Cash Drag (Cluster 3), DuPont ROE Decomposition… (+4 more)
+Cohesion: 0.11
+Nodes (12): decimal, extract_cash_drag_params(), extract_lease_vs_buy_params(), Extracts current balance, monthly burn, benchmark yield %, and reserve target…, Extracts purchase price, lease payment, term years, discount rate, tax rate,…, Perform 3-Stage DuPont Analysis decomposing ROE into Net Margin, Asset…, tool_calculate_dupont_roe(), Unit tests for Treasury Cash Drag (Cluster 3), DuPont ROE Decomposition… (+4 more)
 
 ### Community 304 - "registry"
 Cohesion: 0.25
@@ -1508,6 +1509,10 @@ Nodes (4): _detect_columns(), Detects semantic roles of CSV header columns via D
 ### Community 318 - "run_copilot_supervisor"
 Cohesion: 0.06
 Nodes (47): AgentChatRequest, Core reasoning supervisor dispatching requests to deterministic tools and…, run_copilot_supervisor(), parametrize, Concept questions get card-grounded answers, and questions never stage…, test_card_naming_the_tool_is_preferred_and_steps_kept(), test_concept_answer_with_invented_figure_falls_back_to_card(), test_concept_question_with_model_returns_model_answer_plus_guidance() (+39 more)
+
+### Community 324 - "extract_net_debt_ebitda_params"
+Cohesion: 0.20
+Nodes (4): extract_net_debt_ebitda_params(), Extracts total debt, cash and equivalents, and EBITDA for leverage calculation., Verifies regex extraction and conversational context backfill for all new tools., TestParameterExtractors
 
 ### Community 346 - "calculate_cash_analysis"
 Cohesion: 0.20
