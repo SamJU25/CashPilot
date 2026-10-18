@@ -4,7 +4,7 @@
 > *FinTechathon 2026 Topic E: AI as a Financial Participant | Tsinghua University PBCSF & WeBank*
 
 [![CI](https://github.com/SamJU25/F-SME-Finance-Copilot/actions/workflows/ci.yml/badge.svg)](https://github.com/SamJU25/F-SME-Finance-Copilot/actions/workflows/ci.yml)
-[![Tests](https://img.shields.io/badge/pytest-862_passed-brightgreen.svg)](tests/)
+[![Tests](https://img.shields.io/badge/pytest-863_passed-brightgreen.svg)](tests/)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.115+-009688.svg)](https://fastapi.tiangolo.com/)
 [![Next.js 14](https://img.shields.io/badge/Next.js-14_App_Router-black.svg)](https://nextjs.org/)
@@ -12,7 +12,7 @@
 [![Solidity 0.8.20](https://img.shields.io/badge/Solidity-0.8.20-363636.svg)](contracts/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-**Audited Technical Baseline (2026-10-19)**: **862 automated tests passing (1 POSIX-only skip)** across multi-format statement ingestion (CSV and PDF), 25+ deterministic financial engines in pure Python `decimal.Decimal`, dynamic semantic intent routing (FastEmbed ONNX), on-device local SLM inference (fine-tuned Qwen3-4B LoRA, optional dependencies), Universal Cloud LLM Bridge with live dynamic model discovery, Three-Tier Security Gate with hardware WebAuthn passkeys, and hardened rootless Docker Compose orchestration.
+**Audited Technical Baseline (2026-10-19)**: **863 automated tests passing (1 POSIX-only skip)** across multi-format statement ingestion (CSV and PDF), 25+ deterministic financial engines in pure Python `decimal.Decimal`, dynamic semantic intent routing (FastEmbed ONNX), on-device local SLM inference (fine-tuned Qwen3-4B LoRA, optional dependencies), Universal Cloud LLM Bridge with live dynamic model discovery, Three-Tier Security Gate with browser-verified WebAuthn passkeys, and hardened rootless Docker Compose orchestration.
 
 ---
 
@@ -133,7 +133,7 @@ flowchart TD
 
 - **Tier 1 (Observation — Autonomous)**: Read-only data ingestion and calculations.
 - **Tier 2 (Staging — Queue Only)**: Loan applications and credit proposals placed into an immutable staging ledger (`action_intents`). No capital movement.
-- **Tier 3 (Execution — Strict HITL 2FA)**: Irreversible financial transactions (drawing credit lines, wire disbursements, contract signing) require physical Human-in-the-Loop WebAuthn hardware biometric passkeys (Touch ID, Face ID, YubiKey) verified cryptographically via `py_webauthn`.
+- **Tier 3 (Execution — Strict HITL 2FA)**: Irreversible financial transactions (drawing credit lines, wire disbursements, contract signing) require a Human-in-the-Loop WebAuthn assertion — Touch ID, Face ID, Windows Hello or a roaming security key, whichever authenticator the browser offers — verified cryptographically via `py_webauthn`.
 
 ### 2.5 Consortium Blockchain Double-Pledge Defense (`contracts/`)
 - Generates canonical `SHA-256` content hashes from invoice metadata:
@@ -192,6 +192,23 @@ docker compose logs -f
 # Stop containers
 docker compose down
 ```
+
+---
+
+### Hosting on a real domain (WebAuthn)
+
+The passkey ceremony is performed by the browser and the operating system, and the server only verifies the resulting assertion — Touch ID, Face ID, Windows Hello, a phone passkey or a roaming security key are interchangeable and need no server-side change. What must match the deployment is the relying-party identity:
+
+| Setting | Value for `https://app.example.com` |
+|---|---|
+| `WEBAUTHN_RP_ID` | `app.example.com` — the page host, no scheme or port; a parent such as `example.com` is also accepted |
+| `WEBAUTHN_ORIGINS` | `https://app.example.com` — exact scheme, host and port; comma-separate several origins |
+
+- Serve over HTTPS: browsers only expose `navigator.credentials` in a secure context (`http://localhost` is the development exemption).
+- If the dashboard is served from a different origin than the API, list the dashboard origin in `WEBAUTHN_ORIGINS` (the browser's origin is what gets verified) and in `ALLOWED_ORIGINS` (CORS), or the browser cannot call the API at all.
+- These values are read once at process start, so restart the backend after changing them.
+
+Verified against the registry: an exact host over HTTPS and a parent RP ID used from a subdomain both register and assert; `localhost` for a hosted origin, an `http://` origin, a wrong port and an unlisted origin are all rejected. The Next.js dashboard does not call `navigator.credentials.*` yet, so the browser prompt has to come from a client that implements the ceremony; the server endpoints are complete and exercised end-to-end by the test suite.
 
 ---
 
