@@ -143,3 +143,11 @@
 **Healthy vs warning:** Recent statements give the most useful runway and deficit warnings. Old statements are still useful for reviewing patterns.
 **What to do:** Upload the latest statement before making borrowing or spending decisions.
 **In the app:** The analysis notes whether the data is live or historical.
+
+## Outflow Category Breakdown
+<!-- tools: tool_analyze_outflow_breakdown -->
+**What it is:** A category breakdown of your gross outflows across operational buckets: payroll, rent and facilities, loan debt service, suppliers and inventory, software and utilities, taxes, and operations.
+**Why it matters:** Seeing your daily burn as a total shows how fast money leaves, but not why. Knowing which categories take the largest share shows where to target cost reductions.
+**Healthy vs warning:** Healthy: predictable recurring expenses with non-payroll overhead balanced against revenue. Warning: fixed overhead (payroll, rent, debt) exceeding 80% of total outflows, leaving little room for operational flexibility.
+**What to do:** Audit the top category first. Subscriptions and supplier contracts can often be renegotiated quickly; payroll and facilities require longer planning.
+**In the app:** Ask "which outflows drive our burn?" or "break down our expenses" with a statement loaded to see ranked categories.

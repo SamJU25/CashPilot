@@ -990,9 +990,9 @@
     "semantic_hash": ""
   },
   "README.md": {
-    "mtime": 1792266851.744474,
-    "seen": 1792273602.9825995,
-    "ast_hash": "39089061dab50547ff2d82281b724914",
+    "mtime": 1792282732.697268,
+    "seen": 1792283384.136671,
+    "ast_hash": "ac3b34fa78ac820e76ba0bb74c78cb07",
     "semantic_hash": ""
   },
   "requirements.txt": {
@@ -1188,9 +1188,9 @@
     "semantic_hash": ""
   },
   "api/routes/analyze.py": {
-    "mtime": 1792188060.2715302,
-    "seen": 1792188402.9607444,
-    "ast_hash": "a50219804645140739c13036e20f7711",
+    "mtime": 1792283174.7731743,
+    "seen": 1792283384.0997705,
+    "ast_hash": "cb8e0ef42396841ec9fd9ef0a62b6f8c",
     "semantic_hash": ""
   },
   "app/layout.tsx": {
@@ -1404,9 +1404,9 @@
     "semantic_hash": ""
   },
   "services/agent/tools.py": {
-    "mtime": 1792279658.153995,
-    "seen": 1792281449.5317726,
-    "ast_hash": "d73cff98209adbf88b97c7b8ccfd0ada",
+    "mtime": 1792283043.6538377,
+    "seen": 1792283384.1063864,
+    "ast_hash": "d61616ed7f469c9ff14f112ca7517ba4",
     "semantic_hash": ""
   },
   "tests/integration/test_agent_api.py": {
@@ -1458,9 +1458,9 @@
     "semantic_hash": ""
   },
   "services/agent/param_extractor.py": {
-    "mtime": 1792278328.502604,
-    "seen": 1792279612.9232786,
-    "ast_hash": "5c3e8eba803801d7c2dcb800facf93b5",
+    "mtime": 1792283099.1086287,
+    "seen": 1792283384.1056027,
+    "ast_hash": "c48bb41a4cb55728ef18b0978f9bcb6d",
     "semantic_hash": ""
   },
   "services/calculations/concentration_risk.py": {
@@ -1506,9 +1506,9 @@
     "semantic_hash": ""
   },
   "services/agent/subagents/liquidity_subagent.py": {
-    "mtime": 1792281783.6890643,
-    "seen": 1792281865.837174,
-    "ast_hash": "9e0c3286340e81fce66b27002de049cd",
+    "mtime": 1792283140.8975036,
+    "seen": 1792283384.1061313,
+    "ast_hash": "030115758fd4f29c6751236ef64f398a",
     "semantic_hash": ""
   },
   "services/agent/subagents/risk_subagent.py": {
@@ -1518,9 +1518,9 @@
     "semantic_hash": ""
   },
   "services/agent/session_store.py": {
-    "mtime": 1792194916.2299898,
-    "seen": 1792195094.9100018,
-    "ast_hash": "f324fe2852f3c1d2fe88ff26cab6e609",
+    "mtime": 1792283004.2501845,
+    "seen": 1792283384.105887,
+    "ast_hash": "e20d10c82cc0984256d0be6e13c96606",
     "semantic_hash": ""
   },
   "tests/integration/test_session_memory_api.py": {
@@ -1698,9 +1698,9 @@
     "semantic_hash": ""
   },
   "contracts/decision_tables/agent_persona_policy.json": {
-    "mtime": 1792278122.6697576,
-    "seen": 1792279612.912633,
-    "ast_hash": "8ffcb37e72a8d392316256edba46adae",
+    "mtime": 1792283084.83001,
+    "seen": 1792283384.1008303,
+    "ast_hash": "8e2ecfd964aae7143616c246322de459",
     "semantic_hash": ""
   },
   "services/calculations/solvency.py": {
@@ -1818,9 +1818,9 @@
     "semantic_hash": ""
   },
   "tests/unit/test_currency_calculations.py": {
-    "mtime": 1792281798.399825,
-    "seen": 1792281865.8448014,
-    "ast_hash": "6285ffe0d24272f167a0813a762ecf73",
+    "mtime": 1792282145.3781898,
+    "seen": 1792283384.1143277,
+    "ast_hash": "9532a10a88d4b1c3c82ac901b1cdcee0",
     "semantic_hash": ""
   },
   "services/calculations/currency_registry.py": {
@@ -1830,9 +1830,9 @@
     "semantic_hash": ""
   },
   "services/calculations/fx_rate_service.py": {
-    "mtime": 1792281774.621516,
-    "seen": 1792281865.8388064,
-    "ast_hash": "3cbc6c2f15041930c46b96bf89a82471",
+    "mtime": 1792282145.3776696,
+    "seen": 1792283384.1078765,
+    "ast_hash": "57a00d24cff263a560a79814ae93fda8",
     "semantic_hash": ""
   },
   "scripts/verify_dataset_health.py": {
@@ -1914,9 +1914,9 @@
     "semantic_hash": ""
   },
   "contracts/decision_tables/semantic_intent_prototypes.json": {
-    "mtime": 1792278328.5361772,
-    "seen": 1792279612.9152489,
-    "ast_hash": "4185d933317383ec9e43028573e93b52",
+    "mtime": 1792283061.6357467,
+    "seen": 1792283384.1022825,
+    "ast_hash": "0573bdff0bfdd44255a97ca6b51b3ecf",
     "semantic_hash": ""
   },
   "services/decision/policy_loader.py": {
@@ -1974,9 +1974,9 @@
     "semantic_hash": ""
   },
   "knowledge/cards/cash_liquidity.md": {
-    "mtime": 1792281820.7829738,
-    "seen": 1792281865.8675308,
-    "ast_hash": "fd4e4853c67a4abbc98dfd84cfc7cea0",
+    "mtime": 1792282424.3362794,
+    "seen": 1792283384.1385508,
+    "ast_hash": "964846b079f143153377609dc87e6a48",
     "semantic_hash": ""
   },
   "knowledge/cards/credit_debt.md": {
@@ -1992,9 +1992,9 @@
     "semantic_hash": ""
   },
   "knowledge/cards/profitability_unit_economics.md": {
-    "mtime": 1792254053.8344312,
-    "seen": 1792254137.9257245,
-    "ast_hash": "6f8ced1d3fd3e571da7fbe7554d815c5",
+    "mtime": 1792282327.9441414,
+    "seen": 1792283384.138896,
+    "ast_hash": "9cd98887b1c9828e5215819fed900aef",
     "semantic_hash": ""
   },
   "knowledge/cards/underwriting_risk.md": {
@@ -2004,15 +2004,15 @@
     "semantic_hash": ""
   },
   "knowledge/cards/working_capital.md": {
-    "mtime": 1792253937.0965538,
-    "seen": 1792254137.9257271,
-    "ast_hash": "cb60e6bc9a5d8474c948dcecd7f9a333",
+    "mtime": 1792283189.4019606,
+    "seen": 1792283384.139016,
+    "ast_hash": "9d1c256b40aeee81e66530c5e1ba2fc5",
     "semantic_hash": ""
   },
   "services/agent/knowledge.py": {
-    "mtime": 1792278150.4368677,
-    "seen": 1792279612.9223452,
-    "ast_hash": "55a1a0ecb7e0039b28e8419c390ffc10",
+    "mtime": 1792283311.0879788,
+    "seen": 1792283384.105234,
+    "ast_hash": "bd3841e6398b42f7ecacabad9e465159",
     "semantic_hash": ""
   },
   "tests/unit/test_knowledge_retrieval.py": {
@@ -2055,6 +2055,42 @@
     "mtime": 1792278336.804059,
     "seen": 1792279612.939703,
     "ast_hash": "228c0bd00cb6f8b9ac5ca20328c5753d",
+    "semantic_hash": ""
+  },
+  "services/calculations/outflow_breakdown.py": {
+    "mtime": 1792282355.028707,
+    "seen": 1792283384.1081114,
+    "ast_hash": "2a02af9a42cf720959f79117735e93c1",
+    "semantic_hash": ""
+  },
+  "services/calculations/receivables_ageing.py": {
+    "mtime": 1792283248.177621,
+    "seen": 1792283384.1082287,
+    "ast_hash": "029ad88ce1cc347473c955d80b233438",
+    "semantic_hash": ""
+  },
+  "services/ingestion/invoice_parser.py": {
+    "mtime": 1792282942.9715643,
+    "seen": 1792283384.1106782,
+    "ast_hash": "c98ea483418368cd652cd5b51a8bc3e3",
+    "semantic_hash": ""
+  },
+  "tests/unit/test_invoice_parser.py": {
+    "mtime": 1792283208.118551,
+    "seen": 1792283384.1149218,
+    "ast_hash": "1313f771decdb91bb4cd7170c044e447",
+    "semantic_hash": ""
+  },
+  "tests/unit/test_outflow_breakdown.py": {
+    "mtime": 1792282601.9258459,
+    "seen": 1792283384.115277,
+    "ast_hash": "4235fdb703823b8eb84990b9a711f6be",
+    "semantic_hash": ""
+  },
+  "tests/unit/test_receivables_ageing.py": {
+    "mtime": 1792283232.9683821,
+    "seen": 1792283384.1158822,
+    "ast_hash": "faec479ffe48e78e9f1688d37e8dda66",
     "semantic_hash": ""
   }
 }

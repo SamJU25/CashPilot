@@ -81,12 +81,12 @@
 **In the app:** Ask "evaluate 2/10 net 30" with the invoice amount.
 
 ## Receivables Management
-<!-- tools: tool_calculate_ccc -->
+<!-- tools: tool_analyze_receivables_ageing, tool_calculate_ccc | policy: working_capital_policy -->
 **What it is:** The process of invoicing, tracking and collecting money customers owe.
 **Why it matters:** Late payments are among the most common causes of SME cash shortages.
 **Healthy vs warning:** Healthy: invoices go out the same day, most customers pay within terms. Warning: a growing list of invoices more than 60 days overdue.
 **What to do:** Use an aging report (0–30, 31–60, 61–90, 90+ days), chase the oldest and largest balances first, and tighten terms for repeat late payers.
-**In the app:** Collection speed shows up as DSO and in deficit forecasts.
+**In the app:** Upload an invoice CSV or ask for receivables aging to inspect overdue buckets and top debtor concentration.
 
 ## Inventory Management
 <!-- tools: tool_calculate_ccc -->

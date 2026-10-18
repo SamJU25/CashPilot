@@ -24,6 +24,7 @@ from services.agent.param_extractor import (
     extract_fx_exposure_params,
     extract_ocf_ratio_params,
     extract_quick_ratio_params,
+    extract_receivables_ageing_params,
     extract_trade_credit_params,
     extract_wcr_params,
 )
@@ -34,6 +35,8 @@ from services.agent.schema import (
 )
 from services.agent.tools import (
     tool_analyze_cash_flow,
+    tool_analyze_outflow_breakdown,
+    tool_analyze_receivables_ageing,
     tool_calculate_cash_drag,
     tool_calculate_ccc,
     tool_calculate_current_ratio,
@@ -575,6 +578,111 @@ class LiquiditySubagent:
                 f"{change_line}{delay_line}"
                 f"- **Scenario Deficit**: {deficit}\n"
                 f"- **Assumption**: {res['assumption']}"
+            )
+            return CopilotResponse(
+                reply=enrich_fn(base_reply, prompt_type="diagnostic"),
+                intent_detected="CASH_DIAGNOSTIC",
+                requires_biometric_hitl=False,
+            )
+
+        # 13. Operational Outflow Category Breakdown
+        if sub_intent == "OUTFLOW_BREAKDOWN":
+            if not effective_csv:
+                return CopilotResponse(
+                    reply=get_missing_statement_guidance("diagnostic"),
+                    intent_detected="CASH_DIAGNOSTIC",
+                    requires_biometric_hitl=False,
+                )
+            try:
+                res = tool_analyze_outflow_breakdown(effective_csv)
+            except Exception as e:
+                return CopilotResponse(
+                    reply=f"Unable to process statement for outflow breakdown: {str(e)}",
+                    intent_detected="CASH_DIAGNOSTIC",
+                    requires_biometric_hitl=False,
+                )
+
+            cats_lines = []
+            for c in res["categories"]:
+                cats_lines.append(
+                    f"- **{c['category']}**: ${float(c['total_amount']):,.2f} ({c['percentage_of_outflows']}%, {c['transaction_count']} txs, avg: ${float(c['average_transaction']):,.2f})"
+                )
+            cats_formatted = "\n".join(cats_lines) if cats_lines else "- No outflows recorded in reviewed period."
+
+            base_reply = (
+                f"### Operational Outflow Breakdown by Category\n\n"
+                f"- **Gross Outflows**: ${float(res['gross_outflows']):,.2f} across {res['period_days']} days\n"
+                f"- **Average Daily Outflow**: ${float(res['average_daily_outflow']):,.2f}/day\n"
+                f"- **Primary Cost Driver**: **{res['top_category']}** (${float(res['top_category_amount']):,.2f}, {res['top_category_percentage']}% of outflows)\n\n"
+                f"**Category Breakdown**:\n"
+                f"{cats_formatted}"
+            )
+            return CopilotResponse(
+                reply=enrich_fn(base_reply, prompt_type="diagnostic"),
+                intent_detected="CASH_DIAGNOSTIC",
+                requires_biometric_hitl=False,
+            )
+
+        # 14. Accounts Receivable Ageing & Collections Risk
+        if sub_intent == "RECEIVABLES_AGEING":
+            p_dict = extract_receivables_ageing_params(request.message, history=request.history)
+            invoices_input = p_dict.get("invoices")
+            as_of_date = p_dict.get("as_of_date")
+
+            if not invoices_input and request.session_id:
+                from services.agent.session_store import session_store
+                rec = session_store.get_or_create(request.session_id)
+                if rec and rec.invoices_csv:
+                    invoices_input = rec.invoices_csv
+
+            if not invoices_input:
+                guidance = get_missing_param_guidance("RECEIVABLES_AGEING")
+                return CopilotResponse(
+                    reply=enrich_fn(guidance, prompt_type="concept", calculation="RECEIVABLES_AGEING"),
+                    intent_detected="CASH_DIAGNOSTIC",
+                    requires_biometric_hitl=False,
+                )
+
+            try:
+                res = tool_analyze_receivables_ageing(invoices=invoices_input, as_of_date=as_of_date)
+            except Exception as e:
+                return CopilotResponse(
+                    reply=f"Unable to process invoice data for receivables ageing: {str(e)}",
+                    intent_detected="CASH_DIAGNOSTIC",
+                    requires_biometric_hitl=False,
+                )
+
+            buckets = res["buckets"]
+            bucket_lines = []
+            for b_key in ("CURRENT", "1_30", "31_60", "61_90", "OVER_90"):
+                b = buckets.get(b_key, {})
+                bucket_lines.append(
+                    f"- **{b.get('label', b_key)}**: ${float(b.get('amount', 0)):,.2f} ({b.get('percentage', 0)}%, {b.get('invoice_count', 0)} invoices)"
+                )
+            buckets_formatted = "\n".join(bucket_lines)
+
+            debtor_lines = []
+            for d in res.get("top_debtors", []):
+                debtor_lines.append(
+                    f"- **{d['customer_name']}**: ${float(d['total_open_balance']):,.2f} open (${float(d['overdue_amount']):,.2f} overdue, max {d['max_days_overdue']}d late, {d['share_of_total_ar']}% of AR)"
+                )
+            debtors_formatted = "\n".join(debtor_lines) if debtor_lines else "- No individual debtor concentration identified."
+
+            actions_lines = [f"- {act}" for act in res.get("recommended_actions", [])]
+            actions_formatted = "\n".join(actions_lines)
+
+            base_reply = (
+                f"### Accounts Receivable (AR) Ageing & Collections Audit\n\n"
+                f"- **Snapshot Date**: {res['as_of_date']}\n"
+                f"- **Total Outstanding AR**: ${float(res['total_ar']):,.2f}\n"
+                f"- **Current (Not Overdue)**: ${float(res['current_amount']):,.2f}\n"
+                f"- **Total Overdue**: ${float(res['total_overdue']):,.2f} ({res['overdue_ratio_pct']}% of AR)\n"
+                f"- **Weighted Average Days Overdue**: {res['weighted_average_days_overdue']} days\n"
+                f"- **Top Debtor Concentration**: {res['top_1_concentration_pct']}%\n"
+                f"- **Receivables Risk Posture**: `{res['risk_tier']}`\n\n"
+                f"**Ageing Schedule**:\n{buckets_formatted}\n\n"
+                f"**Delinquent Customer Balances**:\n{debtors_formatted}\n\n"
+                f"**Prescriptive Collection Actions**:\n{actions_formatted}"
             )
             return CopilotResponse(
                 reply=enrich_fn(base_reply, prompt_type="diagnostic"),

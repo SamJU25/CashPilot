@@ -61,10 +61,10 @@ Traditional commercial banks require 4 to 8 weeks to underwrite working capital 
 ┌─────────────────────────────────────────────────────────────────────────────────────────┐
 │                                SME FINANCE COPILOT                                      │
 ├────────────────────────────┬────────────────────────────┬───────────────────────────────┤
-│    1. CFO Health Core      │  2. Conformal Forecaster   │    3. Digital Underwriting    │
-│  • Pure Decimal runway     │  • MAPIE P10/P50/P90 bands │  • WeBank Weiyidai linkage    │
-│  • Daily Average Balance   │  • 30/60/90-day horizons   │  • PuLP MILP cost minimizer   │
-│  • DSCR & Burn calculation │  • Kaplan-Meier DSO hazard │  • Predatory APR flag (>36%)  │
+│    1. CFO Health Core      │  2. Cash Crunch Engine     │    3. Digital Underwriting    │
+│  • Pure Decimal runway     │  • Pure Decimal forecast   │  • Transaction stream metrics │
+│  • Daily Average Balance   │  • 30/60/90-day horizons   │  • Multi-facility ranking     │
+│  • DSCR & Burn calculation │  • Early deficit alerts    │  • Predatory APR flag (>36%)  │
 ├────────────────────────────┼────────────────────────────┼───────────────────────────────┤
 │   4. Three-Tier Gate       │   5. Privacy Shield        │   6. Consortium Blockchain    │
 │  • Tier 1: Read-only auto  │  • Microsoft Presidio PII  │  • FISCO BCOS smart contract  │
@@ -77,15 +77,14 @@ Traditional commercial banks require 4 to 8 weeks to underwrite working capital 
 - Computes exact Net Daily Burn, Cash Runway, Daily Average Balance (DAB), and Debt Service Coverage Ratio (DSCR).
 - Enforces pure Python `decimal.Decimal` with `ROUND_HALF_UP` arithmetic. Prohibits mental arithmetic and LLM mathematical approximations.
 
-### 2.2 Predictive Cash Crunch Forecasting (MAPIE Conformal Prediction)
-- Generates non-parametric prediction intervals across 30, 60, and 90-day forward horizons.
-- Outputs pessimistic ($P_{10}$), median ($P_{50}$), and optimistic ($P_{90}$) cash corridors at 90% empirical coverage, alerting business owners before deficits occur.
-- Uses Kaplan-Meier survival curves to estimate customer invoice settlement delays (DSO).
+### 2.2 Predictive Cash Crunch Early-Warning Engine
+- Projects forward-looking daily cash positions across 30, 60, and 90-day treasury horizons.
+- Evaluates closing balances, daily burn rates, and recurring obligations (payroll, rent, debt service) to pinpoint exact deficit dates and shortfall amounts.
+- Categorizes liquidity risk into deterministic severity tiers (SAFE, WATCH, WARNING, CRITICAL) with actionable bridge financing recommendations.
 
-### 2.3 Intelligent Digital Underwriting & Financing Matcher
-- Replaces static annual tax returns with high-frequency transactional data streams (inspired by WeBank's *Weiyidai* credit assessment model).
-- Evaluates Revenue-Based Financing, Invoice Factoring, and Working Capital Lines.
-- Runs a PuLP Mixed-Integer Linear Program (MILP) to minimize financing costs.
+### 2.3 Transactional Digital Underwriting & Financing Matcher
+- Replaces static annual tax returns with high-frequency transactional data streams: Daily Average Balance (DAB), Non-Sufficient Funds (NSF) frequency, and weekly revenue volatility (CV).
+- Evaluates and ranks Working Capital Lines, Invoice Factoring, and Revenue-Based Financing options by qualification status, net cost, and liquidity score (0-100).
 - Enforces Truth-in-Lending rules: converts factor rates into true APR and flags any facility exceeding 36% APR as predatory.
 
 ### 2.4 Consortium Blockchain Invoice Double-Pledge Prevention
@@ -145,7 +144,7 @@ We selected a Responsive Web Application with Progressive Web App (PWA) packagin
 ├────────────────────────────────────────────────────────────────────────┤
 │ 3. DETERMINISTIC CORE: Python decimal.Decimal (Runway, DAB, DSCR)       │
 ├────────────────────────────────────────────────────────────────────────┤
-│ 4. RISK & FORECASTING: MAPIE Conformal Corridor + Kaplan-Meier DSO      │
+│ 4. RISK & FORECASTING: 30/60/90-Day Carry-Forward Early Warning        │
 ├────────────────────────────────────────────────────────────────────────┤
 │ 5. SECURITY GATE: 3-Tier Permission Matrix + WebAuthn FIDO2 Verifier    │
 ├────────────────────────────────────────────────────────────────────────┤
@@ -163,7 +162,7 @@ We selected a Responsive Web Application with Progressive Web App (PWA) packagin
 |---|---|---|
 | **Task Completion** | **40%** | Ingests bank transaction streams, computes exact financial ratios, forecasts cash deficits 30-90 days in advance, and constructs pre-qualified working capital proposals. |
 | **Defensive Security & Compliance** | **30%** | Three-Tier Security Gate isolating read-only analytics from capital movement, WebAuthn physical biometric 2FA, Presidio PII redaction, and Truth-in-Lending APR disclosures. |
-| **Technical Innovation** | **30%** | WeBank-inspired continuous cash flow underwriting, MAPIE distribution-free conformal forecasting, and consortium blockchain invoice pledge anchoring. |
+| **Technical Innovation** | **30%** | Continuous transactional cash flow underwriting, deterministic multi-horizon cash crunch forecasting, and consortium blockchain invoice pledge anchoring. |
 
 ---
 

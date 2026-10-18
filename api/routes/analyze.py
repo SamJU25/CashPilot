@@ -15,8 +15,10 @@ from pydantic import BaseModel, ConfigDict
 from services.agent.schema import LLMConfig
 from services.agent.session_store import session_store
 from services.calculations.cash_analysis import calculate_cash_analysis
+from services.calculations.receivables_ageing import calculate_receivables_ageing
 from services.calculations.runway import calculate_cash_conversion_cycle
 from services.ingestion.csv_parser import CSVIngestionError, parse_bank_csv, parse_multiple_bank_csv
+from services.ingestion.invoice_parser import InvoiceIngestionError, parse_invoice_csv
 from services.ingestion.pdf_parser import parse_pdf_statement
 from services.ingestion.pdf_validator import PDFValidationError
 
@@ -297,3 +299,140 @@ async def analyze_csv(
 
 def _format_money(value: Decimal) -> str:
     return format(value.quantize(Decimal("0.01")), "f")
+
+
+class AgeingBucketModel(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    label: str
+    amount: str
+    percentage: str
+    invoice_count: int
+
+
+class CustomerDebtorModel(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    customer_name: str
+    total_open_balance: str
+    current_amount: str
+    overdue_amount: str
+    max_days_overdue: int
+    invoice_count: int
+    share_of_total_ar: str
+    oldest_unpaid_invoice: Optional[str] = None
+
+
+class ReceivablesAgeingResponse(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    currency: str
+    accepted_count: int
+    rejected_rows: list[RejectedRowResponse]
+    as_of_date: str
+    total_ar: str
+    current_amount: str
+    total_overdue: str
+    overdue_ratio_pct: str
+    weighted_average_days_overdue: str
+    top_1_concentration_pct: str
+    risk_tier: str
+    summary_advisory: str
+    buckets: dict[str, AgeingBucketModel]
+    top_debtors: list[CustomerDebtorModel]
+    recommended_actions: list[str]
+
+
+@router.post("/analyze/invoices", response_model=ReceivablesAgeingResponse)
+async def analyze_invoices_csv(
+    request: Request,
+    file: UploadFile | None = File(None),
+    as_of_date: date | None = Form(None),
+    x_session_id: Optional[str] = Header(default=None, alias="X-Session-ID"),
+    x_tenant_id: Optional[str] = Header(default=None, alias="X-Tenant-ID"),
+) -> ReceivablesAgeingResponse | JSONResponse:
+    """Parses accounts receivable invoices CSV and computes an AR aging schedule with risk advisory."""
+    if file is None:
+        form = await request.form()
+        raw_file = form.get("file")
+        if hasattr(raw_file, "filename") and hasattr(raw_file, "read"):
+            file = raw_file  # type: ignore[assignment]
+
+    if not file:
+        return JSONResponse(
+            status_code=422,
+            content={"error": {"code": "MISSING_FILE", "message": "Invoice CSV upload is required."}},
+        )
+
+    content_bytes = await file.read(MAX_UPLOAD_BYTES + 1)
+    if len(content_bytes) > MAX_UPLOAD_BYTES:
+        return JSONResponse(
+            status_code=413,
+            content={"error": {"code": "UPLOAD_TOO_LARGE", "message": "Invoice upload exceeds size limit."}},
+        )
+
+    content_str = content_bytes.decode("utf-8", errors="replace")
+    try:
+        ingestion = parse_invoice_csv(content_str, tenant_id=x_tenant_id or "SME-DEFAULT")
+    except InvoiceIngestionError as exc:
+        return JSONResponse(
+            status_code=422,
+            content={"error": {"code": exc.code, "message": str(exc)}},
+        )
+
+    if not ingestion.accepted_invoices:
+        return JSONResponse(
+            status_code=422,
+            content={"error": {"code": "NO_VALID_INVOICES", "message": "No valid invoice rows found in CSV."}},
+        )
+
+    res = calculate_receivables_ageing(ingestion.accepted_invoices, as_of_date=as_of_date)
+
+    if x_session_id:
+        try:
+            session_store.update_invoices(
+                session_id=x_session_id,
+                invoices_csv=content_str,
+                tenant_id=x_tenant_id or "SME-DEFAULT",
+            )
+        except Exception:
+            pass
+
+    return ReceivablesAgeingResponse(
+        currency=ingestion.currency,
+        accepted_count=len(ingestion.accepted_invoices),
+        rejected_rows=[
+            RejectedRowResponse(row_number=r.row_number, reason_code=r.reason_code)
+            for r in ingestion.rejected_rows
+        ],
+        as_of_date=res.as_of_date.isoformat(),
+        total_ar=_format_money(res.total_ar),
+        current_amount=_format_money(res.current_amount),
+        total_overdue=_format_money(res.total_overdue),
+        overdue_ratio_pct=str(res.overdue_ratio_pct),
+        weighted_average_days_overdue=str(res.weighted_average_days_overdue),
+        top_1_concentration_pct=str(res.top_1_concentration_pct),
+        risk_tier=res.risk_tier,
+        summary_advisory=res.summary_advisory,
+        buckets={
+            b_key: AgeingBucketModel(
+                label=b.label,
+                amount=_format_money(b.amount),
+                percentage=str(b.percentage),
+                invoice_count=b.invoice_count,
+            )
+            for b_key, b in res.buckets.items()
+        },
+        top_debtors=[
+            CustomerDebtorModel(
+                customer_name=d.customer_name,
+                total_open_balance=_format_money(d.total_open_balance),
+                current_amount=_format_money(d.current_amount),
+                overdue_amount=_format_money(d.overdue_amount),
+                max_days_overdue=d.max_days_overdue,
+                invoice_count=d.invoice_count,
+                share_of_total_ar=str(d.share_of_total_ar),
+                oldest_unpaid_invoice=d.oldest_unpaid_invoice,
+            )
+            for d in res.top_debtors[:10]
+        ],
+        recommended_actions=res.recommended_actions,
+    )
+

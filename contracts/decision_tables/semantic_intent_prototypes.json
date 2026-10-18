@@ -30,6 +30,8 @@
     "OCF_RATIO": "Calculate operating cash flow ratio, operating cash flow to current liabilities, short-term debt coverage.",
     "BREAK_EVEN_UNITS": "Calculate break-even units, break-even sales volume, how many units must we sell to break even.",
     "CASH_SCENARIO": "What if scenario: what if we hire someone, what if we add a new monthly expense, what if we cut costs per month, what if revenue drops by percent, what if a customer pays an invoice days late.",
+    "OUTFLOW_BREAKDOWN": "Break down expenses, outflow category breakdown, which outflows drive our burn, expense decomposition, where is our money going, spending categories, what expenses take the most cash, sort outflows by category.",
+    "RECEIVABLES_AGEING": "Receivables ageing, AR aging schedule, overdue invoices, who owes us money, who owes us and how late, late customers, unpaid invoices, aging buckets, 30 60 90 days past due, delinquent accounts, customer collection delays.",
     "ATTRITION": "Calculate customer churn impact, lost client impact on burn rate and cash runway, revenue attrition.",
     "INVOICE_HASH": "Verify invoice hash, check invoice double financing, check blockchain invoice integrity, consortium registry check.",
     "CURRENT_RATIO": "Calculate current ratio, short-term liquidity ratio, current assets divided by current liabilities, working capital balance sheet health.",

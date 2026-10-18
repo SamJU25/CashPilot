@@ -13,8 +13,11 @@ from typing import Any, Dict, Optional, Sequence, Union
 
 from services.calculations.cash_analysis import calculate_cash_analysis
 from services.calculations.cash_scenario import calculate_cash_scenario as calc_cash_scenario
+from services.calculations.outflow_breakdown import calculate_outflow_breakdown
 from services.calculations.predictive_cash import calculate_predictive_cash
+from services.calculations.receivables_ageing import calculate_receivables_ageing
 from services.calculations.runway import calculate_cash_conversion_cycle
+from services.ingestion.invoice_parser import parse_invoice_csv, parse_invoices_from_dicts
 from services.calculations.debt_service import (
     calculate_dscr as calc_dscr,
     calculate_fccr as calc_fccr,
@@ -247,6 +250,101 @@ def tool_run_cash_scenario(
         "scenario_deficit_date": scn.projected_deficit_date,
         "scenario_shortfall": _format_money(scn.projected_shortfall_amount),
         "scenario_severity": scn.severity,
+    }
+
+
+def tool_analyze_outflow_breakdown(csv_content: str) -> Dict[str, Any]:
+    """Decomposes statement gross outflows into operational categories (Payroll, Facilities, Debt, Suppliers, Software, etc.)."""
+    raw_bytes = _normalize_statement_bytes(csv_content)
+    ingestion = parse_bank_csv(raw_bytes)
+    res = calculate_outflow_breakdown(ingestion.accepted_rows)
+    return {
+        "gross_outflows": _format_money(res.gross_outflows),
+        "period_days": res.period_days,
+        "average_daily_outflow": _format_money(res.average_daily_outflow),
+        "top_category": res.top_category,
+        "top_category_amount": _format_money(res.top_category_amount),
+        "top_category_percentage": str(res.top_category_percentage),
+        "categories": [
+            {
+                "category": c.category,
+                "total_amount": _format_money(c.total_amount),
+                "percentage_of_outflows": str(c.percentage_of_outflows),
+                "transaction_count": c.transaction_count,
+                "average_transaction": _format_money(c.average_transaction),
+                "largest_transaction": _format_money(c.largest_transaction),
+            }
+            for c in res.categories
+        ],
+    }
+
+
+def tool_analyze_receivables_ageing(
+    invoices: Optional[Any] = None,
+    csv_content: Optional[str] = None,
+    as_of_date: Optional[str] = None,
+    session_id: Optional[str] = None,
+) -> Dict[str, Any]:
+    """Computes Accounts Receivable (AR) aging schedule, delinquency ratios, debtor concentration, and collections risk tier."""
+    raw_invoices = invoices
+    if raw_invoices is None and csv_content:
+        raw_invoices = csv_content
+    elif raw_invoices is None and session_id:
+        from services.agent.session_store import session_store
+        rec = session_store.get_or_create(session_id)
+        if rec and rec.invoices_csv:
+            raw_invoices = rec.invoices_csv
+
+    if not raw_invoices:
+        return {
+            "error": "MISSING_INVOICE_DATA",
+            "message": "No invoice records or CSV provided. Please upload an invoice CSV or supply invoice details.",
+        }
+
+    if isinstance(raw_invoices, str):
+        ingest_res = parse_invoice_csv(raw_invoices)
+        parsed_records = ingest_res.accepted_invoices
+    elif isinstance(raw_invoices, list):
+        ingest_res = parse_invoices_from_dicts(raw_invoices)
+        parsed_records = ingest_res.accepted_invoices
+    else:
+        parsed_records = list(raw_invoices)
+
+    res = calculate_receivables_ageing(parsed_records, as_of_date=as_of_date)
+
+    return {
+        "as_of_date": res.as_of_date.isoformat(),
+        "total_ar": _format_money(res.total_ar),
+        "current_amount": _format_money(res.current_amount),
+        "total_overdue": _format_money(res.total_overdue),
+        "overdue_ratio_pct": str(res.overdue_ratio_pct),
+        "weighted_average_days_overdue": str(res.weighted_average_days_overdue),
+        "top_1_concentration_pct": str(res.top_1_concentration_pct),
+        "risk_tier": res.risk_tier,
+        "summary_advisory": res.summary_advisory,
+        "buckets": {
+            b_key: {
+                "label": b.label,
+                "amount": _format_money(b.amount),
+                "percentage": str(b.percentage),
+                "invoice_count": b.invoice_count,
+            }
+            for b_key, b in res.buckets.items()
+        },
+        "top_debtors": [
+            {
+                "customer_name": d.customer_name,
+                "total_open_balance": _format_money(d.total_open_balance),
+                "current_amount": _format_money(d.current_amount),
+                "overdue_amount": _format_money(d.overdue_amount),
+                "max_days_overdue": d.max_days_overdue,
+                "invoice_count": d.invoice_count,
+                "share_of_total_ar": str(d.share_of_total_ar),
+                "oldest_unpaid_invoice": d.oldest_unpaid_invoice,
+            }
+            for d in res.top_debtors[:5]
+        ],
+        "recommended_actions": res.recommended_actions,
     }
 
 

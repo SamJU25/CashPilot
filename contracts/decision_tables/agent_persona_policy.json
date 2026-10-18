@@ -219,9 +219,9 @@
           },
           {
             "_id": "rule_route_liquidity_subagent",
-            "_description": "Routes working capital requirement, OCF ratio, defensive interval, CCC, current ratio, quick ratio, trade credit, treasury cash drag, FCFF, currency conversion, FX exposure, and what-if cash scenarios to LiquiditySubagent",
+            "_description": "Routes working capital requirement, OCF ratio, defensive interval, CCC, current ratio, quick ratio, trade credit, treasury cash drag, FCFF, currency conversion, FX exposure, what-if cash scenarios, outflow breakdown, and receivables ageing to LiquiditySubagent",
             "in_pt": "'SUBAGENT_ROUTING'",
-            "in_sub": "'WCR', 'OCF_RATIO', 'DEFENSIVE_INTERVAL', 'WORKING_CAPITAL', 'CURRENT_RATIO', 'QUICK_RATIO', 'TRADE_CREDIT', 'CASH_DRAG', 'FCFF', 'CURRENCY_CONVERSION', 'FX_EXPOSURE', 'CASH_SCENARIO'",
+            "in_sub": "'WCR', 'OCF_RATIO', 'DEFENSIVE_INTERVAL', 'WORKING_CAPITAL', 'CURRENT_RATIO', 'QUICK_RATIO', 'TRADE_CREDIT', 'CASH_DRAG', 'FCFF', 'CURRENCY_CONVERSION', 'FX_EXPOSURE', 'CASH_SCENARIO', 'OUTFLOW_BREAKDOWN', 'RECEIVABLES_AGEING'",
             "out_role": "\"LIQUIDITY_SPECIALIST\"",
             "out_target": "\"LiquiditySubagent\"",
             "out_tone": "\"OPERATIONAL_LIQUIDITY\"",
@@ -656,6 +656,17 @@
             "out_tone": "\"OPERATIONAL_LIQUIDITY\"",
             "out_template": "\"\"",
             "out_guidance": "\"To calculate foreign exchange exposure and potential cash flow loss, please provide your foreign currency receivables and foreign payables.\\n\\nExample format: 'Calculate FX exposure for 100,000 EUR receivables and 20,000 EUR payables in USD with 5% shock'.\""
+          },
+          {
+            "_id": "rule_missing_param_receivables_ageing",
+            "_description": "Missing parameter prompt for Receivables Ageing calculation",
+            "in_pt": "'MISSING_PARAM'",
+            "in_sub": "'RECEIVABLES_AGEING'",
+            "out_role": "\"LIQUIDITY_SPECIALIST\"",
+            "out_target": "\"LiquiditySubagent\"",
+            "out_tone": "\"OPERATIONAL_LIQUIDITY\"",
+            "out_template": "\"\"",
+            "out_guidance": "\"To analyze accounts receivable aging and identify who owes you and how late, please upload your invoice CSV or provide invoice records (columns: invoice_id, customer, issue_date, due_date, amount, status).\\n\\nExample format: 'Analyze aging for invoices: INV-001 Acme Corp $15,000 due 2026-09-01, INV-002 Globex $8,000 due 2026-10-15'.\""
           }
         ]
       }

@@ -36,7 +36,9 @@ class SessionRecord(BaseModel):
     updated_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
     messages: List[ChatHistoryItem] = Field(default_factory=list)
     csv_content: Optional[str] = None
+    invoices_csv: Optional[str] = None
     cached_dossier: Optional[Dict[str, Any]] = None
+    cached_ageing: Optional[Dict[str, Any]] = None
     financial_facts: Dict[str, Any] = Field(default_factory=dict)
     rolling_summary: Optional[str] = None
 
@@ -141,6 +143,35 @@ class SessionStore:
                 "max_qualified_limit",
             ]:
                 rec.financial_facts.pop(fact, None)
+            rec.updated_at = datetime.now(timezone.utc).isoformat()
+            self._persist_session(rec)
+            return rec
+
+    def update_invoices(
+        self,
+        session_id: str,
+        invoices_csv: str,
+        tenant_id: str = "SME-DEFAULT",
+        ageing: Optional[Dict[str, Any]] = None,
+    ) -> SessionRecord:
+        """Stores the uploaded invoices CSV and optional cached ageing analysis for the session."""
+        rec = self.get_or_create(session_id, tenant_id=tenant_id)
+        with self._store_lock:
+            rec.invoices_csv = invoices_csv
+            if ageing is not None:
+                rec.cached_ageing = ageing
+            rec.updated_at = datetime.now(timezone.utc).isoformat()
+            self._persist_session(rec)
+            return rec
+
+    def clear_invoices(self, session_id: str) -> Optional[SessionRecord]:
+        """Clears invoices CSV and cached ageing from the session."""
+        with self._store_lock:
+            rec = self._sessions.get(session_id)
+            if not rec:
+                return None
+            rec.invoices_csv = None
+            rec.cached_ageing = None
             rec.updated_at = datetime.now(timezone.utc).isoformat()
             self._persist_session(rec)
             return rec

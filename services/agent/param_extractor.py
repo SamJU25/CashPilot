@@ -1846,3 +1846,42 @@ def is_complete_cash_scenario(params: Dict[str, Any]) -> bool:
     if kind == "INVOICE_DELAY":
         return params.get("amount") is not None and params.get("delay_days") is not None
     return False
+
+
+def extract_receivables_ageing_params(
+    text: str,
+    history: Optional[List[Any]] = None,
+) -> Dict[str, Any]:
+    """Extracts snapshot date and any inline invoice records from text."""
+    as_of_date: Optional[str] = None
+    as_of_m = re.search(r"(?:as\s*of|snapshot|audit\s*date)\s*[:= ]*\s*([0-9]{4}-[0-9]{2}-[0-9]{2})", text, re.IGNORECASE)
+    if as_of_m:
+        as_of_date = as_of_m.group(1)
+
+    # Check for inline invoice patterns, e.g. "INV-101 Acme $5000 due 2026-09-01" or CSV lines
+    invoices: Optional[List[Dict[str, Any]]] = None
+    inline_pattern = re.compile(
+        r"(?:invoice\s*[:= ]*)?([A-Za-z0-9\-]+)[, ]+([A-Za-z0-9\s\.\&]+?)[, ]+\$?([0-9]{1,3}(?:,[0-9]{3})*(?:\.[0-9]{2})?|\d+[km]?)[, ]+(?:due\s*)?([0-9]{4}-[0-9]{2}-[0-9]{2})",
+        re.IGNORECASE,
+    )
+    matches = list(inline_pattern.finditer(text))
+    if matches:
+        invoices = []
+        for m in matches:
+            inv_id = m.group(1).strip()
+            cust = m.group(2).strip()
+            amt = parse_numeric_token(m.group(3))
+            due = m.group(4).strip()
+            if amt and cust:
+                invoices.append({
+                    "invoice_id": inv_id,
+                    "customer_name": cust,
+                    "amount": str(amt),
+                    "due_date": due,
+                })
+
+    return {
+        "as_of_date": as_of_date,
+        "invoices": invoices,
+    }
+
