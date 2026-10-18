@@ -119,3 +119,63 @@ def test_underwrite_api_rejects_malformed_csv():
     )
     assert response.status_code == 422
     assert response.json()["error"]["code"] == "INVALID_HEADER"
+
+
+def test_actions_tenant_header_isolation():
+    staging_ledger.clear()
+
+    # Stage intent for tenant Alpha
+    stage_resp = client.post(
+        "/api/v1/actions/stage",
+        json={
+            "tenant_id": "TENANT-ALPHA",
+            "action_type": "TRANSFER",
+            "amount_cents": 100000,
+            "target_identifier": "ACC-ALPHA-01",
+        },
+    )
+    assert stage_resp.status_code == 201
+    intent_id = stage_resp.json()["id"]
+
+    # Alpha sees it via X-Tenant-ID
+    list_alpha = client.get("/api/v1/actions", headers={"X-Tenant-ID": "TENANT-ALPHA"})
+    assert list_alpha.status_code == 200
+    assert len(list_alpha.json()) == 1
+
+    # Beta sees an empty list via X-Tenant-ID
+    list_beta = client.get("/api/v1/actions", headers={"X-Tenant-ID": "TENANT-BETA"})
+    assert list_beta.status_code == 200
+    assert len(list_beta.json()) == 0
+
+    # Beta cannot retrieve Alpha's intent -> HTTP 404
+    get_beta = client.get(f"/api/v1/actions/{intent_id}", headers={"X-Tenant-ID": "TENANT-BETA"})
+    assert get_beta.status_code == 404
+
+    # Beta cannot request passkey options for Alpha's intent -> HTTP 404
+    opts_beta = client.post(f"/api/v1/actions/{intent_id}/passkey-options", headers={"X-Tenant-ID": "TENANT-BETA"})
+    assert opts_beta.status_code == 404
+
+    # Beta cannot execute Alpha's intent -> HTTP 404
+    exec_beta = client.post(f"/api/v1/actions/{intent_id}/execute", headers={"X-Tenant-ID": "TENANT-BETA"}, json={})
+    assert exec_beta.status_code == 404
+
+
+def test_underwrite_api_caches_statement_in_session():
+    from services.agent.session_store import session_store
+
+    session_id = "sess_underwrite_cache_test"
+    tenant_id = "TENANT-UNDERWRITE-01"
+
+    response = client.post(
+        "/api/v1/underwrite",
+        data={"nsf_count": "0"},
+        files={"file": ("statement.csv", CSV_PAYLOAD.encode("utf-8"), "text/csv")},
+        headers={"X-Session-ID": session_id, "X-Tenant-ID": tenant_id},
+    )
+    assert response.status_code == 200
+
+    rec = session_store.get_for_tenant(session_id, tenant_id)
+    assert rec is not None
+    assert rec.csv_content is not None
+    assert "Office rent" in rec.csv_content
+

@@ -82,7 +82,16 @@ export interface StagingRequest {
 }
 
 export interface ExecutionRequest {
-  biometric_signature?: string;
+  webauthn_assertion?: Record<string, any>;
+}
+
+export interface PasskeyOptionsRequest {
+  tenant_id: string;
+}
+
+export interface PasskeyRegistrationRequest {
+  tenant_id: string;
+  credential: Record<string, any>;
 }
 
 // Digital Transactional Underwriting & Financing Matcher
@@ -287,4 +296,62 @@ export interface DeleteModelResponse {
   message: string;
   deleted_path?: string | null;
   freed_mb?: number | null;
+}
+
+// Accounts Receivable Invoices Aging Types
+export interface AgeingBucketModel {
+  label: string;
+  amount: string;
+  percentage: string;
+  invoice_count: number;
+}
+
+export interface CustomerDebtorModel {
+  customer_name: string;
+  total_open_balance: string;
+  current_amount: string;
+  overdue_amount: string;
+  max_days_overdue: number;
+  invoice_count: number;
+  share_of_total_ar: string;
+  oldest_unpaid_invoice?: string | null;
+}
+
+export interface ReceivablesAgeingResponse {
+  currency: string;
+  accepted_count: number;
+  rejected_rows: RejectedRow[];
+  as_of_date: string;
+  total_ar: string;
+  current_amount: string;
+  total_overdue: string;
+  overdue_ratio_pct: string;
+  weighted_average_days_overdue: string;
+  top_1_concentration_pct: string;
+  risk_tier: string;
+  summary_advisory: string;
+  buckets: Record<string, AgeingBucketModel>;
+  top_debtors: CustomerDebtorModel[];
+  recommended_actions: string[];
+}
+
+// Session Management Types
+export interface SessionTurn {
+  role: 'user' | 'assistant';
+  text: string;
+  timestamp: string;
+}
+
+export interface SessionRecord {
+  session_id: string;
+  tenant_id: string;
+  created_at: string;
+  updated_at: string;
+  messages: SessionTurn[];
+  csv_content?: string | null;
+  invoices_csv?: string | null;
+  cached_dossier?: Record<string, any> | null;
+  cached_ageing?: Record<string, any> | null;
+  financial_facts: Record<string, any>;
+  rolling_summary?: string | null;
 }

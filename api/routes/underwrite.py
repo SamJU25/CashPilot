@@ -9,10 +9,11 @@ import os
 from decimal import Decimal
 from typing import Optional
 
-from fastapi import APIRouter, File, Form, UploadFile
+from fastapi import APIRouter, File, Form, Header, UploadFile
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, ConfigDict
 
+from services.agent.session_store import session_store
 from services.ingestion.csv_parser import CSVIngestionError, parse_bank_csv
 from services.ingestion.pdf_parser import parse_pdf_statement
 from services.ingestion.pdf_validator import PDFValidationError
@@ -73,6 +74,8 @@ def _format_money(val: Decimal) -> str:
 async def underwrite_statement(
     file: UploadFile = File(...),
     nsf_count: int = Form(0, ge=0),
+    x_session_id: Optional[str] = Header(default=None, alias="X-Session-ID"),
+    x_tenant_id: Optional[str] = Header(default=None, alias="X-Tenant-ID"),
 ) -> UnderwriteApiResponse | JSONResponse:
     """Performs digital underwriting on transaction CSV and matches credit options."""
     content = await file.read(MAX_UPLOAD_BYTES + 1)
@@ -98,6 +101,17 @@ async def underwrite_statement(
         ingestion = parse_bank_csv(content)
     except CSVIngestionError as exc:
         return JSONResponse(status_code=422, content={"error": {"code": exc.code, "message": str(exc)}})
+
+    if x_session_id:
+        try:
+            csv_str = content.decode("utf-8", errors="replace")
+            session_store.update_statement(
+                session_id=x_session_id,
+                csv_content=csv_str,
+                tenant_id=x_tenant_id or "SME-DEFAULT",
+            )
+        except Exception:
+            pass
 
     dossier = underwrite_sme_transactions(ingestion.accepted_rows, nsf_count=nsf_count)
     matched_options = match_financing_options(dossier)

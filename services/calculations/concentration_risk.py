@@ -7,7 +7,7 @@ Enforces pure Python decimal.Decimal arithmetic with ROUND_HALF_UP.
 from __future__ import annotations
 
 from decimal import Decimal, ROUND_HALF_UP
-from typing import Dict, Optional, Sequence, Tuple, Union
+from typing import Any, Dict, Optional, Sequence, Tuple, Union
 
 
 def calculate_client_concentration(
