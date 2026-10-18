@@ -29,7 +29,7 @@ from trl import SFTConfig, SFTTrainer
 
 
 def run_colab_training(
-    model_id: str = "Qwen/Qwen2.5-3B-Instruct",
+    model_id: str = "Qwen/Qwen3-4B-Instruct-2507",
     train_file: str = "finetune_train.jsonl",
     val_file: str = "finetune_val.jsonl",
     output_dir: str = "sme-finance-lora",

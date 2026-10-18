@@ -35,6 +35,7 @@ CALCULATION_TOOLS = {
     "AMORTIZATION": "tool_calculate_loan_amortization",
     "ATTRITION": "tool_calculate_revenue_attrition_impact",
     "BREAK_EVEN": "tool_calculate_break_even",
+    "BRIDGE_PLAN": "tool_build_bridge_plan",
     "BREAK_EVEN_UNITS": "tool_calculate_break_even_units",
     "CAC_PAYBACK": "tool_calculate_cac_payback",
     "CASH_DRAG": "tool_calculate_cash_drag",
@@ -70,6 +71,7 @@ CALCULATION_TOOLS = {
     "TRADE_CREDIT": "tool_calculate_trade_credit_apr",
     "WACC": "tool_calculate_wacc",
     "WCR": "tool_calculate_wcr",
+    "WORKING_CAPITAL": "tool_calculate_ccc",
 }
 
 

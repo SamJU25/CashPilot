@@ -114,6 +114,13 @@ def test_fallback_security_gate_tier_2():
 def test_fallback_deficit_severity_horizons():
     adapter = FallbackRuleAdapter()
 
+    # An existing overdraft is 0 days out and must still print the number
+    res_now = adapter.evaluate(DecisionRequest(
+        domain=DecisionDomain.DEFICIT_SEVERITY,
+        input_state={"days_until_deficit": 0},
+    ))
+    assert "deficit in 0 days" in res_now.rationale
+
     # Critical (<= 30 days)
     res_crit = adapter.evaluate(DecisionRequest(
         domain=DecisionDomain.DEFICIT_SEVERITY,
@@ -217,6 +224,12 @@ def test_zen_adapter_security_gate_parity():
 def test_zen_adapter_deficit_severity_parity():
     from services.decision.adapters.zen_adapter import ZenRulesAdapter
     adapter = ZenRulesAdapter()
+
+    res_now = adapter.evaluate(DecisionRequest(
+        domain=DecisionDomain.DEFICIT_SEVERITY,
+        input_state={"days_until_deficit": 0},
+    ))
+    assert "deficit in 0 days" in res_now.rationale
 
     # Critical (<= 30 days)
     res_crit = adapter.evaluate(DecisionRequest(

@@ -314,7 +314,7 @@ class FallbackRuleAdapter(AbstractDecisionEngine):
         d90_val = str(state.get("d90", "0.00"))
 
         explanation = (
-            tpl.replace("{days}", str(days or ""))
+            tpl.replace("{days}", str(days))
             .replace("{date}", date_val)
             .replace("{trigger}", trig_suffix)
             .replace("{shortfall}", shortfall_val)
@@ -339,17 +339,17 @@ class FallbackRuleAdapter(AbstractDecisionEngine):
 
     def _evaluate_expense_triage(self, state: Dict[str, Any]) -> DecisionResult:
         memo = str(state.get("description", state.get("memo", state.get("memo_clean", "")))).lower()
-        if any(k in memo for k in ("payroll", "gusto", "adp", "paychex", "workday", "salary", "wages", "rippling", "justworks")):
+        if re.search(r"\b(payroll|gusto|adp|paychex|workday|salary|wages|rippling|justworks)\b", memo):
             category, recurrence, essential = "PAYROLL", "LUMPY_MONTHLY", True
-        elif any(k in memo for k in ("rent", "lease", "wework", "regus", "property", "landlord", "realty", "storage")):
+        elif re.search(r"\b(rent|lease|wework|regus|property|landlord|realty|storage)\b", memo):
             category, recurrence, essential = "RENT", "LUMPY_MONTHLY", True
-        elif any(k in memo for k in ("loan", "debt", "principal", "amortization", "interest payment", "sba", "note payable", "credit line")):
+        elif re.search(r"\b(loan|loans|debt|principal|amortization|interest payment|sba|note payable|credit line)\b", memo):
             category, recurrence, essential = "DEBT_SERVICE", "LUMPY_MONTHLY", True
-        elif any(k in memo for k in ("tax", "irs", "state tax", "treasury", "revenue dept", "vat", "withholding")):
+        elif re.search(r"\b(tax|taxes|irs|state tax|treasury|revenue dept|vat|withholding)\b", memo):
             category, recurrence, essential = "TAX", "LUMPY_MONTHLY", True
-        elif any(k in memo for k in ("electric", "power", "water", "internet", "telecom", "comcast", "verizon", "att", "pge")):
+        elif re.search(r"\b(electric|power|water|internet|telecom|comcast|verizon|att|pge)\b", memo):
             category, recurrence, essential = "UTILITIES", "LUMPY_MONTHLY", True
-        elif any(k in memo for k in ("stripe", "square", "shopify", "paypal", "merchant pay", "customer wire", "settlement", "invoice payment")):
+        elif re.search(r"\b(stripe|square|shopify|paypal|merchant pay|customer wire|settlement|invoice payment)\b", memo):
             category, recurrence, essential = "REVENUE", "VARIABLE", False
         else:
             category, recurrence, essential = "GENERAL_EXPENSE", "VARIABLE", False

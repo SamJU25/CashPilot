@@ -29,6 +29,7 @@ from services.agent.param_extractor import (
     extract_wcr_params,
 )
 from services.agent.schema import (
+    AgentActionProposal,
     AgentChatRequest,
     AgentMetricsSummary,
     CopilotResponse,
@@ -48,11 +49,13 @@ from services.agent.tools import (
     tool_calculate_trade_credit_apr,
     tool_calculate_wcr,
     tool_convert_currency,
+    tool_build_bridge_plan,
     tool_run_cash_scenario,
 )
 from services.agent.prompts import (
     get_missing_param_guidance,
     get_missing_statement_guidance,
+    is_question,
     resolve_subagent_routing,
 )
 
@@ -531,6 +534,62 @@ class LiquiditySubagent:
                 reply=enrich_fn(get_missing_param_guidance("FX_EXPOSURE"), prompt_type="concept", calculation="FX_EXPOSURE"),
                 intent_detected="CASH_DIAGNOSTIC",
                 requires_biometric_hitl=False,
+            )
+
+        # Bridge financing plan for the projected shortfall
+        if sub_intent == "BRIDGE_PLAN":
+            if not effective_csv:
+                return CopilotResponse(
+                    reply=get_missing_statement_guidance("diagnostic"),
+                    intent_detected="CASH_DIAGNOSTIC",
+                    requires_biometric_hitl=False,
+                )
+            invoices_csv = None
+            if request.session_id:
+                from services.agent.session_store import session_store
+                rec = session_store.get_or_create(request.session_id)
+                invoices_csv = rec.invoices_csv if rec else None
+            # Questions get the plan only; staging needs an explicit request (never stage from a question).
+            stage = not is_question(request.message)
+            res = tool_build_bridge_plan(effective_csv, invoices_csv=invoices_csv, stage=stage, tenant_id=request.tenant_id)
+            if not res["has_shortfall"]:
+                base_reply = "### Bridge Financing Plan\n\n- **Projected Shortfall**: None within the forecast horizon\n- **Bridge Target**: $0.00"
+                return CopilotResponse(reply=enrich_fn(base_reply, prompt_type="diagnostic"), intent_detected="CASH_DIAGNOSTIC")
+
+            leg_lines = "".join(
+                f"- **Step {i}: {leg['source']}**: ${float(leg['amount']):,.2f} at {leg['apr_percent']}% APR "
+                f"for {leg['term_days']} days (cost ${float(leg['cost']):,.2f})"
+                f"{'' if leg['stageable'] else ', needs supplier agreement'}\n"
+                for i, leg in enumerate(res["legs"], 1)
+            )
+            if res["staged"]:
+                ids = ", ".join(s["intent_id"] for s in res["staged"])
+                staged_line = f"- **Staged For Approval**: {len(res['staged'])} proposal(s) awaiting passkey approval ({ids})\n"
+            else:
+                staged_line = "- **Staged For Approval**: None yet; ask me to prepare the plan to stage it\n"
+            base_reply = (
+                f"### Bridge Financing Plan\n\n"
+                f"- **Projected Shortfall**: ${float(res['shortfall']):,.2f} on {res['deficit_date']}\n"
+                f"- **Cash Buffer**: ${float(res['buffer']):,.2f}\n"
+                f"- **Bridge Target**: ${float(res['target']):,.2f}\n"
+                f"{leg_lines}"
+                f"- **Total Estimated Cost**: ${float(res['total_cost']):,.2f}\n"
+                f"- **Uncovered Gap**: ${float(res['uncovered']):,.2f}\n"
+                f"{staged_line}"
+            ).rstrip()
+            staged_action = None
+            if res["staged"]:
+                # shortcut: CopilotResponse carries one proposal, so it shows the largest; all IDs are in the reply.
+                top = max(res["staged"], key=lambda s: s["amount_cents"])
+                staged_action = AgentActionProposal(
+                    intent_id=top["intent_id"], action_type=top["action_type"], amount_cents=top["amount_cents"],
+                    target_identifier=top["target_identifier"], status=top["status"], biometric_required=True,
+                )
+            return CopilotResponse(
+                reply=enrich_fn(base_reply, prompt_type="diagnostic"),
+                intent_detected="CASH_DIAGNOSTIC",
+                staged_action=staged_action,
+                requires_biometric_hitl=staged_action is not None,
             )
 
         # 12. What-if cash scenario rerun against the statement

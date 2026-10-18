@@ -1,6 +1,6 @@
 """Production QLoRA Fine-Tuning Pipeline for SME Finance Copilot.
 
-Fine-tunes open-weight foundation models (default: Qwen/Qwen2.5-3B-Instruct)
+Fine-tunes open-weight foundation models (default: Qwen/Qwen3-4B-Instruct-2507)
 on the verified financial reasoning and executive communication dataset (`dataset/finetune_train.jsonl`).
 
 Optimizations:
@@ -48,8 +48,9 @@ def parse_args():
     parser.add_argument(
         "--model_id",
         type=str,
-        default="Qwen/Qwen2.5-3B-Instruct",
-        help="Base Hugging Face model ID (e.g. Qwen/Qwen2.5-3B-Instruct, Qwen/Qwen2.5-7B-Instruct, meta-llama/Llama-3.2-3B-Instruct)",
+        # Kept literal: this script runs standalone on Kaggle. The trained adapter records it for the runtime loader.
+        default="Qwen/Qwen3-4B-Instruct-2507",
+        help="Base Hugging Face model ID; must match services.agent.local_transformers.BASE_MODEL_ID for new adapters",
     )
     parser.add_argument(
         "--train_file",
@@ -73,7 +74,7 @@ def parse_args():
     parser.add_argument("--batch_size", type=int, default=1, help="Per-device train batch size (1 recommended for 6GB VRAM)")
     parser.add_argument("--grad_accum", type=int, default=16, help="Gradient accumulation steps (effective batch size = batch_size * grad_accum = 16)")
     parser.add_argument("--lr", type=float, default=2e-4, help="Learning rate")
-    parser.add_argument("--max_seq_length", type=int, default=1536, help="Maximum sequence length")
+    parser.add_argument("--max_seq_length", type=int, default=2048, help="Maximum sequence length")
     parser.add_argument("--max_steps", type=int, default=-1, help="If > 0, train for exact steps (useful for pre-flight dry runs)")
     return parser.parse_args()
 

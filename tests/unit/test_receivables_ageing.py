@@ -85,6 +85,9 @@ def test_receivables_ageing_calculation():
     # Risk Tier: Over 90% is 20%, overdue ratio is 50% -> WARNING tier (or CRITICAL if >50%)
     assert result.risk_tier in ("WARNING", "CRITICAL")
     assert len(result.recommended_actions) >= 1
+    # Concentration warning must name Stark Ind (50% of total AR), NOT Wayne Ent (highest overdue but only 20% of AR)
+    assert any("Stark Ind represents 50.00% of total AR" in action for action in result.recommended_actions)
+    assert not any("Wayne Ent represents 50.00% of total AR" in action for action in result.recommended_actions)
 
 
 def test_tool_analyze_receivables_ageing():

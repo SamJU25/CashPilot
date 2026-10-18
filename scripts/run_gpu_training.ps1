@@ -1,9 +1,9 @@
 # SME Finance Copilot — Automated GPU Training Runner
 # Configures a clean Python 3.12 environment with CUDA 12.4 for your NVIDIA GeForce RTX 4050 GPU
-# Trains Qwen-2.5-3B (or 7B) natively without Ollama dependency.
+# Trains the base model named in train_local_model.py (override with -ModelId) without Ollama dependency.
 
 param (
-    [string]$ModelId = "Qwen/Qwen2.5-3B-Instruct"
+    [string]$ModelId = ""
 )
 
 $ErrorActionPreference = "Stop"
@@ -13,7 +13,7 @@ $env:PYTHONIOENCODING = "utf-8"
 Write-Host "========================================================================" -ForegroundColor Cyan
 Write-Host "SME Finance Copilot — Local RTX GPU Fine-Tuning Pipeline" -ForegroundColor Cyan
 Write-Host "Target GPU: NVIDIA GeForce RTX 4050 (6GB VRAM)" -ForegroundColor Green
-Write-Host "Selected Model: $ModelId" -ForegroundColor Green
+Write-Host "Selected Model: $(if ($ModelId) { $ModelId } else { 'train_local_model.py default' })" -ForegroundColor Green
 Write-Host "========================================================================" -ForegroundColor Cyan
 
 # Step 1: Ensure isolated Python 3.12 GPU environment is configured
@@ -33,7 +33,8 @@ Write-Host "`n[2/5] Verifying GPU detection and CUDA compute status..." -Foregro
 
 # Step 3: Run QLoRA training
 Write-Host "`n[3/5] Executing QLoRA fine-tuning on 4,566 verified financial examples..." -ForegroundColor Yellow
-& .\.venv-train\Scripts\python.exe scripts/train_local_model.py --model_id $ModelId --epochs 3 --batch_size 1 --grad_accum 16 --max_seq_length 1536
+$modelArgs = if ($ModelId) { @('--model_id', $ModelId) } else { @() }
+& .\.venv-train\Scripts\python.exe scripts/train_local_model.py @modelArgs --epochs 3 --batch_size 1 --grad_accum 16 --max_seq_length 1536
 
 # Step 4: Merge weights into standalone native model
 Write-Host "`n[4/5] Merging fine-tuned LoRA weights into standalone model..." -ForegroundColor Yellow

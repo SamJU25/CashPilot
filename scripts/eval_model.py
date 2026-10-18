@@ -204,10 +204,11 @@ def run_evaluation(eval_file: str, model_path: Optional[str] = None, use_mock: b
         print("[MODE] Using Deterministic Mock Model for verification.")
         model = MockModel()
     else:
-        print(f"[MODE] Loading model from: {model_path or 'Local Qwen 2.5 3B'}")
+        from services.agent.local_transformers import BASE_MODEL_ID
+        print(f"[MODE] Loading model from: {model_path or BASE_MODEL_ID}")
         import torch
         from transformers import AutoModelForCausalLM, AutoTokenizer
-        target = model_path or "Qwen/Qwen2.5-3B-Instruct"
+        target = model_path or BASE_MODEL_ID
         tokenizer = AutoTokenizer.from_pretrained(target, trust_remote_code=True)
         if tokenizer.pad_token is None:
             tokenizer.pad_token = tokenizer.eos_token

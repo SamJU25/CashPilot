@@ -1298,3 +1298,81 @@ def tool_evaluate_financial_math(expression: str) -> Dict[str, Any]:
 
 
 
+# Advance rate used when factoring open invoices from the ageing schedule (the factoring card's example rate).
+FACTORING_ADVANCE_RATE = Decimal("0.85")
+# Supplier payments pushed back by this many days count as deferral capacity; two weeks is a common negotiated stretch.
+SUPPLIER_DEFERRAL_DAYS = 14
+
+
+def tool_build_bridge_plan(
+    csv_content: str,
+    invoices_csv: Optional[str] = None,
+    stage: bool = False,
+    tenant_id: str = "SME-DEFAULT",
+) -> Dict[str, Any]:
+    """Cheapest plan covering the projected shortfall plus buffer from supplier deferral, credit line and factoring.
+
+    stage=True records the credit-line and factoring legs as Tier 2 proposals; deferral moves no money and is never staged.
+    """
+    from services.calculations.bridge_plan import FundingSource, calculate_bridge_plan
+
+    cash = tool_analyze_cash_flow(csv_content)
+    shortfall = _to_decimal(cash["projected_shortfall_amount"]) if cash["has_projected_deficit"] else Decimal("0.00")
+    target = _to_decimal(cash["recommended_bridge_amount"]) if cash["has_projected_deficit"] else Decimal("0.00")
+
+    sources = []
+    if target > 0:
+        options = [o for o in tool_underwrite_credit(csv_content)["matched_options"] if not o["is_predatory"]]
+        for opt in options:
+            if opt["product_type"] == "WORKING_CAPITAL_LINE":
+                sources.append(FundingSource("DRAW_CREDIT_LINE", opt["facility_name"], _to_decimal(opt["max_amount"]),
+                                             _to_decimal(opt["apr_percent"]), int(opt["term_days"]), "DRAW_CREDIT_LINE"))
+            elif opt["product_type"] == "INVOICE_FACTORING":
+                capacity = _to_decimal(opt["max_amount"])
+                if invoices_csv:
+                    ageing = tool_analyze_receivables_ageing(csv_content=invoices_csv)
+                    if "error" not in ageing:
+                        capacity = (_to_decimal(ageing["current_amount"]) * FACTORING_ADVANCE_RATE).quantize(Decimal("0.01"))
+                sources.append(FundingSource("FACTOR_INVOICE", opt["facility_name"], capacity,
+                                             _to_decimal(opt["apr_percent"]), int(opt["term_days"]), "FACTOR_INVOICE"))
+        breakdown = tool_analyze_outflow_breakdown(csv_content)
+        supplier = next((c for c in breakdown["categories"] if c["category"] == "Suppliers & Inventory"), None)
+        if supplier:
+            daily = _to_decimal(supplier["total_amount"]) / Decimal(breakdown["period_days"])
+            sources.append(FundingSource("SUPPLIER_DEFERRAL", "Supplier payment deferral",
+                                         (daily * SUPPLIER_DEFERRAL_DAYS).quantize(Decimal("0.01")), Decimal("0.00"),
+                                         SUPPLIER_DEFERRAL_DAYS, None))
+
+    plan = calculate_bridge_plan(shortfall, target, sources)
+    staged = []
+    if stage:
+        for leg in plan.legs:
+            if leg.source.stage_action:
+                staged.append(tool_stage_financial_action(
+                    tenant_id=tenant_id,
+                    action_type=leg.source.stage_action,
+                    amount_cents=int(leg.amount * 100),
+                    target_identifier=leg.source.name,
+                ))
+    return {
+        "has_shortfall": shortfall > 0,
+        "deficit_date": cash["projected_deficit_date"],
+        "shortfall": _format_money(plan.shortfall),
+        "buffer": _format_money(plan.buffer),
+        "target": _format_money(plan.target),
+        "legs": [
+            {
+                "action": leg.source.kind,
+                "source": leg.source.name,
+                "amount": _format_money(leg.amount),
+                "apr_percent": _format_money(leg.source.apr_percent),
+                "term_days": leg.source.term_days,
+                "cost": _format_money(leg.cost),
+                "stageable": leg.source.stage_action is not None,
+            }
+            for leg in plan.legs
+        ],
+        "total_cost": _format_money(plan.total_cost),
+        "uncovered": _format_money(plan.uncovered),
+        "staged": staged,
+    }

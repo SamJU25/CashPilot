@@ -40,6 +40,14 @@ def test_categorize_descriptions():
     assert categorize_transaction_description("QuickBooks Online Subscription") == "Software & Utilities"
     assert categorize_transaction_description("FedEx Freight Delivery") == "Suppliers & Inventory"
 
+    # Plural loans and leases checks
+    assert categorize_transaction_description("Commercial Loans") == "Debt Service & Loans"
+    assert categorize_transaction_description("Term Loans") == "Debt Service & Loans"
+    assert categorize_transaction_description("Office Leases") == "Facilities & Rent"
+    assert categorize_transaction_description("Lease Payment") == "Facilities & Rent"
+    assert categorize_transaction_description("Equipment Leases") == "Debt Service & Loans"
+    assert categorize_transaction_description("Vehicle Leases") == "Debt Service & Loans"
+
 
 
 def test_outflow_breakdown_multi_category():

@@ -292,7 +292,7 @@ class ZenRulesAdapter(AbstractDecisionEngine):
 
                 if tpl:
                     explanation = (
-                        tpl.replace("{days}", str(days_val or ""))
+                        tpl.replace("{days}", "" if days_val is None else str(days_val))
                         .replace("{date}", date_val)
                         .replace("{trigger}", trig_suffix)
                         .replace("{shortfall}", shortfall_val)

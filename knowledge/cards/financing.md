@@ -73,12 +73,12 @@
 **In the app:** A non-positive balance appears as CASH_NONPOSITIVE status.
 
 ## Bridge Financing
-<!-- tools: tool_calculate_predictive_cash, tool_stage_financial_action -->
-**What it is:** Short-term funding that covers a known gap until expected cash arrives, such as a large customer payment.
-**Why it matters:** It prevents a temporary shortfall from causing missed payroll or supplier payments.
-**Healthy vs warning:** Healthy: the repayment source is clear and dated. Warning: no clear source of repayment.
-**What to do:** Size the bridge to the projected shortfall and match its term to the expected inflow date.
-**In the app:** The deficit warning recommends a bridge amount; staging it creates a proposal you approve with a passkey.
+<!-- tools: tool_build_bridge_plan, tool_calculate_predictive_cash, tool_stage_financial_action -->
+**What it is:** Short-term funding that covers a known gap until expected cash arrives. A bridge plan covers the shortfall plus a buffer from the cheapest sources first: supplier deferral, then a credit line, then factoring.
+**Why it matters:** It prevents missed payroll or supplier payments without paying factoring rates when a cheaper line would do.
+**Healthy vs warning:** Healthy: the target is covered under 36% APR with a dated repayment source. Warning: a gap left after every non-predatory source signals a structural problem.
+**What to do:** Agree deferrals before relying on them and match each draw's term to the expected inflow date.
+**In the app:** Ask how to cover the shortfall to see the plan; ask the copilot to prepare it to stage the line and factoring steps for passkey approval.
 
 ## Equipment Leasing vs Buying
 <!-- tools: tool_calculate_lease_vs_buy | policy: debt_covenant_policy -->

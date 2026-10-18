@@ -1859,14 +1859,20 @@ def extract_receivables_ageing_params(
         as_of_date = as_of_m.group(1)
 
     # Check for inline invoice patterns, e.g. "INV-101 Acme $5000 due 2026-09-01" or CSV lines
-    invoices: Optional[List[Dict[str, Any]]] = None
-    inline_pattern = re.compile(
-        r"(?:invoice\s*[:= ]*)?([A-Za-z0-9\-]+)[, ]+([A-Za-z0-9\s\.\&]+?)[, ]+\$?([0-9]{1,3}(?:,[0-9]{3})*(?:\.[0-9]{2})?|\d+[km]?)[, ]+(?:due\s*)?([0-9]{4}-[0-9]{2}-[0-9]{2})",
-        re.IGNORECASE,
-    )
-    matches = list(inline_pattern.finditer(text))
-    if matches:
-        invoices = []
+    invoices: Optional[Any] = None
+    if "invoice_id" in text.lower() and "\n" in text:
+        csv_start = re.search(r"(?im)^invoice_id[^\n]*\n", text)
+        if csv_start:
+            invoices = text[csv_start.start():].strip()
+
+    if not invoices:
+        inline_pattern = re.compile(
+            r"(?:invoice\s*[:= ]*)?([A-Za-z0-9\-]+)[, ]+([A-Za-z0-9\s\.\&]+?)[, ]+\$?([0-9]{1,3}(?:,[0-9]{3})*(?:\.[0-9]{2})?|\d+[km]?)[, ]+(?:due\s*)?([0-9]{4}-[0-9]{2}-[0-9]{2})",
+            re.IGNORECASE,
+        )
+        matches = list(inline_pattern.finditer(text))
+        if matches:
+            invoices = []
         for m in matches:
             inv_id = m.group(1).strip()
             cust = m.group(2).strip()

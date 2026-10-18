@@ -122,7 +122,8 @@ def main():
         lora_dir = "models/sme-finance-lora"
         if os.path.exists(lora_dir):
             print(f"[NOTE] Merged model '{target_path}' not found, but LoRA adapter detected at '{lora_dir}'.")
-            target_path = "Qwen/Qwen2.5-3B-Instruct"
+            from services.agent.local_transformers import adapter_base_model_id, base_on_disk
+            target_path = base_on_disk(adapter_base_model_id(lora_dir)) or adapter_base_model_id(lora_dir)
             using_adapter = lora_dir
 
     # Automatically use 4-bit quantization if on 6GB GPU to avoid CUDA OOM

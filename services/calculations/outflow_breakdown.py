@@ -25,11 +25,11 @@ CATEGORY_PATTERNS = [
     ),
     (
         "Debt Service & Loans",
-        re.compile(r"\b(loan|principal|debt\s*service|amortization|equipment\s*lease|equipment\s*financing|vehicle\s*lease|note\s*pay|interest\s*(?:charge|payment|expense)?|line\s*of\s*credit|credit\s*card\s*pay(?:ment)?|amex\s*epayment|chase\s*card|citi\s*card|capital\s*one|mortgage|sba\s*loan|term\s*loan)\b", re.IGNORECASE),
+        re.compile(r"\b(loans?|principal|debt\s*service|amortiz(?:ation|ing)?|equipment\s*leases?|equipment\s*financing|vehicle\s*leases?|auto\s*leases?|capital\s*leases?|finance\s*leases?|notes?\s*pay(?:able)?|interest\s*(?:charge|payment|expense)?|line\s*of\s*credit|credit\s*card\s*pay(?:ment)?|amex\s*epayment|chase\s*card|citi\s*card|capital\s*one|mortgages?|sba\s*loans?|term\s*loans?)\b", re.IGNORECASE),
     ),
     (
         "Facilities & Rent",
-        re.compile(r"\b(rent|office\s*rent|building\s*rent|property\s*lease|landlord|realty|storage|facility|office\s*space|building\s*lease)\b", re.IGNORECASE),
+        re.compile(r"\b(rents?|rentals?|leases?|leasing|landlord|realty|storage|facility|facilities|office\s*space)\b", re.IGNORECASE),
     ),
     (
         "Taxes & Government",
@@ -77,6 +77,32 @@ def categorize_transaction_description(description: str) -> str:
     for cat_name, pattern in CATEGORY_PATTERNS:
         if pattern.search(desc):
             return cat_name
+
+    # Delegate unmatched descriptions to DecisionDomain.EXPENSE_TRIAGE table
+    try:
+        from services.decision import DecisionDomain, DecisionEngineRegistry, DecisionRequest
+
+        registry = DecisionEngineRegistry.get_instance()
+        triage_res = registry.evaluate(
+            DecisionRequest(
+                domain=DecisionDomain.EXPENSE_TRIAGE,
+                input_state={"memo_clean": desc.lower()},
+            )
+        )
+        choice = triage_res.output_payload.get("category") or triage_res.selected_choice
+        mapping = {
+            "PAYROLL": "Payroll & Wages",
+            "RENT": "Facilities & Rent",
+            "DEBT_SERVICE": "Debt Service & Loans",
+            "TAX": "Taxes & Government",
+            "UTILITIES": "Software & Utilities",
+            "GENERAL_EXPENSE": "Operations & Other",
+        }
+        if choice in mapping and mapping[choice] != "Operations & Other":
+            return mapping[choice]
+    except Exception:
+        pass
+
     return "Operations & Other"
 
 

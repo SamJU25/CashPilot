@@ -452,7 +452,8 @@ def run_copilot_supervisor(
         ))
 
     # 1. Action Staging Flow (Tier 2 Proposal Creation)
-    if intent == "ACTION_STAGING":
+    # A bridge-plan request stages its own computed legs; the generic path would stage a default draw instead.
+    if intent == "ACTION_STAGING" and classify_sub_intent_dynamic(request.message, history=request.history) != "BRIDGE_PLAN":
         from services.decision import DecisionDomain, DecisionEngineRegistry, DecisionRequest
         req_defaults = DecisionRequest(
             domain=DecisionDomain.SECURITY_GATE,

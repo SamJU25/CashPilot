@@ -48,6 +48,8 @@ from services.agent.subagents import CreditSubagent, LiquiditySubagent, RiskMana
 from services.agent.supervisor import is_off_topic_query
 from services.agent.tools import (
     tool_analyze_cash_flow,
+    tool_analyze_outflow_breakdown,
+    tool_analyze_receivables_ageing,
     tool_calculate_break_even,
     tool_calculate_trade_credit_apr,
     tool_underwrite_credit,
@@ -69,14 +71,15 @@ if os.path.exists(EVAL_SET_PATH):
                         EVAL_QUESTIONS.add(_m.get("content", "").strip().lower())
                         break
 
-TOKENIZER_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "../models/base/Qwen2.5-3B-Instruct"))
+from services.agent.local_transformers import BASE_MODEL_ID, base_on_disk
+TOKENIZER_DIR = base_on_disk(BASE_MODEL_ID) or BASE_MODEL_ID
 _TOKENIZER = None
-if os.path.exists(TOKENIZER_DIR):
-    try:
-        from transformers import AutoTokenizer
-        _TOKENIZER = AutoTokenizer.from_pretrained(TOKENIZER_DIR, trust_remote_code=True)
-    except Exception as _tok_err:
-        print(f"Warning: could not load local tokenizer: {_tok_err}")
+# A base that is not on disk fetches only its small tokenizer files, never the weights.
+try:
+    from transformers import AutoTokenizer
+    _TOKENIZER = AutoTokenizer.from_pretrained(TOKENIZER_DIR, trust_remote_code=True)
+except Exception as _tok_err:
+    print(f"Warning: could not load tokenizer: {_tok_err}")
 
 
 def compute_ngram_overlap(text: str, source: str, n: int = 4) -> float:
@@ -871,7 +874,7 @@ QUANT_SPECS: List[Dict[str, Any]] = [
         "action": {"any": ["Compare the payment with your average monthly net inflow, then request staging if it fits.", "If the payment feels tight, test a longer term to lower it."]},
     },
     {
-        "sub": "FACTORING", "name": "your net cash proceeds", "head": "Net Immediate Cash Proceeds",
+        "sub": "FACTORING", "name": "your net cash from the advance", "head": "Net Immediate Cash Proceeds",
         "support": [("Invoice Face Value", "invoice value"), ("Factoring Discount Fee", "fee"), ("True Annualized APR", "true APR")],
         "params": lambda r: {"inv": usd(k(r, 10_000, 250_000)), "adv": r.choice([75, 80, 85, 90]), "fee": r.choice([1, 2, 3, 4]), "d": r.choice([30, 45, 60, 90])},
         "questions": ["Factor a {inv} invoice with {adv}% advance, {fee}% discount fee, and {d} days collection", "What do we net if we factor a {inv} invoice at {adv}% advance with a {fee}% fee over {d} days?"],
@@ -1295,6 +1298,253 @@ def build_scenario_rows(rng: random.Random, count: int) -> List[Dict[str, Any]]:
         system = append_reference_cards(get_cash_diagnostic_prompt(base), question)
         rows.append(make_row(system, question, reply, base, f"scenario:{kind}"))
     return rows
+
+
+# ==============================================================================
+# Bridge financing plans (question mode only: rows never stage or claim staging)
+# ==============================================================================
+
+BRIDGE_QUESTIONS = [
+    "How should we cover the projected shortfall?",
+    "What is the cheapest way to bridge our cash gap?",
+    "How do we fund the deficit before it hits?",
+    "What's the cheapest mix of financing to cover the shortfall?",
+    "How can we cover the shortfall cheaply?",
+    "Which financing should we use to cover the projected deficit?",
+]
+BRIDGE_STEP = re.compile(r"(\$[\d,]+\.\d{2}) at ([\d.]+%) APR for (\d+) days \(cost (\$[\d,]+\.\d{2})\)")
+
+
+def bridge_reply(rng: random.Random, f: Dict[str, str]) -> Optional[str]:
+    if f.get("Projected Shortfall", "").startswith("None"):
+        return rng.choice([
+            "No shortfall is projected within the forecast horizon, so the bridge target is $0.00 and there is nothing to bridge right now. Recheck after your next statement or before any large new commitment.",
+            "Your forecast shows no deficit, so the bridge target is $0.00 and no financing is needed today. Keep the buffer you have and rerun this if a big payment or hire is coming.",
+        ])
+    m = re.match(r"(\$[\d,]+\.\d{2}) on (\d{4}-\d{2}-\d{2})", f.get("Projected Shortfall", ""))
+    if not m or "Bridge Target" not in f:
+        return None
+    parts = [f"Your forecast shows a {m.group(1)} shortfall on {m.group(2)}, so the plan targets {figure(f['Bridge Target'])} including a {figure(f.get('Cash Buffer', '$0.00'))} cash buffer."]
+    steps = [(label.split(": ", 1)[1], value) for label, value in f.items() if label.startswith("Step ")]
+    for i, (name, value) in enumerate(steps):
+        s = BRIDGE_STEP.match(value)
+        if not s:
+            return None
+        amt, apr, days, cost = s.groups()
+        lead = "Start by" if i == 0 else "Then"
+        if "supplier agreement" in value:
+            parts.append(f"{lead} {'deferring' if i == 0 else 'defer'} {amt} of supplier payments for {days} days, which costs nothing but needs their agreement.")
+        elif "Line" in name or "Credit" in name:
+            parts.append(f"{lead} {'drawing' if i == 0 else 'draw'} {amt} on the {name} at {apr} APR, about {cost} over {days} days.")
+        else:
+            parts.append(f"{lead} {'factoring' if i == 0 else 'factor'} {amt} of open invoices through the {name} at {apr} APR, about {cost} over {days} days.")
+    uncovered = figure(f.get("Uncovered Gap", "$0.00"))
+    if uncovered != "$0.00":
+        parts.append(f"That still leaves {uncovered} uncovered, which points to a structural gap rather than a timing problem.")
+    else:
+        parts.append(f"The total estimated cost is {figure(f.get('Total Estimated Cost', '$0.00'))}.")
+    if any("supplier agreement" not in v for _, v in steps):
+        parts.append(rng.choice([
+            "Ask me to prepare the plan and I will stage the financing steps for your passkey approval.",
+            "If it looks right, ask me to prepare it and the financing steps will wait for your passkey approval.",
+        ]))
+    else:
+        parts.append("Agree the deferral with your suppliers before that date; no financing needs staging.")
+    return bold_first_figure(rng, " ".join(parts))
+
+
+def build_bridge_rows(rng: random.Random, count: int) -> List[Dict[str, Any]]:
+    rows = []
+    attempts = 0
+    while len(rows) < count and attempts < count * 4:
+        attempts += 1
+        question = rng.choice(BRIDGE_QUESTIONS)
+        if route(question, True)[1] != "BRIDGE_PLAN":
+            continue
+        profile = rng.choices(["slow_burn", "fast_burn", "near_deficit", "cash_positive"], weights=[6, 3, 2, 1])[0]
+        csv = make_statement(rng, profile)
+        captured: Dict[str, str] = {}
+
+        def capture(base_reply: str, prompt_type: str = "diagnostic", **_: Any) -> str:
+            captured["base"] = base_reply
+            return base_reply
+
+        LiquiditySubagent.handle_sub_intent("BRIDGE_PLAN", AgentChatRequest(message=question), csv, capture)
+        base = captured.get("base")
+        reply = bridge_reply(rng, parse_bullets(base)) if base else None
+        if not reply:
+            continue
+        system = append_reference_cards(get_cash_diagnostic_prompt(base), question)
+        rows.append(make_row(system, question, reply, base, "bridge:plan"))
+    return rows
+
+
+# ==============================================================================
+# Outflow Category Breakdown rows
+# ==============================================================================
+
+OUTFLOW_QUESTIONS = [
+    "Which outflows drive our burn?",
+    "Can you break down our operating outflows?",
+    "Give me an outflow breakdown by category.",
+    "Which categories are driving our cash outflows?",
+    "Break down our cash outflows",
+    "Categorize our operating outflows",
+    "What is our outflow breakdown?",
+    "Show me the outflow breakdown by category",
+    "Audit our outflow breakdown",
+]
+
+
+def outflow_breakdown_reply(rng: random.Random, f: Dict[str, str]) -> Optional[str]:
+    gross = figure(f.get("Gross Outflows", ""))
+    daily = figure(f.get("Average Daily Outflow", ""))
+    driver_val = f.get("Primary Cost Driver", "")
+    if not gross or not daily or not driver_val:
+        return None
+
+    driver_match = re.match(r"([A-Za-z\s\&]+)\s*\(([\$[\d,]+\.\d{2}),\s*([\d.]+%)[^)]*\)", driver_val)
+    if not driver_match:
+        return None
+    name, amt, pct = driver_match.groups()
+    cat_name = name.strip()
+
+    parts = [
+        f"Across this reviewed period your gross operating outflows totaled {gross}, averaging {daily}/day.",
+        f"Your primary cost driver is {cat_name} at {amt} ({pct} of total spending).",
+    ]
+
+    parts.append(rng.choice([
+        f"Audit discretionary vendors in {cat_name} to extend your cash runway.",
+        f"Review terms on {cat_name} commitments to protect operating cash buffers.",
+        f"Control {cat_name} expenditures before scaling additional operating overhead.",
+    ]))
+    return bold_first_figure(rng, " ".join(parts))
+
+
+def build_outflow_breakdown_rows(rng: random.Random, count: int) -> List[Dict[str, Any]]:
+    rows = []
+    attempts = 0
+    while len(rows) < count and attempts < count * 4:
+        attempts += 1
+        question = rng.choice(OUTFLOW_QUESTIONS)
+        if route(question, True)[1] != "OUTFLOW_BREAKDOWN":
+            continue
+        profile = rng.choices(["slow_burn", "fast_burn", "near_deficit", "cash_positive"], weights=[4, 4, 2, 2])[0]
+        csv = make_statement(rng, profile)
+        captured: Dict[str, str] = {}
+
+        def capture(base_reply: str, prompt_type: str = "diagnostic", **_: Any) -> str:
+            captured["base"] = base_reply
+            return base_reply
+
+        LiquiditySubagent.handle_sub_intent("OUTFLOW_BREAKDOWN", AgentChatRequest(message=question), csv, capture)
+        base = captured.get("base")
+        if not base:
+            continue
+        reply = outflow_breakdown_reply(rng, parse_bullets(base))
+        if not reply:
+            continue
+        system = append_reference_cards(get_cash_diagnostic_prompt(base), question)
+        rows.append(make_row(system, question, reply, base, "outflow:breakdown"))
+    return rows
+
+
+# ==============================================================================
+# Accounts Receivable Ageing rows
+# ==============================================================================
+
+RECEIVABLES_AGEING_QUESTIONS = [
+    "Who owes us and how late are they?",
+    "Audit our accounts receivable ageing",
+    "Which customers have overdue invoices?",
+    "Show our accounts receivable aging schedule",
+    "Audit receivables ageing schedule",
+    "Give me an accounts receivable breakdown by age",
+]
+
+
+def make_ar_csv(rng: random.Random, as_of: date) -> str:
+    customers = [
+        "Acme Corp", "Wayne Enterprises", "Stark Industries", "Globex",
+        "Initech", "Umbrella Corp", "Cyberdyne Systems", "Hooli", "Pied Piper",
+    ]
+    lines = ["invoice_id,customer_name,issue_date,due_date,amount,status"]
+    count = rng.randint(4, 5)
+    for i in range(1, count + 1):
+        inv_id = f"INV-20{i:02d}"
+        cust = rng.choice(customers)
+        amt = rng.randint(3, 40) * 1000
+        due_offset = rng.choice([-75, -45, -20, -5, 15, 30])
+        due_dt = as_of + timedelta(days=due_offset)
+        issue_dt = due_dt - timedelta(days=30)
+        lines.append(f"{inv_id},{cust},{issue_dt.isoformat()},{due_dt.isoformat()},{amt:.2f},UNPAID")
+    return "\n".join(lines)
+
+
+def receivables_ageing_reply(rng: random.Random, f: Dict[str, str]) -> Optional[str]:
+    total_ar = figure(f.get("Total Outstanding AR", ""))
+    total_overdue = figure(f.get("Total Overdue", ""))
+    overdue_match = re.search(r"\(([\d.]+%\s*of\s*AR)\)", f.get("Total Overdue", ""))
+    overdue_pct = overdue_match.group(1) if overdue_match else "past due"
+    top_conc = f.get("Top Debtor Concentration", "")
+    risk_posture = f.get("Receivables Risk Posture", "")
+    risk_tier = risk_posture.split(" — ")[0].strip() if " — " in risk_posture else "EVALUATED"
+
+    if not total_ar or not total_overdue:
+        return None
+
+    parts = [
+        f"Your total outstanding receivables stand at {total_ar}, with {total_overdue} past due ({overdue_pct}, {risk_tier} risk).",
+    ]
+    for b_key in ("90+ Days Past Due", "61-90 Days Past Due", "31-60 Days Past Due", "1-30 Days Past Due"):
+        val = f.get(b_key)
+        if val and not val.startswith("$0.00"):
+            b_match = re.search(r"(\$[\d,]+\.\d{2})\s*\(([\d.]+%)", val)
+            if b_match:
+                parts.append(f"Delinquency is led by {b_match.group(1)} in the {b_key} bucket ({b_match.group(2)}).")
+                break
+
+    if top_conc and top_conc != "0.00%":
+        parts.append(f"Debtor concentration shows your largest customer represents {top_conc} of open receivables.")
+
+    parts.append(rng.choice([
+        "Prioritize immediate collection follow-up on delinquent accounts before exploring bridge financing.",
+        "Accelerate collections on overdue accounts to protect operating cash buffers.",
+        "Consider factoring eligible open invoices to convert receivables into immediate working capital.",
+    ]))
+    return bold_first_figure(rng, " ".join(parts))
+
+
+def build_receivables_ageing_rows(rng: random.Random, count: int) -> List[Dict[str, Any]]:
+    rows = []
+    attempts = 0
+    while len(rows) < count and attempts < count * 4:
+        attempts += 1
+        base_q = rng.choice(RECEIVABLES_AGEING_QUESTIONS)
+        if route(base_q, False)[1] != "RECEIVABLES_AGEING":
+            continue
+        as_of = date(2026, rng.choice([8, 9, 10]), rng.randint(1, 28))
+        ar_csv = make_ar_csv(rng, as_of)
+        question = f"{base_q} as of {as_of.isoformat()}:\n{ar_csv}"
+
+        captured: Dict[str, str] = {}
+
+        def capture(base_reply: str, prompt_type: str = "diagnostic", **_: Any) -> str:
+            captured["base"] = base_reply
+            return base_reply
+
+        LiquiditySubagent.handle_sub_intent("RECEIVABLES_AGEING", AgentChatRequest(message=question), None, capture)
+        base = captured.get("base")
+        if not base:
+            continue
+        reply = receivables_ageing_reply(rng, parse_bullets(base))
+        if not reply:
+            continue
+        system = append_reference_cards(get_cash_diagnostic_prompt(base), base_q)
+        rows.append(make_row(system, question, reply, base, "receivables:ageing"))
+    return rows
+
 
 
 # ==============================================================================
@@ -2068,7 +2318,7 @@ def rejection_reason(row: Dict[str, Any]) -> Optional[str]:
         try:
             formatted = _TOKENIZER.apply_chat_template(msgs, tokenize=False)
             tok_len = len(_TOKENIZER(formatted)["input_ids"])
-            if tok_len > 1536:
+            if tok_len > 2048:
                 return "token_limit_exceeded"
         except Exception:
             pass
@@ -2110,6 +2360,9 @@ def main() -> None:
     parser.add_argument("--refusals", type=int, default=100)
     parser.add_argument("--governance", type=int, default=80)
     parser.add_argument("--scenarios", type=int, default=240)
+    parser.add_argument("--bridge-plans", type=int, default=150)
+    parser.add_argument("--outflow-breakdown", type=int, default=120)
+    parser.add_argument("--receivables-ageing", type=int, default=120)
     parser.add_argument("--missing-statement", type=int, default=120)
     parser.add_argument("--output-dir", default=OUTPUT_DIR)
     args = parser.parse_args()
@@ -2120,6 +2373,9 @@ def main() -> None:
         ("credit underwriting", lambda: build_underwriting_rows(rng, args.underwriting_statements)),
         ("quantitative calculations", lambda: build_quant_rows(rng, args.quant_per_intent)),
         ("what-if scenarios", lambda: build_scenario_rows(rng, args.scenarios)),
+        ("bridge plans", lambda: build_bridge_rows(rng, args.bridge_plans)),
+        ("outflow breakdown", lambda: build_outflow_breakdown_rows(rng, args.outflow_breakdown)),
+        ("receivables ageing", lambda: build_receivables_ageing_rows(rng, args.receivables_ageing)),
         ("concept knowledge", lambda: build_concept_card_rows(rng, args.concept_cards)),
         ("multiturn follow-up", lambda: build_multiturn_rows(rng, args.multiturn)),
         ("conversational", lambda: build_conversational_rows(rng, args.conversational)),
@@ -2149,7 +2405,7 @@ def main() -> None:
         q_norm = row["messages"][-2]["content"].strip().lower()
         kind = row["_kind"].split(":")[0]
         # For conversational and refusals, allow modest reuse; for quant/cash/concept require uniqueness
-        if kind in ("conversational", "refusal", "governance", "missing"):
+        if kind in ("conversational", "refusal", "governance", "missing", "bridge", "outflow", "receivables"):
             kept.append(row)
         elif kind == "multiturn":
             t1_q = row["messages"][1]["content"].strip().lower() if len(row["messages"]) >= 4 else ""
@@ -2164,6 +2420,16 @@ def main() -> None:
             kept.append(row)
         elif rng.random() < 0.05:  # Allow max 5% repeat across different statements
             kept.append(row)
+
+    # Exact repeats survive the reuse allowances above; drop them so no conversation lands in both train and val.
+    seen_convos: set[str] = set()
+    unique = []
+    for row in kept:
+        key = json.dumps([m["content"] for m in row["messages"][1:]])
+        if key not in seen_convos:
+            seen_convos.add(key)
+            unique.append(row)
+    kept = unique
 
     engine_rows = [r for r in kept if r["_base_reply"]]
     grounded = sum(

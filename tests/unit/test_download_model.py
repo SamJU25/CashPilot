@@ -80,7 +80,7 @@ def test_api_download_model_route(client):
             "success": True,
             "model_name": "sme-finance-lora",
             "message": "Model 'sme-finance-lora' downloaded successfully (5886.0 MB).",
-            "downloaded_path": "/mock/path/models/base/Qwen2.5-3B-Instruct",
+            "downloaded_path": "/mock/path/models/base/Qwen3-4B-Instruct-2507",
             "size_mb": 5886.0,
         },
     ):
@@ -105,13 +105,13 @@ def test_download_model_saves_into_folder():
     """Verifies download_model passes local_dir to snapshot_download to store weights inside project models folder."""
     engine = LocalTransformersEngine.get_instance()
     with patch("huggingface_hub.snapshot_download") as mock_snapshot:
-        mock_snapshot.return_value = "F:/SME Finance Copilot/models/base/Qwen2.5-3B-Instruct"
+        mock_snapshot.return_value = "F:/SME Finance Copilot/models/base/Qwen3-4B-Instruct-2507"
         res = engine.download_model("sme-finance-lora")
         assert res["success"] is True
         mock_snapshot.assert_called_once()
         _, kwargs = mock_snapshot.call_args
         assert "local_dir" in kwargs
-        assert kwargs["local_dir"].endswith("Qwen2.5-3B-Instruct")
+        assert kwargs["local_dir"].endswith("Qwen3-4B-Instruct-2507")
 
 
 def test_test_connection_missing_model_handling():
@@ -183,7 +183,7 @@ def test_api_delete_model_route(client):
             "success": True,
             "model_name": "sme-finance-lora",
             "message": "Model 'sme-finance-lora' removed successfully (5886.0 MB freed).",
-            "deleted_path": "/mock/path/models/base/Qwen2.5-3B-Instruct",
+            "deleted_path": "/mock/path/models/base/Qwen3-4B-Instruct-2507",
             "freed_mb": 5886.0,
         },
     ):
@@ -196,3 +196,24 @@ def test_api_delete_model_route(client):
         assert "removed successfully" in data["message"]
 
 
+
+
+def test_adapter_loads_onto_the_base_it_was_trained_on(tmp_path):
+    import json
+    from services.agent.local_transformers import (
+        BASE_MODEL_ID,
+        adapter_base_model_id,
+        base_on_disk,
+        local_base_dir,
+    )
+
+    (tmp_path / "adapter_config.json").write_text(json.dumps({"base_model_name_or_path": "Org/Other-Base-1B"}))
+    assert adapter_base_model_id(str(tmp_path)) == "Org/Other-Base-1B"
+    assert local_base_dir("Org/Other-Base-1B").endswith("Other-Base-1B")
+    assert base_on_disk("Org/Other-Base-1B") is None
+    assert adapter_base_model_id(str(tmp_path / "missing")) == BASE_MODEL_ID
+
+
+def test_legacy_base_aliases_still_resolve():
+    assert resolve_canonical_model_name("qwen2.5-3b-instruct") == "base-instruct"
+    assert resolve_canonical_model_name("base") == "base-instruct"

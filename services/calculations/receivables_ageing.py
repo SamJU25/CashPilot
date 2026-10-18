@@ -232,7 +232,8 @@ def calculate_receivables_ageing(
     # Sort debtors: highest overdue first, then highest total open
     top_debtors.sort(key=lambda d: (d.overdue_amount, d.total_open_balance), reverse=True)
 
-    top_1_concentration = max((d.share_of_total_ar for d in top_debtors), default=Decimal("0.00"))
+    largest_debtor = max(top_debtors, key=lambda d: d.share_of_total_ar, default=None)
+    top_1_concentration = largest_debtor.share_of_total_ar if largest_debtor else Decimal("0.00")
 
     # Risk Tier Assessment
     over_90_pct = buckets_summary["OVER_90"].percentage
@@ -276,9 +277,9 @@ def calculate_receivables_ageing(
             f"(${bucket_amounts['OVER_90']:,.2f} at default risk)."
         )
 
-    if top_1_concentration > Decimal("35.00"):
+    if top_1_concentration > Decimal("35.00") and largest_debtor:
         actions.append(
-            f"High debtor concentration risk: {top_debtors[0].customer_name} represents {top_1_concentration}% of total AR. "
+            f"High debtor concentration risk: {largest_debtor.customer_name} represents {top_1_concentration}% of total AR. "
             f"Negotiate milestone progress billing or letters of credit."
         )
 

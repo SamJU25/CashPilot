@@ -483,7 +483,7 @@ const PRESETS: Record<LLMProviderId, { name: string; defaultModel: string; defau
 };
 
 const SUPPORTED_OFFLINE_MODELS: ModelItem[] = [
-  { id: 'sme-finance-lora', name: 'SME Finance Copilot 3B (Flagship LoRA 4-Bit)' },
+  { id: 'sme-finance-lora', name: 'SME Finance Copilot (Flagship LoRA 4-Bit)' },
 ];
 
 function money(value: string, currency: string): string {

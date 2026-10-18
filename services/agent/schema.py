@@ -61,7 +61,7 @@ class FetchModelsResponse(BaseModel):
 class DownloadModelRequest(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
-    model_name: str = Field(default="sme-finance-lora", description="Target model identifier: sme-finance-lora or qwen2.5-3b-instruct")
+    model_name: str = Field(default="sme-finance-lora", description="Target model identifier: sme-finance-lora or base-instruct")
 
 
 class DownloadModelResponse(BaseModel):

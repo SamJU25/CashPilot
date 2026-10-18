@@ -1,8 +1,8 @@
-"""Dataset health audit for the Qwen2.5 LoRA fine-tune (dataset/finetune_*.jsonl).
+"""Dataset health audit for the LoRA fine-tune (dataset/finetune_*.jsonl).
 
 Checks that every row matches the runtime call shape and the reply contract:
 1. Exactly system, user, assistant turns; no tool turns or tool calls (the local engine never passes tools).
-2. Token length under 1536 with the Qwen2.5 chat template.
+2. Token length under 2048 with the base model's chat template.
 3. No <thought> blocks, '###' headers or metric bullets in replies (sanitize_cfo_reply deletes them).
 4. Every reply passes numbers_are_grounded() against the engine output embedded in its system prompt.
 5. Reply variety: no single reply skeleton (figures masked) above 2% of rows.
@@ -21,9 +21,9 @@ from services.agent.prompts import numbers_are_grounded
 
 TRAIN_PATH = "dataset/finetune_train.jsonl"
 VAL_PATH = "dataset/finetune_val.jsonl"
-LOCAL_BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "../models/base/Qwen2.5-3B-Instruct"))
-TOKENIZER_DIR = LOCAL_BASE_DIR if os.path.exists(LOCAL_BASE_DIR) else "Qwen/Qwen2.5-3B-Instruct"
-MAX_TOKENS = 1536
+from services.agent.local_transformers import BASE_MODEL_ID, base_on_disk
+TOKENIZER_DIR = base_on_disk(BASE_MODEL_ID) or BASE_MODEL_ID
+MAX_TOKENS = 2048
 MAX_SKELETON_SHARE = 0.02
 
 # The CASH_DIAGNOSTIC and CREDIT_UNDERWRITING templates in agent_persona_policy.json wrap base_reply in these markers.

@@ -221,7 +221,7 @@
             "_id": "rule_route_liquidity_subagent",
             "_description": "Routes working capital requirement, OCF ratio, defensive interval, CCC, current ratio, quick ratio, trade credit, treasury cash drag, FCFF, currency conversion, FX exposure, what-if cash scenarios, outflow breakdown, and receivables ageing to LiquiditySubagent",
             "in_pt": "'SUBAGENT_ROUTING'",
-            "in_sub": "'WCR', 'OCF_RATIO', 'DEFENSIVE_INTERVAL', 'WORKING_CAPITAL', 'CURRENT_RATIO', 'QUICK_RATIO', 'TRADE_CREDIT', 'CASH_DRAG', 'FCFF', 'CURRENCY_CONVERSION', 'FX_EXPOSURE', 'CASH_SCENARIO', 'OUTFLOW_BREAKDOWN', 'RECEIVABLES_AGEING'",
+            "in_sub": "'WCR', 'OCF_RATIO', 'DEFENSIVE_INTERVAL', 'WORKING_CAPITAL', 'CURRENT_RATIO', 'QUICK_RATIO', 'TRADE_CREDIT', 'CASH_DRAG', 'FCFF', 'CURRENCY_CONVERSION', 'FX_EXPOSURE', 'CASH_SCENARIO', 'OUTFLOW_BREAKDOWN', 'RECEIVABLES_AGEING', 'BRIDGE_PLAN'",
             "out_role": "\"LIQUIDITY_SPECIALIST\"",
             "out_target": "\"LiquiditySubagent\"",
             "out_tone": "\"OPERATIONAL_LIQUIDITY\"",

@@ -9,6 +9,7 @@ Enables 100% on-device, in-process neural generation with:
 
 from __future__ import annotations
 
+import json
 import logging
 import os
 import threading
@@ -22,27 +23,59 @@ MERGED_MODEL_DIR = os.path.abspath(
 LORA_MODEL_DIR = os.path.abspath(
     os.path.join(os.path.dirname(__file__), "../../models/sme-finance-lora")
 )
-BASE_3B_DIR = os.path.abspath(
-    os.path.join(os.path.dirname(__file__), "../../models/base/Qwen2.5-3B-Instruct")
-)
+BASE_MODELS_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../models/base"))
+# Default base for new adapters and the un-finetuned option; scripts import it so the name lives in one place.
+BASE_MODEL_ID = "Qwen/Qwen3-4B-Instruct-2507"
+
+
+def local_base_dir(model_id: str) -> str:
+    """models/base/<repo name>: the folder download_model fills for that base."""
+    return os.path.join(BASE_MODELS_ROOT, model_id.replace("\\", "/").rstrip("/").split("/")[-1])
+
+
+BASE_MODEL_DIR = local_base_dir(BASE_MODEL_ID)
+
+
+def adapter_base_model_id(adapter_dir: str = LORA_MODEL_DIR) -> str:
+    """Base the adapter was trained on, from its adapter_config.json, so it never loads onto a different base."""
+    try:
+        with open(os.path.join(adapter_dir, "adapter_config.json"), "r", encoding="utf-8") as f:
+            return json.load(f).get("base_model_name_or_path") or BASE_MODEL_ID
+    except (OSError, ValueError):
+        return BASE_MODEL_ID
+
+
+def base_on_disk(model_id: str) -> Optional[str]:
+    """Local folder, absolute path or Hugging Face cache entry holding this base; None if absent (never downloads)."""
+    for path in (local_base_dir(model_id), model_id):
+        if os.path.exists(os.path.join(path, "config.json")):
+            return path
+    try:
+        from huggingface_hub import try_to_load_from_cache
+        cached = try_to_load_from_cache(model_id, "config.json")
+        if isinstance(cached, str) and os.path.exists(cached):
+            return model_id
+    except Exception:
+        pass
+    return None
 
 SUPPORTED_LOCAL_MODELS = {
     "sme-finance-lora": {
         "id": "sme-finance-lora",
-        "name": "SME Finance Copilot 3B (Flagship LoRA 4-Bit)",
-        "repo_id": "Qwen/Qwen2.5-3B-Instruct",
+        "name": "SME Finance Copilot (Flagship LoRA 4-Bit)",
+        "repo_id": BASE_MODEL_ID,
         "local_dir": LORA_MODEL_DIR,
-        "base_dir": BASE_3B_DIR,
-        "description": "Flagship 3B model for advanced financial reasoning & tool calling. Requires GPU (4-bit, ~2.2 GB VRAM).",
+        "base_dir": BASE_MODEL_DIR,
+        "description": "Fine-tuned flagship adapter for financial replies and tool calling. Requires GPU (4-bit).",
         "is_lora": True,
         "device_preferred": "cuda",
     },
-    "qwen2.5-3b-instruct": {
-        "id": "qwen2.5-3b-instruct",
-        "name": "Qwen 2.5 3B Instruct (Base Foundation)",
-        "repo_id": "Qwen/Qwen2.5-3B-Instruct",
-        "local_dir": BASE_3B_DIR,
-        "description": "Original un-finetuned 3B foundation model for baseline reasoning comparison.",
+    "base-instruct": {
+        "id": "base-instruct",
+        "name": f"{BASE_MODEL_ID.split('/')[-1]} (Base Foundation)",
+        "repo_id": BASE_MODEL_ID,
+        "local_dir": BASE_MODEL_DIR,
+        "description": "Un-finetuned base model for baseline comparison with the adapter.",
         "is_lora": False,
         "device_preferred": "cuda",
     },
@@ -63,7 +96,12 @@ def resolve_canonical_model_name(name: Optional[str]) -> str:
         "3b",
     ):
         return "sme-finance-lora"
+    # Legacy Qwen2.5 names stay as aliases so older API callers still reach the base option.
     if n in (
+        "base-instruct",
+        "base",
+        BASE_MODEL_ID.lower(),
+        BASE_MODEL_ID.split("/")[-1].lower(),
         "qwen2.5-3b-instruct",
         "qwen2.5-3b-base",
         "qwen-3b-base",
@@ -71,7 +109,7 @@ def resolve_canonical_model_name(name: Optional[str]) -> str:
         "base-3b",
         "qwen/qwen2.5-3b-instruct",
     ):
-        return "qwen2.5-3b-instruct"
+        return "base-instruct"
     return n
 
 
@@ -100,42 +138,18 @@ class LocalTransformersEngine:
         c_name = resolve_canonical_model_name(model_name)
 
         if c_name == "sme-finance-lora":
-            if os.path.exists(MERGED_MODEL_DIR):
-                if os.path.exists(os.path.join(MERGED_MODEL_DIR, "config.json")):
-                    return True
-            if os.path.exists(LORA_MODEL_DIR):
-                try:
-                    import peft  # noqa: F401
-                except ImportError:
-                    return False
-                adapter_file = os.path.join(LORA_MODEL_DIR, "adapter_config.json")
-                if os.path.exists(adapter_file):
-                    if os.path.exists(os.path.join(BASE_3B_DIR, "config.json")):
-                        return True
-                    try:
-                        from huggingface_hub import try_to_load_from_cache
-                        cached = try_to_load_from_cache(
-                            "Qwen/Qwen2.5-3B-Instruct", "model-00001-of-00002.safetensors"
-                        )
-                        if cached is not None and os.path.exists(str(cached)):
-                            return True
-                    except Exception:
-                        pass
-            return False
-
-        if c_name in ("qwen2.5-3b-instruct", "qwen2.5-3b-base"):
-            if os.path.exists(os.path.join(BASE_3B_DIR, "config.json")):
+            if os.path.exists(os.path.join(MERGED_MODEL_DIR, "config.json")):
                 return True
+            if not os.path.exists(os.path.join(LORA_MODEL_DIR, "adapter_config.json")):
+                return False
             try:
-                from huggingface_hub import try_to_load_from_cache
-                cached = try_to_load_from_cache(
-                    "Qwen/Qwen2.5-3B-Instruct", "model-00001-of-00002.safetensors"
-                )
-                if cached is not None and os.path.exists(str(cached)):
-                    return True
-            except Exception:
-                pass
-            return False
+                import peft  # noqa: F401
+            except ImportError:
+                return False
+            return base_on_disk(adapter_base_model_id()) is not None
+
+        if c_name == "base-instruct":
+            return base_on_disk(BASE_MODEL_ID) is not None
 
         return False
 
@@ -146,10 +160,8 @@ class LocalTransformersEngine:
             if os.path.exists(os.path.join(MERGED_MODEL_DIR, "config.json")):
                 return MERGED_MODEL_DIR
             return LORA_MODEL_DIR
-        if c_name in ("qwen2.5-3b-instruct", "qwen2.5-3b-base"):
-            if os.path.exists(BASE_3B_DIR):
-                return BASE_3B_DIR
-            return "Qwen/Qwen2.5-3B-Instruct"
+        if c_name == "base-instruct":
+            return base_on_disk(BASE_MODEL_ID) or BASE_MODEL_ID
         return LORA_MODEL_DIR
 
     def _ensure_loaded(self, model_name: Optional[str] = None) -> bool:
@@ -193,7 +205,6 @@ class LocalTransformersEngine:
                 return False
 
             try:
-                import json
                 import torch
                 from transformers import AutoModelForCausalLM, AutoTokenizer
 
@@ -227,11 +238,8 @@ class LocalTransformersEngine:
                 if is_lora_only:
                     from peft import PeftModel
 
-                    with open(os.path.join(model_path, "adapter_config.json"), "r", encoding="utf-8") as f:
-                        adapter_cfg = json.load(f)
-                    base_model_id = adapter_cfg.get("base_model_name_or_path", "Qwen/Qwen2.5-3B-Instruct")
-                    if os.path.exists(os.path.join(BASE_3B_DIR, "config.json")):
-                        base_model_id = BASE_3B_DIR
+                    trained_on = adapter_base_model_id(model_path)
+                    base_model_id = base_on_disk(trained_on) or trained_on
 
                     tok_path = model_path if os.path.exists(os.path.join(model_path, "tokenizer_config.json")) else base_model_id
                     self._tokenizer = AutoTokenizer.from_pretrained(
@@ -310,8 +318,8 @@ class LocalTransformersEngine:
             }
 
         meta = SUPPORTED_LOCAL_MODELS[c_name]
-        repo_id = meta["repo_id"]
-        target_dir = meta.get("base_dir") if meta.get("is_lora") else meta["local_dir"]
+        repo_id = adapter_base_model_id() if meta.get("is_lora") else meta["repo_id"]
+        target_dir = local_base_dir(repo_id)
         os.makedirs(target_dir, exist_ok=True)
         logger.info(
             "Starting explicit user-requested download for model '%s' (%s) into folder %s...",
@@ -386,7 +394,8 @@ class LocalTransformersEngine:
             }
 
         meta = SUPPORTED_LOCAL_MODELS[c_name]
-        base_dir = meta.get("base_dir") if meta.get("is_lora") else meta["local_dir"]
+        repo_id = adapter_base_model_id() if meta.get("is_lora") else meta["repo_id"]
+        base_dir = local_base_dir(repo_id)
 
         # Hard security guard: adapter folders are protected and can never be deleted
         protected_adapter_dirs = {os.path.abspath(LORA_MODEL_DIR)}
@@ -427,7 +436,7 @@ class LocalTransformersEngine:
             # Purge from HuggingFace cache if present to completely free disk space
             try:
                 from huggingface_hub import try_to_load_from_cache
-                cached = try_to_load_from_cache(meta["repo_id"], "config.json")
+                cached = try_to_load_from_cache(repo_id, "config.json")
                 if cached is not None and os.path.exists(str(cached)):
                     cached_dir = os.path.dirname(os.path.abspath(str(cached)))
                     if "hub" in cached_dir:

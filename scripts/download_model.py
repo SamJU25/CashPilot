@@ -71,7 +71,7 @@ def main() -> None:
         "--model",
         type=str,
         default=None,
-        help="Target model to download ('sme-finance-lora', 'qwen2.5-3b-instruct', or 'all')",
+        help="Target model to download ('sme-finance-lora', 'base-instruct', or 'all')",
     )
     parser.add_argument(
         "--delete",
