@@ -9,10 +9,9 @@
 - 📘 [System Design (`docs/system.md`)](system.md) — Schemas, 25+ math engines, decision tables & smart contract specs
 - 🏛️ [Architecture Plan (`docs/architecture.md`)](architecture.md) — 6-layer topology, dual SLM inference & multi-agent suites
 - 🛡️ [Security Architecture (`docs/security.md`)](security.md) — 5 Invariants, threat modeling & Three-Tier Security Gate
-- 👥 [Operational Guide (`docs/team_distribution_guide.md`)](team_distribution_guide.md) — AI agent squad orchestration & domain handoffs
 - ⚡ [Engineering Lifecycle (`.agent/workflows/sprint-workflow.md`)](../.agent/workflows/sprint-workflow.md) — Contract-first TDD and verification protocol
-- 🧭 [Execution Plan & Technical Contract (`docs/team_execution_plan.md`)](team_execution_plan.md) — Verified technical contract & API specifications
 - 📜 [Architecture Decision Records (`docs/adr/`)](adr/) — ADR-001 to ADR-007
+- 📖 [Ubiquitous Domain Glossary (`GLOSSARY.md`)](../GLOSSARY.md) — Standardized fintech and underwriting terminology
 
 ---
 

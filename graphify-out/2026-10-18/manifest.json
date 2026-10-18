@@ -1337,12 +1337,6 @@
     "ast_hash": "2084d7669adba550d61e7958c222be9e",
     "semantic_hash": ""
   },
-  "docs/SME_Finance_Copilot_Complete_Architecture_and_Beginner_Guide.md": {
-    "mtime": 1792229328.828704,
-    "seen": 1792229779.8421924,
-    "ast_hash": "bc7ce90735dde15b1d2aba3a54d412e8",
-    "semantic_hash": ""
-  },
   "tests/e2e/__init__.py": {
     "mtime": 1791998542.8995535,
     "seen": 1791998728.3882987,
@@ -1935,12 +1929,6 @@
     "mtime": 1792224801.8073971,
     "seen": 1792224875.2815456,
     "ast_hash": "57a3a7e294411329c23e918475377211",
-    "semantic_hash": ""
-  },
-  "docs/PROJECT_REPORT_AND_POSTMORTEM.md": {
-    "mtime": 1792266851.7450068,
-    "seen": 1792273602.9827092,
-    "ast_hash": "e601999947d2bd87af9e543865e2413a",
     "semantic_hash": ""
   },
   "services/security/passkeys.py": {

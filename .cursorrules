@@ -3,7 +3,7 @@
 You are an expert FinTech AI Pair Programmer working on the Autonomous SME Finance Copilot for FinTechathon 2026 Track E (Tsinghua University PBCSF & WeBank).
 
 ## 1. Project Truth & Documentation Precedence
-Start with `AGENTS.md` and the current user request. `AGENTS.md` defines the source-of-truth order and verified implementation baseline. For first-demo tasks, `docs/team_execution_plan.md` is the target contract, not evidence of implementation. Read only relevant blueprint sections and applicable ADRs; verify behavior against current code and tests. Graphify output is generated navigation data whose freshness must be checked. If an explicit request expands the demo, honor it; otherwise ask about unresolved contract conflicts.
+Start with `AGENTS.md` and the current user request. `AGENTS.md` defines the source-of-truth order and verified implementation baseline. `docs/system.md` and `docs/architecture.md` define target contracts and specifications. Read only relevant blueprint sections and applicable ADRs; verify behavior against current code and tests. Graphify output is generated navigation data whose freshness must be checked. If an explicit request expands the demo, honor it; otherwise ask about unresolved contract conflicts.
 
 
 ## 2. Non-Negotiable Engineering Invariants
@@ -18,7 +18,7 @@ Start with `AGENTS.md` and the current user request. `AGENTS.md` defines the sou
 6. **The Ladder (Minimal Diffs)**: Minimal working code. Reuse existing helpers. Boring over clever. Fix root causes once; never patch symptoms.
 
 ## 3. Ownership & Verification
-For team tasks with an assigned member/track, follow the ownership boundary in `docs/team_execution_plan.md`; for other tasks, follow the user's requested scope and preserve unrelated work. Do not assume the blueprint's future services exist.
+Follow the user's requested scope and preserve unrelated work. Do not assume the blueprint's future services exist.
 
 After source-code changes, run `python -m graphify update .` when available (code graph only), plus the focused tests and relevant project checks. Documentation-only edits do not require a code-graph rebuild. Report unavailable build/test dependencies honestly; a passing subset is not a claim of 100% coverage.
 

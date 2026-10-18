@@ -5,17 +5,16 @@ Scope: All software development, research, financial engineering, and testing in
 ---
 
 ## 0. Project Truth & Instruction Precedence
-- Start with [`AGENTS.md`](AGENTS.md) and the current user request. It defines the authority order, verified implementation baseline (424 passing tests), and known gaps.
-- Use [`docs/team_execution_plan.md`](docs/team_execution_plan.md) as the verified technical contract and operational plan. Read only the relevant sections of the architecture/security blueprints and applicable ADRs.
+- Start with [`AGENTS.md`](AGENTS.md) and the current user request. It defines the authority order, verified implementation baseline, and known gaps.
+- Use [`docs/system.md`](docs/system.md) and [`docs/architecture.md`](docs/architecture.md) as the verified technical contracts. Read only the relevant sections of the architecture/security blueprints and applicable ADRs.
 - The project pairs the Lead Architect with specialized AI subagents across direct execution loops without committee handoffs.
 - Verify implementation claims against source and tests (`pytest -q`). Treat `graphify-out/` as generated navigation data whose freshness must be checked.
 
 ## 1. Environment & Architecture Overview
 - **Master Specifications**:
   - [`docs/system.md`](docs/system.md): Concrete implementation mechanics, math models, schemas & contracts.
-  - [`docs/architecture.md`](docs/architecture.md): Macro topology, 1-Supervisor + 4-Squads model & roadmap.
+  - [`docs/architecture.md`](docs/architecture.md): Macro topology, dual SLM inference & multi-agent suites.
   - [`docs/security.md`](docs/security.md): 5 Invariants, threat defense, self-healing & decadal security.
-  - [`docs/team_distribution_guide.md`](docs/team_distribution_guide.md): Operational guide for orchestrating the 57 subagents.
   - [`docs/adr/`](docs/adr/): 7 formal Architecture Decision Records.
   - [`.agent/workflows/sprint-workflow.md`](.agent/workflows/sprint-workflow.md): Sprint workflow and TDD loop.
 - **Project Structure**:

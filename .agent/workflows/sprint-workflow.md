@@ -5,7 +5,7 @@ description: Contract-first, high-velocity engineering workflow for SME Finance 
 
 # Sprint Workflow & Engineering Lifecycle
 
-The repository's contract and baseline source of truth is [`docs/team_execution_plan.md`](../../docs/team_execution_plan.md) and [`AGENTS.md`](../../AGENTS.md). The system, architecture, and security documents are design references. You own all architectural domains directly without committee handoffs or approval bottlenecks.
+The repository's contract and baseline source of truth is [`AGENTS.md`](../../AGENTS.md), [`docs/system.md`](../../docs/system.md), and [`docs/architecture.md`](../../docs/architecture.md). You own all architectural domains directly without committee handoffs or approval bottlenecks.
 
 ## 1. Before Editing
 

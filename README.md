@@ -17,21 +17,20 @@
 
 ### Project status and documentation map
 
-The repository pairs the Lead Architect with specialized AI subagents. Read [`AGENTS.md`](AGENTS.md) for instruction precedence and verified status, then [`docs/team_execution_plan.md`](docs/team_execution_plan.md) for the technical contract and architectural domains. The current code and tests show what is implemented today.
+Read [`AGENTS.md`](AGENTS.md) for instruction precedence and verified baseline status, [`docs/system.md`](docs/system.md) for mathematical and technical specifications, and [`docs/architecture.md`](docs/architecture.md) for system topology. The current code and tests show what is implemented today.
 
 - 📘 [System Design Specification](docs/system.md) — Implementation mechanics, mathematical formulations, schemas & smart contracts
-- 🏛️ [Architectural Plan & Roadmap](docs/architecture.md) — 6-layer topology, 1-Supervisor + 4-Squads model & multi-agent orchestration
+- 🏛️ [Architectural Plan & Roadmap](docs/architecture.md) — 6-layer topology, local SLM inference & multi-agent orchestration
 - 🛡️ [Security Architecture & Defense-in-Depth](docs/security.md) — 5 Invariants, threat defense, self-healing & decadal resilience
-- 👤 [Operational Guide](docs/team_distribution_guide.md) — Subagent orchestration across 4 architectural domains
-- 🧭 [Execution Plan & Technical Contract](docs/team_execution_plan.md) — Technical contract, API schemas, and verified capabilities
 - ⚡ [Sprint Workflow](.agent/workflows/sprint-workflow.md) — Engineering sprint workflow and TDD loop
 - 📜 [Architecture Decision Records (ADRs)](docs/adr/) — 7 formal architecture decision records (ADR-001 to ADR-007)
+- 📖 [Ubiquitous Domain Glossary](GLOSSARY.md) — Standardized fintech and underwriting terminology
 
 ---
 
 ## 1. Executive Summary & Problem Statement
 
-> **Status note:** For the verified implementation contract, architectural domains, and subagent prompts, use [`docs/team_execution_plan.md`](docs/team_execution_plan.md) and verify behavior against current code and tests.
+> **Status note:** For the verified implementation contract and architectural domains, refer to [`docs/system.md`](docs/system.md) and [`docs/architecture.md`](docs/architecture.md) and verify behavior against current code and tests.
 
 Small and Medium Enterprises (SMEs) represent over 90% of global businesses and 50% of employment. However, **82% of SME closures stem from cash flow mismanagement and working capital timing mismatches**, rather than a lack of underlying profitability.
 
@@ -240,7 +239,7 @@ The repository pairs the Lead Architect with specialized AI subagents. The Lead 
 - **Domain C (Multi-Format Ingestion & Blockchain)**: CSV and PDF bank statement parsing, line-item extraction, balance tie-out, error provenance, SHA-256 invoice hashing, FISCO BCOS contract.
 - **Domain D (Quantitative FinTech & Decision Tables)**: Pure Decimal financial math, DAB carry-forward, cash flow analysis, ZenEngine decision tables, continuous liquidity scoring.
 
-See [`docs/team_distribution_guide.md`](docs/team_distribution_guide.md) and [`docs/team_execution_plan.md`](docs/team_execution_plan.md) for full contracts and delegation prompts.
+See [`AGENTS.md`](AGENTS.md) and [`docs/architecture.md`](docs/architecture.md) for full architecture specifications and subagent routing.
 
 ---
 

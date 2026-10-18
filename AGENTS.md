@@ -4,17 +4,15 @@ This workspace is engineered specifically for building the **Autonomous AI Agent
 
 ### Master Documentation & Operational Protocols:
 - 📘 [System Design Specification](docs/system.md) | 🏛️ [Architectural Plan](docs/architecture.md) | 🛡️ [Security Architecture](docs/security.md)
-- 👤 [Operational Guide](docs/team_distribution_guide.md) | ⚡ [Sprint Workflow](.agent/workflows/sprint-workflow.md) | 📜 [ADRs](docs/adr/)
-- 🧭 [Execution Plan & Technical Contract](docs/team_execution_plan.md)
+- ⚡ [Sprint Workflow](.agent/workflows/sprint-workflow.md) | 📜 [ADRs](docs/adr/) | 📖 [Glossary](GLOSSARY.md)
 
 ## 0. Project Truth, Instruction Precedence & Current Baseline
 
 Use this order when project documents disagree:
 1. The user's explicit task and safety constraints for this session.
-2. This file (`AGENTS.md`) for repository-wide agent behavior.
-3. [`docs/team_execution_plan.md`](docs/team_execution_plan.md) for the verified shared API/data contract, architecture domains, and acceptance criteria. It describes the agreed implementation target; verify behavior against tests and source.
-4. The current source code and tests for what actually runs today. Treat tests as evidence only for the behavior they cover.
-5. Applicable ADRs for accepted decisions; then [`docs/system.md`](docs/system.md), [`docs/architecture.md`](docs/architecture.md), and [`docs/security.md`](docs/security.md) as broader design blueprints. Blueprint features are not implementation claims or automatic sprint scope.
+2. This file (`AGENTS.md`) for repository-wide agent behavior and verified baseline.
+3. The current source code and tests for what actually runs today. Treat tests as evidence only for the behavior they cover.
+4. Applicable ADRs for accepted decisions; then [`docs/system.md`](docs/system.md), [`docs/architecture.md`](docs/architecture.md), and [`docs/security.md`](docs/security.md) as core technical specifications and architectural blueprints.
 6. `graphify-out/` reports, wiki pages, and graph data are generated navigation aids, not authorities. Check their freshness and confirm claims in source/tests.
 7. Agent personas, skill catalogs, and platform-specific instruction files route work; they do not supersede this precedence or the user's scope.
 
