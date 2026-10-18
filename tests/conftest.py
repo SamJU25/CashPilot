@@ -14,4 +14,6 @@ import tempfile
 os.environ.setdefault("COPILOT_SESSION_DIR", tempfile.mkdtemp(prefix="copilot_sessions_"))
 os.environ.setdefault("COPILOT_LEDGER_DIR", tempfile.mkdtemp(prefix="copilot_ledger_"))
 os.environ.setdefault("TENANT_ENROLLMENT_KEY", "test-enrollment-key")
+# The suite mints tokens for many tenant ids with one key; production defaults to fail-closed.
+os.environ.setdefault("TENANT_ENROLLMENT_ALLOW_ANY_TENANT", "1")
 os.environ.setdefault("RATE_LIMIT_PER_MINUTE", "0")

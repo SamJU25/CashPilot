@@ -10,11 +10,16 @@ import logging
 
 import json
 from typing import Optional
-from fastapi import APIRouter, Header, HTTPException, status
+from fastapi import APIRouter, Depends, Header, HTTPException, status
 from starlette.concurrency import run_in_threadpool
 
+from api.dependencies import require_tenant
 from services.agent.llm_bridge import fetch_remote_models, test_llm_connection
-from services.security.tenant_token import TenantTokenError, resolve_tenant_identity
+from services.security.tenant_token import (
+    TenantTokenError,
+    resolve_tenant_identity,
+    resolve_verified_tenant,
+)
 from services.agent.schema import (
     AgentChatRequest,
     CopilotResponse,
@@ -45,6 +50,7 @@ router = APIRouter(prefix="/api/v1/agent", tags=["Autonomous Agent"])
 )
 async def agent_test_connection(
     request: TestConnectionRequest,
+    tenant: str = Depends(require_tenant),
 ) -> TestConnectionResponse:
     """Sends a lightweight verification probe to the target LLM provider."""
     return await run_in_threadpool(test_llm_connection, request)
@@ -59,6 +65,7 @@ async def agent_test_connection(
 )
 async def agent_fetch_models(
     request: FetchModelsRequest,
+    tenant: str = Depends(require_tenant),
 ) -> FetchModelsResponse:
     """Dynamically queries the target provider's models catalog."""
     return await run_in_threadpool(fetch_remote_models, request)
@@ -73,6 +80,7 @@ async def agent_fetch_models(
 )
 async def agent_download_model(
     request: DownloadModelRequest,
+    tenant: str = Depends(require_tenant),
 ) -> DownloadModelResponse:
     """Explicitly downloads target model weights on demand without silent auto-downloads."""
     from services.agent.local_transformers import LocalTransformersEngine
@@ -90,6 +98,7 @@ async def agent_download_model(
 )
 async def agent_delete_model(
     request: DeleteModelRequest,
+    tenant: str = Depends(require_tenant),
 ) -> DeleteModelResponse:
     """Removes downloaded model files to free up disk space."""
     from services.agent.local_transformers import LocalTransformersEngine
@@ -194,7 +203,10 @@ async def agent_chat(
 ) -> CopilotResponse:
     """Dispatches user prompt to the Agent Supervisor with authoritative header-based tenant and session isolation."""
     try:
-        effective_tenant = _resolve_agent_tenant(
+        # A signed token is authoritative. Without one, chat stays usable read-only, but staging
+        # is refused inside the supervisor so no ledger entry can be created anonymously.
+        verified_tenant = resolve_verified_tenant(x_tenant_token, authorization)
+        effective_tenant = verified_tenant or _resolve_agent_tenant(
             x_tenant_token=x_tenant_token,
             authorization=authorization,
             x_tenant_id=x_tenant_id,
@@ -223,6 +235,7 @@ async def agent_chat(
             tenant_id=effective_tenant,
             llm_config=effective_llm_config,
             session_id=effective_session_id,
+            allow_staging=verified_tenant is not None,
         )
         response.session_id = effective_session_id
         return response

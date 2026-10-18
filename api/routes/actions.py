@@ -9,7 +9,7 @@ never trusted here: callers must present a signed tenant token (X-Tenant-Token o
 from __future__ import annotations
 
 from typing import Optional
-from fastapi import APIRouter, Depends, Header, HTTPException, Response, status
+from fastapi import APIRouter, Depends, HTTPException, Response, status
 
 from services.security.passkeys import (
     passkey_registry,
@@ -29,27 +29,9 @@ from services.security.staging_ledger import (
     IntentStateError,
     BiometricVerificationError,
 )
-from services.security.tenant_token import TenantTokenError, require_tenant_identity
+from api.dependencies import require_tenant
 
 router = APIRouter(prefix="/api/v1/actions", tags=["Security Gate & Action Intents"])
-
-
-def require_tenant(
-    x_tenant_token: Optional[str] = Header(default=None, alias="X-Tenant-Token"),
-    authorization: Optional[str] = Header(default=None, alias="Authorization"),
-) -> str:
-    """FastAPI dependency: resolves a verified tenant or fails with 401."""
-    try:
-        return require_tenant_identity(
-            x_tenant_token=x_tenant_token,
-            authorization=authorization,
-        )
-    except TenantTokenError as exc:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail=str(exc),
-            headers={"WWW-Authenticate": "Bearer"},
-        )
 
 
 def _assert_same_tenant(claimed: Optional[str], authenticated: str) -> None:

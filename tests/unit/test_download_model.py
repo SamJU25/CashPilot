@@ -26,6 +26,7 @@ from services.agent.schema import (
     TestConnectionRequest,
 )
 from services.agent.llm_bridge import fetch_remote_models, test_llm_connection as run_test_llm_connection
+from tests.auth_helpers import tenant_headers
 
 TestConnectionRequest.__test__ = False
 
@@ -85,7 +86,11 @@ def test_api_download_model_route(client):
             "size_mb": 5886.0,
         },
     ):
-        resp = client.post("/api/v1/agent/download-model", json={"model_name": "sme-finance-lora"})
+        resp = client.post(
+            "/api/v1/agent/download-model",
+            json={"model_name": "sme-finance-lora"},
+            headers=tenant_headers(client, "SME-MODEL-TEST"),
+        )
         assert resp.status_code == 200
         data = resp.json()
         assert data["success"] is True
@@ -189,7 +194,11 @@ def test_api_delete_model_route(client):
             "freed_mb": 5886.0,
         },
     ):
-        resp = client.post("/api/v1/agent/delete-model", json={"model_name": "sme-finance-lora"})
+        resp = client.post(
+            "/api/v1/agent/delete-model",
+            json={"model_name": "sme-finance-lora"},
+            headers=tenant_headers(client, "SME-MODEL-TEST"),
+        )
         assert resp.status_code == 200
         data = resp.json()
         assert data["success"] is True

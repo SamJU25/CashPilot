@@ -82,6 +82,7 @@ class LiquiditySubagent:
         request: AgentChatRequest,
         effective_csv: Optional[str],
         enrich_fn: Callable[[str, str], str],
+        allow_staging: bool = False,
     ) -> Optional[CopilotResponse]:
         """Dispatches liquidity and working capital calculations to specialized tools."""
         # 1. Working Capital Requirement (WCR)
@@ -552,10 +553,11 @@ class LiquiditySubagent:
             invoices_csv = None
             if request.session_id:
                 from services.agent.session_store import session_store
-                rec = session_store.get_or_create(request.session_id)
+                rec = session_store.get_or_create(request.session_id, tenant_id=request.tenant_id)
                 invoices_csv = rec.invoices_csv if rec else None
-            # Questions get the plan only; staging needs an explicit request (never stage from a question).
-            stage = not is_question(request.message)
+            # Questions get the plan only; staging needs an explicit request (never stage from a question)
+            # and a verified identity, since each staged leg writes into the tenant's ledger.
+            stage = allow_staging and not is_question(request.message)
             res = tool_build_bridge_plan(effective_csv, invoices_csv=invoices_csv, stage=stage, tenant_id=request.tenant_id)
             if not res["has_shortfall"]:
                 base_reply = "### Bridge Financing Plan\n\n- **Projected Shortfall**: None within the forecast horizon\n- **Bridge Target**: $0.00"
@@ -570,6 +572,11 @@ class LiquiditySubagent:
             if res["staged"]:
                 ids = ", ".join(s["intent_id"] for s in res["staged"])
                 staged_line = f"- **Staged For Approval**: {len(res['staged'])} proposal(s) awaiting passkey approval ({ids})\n"
+            elif not allow_staging:
+                staged_line = (
+                    "- **Staged For Approval**: None. Staging requires an authenticated tenant token "
+                    "(`POST /api/v1/auth/token`), so this anonymous plan is advisory only.\n"
+                )
             else:
                 staged_line = "- **Staged For Approval**: None yet; ask me to prepare the plan to stage it\n"
             base_reply = (
@@ -695,7 +702,7 @@ class LiquiditySubagent:
 
             if not invoices_input and request.session_id:
                 from services.agent.session_store import session_store
-                rec = session_store.get_or_create(request.session_id)
+                rec = session_store.get_or_create(request.session_id, tenant_id=request.tenant_id)
                 if rec and rec.invoices_csv:
                     invoices_input = rec.invoices_csv
 

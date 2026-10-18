@@ -14,6 +14,7 @@ from fastapi.testclient import TestClient
 
 from api.main import app
 from services.security.staging_ledger import staging_ledger
+from tests.auth_helpers import tenant_headers
 
 client = TestClient(app)
 
@@ -109,9 +110,11 @@ def test_agent_credit_underwriting_flow():
 def test_agent_action_staging_flow():
     """Verify agent stages financial intents into Tier 2 and enforces biometric passkey requirement."""
     staging_ledger.clear()
+    headers = tenant_headers(client, "SME-BAKERY-001")
 
     response = client.post(
         "/api/v1/agent/chat",
+        headers=headers,
         json={
             "message": "Please stage an application to draw line of $25,000 for working capital",
             "tenant_id": "SME-BAKERY-001",
@@ -134,6 +137,27 @@ def test_agent_action_staging_flow():
     assert "biometric passkey" in data["reply"].lower()
 
 
+def test_agent_anonymous_chat_staging_refused():
+    """Verify unauthenticated chat requests cannot stage financial intents."""
+    staging_ledger.clear()
+    response = client.post(
+        "/api/v1/agent/chat",
+        json={
+            "message": "Please stage an application to draw line of $25,000 for working capital",
+            "tenant_id": "VICTIM-TENANT",
+            "staged_action_type": "DRAW_CREDIT_LINE",
+            "staged_amount_cents": 2500000,
+            "staged_target": "Lender-Prime-Facility",
+        },
+    )
+    assert response.status_code == 200
+    data = response.json()
+    assert data["intent_detected"] == "ACTION_STAGING"
+    assert data["staged_action"] is None
+    assert "requires an authenticated tenant session" in data["reply"]
+    assert len(staging_ledger.list_intents()) == 0
+
+
 def test_agent_missing_csv_returns_guidance():
     """Verify agent prompts for statement CSV when diagnostic inquiry lacks transaction data."""
     response = client.post(
@@ -148,12 +172,13 @@ def test_agent_missing_csv_returns_guidance():
 
 
 def test_agent_header_tenant_isolation_overrides_body():
-    """Verify X-Tenant-ID header authoritatively overrides client-supplied body tenant_id (IDOR defense)."""
+    """Verify signed tenant token authoritatively overrides client-supplied body tenant_id (IDOR defense)."""
     staging_ledger.clear()
+    headers = tenant_headers(client, "AUTHENTICATED-TENANT-999")
 
     response = client.post(
         "/api/v1/agent/chat",
-        headers={"X-Tenant-ID": "AUTHENTICATED-TENANT-999"},
+        headers=headers,
         json={
             "message": "Stage credit line application for $10,000",
             "tenant_id": "ATTACKER-SPOOFED-TENANT",
@@ -167,7 +192,7 @@ def test_agent_header_tenant_isolation_overrides_body():
     assert data["staged_action"] is not None
     staged_id = data["staged_action"]["intent_id"]
 
-    # Verify ledger entry strictly owns the header-authenticated tenant
+    # Verify ledger entry strictly owns the authenticated tenant
     persisted_intent = staging_ledger.get_intent(staged_id)
     assert persisted_intent.tenant_id == "AUTHENTICATED-TENANT-999"
     assert persisted_intent.tenant_id != "ATTACKER-SPOOFED-TENANT"
@@ -195,6 +220,7 @@ def test_agent_test_connection_offline():
     with patch("services.agent.local_transformers.LocalTransformersEngine.is_available", return_value=True):
         response = client.post(
             "/api/v1/agent/test-connection",
+            headers=tenant_headers(client, "SME-TOOLING-01"),
             json={"provider": "offline"},
         )
         assert response.status_code == 200
@@ -207,6 +233,7 @@ def test_agent_test_connection_missing_api_key():
     """Verify cloud provider validation flags missing API key before network attempts."""
     response = client.post(
         "/api/v1/agent/test-connection",
+        headers=tenant_headers(client, "SME-TOOLING-01"),
         json={"provider": "gemini"},
     )
     assert response.status_code == 200
@@ -219,6 +246,7 @@ def test_agent_test_connection_custom_missing_base_url():
     """Verify custom provider validation flags missing Base URL before network attempts."""
     response = client.post(
         "/api/v1/agent/test-connection",
+        headers=tenant_headers(client, "SME-TOOLING-01"),
         json={"provider": "custom", "api_key": "some-key"},
     )
     assert response.status_code == 200
@@ -262,6 +290,7 @@ def test_agent_fetch_models_offline():
     """Verify offline provider returns deterministic local model catalog immediately."""
     response = client.post(
         "/api/v1/agent/fetch-models",
+        headers=tenant_headers(client, "SME-TOOLING-01"),
         json={"provider": "offline"},
     )
     assert response.status_code == 200
@@ -276,6 +305,7 @@ def test_agent_fetch_models_missing_key():
     """Verify missing API key returns empty models list without hardcoded fallback."""
     response = client.post(
         "/api/v1/agent/fetch-models",
+        headers=tenant_headers(client, "SME-TOOLING-01"),
         json={"provider": "gemini"},
     )
     assert response.status_code == 200
@@ -289,6 +319,7 @@ def test_agent_fetch_models_custom_missing_base_url():
     """Verify custom provider without base URL returns empty models list."""
     response = client.post(
         "/api/v1/agent/fetch-models",
+        headers=tenant_headers(client, "SME-TOOLING-01"),
         json={"provider": "custom"},
     )
     assert response.status_code == 200
@@ -513,6 +544,7 @@ def test_agent_offline_lora_connection_and_discovery():
     with patch("services.agent.local_transformers.LocalTransformersEngine.is_available", return_value=True):
         res_test = client.post(
             "/api/v1/agent/test-connection",
+            headers=tenant_headers(client, "SME-TOOLING-01"),
             json={"provider": "offline", "model_name": "sme-finance-lora"},
         )
         assert res_test.status_code == 200
@@ -522,6 +554,7 @@ def test_agent_offline_lora_connection_and_discovery():
 
         res_models = client.post(
             "/api/v1/agent/fetch-models",
+            headers=tenant_headers(client, "SME-TOOLING-01"),
             json={"provider": "offline"},
         )
         assert res_models.status_code == 200

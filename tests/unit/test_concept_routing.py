@@ -47,9 +47,21 @@ def test_questions_never_stage_a_proposal(message):
 
 def test_instruction_still_stages_a_proposal():
     staging_ledger.clear()
-    resp = run_copilot_supervisor(AgentChatRequest(message="Stage credit line application for $10,000"))
+    resp = run_copilot_supervisor(
+        AgentChatRequest(message="Stage credit line application for $10,000"),
+        allow_staging=True,
+    )
     assert resp.intent_detected == "ACTION_STAGING"
     assert resp.staged_action is not None
+
+
+def test_staging_is_refused_without_a_verified_identity():
+    staging_ledger.clear()
+    resp = run_copilot_supervisor(AgentChatRequest(message="Stage credit line application for $10,000"))
+    assert resp.intent_detected == "ACTION_STAGING"
+    assert resp.staged_action is None
+    assert resp.requires_biometric_hitl is False
+    assert staging_ledger.list_intents() == []
 
 
 def test_concept_question_without_model_uses_card_and_calculation_guidance():
@@ -165,7 +177,7 @@ def test_messages_without_a_named_action_never_stage(message):
 )
 def test_credit_line_draw_command_stages_that_draw(message, cents):
     staging_ledger.clear()
-    resp = run_copilot_supervisor(AgentChatRequest(message=message))
+    resp = run_copilot_supervisor(AgentChatRequest(message=message), allow_staging=True)
     assert resp.intent_detected == "ACTION_STAGING"
     assert resp.staged_action.action_type == "DRAW_CREDIT_LINE"
     assert resp.staged_action.amount_cents == cents

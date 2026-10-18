@@ -5,6 +5,7 @@ from fastapi.testclient import TestClient
 
 from api.main import app
 from services.agent.url_guard import BlockedEndpointError, validate_llm_endpoint
+from tests.auth_helpers import tenant_headers
 
 client = TestClient(app)
 
@@ -62,6 +63,7 @@ def test_test_connection_blocks_internal_targets(monkeypatch):
 
     response = client.post(
         "/api/v1/agent/test-connection",
+        headers=tenant_headers(client, "SME-SSRF-01"),
         json={
             "provider": "custom",
             "base_url": "http://169.254.169.254/latest",
@@ -79,6 +81,7 @@ def test_fetch_models_blocks_internal_targets(monkeypatch):
     monkeypatch.setenv("LLM_ALLOW_LOOPBACK_ENDPOINTS", "0")
     response = client.post(
         "/api/v1/agent/fetch-models",
+        headers=tenant_headers(client, "SME-SSRF-01"),
         json={"provider": "custom", "base_url": "http://127.0.0.1:9", "api_key": "probe"},
     )
     assert response.status_code == 200

@@ -10,9 +10,12 @@ from fastapi.testclient import TestClient
 from api.main import app
 from tests.auth_helpers import ENROLLMENT_KEY
 from services.security.tenant_token import (
+    TenantIssuanceDeniedError,
+    TenantIssuanceUnavailableError,
     TenantTokenError,
     TenantTokenExpiredError,
     TenantTokenInvalidError,
+    authorize_token_issuance,
     issue_tenant_token,
     resolve_tenant_identity,
     verify_tenant_token,
@@ -79,6 +82,52 @@ def test_resolve_tenant_identity_precedence():
         x_tenant_id=None,
     )
     assert resolved_default == "SME-DEFAULT"
+
+
+def test_per_tenant_map_rejects_tenants_missing_from_it(monkeypatch):
+    monkeypatch.setenv("TENANT_ENROLLMENT_KEYS", '{"SME-ALPHA": "alpha-key"}')
+    monkeypatch.setenv("TENANT_ENROLLMENT_KEY", "master-key")
+
+    authorize_token_issuance("SME-ALPHA", "alpha-key")
+    with pytest.raises(TenantIssuanceDeniedError):
+        # The single key is not a wildcard once a per-tenant map exists.
+        authorize_token_issuance("SME-BETA", "master-key")
+    with pytest.raises(TenantIssuanceDeniedError):
+        authorize_token_issuance("SME-ALPHA", "master-key")
+
+
+def test_single_key_can_be_bound_to_one_tenant(monkeypatch):
+    monkeypatch.delenv("TENANT_ENROLLMENT_KEYS", raising=False)
+    monkeypatch.delenv("TENANT_ENROLLMENT_ALLOW_ANY_TENANT", raising=False)
+    monkeypatch.setenv("TENANT_ENROLLMENT_KEY", "master-key")
+    monkeypatch.setenv("TENANT_ENROLLMENT_TENANT_ID", "SME-ONLY")
+
+    authorize_token_issuance("SME-ONLY", "master-key")
+    with pytest.raises(TenantIssuanceDeniedError):
+        authorize_token_issuance("SME-OTHER", "master-key")
+    with pytest.raises(TenantIssuanceDeniedError):
+        authorize_token_issuance("SME-ONLY", "wrong-key")
+
+
+def test_unbound_single_key_is_closed_by_default(monkeypatch):
+    monkeypatch.delenv("TENANT_ENROLLMENT_KEYS", raising=False)
+    monkeypatch.delenv("TENANT_ENROLLMENT_TENANT_ID", raising=False)
+    monkeypatch.delenv("TENANT_ENROLLMENT_ALLOW_ANY_TENANT", raising=False)
+    monkeypatch.setenv("TENANT_ENROLLMENT_KEY", "master-key")
+
+    with pytest.raises(TenantIssuanceUnavailableError):
+        authorize_token_issuance("SME-ANY", "master-key")
+
+
+def test_unbound_single_key_requires_an_explicit_opt_in(monkeypatch):
+    monkeypatch.delenv("TENANT_ENROLLMENT_KEYS", raising=False)
+    monkeypatch.delenv("TENANT_ENROLLMENT_TENANT_ID", raising=False)
+    monkeypatch.setenv("TENANT_ENROLLMENT_KEY", "master-key")
+    monkeypatch.setenv("TENANT_ENROLLMENT_ALLOW_ANY_TENANT", "1")
+
+    authorize_token_issuance("SME-ANY", "master-key")
+    with pytest.raises(TenantIssuanceDeniedError):
+        authorize_token_issuance("SME-ANY", "wrong-key")
 
 
 def test_auth_token_api_endpoints(client):

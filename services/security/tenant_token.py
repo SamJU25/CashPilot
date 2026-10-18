@@ -72,6 +72,9 @@ def _signing_secret(secret: Optional[str] = None) -> bytes:
     return _EPHEMERAL_SECRET
 
 
+_SINGLE_KEY_UNBOUND_WARNED = False
+
+
 def authorize_token_issuance(tenant_id: str, enrollment_key: Optional[str]) -> None:
     """
     Authorizes issuing a tenant token.
@@ -106,6 +109,30 @@ def authorize_token_issuance(tenant_id: str, enrollment_key: Optional[str]) -> N
     if single_key:
         if not provided or not hmac.compare_digest(provided, single_key):
             raise TenantIssuanceDeniedError("Invalid enrollment key")
+
+        # A shared operator key is a master credential. It is fail-closed unless bound to one
+        # tenant; TENANT_ENROLLMENT_ALLOW_ANY_TENANT is an explicit local-development escape hatch.
+        bound_tenant = os.getenv("TENANT_ENROLLMENT_TENANT_ID", "").strip()
+        allow_any = os.getenv("TENANT_ENROLLMENT_ALLOW_ANY_TENANT", "").strip().lower() in {"1", "true", "yes"}
+        if bound_tenant:
+            if not hmac.compare_digest(clean_tenant, bound_tenant):
+                raise TenantIssuanceDeniedError(
+                    f"Tenant {clean_tenant} is not enrolled: the single enrollment key is bound to {bound_tenant}"
+                )
+        elif not allow_any:
+            raise TenantIssuanceUnavailableError(
+                "Single-key enrollment is not bound to a tenant. Set TENANT_ENROLLMENT_TENANT_ID "
+                "(one tenant), TENANT_ENROLLMENT_KEYS (many tenants), or "
+                "TENANT_ENROLLMENT_ALLOW_ANY_TENANT=1 for local-only use."
+            )
+        else:
+            global _SINGLE_KEY_UNBOUND_WARNED
+            if not _SINGLE_KEY_UNBOUND_WARNED:
+                _SINGLE_KEY_UNBOUND_WARNED = True
+                logger.warning(
+                    "TENANT_ENROLLMENT_ALLOW_ANY_TENANT is active: the single enrollment key can mint "
+                    "any tenant identity. Use a tenant binding or the per-tenant map in production."
+                )
         return
 
     raise TenantIssuanceUnavailableError(
@@ -211,6 +238,24 @@ def resolve_tenant_identity(
         return x_tenant_id.strip()
 
     return "SME-DEFAULT"
+
+
+def resolve_verified_tenant(
+    x_tenant_token: Optional[str] = None,
+    authorization: Optional[str] = None,
+) -> Optional[str]:
+    """Returns the verified tenant when a valid signed token is present, else None.
+
+    Used for capabilities that are optional for anonymous callers (read-only chat) but
+    must be authenticated when they mutate state (proposal staging).
+    """
+    try:
+        return require_tenant_identity(
+            x_tenant_token=x_tenant_token,
+            authorization=authorization,
+        )
+    except TenantTokenError:
+        return None
 
 
 def require_tenant_identity(

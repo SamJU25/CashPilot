@@ -56,7 +56,10 @@ def test_fastapi_health_endpoint():
     assert response.status_code == 200
     data = response.json()
     assert data["status"] == "healthy"
-    assert data["form_factor"] == "Local CSV analysis demo"
-    assert "CSV analysis uses Python Decimal arithmetic" in data["active_invariants"]
-    assert "Synthetic first-demo requests are read-only and are not persisted" in data["active_invariants"]
+    assert data["form_factor"] == "Local-first FastAPI service with Next.js client"
+    assert "All financial calculations use Python Decimal arithmetic" in data["active_invariants"]
+    assert (
+        "Action staging requires a signed tenant token; execution requires a WebAuthn passkey"
+        in data["active_invariants"]
+    )
     assert len(data["active_invariants"]) == 3

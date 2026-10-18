@@ -200,6 +200,7 @@ def _handle_quantitative_calculation(
     effective_csv: Optional[str],
     effective_config: Optional[LLMConfig],
     enrich_fn: Any,
+    allow_staging: bool = False,
 ) -> Optional[CopilotResponse]:
     """Delegates quantitative calculation inquiries to specialized domain subagents."""
     if not sub_intent:
@@ -221,6 +222,7 @@ def _handle_quantitative_calculation(
             request=request,
             effective_csv=effective_csv,
             enrich_fn=enrich_fn,
+            allow_staging=allow_staging,
         )
 
     # 3. Risk & Unit Economics Subagent (Break-Even, Break-Even Units, Concentration, Churn Attrition, Deficit)
@@ -240,9 +242,13 @@ def run_copilot_supervisor(
     tenant_id: Optional[str] = None,
     llm_config: Optional[LLMConfig] = None,
     session_id: Optional[str] = None,
+    allow_staging: bool = False,
 ) -> CopilotResponse:
     """Core reasoning supervisor dispatching requests to deterministic tools and formatting responses."""
     effective_tenant = tenant_id or request.tenant_id or "SME-DEFAULT"
+    # Subagents read request.tenant_id when they write to the ledger; pin it to the resolved
+    # identity so a body-supplied tenant can never redirect a verified caller's proposal.
+    request.tenant_id = effective_tenant
     effective_session = session_id or request.session_id
     if not effective_session:
         import uuid
@@ -472,6 +478,20 @@ def run_copilot_supervisor(
     # 1. Action Staging Flow (Tier 2 Proposal Creation)
     # A bridge-plan request stages its own computed legs; the generic path would stage a default draw instead.
     if intent == "ACTION_STAGING" and classify_sub_intent_dynamic(request.message, history=request.history) != "BRIDGE_PLAN":
+        # Staging mutates the tenant's ledger, so it needs a verified identity even though the
+        # surrounding chat is read-only and may be anonymous.
+        if not allow_staging:
+            return _finalize(CopilotResponse(
+                reply=(
+                    "I can run the cash-flow and underwriting analysis for you, but staging a financing "
+                    "proposal requires an authenticated tenant session. Mint a signed tenant token at "
+                    "POST /api/v1/auth/token with your enrollment key, then retry with that token. "
+                    "No proposal was staged."
+                ),
+                intent_detected=intent,
+                requires_biometric_hitl=False,
+            ))
+
         from services.decision import DecisionDomain, DecisionEngineRegistry, DecisionRequest
         req_defaults = DecisionRequest(
             domain=DecisionDomain.SECURITY_GATE,
@@ -538,6 +558,7 @@ def run_copilot_supervisor(
             effective_csv=effective_csv,
             effective_config=effective_config,
             enrich_fn=_enrich_reply,
+            allow_staging=allow_staging,
         )
     except (ValueError, ArithmeticError) as exc:
         # Calculators reject impossible inputs (0 collection days, negative margin); answer instead of a 500.

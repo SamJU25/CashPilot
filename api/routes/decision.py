@@ -1,7 +1,10 @@
+import logging
 from typing import Any, Dict, List
-from fastapi import APIRouter, HTTPException, status
+
+from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel, Field
 
+from api.dependencies import require_admin
 from services.decision import (
     DecisionDomain,
     DecisionEngineRegistry,
@@ -9,6 +12,7 @@ from services.decision import (
     DecisionResult,
 )
 
+logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/v1/decision", tags=["Decision Engine"])
 
 
@@ -62,24 +66,28 @@ async def evaluate_decision(request: DecisionRequest) -> DecisionResult:
     try:
         registry = DecisionEngineRegistry.get_instance()
         return registry.evaluate(request)
-    except Exception as exc:
+    except Exception:
+        # Log the cause; the client gets a stable message instead of internal policy details.
+        logger.exception("Decision evaluation failed")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Decision evaluation failed: {str(exc)}",
+            detail="Decision evaluation failed.",
         )
 
 
 @router.post("/reload", response_model=ReloadResponse)
-async def reload_decision_tables() -> ReloadResponse:
+async def reload_decision_tables(_: None = Depends(require_admin)) -> ReloadResponse:
     """
     Triggers zero-downtime hot-reloading across all compiled JDM policy tables.
+    Process-wide operation: requires the operator's X-Admin-Key.
     """
     try:
         registry = DecisionEngineRegistry.get_instance()
         summary = registry.reload_all()
         return ReloadResponse(reload_summary=summary)
-    except Exception as exc:
+    except Exception:
+        logger.exception("Decision table hot reload failed")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Hot reload failed: {str(exc)}",
+            detail="Hot reload failed.",
         )

@@ -71,16 +71,30 @@ def test_tool_stage_mode_stages_only_financing_legs():
     assert all(s["biometric_required"] for s in res["staged"])
 
 
-def _handle(message, csv):
-    return LiquiditySubagent.handle_sub_intent("BRIDGE_PLAN", AgentChatRequest(message=message), csv, lambda base, **_: base)
+def _handle(message, csv, allow_staging=False):
+    return LiquiditySubagent.handle_sub_intent(
+        "BRIDGE_PLAN",
+        AgentChatRequest(message=message),
+        csv,
+        lambda base, **_: base,
+        allow_staging=allow_staging,
+    )
 
 
 def test_handler_question_offers_to_stage_and_request_stages():
     csv = _deficit_statement()
-    asked = _handle("How should we cover the projected shortfall?", csv)
+    asked = _handle("How should we cover the projected shortfall?", csv, allow_staging=True)
     assert asked.staged_action is None and "Bridge Target" in asked.reply
-    told = _handle("Prepare a bridge financing plan for the shortfall.", csv)
+    told = _handle("Prepare a bridge financing plan for the shortfall.", csv, allow_staging=True)
     assert told.staged_action is not None and told.requires_biometric_hitl is True
+
+
+def test_handler_without_staging_permission_never_stages():
+    csv = _deficit_statement()
+    resp = _handle("Prepare a bridge financing plan for the shortfall.", csv)
+    assert resp.staged_action is None
+    assert resp.requires_biometric_hitl is False
+    assert "advisory only" in resp.reply
 
 
 @pytest.mark.parametrize(

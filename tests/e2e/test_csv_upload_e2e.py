@@ -171,11 +171,12 @@ def test_complete_conversational_agent_user_journey():
         "/api/v1/agent/chat",
         json={
             "message": "Please stage an application to draw line of $25,000 for working capital",
-            "tenant_id": "SME-COFFEE-001",
+            "tenant_id": tenant,
             "staged_action_type": "DRAW_CREDIT_LINE",
             "staged_amount_cents": 2500000,
             "staged_target": top_facility["provider"],
         },
+        headers=headers,
     )
     assert chat_stage.status_code == 200
     stage_data = chat_stage.json()

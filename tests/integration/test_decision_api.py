@@ -87,8 +87,11 @@ def test_evaluate_working_capital_decision_api():
     assert data["matched_rule_id"] == "rule_ccc_trap"
 
 
-def test_reload_decision_tables_api():
-    response = client.post("/api/v1/decision/reload")
+def test_reload_decision_tables_api(monkeypatch):
+    monkeypatch.setenv("DECISION_ADMIN_KEY", "test-admin-key")
+    response = client.post(
+        "/api/v1/decision/reload", headers={"X-Admin-Key": "test-admin-key"}
+    )
     assert response.status_code == 200
     data = response.json()
     assert data["status"] == "SUCCESS"
