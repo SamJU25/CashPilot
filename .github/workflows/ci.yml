@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   backend:
@@ -38,6 +38,35 @@ jobs:
             echo '```' >> $GITHUB_STEP_SUMMARY
           fi
         shell: bash
+      - name: Post failure comment to commit
+        if: failure()
+        run: |
+          python -c "
+          import urllib.request, json, os
+          token = os.environ.get('GITHUB_TOKEN')
+          sha = os.environ.get('GITHUB_SHA')
+          repo = os.environ.get('GITHUB_REPOSITORY')
+          if not token or not sha or not repo:
+              exit(0)
+          url = f'https://api.github.com/repos/{repo}/commits/{sha}/comments'
+          output = ''
+          if os.path.exists('test_output.txt'):
+              with open('test_output.txt', 'r', encoding='utf-8', errors='replace') as f:
+                  output = f.read()[-3000:]
+          body = json.dumps({'body': f'### ❌ CI Test Failure Details\n\`\`\`\n{output}\n\`\`\`'}).encode('utf-8')
+          req = urllib.request.Request(url, data=body, headers={
+              'Authorization': f'Bearer {token}',
+              'Accept': 'application/vnd.github.v3+json',
+              'Content-Type': 'application/json',
+              'User-Agent': 'CI'
+          })
+          try:
+              urllib.request.urlopen(req)
+          except Exception as e:
+              print('Failed to comment:', e)
+          "
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   frontend:
     name: Frontend type-check and build
