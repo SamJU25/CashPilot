@@ -237,7 +237,7 @@ Open <http://127.0.0.1:3000> in your browser. Download the sample bank statement
 Run the full verification suite from the repository root with the virtual environment active:
 
 ```bash
-# Run backend test suite (862 tests, 1 POSIX-only skip)
+# Run backend test suite (863 tests, 1 POSIX-only skip)
 python -m pytest -q
 
 # Run frontend type checking
@@ -249,11 +249,11 @@ npm run build
 
 ### Verified Test Breakdown
 ```
-tests/unit/            716 passed            (Ingestion, Pure Decimal Math, Underwriting, Decision Tables, Session Store)
+tests/unit/            717 passed            (Ingestion, Pure Decimal Math, Underwriting, Decision Tables, Session Store)
 tests/integration/      86 passed            (FastAPI Endpoints, LLM Bridge, Model Discovery, WebAuthn, Session Memory)
 tests/security/         58 passed, 1 skipped (Three-Tier Gate Invariants, PII Sanitization, Tampering, Hardening, Encryption)
 tests/e2e/               2 passed            (Full Statement Ingestion to WebAuthn Execution Flows)
-========================= 862 passed, 1 skipped in 47.20s =========================
+========================= 863 passed, 1 skipped in 45.97s =========================
 ```
 
 ---

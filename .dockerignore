@@ -14,6 +14,11 @@ build
 .env
 .env.local
 .env.*.local
+# Sealed statements, staged proposals and passkeys must never be baked into an image layer.
+.data
+.sessions
+.freebuff
+.claude
 graphify-out
 .agent
 tests
@@ -22,7 +27,6 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 models
-.sessions
 dataset
 kaggle
 notebooks

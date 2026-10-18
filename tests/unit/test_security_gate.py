@@ -200,6 +200,23 @@ def test_registration_from_a_foreign_origin_rejected(passkeys):
     assert not passkeys.has_passkey("SME-201")
 
 
+def test_wrong_rp_id_rejected(ledger, passkeys, authenticator):
+    intent = _stage(ledger)
+    # A credential minted for another relying party must not unlock this tenant's intent.
+    authenticator.rp_id = "evil.example"
+
+    with pytest.raises(BiometricVerificationError):
+        ledger.execute_intent(intent.id, webauthn_assertion=_sign(passkeys, authenticator, intent.id))
+
+
+def test_registration_with_mismatched_rp_id_refused(passkeys):
+    options = json.loads(passkeys.registration_options("SME-201"))
+
+    with pytest.raises(PasskeyError):
+        passkeys.register("SME-201", SoftAuthenticator(rp_id="evil.example").create(options))
+    assert not passkeys.has_passkey("SME-201")
+
+
 def test_second_passkey_registration_refused(passkeys, authenticator):
     with pytest.raises(PasskeyAlreadyRegisteredError):
         passkeys.registration_options(TENANT)
