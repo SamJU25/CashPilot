@@ -20,10 +20,10 @@ async def get_health_status():
     return HealthStatus(
         status="healthy",
         version="1.0.0",
-        form_factor="Local CSV analysis demo",
+        form_factor="Local-first FastAPI service with Next.js client",
         active_invariants=[
-            "CSV analysis uses Python Decimal arithmetic",
-            "CSV rows and file-level inputs are validated before analysis",
-            "Synthetic first-demo requests are read-only and are not persisted"
+            "All financial calculations use Python Decimal arithmetic",
+            "Statement uploads are size- and page-validated before analysis",
+            "Action staging requires a signed tenant token; execution requires a WebAuthn passkey",
         ]
     )

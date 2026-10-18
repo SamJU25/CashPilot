@@ -10,12 +10,14 @@ import logging
 import os
 import threading
 import uuid
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from enum import Enum
 from typing import Any, Optional
 
 from pydantic import BaseModel, ConfigDict, Field
 
+from services.security.crypto import open_text, seal_text
+from services.security.file_utils import ensure_private_dir, restrict_file
 from services.security.passkeys import PasskeyError, PasskeyRegistry, passkey_registry
 from services.security.three_tier_gate import StagedActionIntent, requires_biometric_execution
 
@@ -25,6 +27,10 @@ LEDGER_DIR = os.path.abspath(
     os.environ.get("COPILOT_LEDGER_DIR")
     or os.path.join(os.path.dirname(__file__), "../../.data")
 )
+# Pending proposals are a queue for a human, not an archive: stale ones are dropped.
+STAGED_INTENT_TTL_HOURS = max(1, int(os.environ.get("STAGED_INTENT_TTL_HOURS", "72")))
+# Repeating the same instruction (double-click, retry) reuses the pending proposal.
+STAGED_INTENT_DEDUPE_SECONDS = max(0, int(os.environ.get("STAGED_INTENT_DEDUPE_SECONDS", "300")))
 
 
 class ActionStatus(str, Enum):
@@ -83,13 +89,16 @@ class StagingLedger:
         self._intents: dict[str, StagedActionIntent] = {}
         self._lock = threading.Lock()
         self._load_persisted()
+        with self._lock:
+            if self._purge_expired_locked():
+                self._persist()
 
     def _load_persisted(self) -> None:
         if not self._file_path or not os.path.exists(self._file_path):
             return
         try:
             with open(self._file_path, "r", encoding="utf-8") as f:
-                data = json.load(f)
+                data = json.loads(open_text(f.read()))
                 for item in data.values():
                     intent = StagedActionIntent.model_validate_json(json.dumps(item))
                     self._intents[intent.id] = intent
@@ -99,37 +108,83 @@ class StagingLedger:
     def _persist(self) -> None:
         if not self._file_path:
             return
-        os.makedirs(self._storage_dir, exist_ok=True)
+        ensure_private_dir(self._storage_dir)
         tmp_path = f"{self._file_path}.tmp"
         try:
             data = {k: v.model_dump(mode="json") for k, v in self._intents.items()}
             with open(tmp_path, "w", encoding="utf-8") as f:
-                json.dump(data, f, indent=2)
+                f.write(seal_text(json.dumps(data, indent=2)))
             os.replace(tmp_path, self._file_path)
+            restrict_file(self._file_path)
         except OSError as exc:
             logger.warning("Failed to persist intents to %s: %s", self._file_path, exc)
 
+    @staticmethod
+    def _aware(value: datetime) -> datetime:
+        """Persisted/constructed timestamps may be naive; compare them as UTC."""
+        return value if value.tzinfo else value.replace(tzinfo=timezone.utc)
+
+    def _purge_expired_locked(self) -> int:
+        """Drops pending intents older than the TTL. Caller must hold _lock."""
+        cutoff = datetime.now(timezone.utc) - timedelta(hours=STAGED_INTENT_TTL_HOURS)
+        expired = [
+            intent_id
+            for intent_id, intent in self._intents.items()
+            if intent.status == ActionStatus.STAGED_PENDING_HITL.value
+            and self._aware(intent.staged_at) < cutoff
+        ]
+        for intent_id in expired:
+            self._intents.pop(intent_id, None)
+        return len(expired)
+
+    def _find_recent_duplicate_locked(self, request: StagingRequest, tenant_id: str, now: datetime) -> Optional[StagedActionIntent]:
+        """Returns an equivalent pending proposal created inside the dedupe window, if any."""
+        if STAGED_INTENT_DEDUPE_SECONDS <= 0:
+            return None
+        cutoff = now - timedelta(seconds=STAGED_INTENT_DEDUPE_SECONDS)
+        for intent in self._intents.values():
+            if (
+                intent.status == ActionStatus.STAGED_PENDING_HITL.value
+                and intent.tenant_id == tenant_id
+                and intent.action_type == request.action_type
+                and intent.amount_cents == request.amount_cents
+                and intent.target_identifier == request.target_identifier
+                and self._aware(intent.staged_at) >= cutoff
+            ):
+                return intent
+        return None
+
     def stage_intent(self, request: StagingRequest) -> StagedActionIntent:
-        """Stages an action proposal in Tier 2. No money moves."""
+        """Stages an action proposal in Tier 2. No money moves.
+
+        Expired pending proposals are purged, and an identical pending proposal inside the
+        dedupe window is returned instead of minting another ID for the same instruction.
+        """
         tenant_id = (request.tenant_id or "").strip()
         if not tenant_id:
             raise ValueError("A verified tenant identity is required to stage an action")
-        intent_id = f"intent-{uuid.uuid4().hex[:12]}"
         now = datetime.now(timezone.utc)
-        intent = StagedActionIntent(
-            id=intent_id,
-            tenant_id=tenant_id,
-            action_type=request.action_type,
-            amount_cents=request.amount_cents,
-            target_identifier=request.target_identifier,
-            status=ActionStatus.STAGED_PENDING_HITL.value,
-            staged_at=now,
-            biometric_signature=None,
-        )
         with self._lock:
-            self._intents[intent_id] = intent
+            purged = self._purge_expired_locked()
+            duplicate = self._find_recent_duplicate_locked(request, tenant_id, now)
+            if duplicate is not None:
+                if purged:
+                    self._persist()
+                return duplicate
+
+            intent = StagedActionIntent(
+                id=f"intent-{uuid.uuid4().hex[:12]}",
+                tenant_id=tenant_id,
+                action_type=request.action_type,
+                amount_cents=request.amount_cents,
+                target_identifier=request.target_identifier,
+                status=ActionStatus.STAGED_PENDING_HITL.value,
+                staged_at=now,
+                biometric_signature=None,
+            )
+            self._intents[intent.id] = intent
             self._persist()
-        return intent
+            return intent
 
     def get_intent(self, intent_id: str) -> StagedActionIntent:
         """Retrieves a staged intent by ID."""

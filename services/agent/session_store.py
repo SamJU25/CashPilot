@@ -20,6 +20,8 @@ from typing import Any, Dict, List, Optional
 from pydantic import BaseModel, Field
 
 from services.agent.schema import ChatHistoryItem
+from services.security.crypto import DataDecryptionError, open_text, seal_text
+from services.security.file_utils import ensure_private_dir, restrict_file
 
 logger = logging.getLogger(__name__)
 
@@ -29,6 +31,8 @@ SESSION_CACHE_DIR = os.path.abspath(
 )
 # Sessions hold raw bank statements; untouched ones are dropped instead of kept forever.
 SESSION_TTL_DAYS = 30
+# Bound in-memory growth: anonymous chat can mint sessions, so old ones are evicted.
+MAX_IN_MEMORY_SESSIONS = 500
 # Facts derived from the loaded statement; stale the moment a different statement arrives.
 STATEMENT_FACTS = (
     "current_balance",
@@ -66,7 +70,7 @@ class SessionStore:
     def __init__(self) -> None:
         self._sessions: Dict[str, SessionRecord] = {}
         self._store_lock = threading.Lock()
-        os.makedirs(SESSION_CACHE_DIR, exist_ok=True)
+        ensure_private_dir(SESSION_CACHE_DIR)
         self._load_persisted_sessions()
 
     @classmethod
@@ -90,12 +94,12 @@ class SessionStore:
                 fpath = os.path.join(SESSION_CACHE_DIR, fname)
                 try:
                     with open(fpath, "r", encoding="utf-8") as f:
-                        rec = SessionRecord(**json.load(f))
+                        rec = SessionRecord(**json.loads(open_text(f.read())))
                     if datetime.fromisoformat(rec.updated_at) < cutoff:
                         os.remove(fpath)
                         continue
                     self._sessions[rec.session_id] = rec
-                except (OSError, ValueError) as exc:
+                except (OSError, ValueError, DataDecryptionError) as exc:
                     logger.warning("Skipping unreadable session file %s: %s", fname, exc)
 
     def _persist_session(self, record: SessionRecord) -> None:
@@ -105,8 +109,9 @@ class SessionStore:
         try:
             # Write-then-rename: a crash mid-write used to leave a truncated file the loader dropped.
             with open(tmp_path, "w", encoding="utf-8") as f:
-                f.write(record.model_dump_json(indent=2))
+                f.write(seal_text(record.model_dump_json(indent=2)))
             os.replace(tmp_path, fpath)
+            restrict_file(fpath)
         except OSError as exc:
             logger.warning("Session disk write error for %s: %s", record.session_id, exc)
 
@@ -124,10 +129,38 @@ class SessionStore:
                 logger.warning("Session %s requested by a different tenant; issuing a new session", session_id)
                 session_id = f"sess_{uuid.uuid4().hex[:12]}"
 
+            self._evict_locked()
             rec = SessionRecord(session_id=session_id, tenant_id=tenant_id)
             self._sessions[session_id] = rec
             self._persist_session(rec)
             return rec
+
+    def _evict_locked(self) -> None:
+        """Drops expired sessions, then the oldest ones beyond MAX_IN_MEMORY_SESSIONS.
+
+        Caller must hold _store_lock. updated_at is ISO-8601 UTC, so string ordering matches
+        chronological ordering without re-parsing every record.
+        """
+        cutoff = (datetime.now(timezone.utc) - timedelta(days=SESSION_TTL_DAYS)).isoformat()
+        expired = [sid for sid, rec in self._sessions.items() if rec.updated_at < cutoff]
+        for sid in expired:
+            self._remove_locked(sid)
+
+        # Leave room for the session about to be inserted so the cap holds after the insert.
+        overflow = len(self._sessions) - (MAX_IN_MEMORY_SESSIONS - 1)
+        if overflow > 0:
+            oldest = sorted(self._sessions.items(), key=lambda item: item[1].updated_at)[:overflow]
+            for sid, _ in oldest:
+                self._remove_locked(sid)
+
+    def _remove_locked(self, session_id: str) -> None:
+        self._sessions.pop(session_id, None)
+        fpath = self._get_session_path(session_id)
+        if os.path.exists(fpath):
+            try:
+                os.remove(fpath)
+            except OSError:
+                pass
 
     def get(self, session_id: str) -> Optional[SessionRecord]:
         with self._store_lock:

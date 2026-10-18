@@ -17,6 +17,8 @@ from typing import Optional
 
 from pydantic import BaseModel, ConfigDict, Field
 
+from services.security.crypto import open_text
+
 logger = logging.getLogger(__name__)
 
 BLOCKCHAIN_STORAGE_DIR = os.path.abspath(
@@ -91,7 +93,7 @@ class ConsortiumInvoiceRegistry:
             return
         try:
             with open(self._file_path, "r", encoding="utf-8") as f:
-                data = json.load(f)
+                data = json.loads(open_text(f.read()))
                 for item in data.values():
                     record = InvoicePledgeRecord.model_validate_json(json.dumps(item))
                     self._records[record.invoice_hash] = record
@@ -101,13 +103,19 @@ class ConsortiumInvoiceRegistry:
     def _persist(self) -> None:
         if not self._file_path:
             return
-        os.makedirs(self._storage_dir, exist_ok=True)
+        from services.security.crypto import seal_text
+        from services.security.file_utils import ensure_private_dir
+
+        ensure_private_dir(self._storage_dir)
         tmp_path = f"{self._file_path}.tmp"
         try:
             data = {k: v.model_dump(mode="json") for k, v in self._records.items()}
             with open(tmp_path, "w", encoding="utf-8") as f:
-                json.dump(data, f, indent=2)
+                f.write(seal_text(json.dumps(data, indent=2)))
             os.replace(tmp_path, self._file_path)
+            from services.security.file_utils import restrict_file
+
+            restrict_file(self._file_path)
         except OSError as exc:
             logger.warning("Failed to persist blockchain records to %s: %s", self._file_path, exc)
 

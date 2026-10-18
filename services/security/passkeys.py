@@ -35,6 +35,9 @@ from webauthn.helpers.structs import (
     UserVerificationRequirement,
 )
 
+from services.security.crypto import open_text, seal_text
+from services.security.file_utils import ensure_private_dir, restrict_file
+
 logger = logging.getLogger(__name__)
 
 PASSKEY_STORAGE_DIR = os.path.abspath(
@@ -43,6 +46,7 @@ PASSKEY_STORAGE_DIR = os.path.abspath(
 )
 
 CHALLENGE_TTL_SECONDS = 300
+MAX_ACTIVE_CHALLENGES = 1024
 
 
 class PasskeyError(Exception):
@@ -103,7 +107,7 @@ class PasskeyRegistry:
             return
         try:
             with open(self._file_path, "r", encoding="utf-8") as f:
-                data = json.load(f)
+                data = json.loads(open_text(f.read()))
                 for tenant_id, cred_data in data.items():
                     self._credentials[tenant_id] = _StoredCredential(
                         credential_id=bytes.fromhex(cred_data["credential_id"]),
@@ -116,7 +120,7 @@ class PasskeyRegistry:
     def _persist(self) -> None:
         if not self._file_path:
             return
-        os.makedirs(self._storage_dir, exist_ok=True)
+        ensure_private_dir(self._storage_dir)
         tmp_path = f"{self._file_path}.tmp"
         try:
             data = {
@@ -128,8 +132,9 @@ class PasskeyRegistry:
                 for tenant_id, cred in self._credentials.items()
             }
             with open(tmp_path, "w", encoding="utf-8") as f:
-                json.dump(data, f, indent=2)
+                f.write(seal_text(json.dumps(data, indent=2)))
             os.replace(tmp_path, self._file_path)
+            restrict_file(self._file_path)
         except OSError as exc:
             logger.warning("Failed to persist passkeys to %s: %s", self._file_path, exc)
 
@@ -221,7 +226,17 @@ class PasskeyRegistry:
                     pass
 
     def _issue(self, key: tuple[str, str], challenge: bytes) -> None:
-        self._challenges[key] = (challenge, time.monotonic() + CHALLENGE_TTL_SECONDS)
+        # Expired challenges are otherwise only dropped when reused, so a tenant that keeps
+        # requesting options would grow this map without bound.
+        now = time.monotonic()
+        for stale in [k for k, (_, expiry) in self._challenges.items() if now > expiry]:
+            self._challenges.pop(stale, None)
+        if len(self._challenges) >= MAX_ACTIVE_CHALLENGES:
+            overflow = len(self._challenges) - MAX_ACTIVE_CHALLENGES + 1
+            oldest = sorted(self._challenges.items(), key=lambda item: item[1][1])[:overflow]
+            for stale_key, _ in oldest:
+                self._challenges.pop(stale_key, None)
+        self._challenges[key] = (challenge, now + CHALLENGE_TTL_SECONDS)
 
     def _consume(self, key: tuple[str, str]) -> bytes:
         entry = self._challenges.pop(key, None)

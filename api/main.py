@@ -24,7 +24,9 @@ async def lifespan(_: FastAPI):
     from services.decision.registry import DecisionEngineRegistry
     from services.agent.knowledge import retrieve_cards
     from services.agent.dynamic_router import FastEmbedSemanticRouter
+    from services.security.crypto import validate_configuration
 
+    validate_configuration()
     DecisionEngineRegistry.get_instance()
 
     def _warmup_background():

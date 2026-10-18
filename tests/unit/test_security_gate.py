@@ -4,6 +4,7 @@ Verifies proposal staging, state transitions, and HITL WebAuthn passkey verifica
 """
 
 import json
+from datetime import datetime, timedelta, timezone
 
 import pytest
 from webauthn.helpers import base64url_to_bytes, bytes_to_base64url
@@ -54,6 +55,40 @@ def _stage(ledger, action_type="TRANSFER", amount_cents=100000, target="ACC-9988
 
 def _sign(passkeys, device, intent_id):
     return device.get(json.loads(passkeys.authentication_options(TENANT, intent_id)))
+
+
+def test_repeated_instruction_reuses_the_pending_proposal(ledger):
+    first = _stage(ledger, action_type="FACTOR_INVOICE", amount_cents=500000, target="INV-DEDUPE")
+    second = _stage(ledger, action_type="FACTOR_INVOICE", amount_cents=500000, target="INV-DEDUPE")
+
+    assert second.id == first.id
+    assert len(ledger.list_intents()) == 1
+
+
+def test_a_different_target_is_a_new_proposal(ledger):
+    first = _stage(ledger, action_type="FACTOR_INVOICE", amount_cents=500000, target="INV-A")
+    second = _stage(ledger, action_type="FACTOR_INVOICE", amount_cents=500000, target="INV-B")
+
+    assert second.id != first.id
+    assert len(ledger.list_intents()) == 2
+
+
+def test_expired_pending_proposals_are_purged(ledger, monkeypatch):
+    import sys
+
+    # services.security re-exports the singleton under the same name, so reach the module via sys.modules.
+    ledger_module = sys.modules["services.security.staging_ledger"]
+    monkeypatch.setattr(ledger_module, "STAGED_INTENT_TTL_HOURS", 1)
+    stale = _stage(ledger, action_type="TRANSFER", amount_cents=1000, target="ACC-OLD")
+    with ledger._lock:
+        ledger._intents[stale.id] = stale.model_copy(
+            update={"staged_at": datetime.now(timezone.utc) - timedelta(hours=2)}
+        )
+
+    fresh = _stage(ledger, action_type="TRANSFER", amount_cents=1000, target="ACC-NEW")
+    remaining = {intent.id for intent in ledger.list_intents()}
+    assert stale.id not in remaining
+    assert fresh.id in remaining
 
 
 def test_stage_intent_creates_pending_proposal(ledger):
@@ -147,6 +182,22 @@ def test_wrong_origin_rejected(ledger, passkeys, authenticator):
 
     with pytest.raises(BiometricVerificationError):
         ledger.execute_intent(intent.id, webauthn_assertion=_sign(passkeys, authenticator, intent.id))
+
+
+def test_wrong_rp_id_rejected(ledger, passkeys, authenticator):
+    intent = _stage(ledger)
+    authenticator.rp_id = "evil.example"
+
+    with pytest.raises(BiometricVerificationError):
+        ledger.execute_intent(intent.id, webauthn_assertion=_sign(passkeys, authenticator, intent.id))
+
+
+def test_registration_from_a_foreign_origin_rejected(passkeys):
+    options = json.loads(passkeys.registration_options("SME-201"))
+
+    with pytest.raises(PasskeyError):
+        passkeys.register("SME-201", SoftAuthenticator(origin="https://evil.example").create(options))
+    assert not passkeys.has_passkey("SME-201")
 
 
 def test_second_passkey_registration_refused(passkeys, authenticator):
