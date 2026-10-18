@@ -71,8 +71,9 @@ checkpoint-*/
 *.pth
 *.onnx
 
-# Local Session Store Cache
+# Local Session Store & Persistent Ledger Cache
 .sessions/
+.data/
 
 # Local Assistant Caches & Training Datasets
 .claude/

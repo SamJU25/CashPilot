@@ -15,15 +15,29 @@ from api.routes.actions import router as actions_router
 from api.routes.underwrite import router as underwrite_router
 from api.routes.agent import router as agent_router
 from api.routes.decision import router as decision_router
+from api.routes.auth import router as auth_router
 
 @asynccontextmanager
 async def lifespan(_: FastAPI):
-    # Without this the first chat pays ~7s: registry init plus embedding every knowledge card.
+    # Pre-warm decision registry, knowledge cards, and FastEmbed ONNX semantic router
+    # in a background daemon thread so first user chat turn responds in <50ms.
     from services.decision.registry import DecisionEngineRegistry
     from services.agent.knowledge import retrieve_cards
+    from services.agent.dynamic_router import FastEmbedSemanticRouter
 
     DecisionEngineRegistry.get_instance()
-    threading.Thread(target=retrieve_cards, args=("cash runway",), daemon=True).start()
+
+    def _warmup_background():
+        try:
+            retrieve_cards("cash runway")
+        except Exception:
+            pass
+        try:
+            FastEmbedSemanticRouter.get_instance()
+        except Exception:
+            pass
+
+    threading.Thread(target=_warmup_background, daemon=True).start()
     yield
 
 
@@ -61,6 +75,7 @@ app.include_router(actions_router)
 app.include_router(underwrite_router)
 app.include_router(agent_router)
 app.include_router(decision_router)
+app.include_router(auth_router)
 
 
 from api.routes.health import get_health_status

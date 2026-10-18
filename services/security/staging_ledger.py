@@ -5,6 +5,9 @@ Enforces the Three-Tier Security Gate to prevent unauthorized automated money mo
 
 from __future__ import annotations
 
+import json
+import logging
+import os
 import threading
 import uuid
 from datetime import datetime, timezone
@@ -15,6 +18,13 @@ from pydantic import BaseModel, ConfigDict, Field
 
 from services.security.passkeys import PasskeyError, PasskeyRegistry, passkey_registry
 from services.security.three_tier_gate import StagedActionIntent, requires_biometric_execution
+
+logger = logging.getLogger(__name__)
+
+LEDGER_DIR = os.path.abspath(
+    os.environ.get("COPILOT_LEDGER_DIR")
+    or os.path.join(os.path.dirname(__file__), "../../.data")
+)
 
 
 class ActionStatus(str, Enum):
@@ -58,12 +68,44 @@ class ExecutionRequest(BaseModel):
 
 
 class StagingLedger:
-    """Thread-safe in-memory staging ledger for autonomous agent financial actions."""
+    """Thread-safe persistent staging ledger for autonomous agent financial actions."""
 
-    def __init__(self, passkeys: Optional[PasskeyRegistry] = None) -> None:
+    def __init__(
+        self,
+        passkeys: Optional[PasskeyRegistry] = None,
+        storage_dir: Optional[str] = None,
+    ) -> None:
         self._passkeys = passkeys or passkey_registry
+        self._storage_dir = storage_dir
+        self._file_path = os.path.join(self._storage_dir, "staged_intents.json") if self._storage_dir else None
         self._intents: dict[str, StagedActionIntent] = {}
         self._lock = threading.Lock()
+        self._load_persisted()
+
+    def _load_persisted(self) -> None:
+        if not self._file_path or not os.path.exists(self._file_path):
+            return
+        try:
+            with open(self._file_path, "r", encoding="utf-8") as f:
+                data = json.load(f)
+                for item in data.values():
+                    intent = StagedActionIntent.model_validate_json(json.dumps(item))
+                    self._intents[intent.id] = intent
+        except Exception as exc:
+            logger.warning("Could not load persisted intents from %s: %s", self._file_path, exc)
+
+    def _persist(self) -> None:
+        if not self._file_path:
+            return
+        os.makedirs(self._storage_dir, exist_ok=True)
+        tmp_path = f"{self._file_path}.tmp"
+        try:
+            data = {k: v.model_dump(mode="json") for k, v in self._intents.items()}
+            with open(tmp_path, "w", encoding="utf-8") as f:
+                json.dump(data, f, indent=2)
+            os.replace(tmp_path, self._file_path)
+        except OSError as exc:
+            logger.warning("Failed to persist intents to %s: %s", self._file_path, exc)
 
     def stage_intent(self, request: StagingRequest) -> StagedActionIntent:
         """Stages an action proposal in Tier 2. No money moves."""
@@ -81,6 +123,7 @@ class StagingLedger:
         )
         with self._lock:
             self._intents[intent_id] = intent
+            self._persist()
         return intent
 
     def get_intent(self, intent_id: str) -> StagedActionIntent:
@@ -134,6 +177,7 @@ class StagingLedger:
                 }
             )
             self._intents[intent_id] = executed_intent
+            self._persist()
             return executed_intent
 
     def reject_intent(self, intent_id: str, reason: str = "Rejected by user") -> StagedActionIntent:
@@ -150,13 +194,19 @@ class StagingLedger:
                 update={"status": ActionStatus.REJECTED.value}
             )
             self._intents[intent_id] = rejected_intent
+            self._persist()
             return rejected_intent
 
     def clear(self) -> None:
         """Clears all intents (used for testing)."""
         with self._lock:
             self._intents.clear()
+            if self._file_path and os.path.exists(self._file_path):
+                try:
+                    os.remove(self._file_path)
+                except OSError:
+                    pass
 
 
 # Shared singleton instance
-staging_ledger = StagingLedger()
+staging_ledger = StagingLedger(storage_dir=LEDGER_DIR)

@@ -355,3 +355,15 @@ export interface SessionRecord {
   financial_facts: Record<string, any>;
   rolling_summary?: string | null;
 }
+
+export interface TokenResponse {
+  access_token: string;
+  token_type: string;
+  tenant_id: string;
+  expires_in: number;
+}
+
+export interface VerifyResponse {
+  valid: boolean;
+  tenant_id: string;
+}

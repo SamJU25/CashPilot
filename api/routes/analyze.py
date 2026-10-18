@@ -21,9 +21,10 @@ from services.ingestion.csv_parser import CSVIngestionError, parse_bank_csv, par
 from services.ingestion.invoice_parser import InvoiceIngestionError, parse_invoice_csv
 from services.ingestion.pdf_parser import parse_pdf_statement
 from services.ingestion.pdf_validator import PDFValidationError
+from services.security.tenant_token import TenantTokenError, resolve_tenant_identity
 
 router = APIRouter(prefix="/api/v1", tags=["Cash analysis"])
-MAX_UPLOAD_BYTES = int(os.getenv("MAX_ANALYSIS_UPLOAD_BYTES", "1048576"))
+MAX_UPLOAD_BYTES = int(os.getenv("MAX_ANALYSIS_UPLOAD_BYTES", "10485760"))
 
 
 
@@ -100,10 +101,21 @@ async def analyze_csv(
     as_of_date: date | None = Form(None),
     x_llm_config: Optional[str] = Header(default=None, alias="X-LLM-Config"),
     x_session_id: Optional[str] = Header(default=None, alias="X-Session-ID"),
+    x_tenant_token: Optional[str] = Header(default=None, alias="X-Tenant-Token"),
+    authorization: Optional[str] = Header(default=None, alias="Authorization"),
     x_tenant_id: Optional[str] = Header(default=None, alias="X-Tenant-ID"),
 ) -> CashAnalysisResponse | JSONResponse:
     if MAX_UPLOAD_BYTES <= 0:
         raise RuntimeError("MAX_ANALYSIS_UPLOAD_BYTES must be a positive integer")
+
+    try:
+        effective_tenant = resolve_tenant_identity(
+            x_tenant_token=x_tenant_token,
+            authorization=authorization,
+            x_tenant_id=x_tenant_id,
+        )
+    except TenantTokenError as exc:
+        return JSONResponse(status_code=401, content={"error": {"code": "INVALID_TOKEN", "message": str(exc)}})
 
     effective_llm_config: LLMConfig | None = None
     if x_llm_config:
@@ -166,7 +178,7 @@ async def analyze_csv(
         if is_pdf:
             has_pdf = True
             try:
-                pdf_res = parse_pdf_statement(content, tenant_id=x_tenant_id or "SME-DEFAULT")
+                pdf_res = parse_pdf_statement(content, tenant_id=effective_tenant)
                 pdf_pages_total += pdf_res.page_count
                 csv_bytes = pdf_res.csv_text.encode("utf-8")
                 normalized_csv_parts.append(pdf_res.csv_text)
@@ -257,7 +269,7 @@ async def analyze_csv(
             session_store.update_statement(
                 session_id=x_session_id,
                 csv_content=combined_csv,
-                tenant_id=x_tenant_id or "SME-DEFAULT",
+                tenant_id=effective_tenant,
             )
         except Exception:
             pass
@@ -346,9 +358,20 @@ async def analyze_invoices_csv(
     file: UploadFile | None = File(None),
     as_of_date: date | None = Form(None),
     x_session_id: Optional[str] = Header(default=None, alias="X-Session-ID"),
+    x_tenant_token: Optional[str] = Header(default=None, alias="X-Tenant-Token"),
+    authorization: Optional[str] = Header(default=None, alias="Authorization"),
     x_tenant_id: Optional[str] = Header(default=None, alias="X-Tenant-ID"),
 ) -> ReceivablesAgeingResponse | JSONResponse:
     """Parses accounts receivable invoices CSV and computes an AR aging schedule with risk advisory."""
+    try:
+        effective_tenant = resolve_tenant_identity(
+            x_tenant_token=x_tenant_token,
+            authorization=authorization,
+            x_tenant_id=x_tenant_id,
+        )
+    except TenantTokenError as exc:
+        return JSONResponse(status_code=401, content={"error": {"code": "INVALID_TOKEN", "message": str(exc)}})
+
     if file is None:
         form = await request.form()
         raw_file = form.get("file")
@@ -370,7 +393,7 @@ async def analyze_invoices_csv(
 
     content_str = content_bytes.decode("utf-8", errors="replace")
     try:
-        ingestion = parse_invoice_csv(content_str, tenant_id=x_tenant_id or "SME-DEFAULT")
+        ingestion = parse_invoice_csv(content_str, tenant_id=effective_tenant)
     except InvoiceIngestionError as exc:
         return JSONResponse(
             status_code=422,
@@ -390,7 +413,7 @@ async def analyze_invoices_csv(
             session_store.update_invoices(
                 session_id=x_session_id,
                 invoices_csv=content_str,
-                tenant_id=x_tenant_id or "SME-DEFAULT",
+                tenant_id=effective_tenant,
             )
         except Exception:
             pass

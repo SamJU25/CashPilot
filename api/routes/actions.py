@@ -26,8 +26,26 @@ from services.security.staging_ledger import (
     IntentStateError,
     BiometricVerificationError,
 )
+from services.security.tenant_token import TenantTokenError, resolve_tenant_identity
 
 router = APIRouter(prefix="/api/v1/actions", tags=["Security Gate & Action Intents"])
+
+
+def _resolve_tenant(
+    x_tenant_token: Optional[str] = None,
+    authorization: Optional[str] = None,
+    x_tenant_id: Optional[str] = None,
+) -> Optional[str]:
+    if not x_tenant_token and not authorization and not x_tenant_id:
+        return None
+    try:
+        return resolve_tenant_identity(
+            x_tenant_token=x_tenant_token,
+            authorization=authorization,
+            x_tenant_id=x_tenant_id,
+        )
+    except TenantTokenError as exc:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=str(exc))
 
 
 @router.post("/stage", response_model=StagedActionIntent, status_code=status.HTTP_201_CREATED)
@@ -61,22 +79,28 @@ async def register_passkey(request: PasskeyRegistrationRequest) -> dict[str, boo
 @router.get("", response_model=list[StagedActionIntent])
 async def list_action_intents(
     tenant_id: Optional[str] = Query(default=None, description="Optional tenant filter"),
+    x_tenant_token: Optional[str] = Header(default=None, alias="X-Tenant-Token"),
+    authorization: Optional[str] = Header(default=None, alias="Authorization"),
     x_tenant_id: Optional[str] = Header(default=None, alias="X-Tenant-ID"),
 ) -> list[StagedActionIntent]:
     """Lists staged proposals awaiting review or historical execution records."""
-    effective_tenant = tenant_id or x_tenant_id
+    resolved = _resolve_tenant(x_tenant_token, authorization, x_tenant_id)
+    effective_tenant = tenant_id or resolved
     return staging_ledger.list_intents(tenant_id=effective_tenant)
 
 
 @router.get("/{intent_id}", response_model=StagedActionIntent)
 async def get_action_intent(
     intent_id: str,
+    x_tenant_token: Optional[str] = Header(default=None, alias="X-Tenant-Token"),
+    authorization: Optional[str] = Header(default=None, alias="Authorization"),
     x_tenant_id: Optional[str] = Header(default=None, alias="X-Tenant-ID"),
 ) -> StagedActionIntent:
     """Retrieves a specific staged action intent."""
+    resolved_tenant = _resolve_tenant(x_tenant_token, authorization, x_tenant_id)
     try:
         intent = staging_ledger.get_intent(intent_id)
-        if x_tenant_id and intent.tenant_id != x_tenant_id:
+        if resolved_tenant and intent.tenant_id != resolved_tenant:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Action intent {intent_id} not found")
         return intent
     except IntentNotFoundError as exc:
@@ -86,15 +110,18 @@ async def get_action_intent(
 @router.post("/{intent_id}/passkey-options")
 async def intent_passkey_options(
     intent_id: str,
+    x_tenant_token: Optional[str] = Header(default=None, alias="X-Tenant-Token"),
+    authorization: Optional[str] = Header(default=None, alias="Authorization"),
     x_tenant_id: Optional[str] = Header(default=None, alias="X-Tenant-ID"),
 ) -> Response:
     """
     Issues a single-use WebAuthn challenge bound to this intent.
     428 means the tenant has no passkey yet and must register one first.
     """
+    resolved_tenant = _resolve_tenant(x_tenant_token, authorization, x_tenant_id)
     try:
         intent = staging_ledger.get_intent(intent_id)
-        if x_tenant_id and intent.tenant_id != x_tenant_id:
+        if resolved_tenant and intent.tenant_id != resolved_tenant:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Action intent {intent_id} not found")
     except IntentNotFoundError as exc:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc))
@@ -111,16 +138,19 @@ async def intent_passkey_options(
 async def execute_action_intent(
     intent_id: str,
     request: Optional[ExecutionRequest] = None,
+    x_tenant_token: Optional[str] = Header(default=None, alias="X-Tenant-Token"),
+    authorization: Optional[str] = Header(default=None, alias="Authorization"),
     x_tenant_id: Optional[str] = Header(default=None, alias="X-Tenant-ID"),
 ) -> StagedActionIntent:
     """
     Executes a staged proposal.
     Tier 3 irreversible actions require a WebAuthn assertion over the intent's passkey challenge.
     """
+    resolved_tenant = _resolve_tenant(x_tenant_token, authorization, x_tenant_id)
     assertion = request.webauthn_assertion if request else None
     try:
         intent = staging_ledger.get_intent(intent_id)
-        if x_tenant_id and intent.tenant_id != x_tenant_id:
+        if resolved_tenant and intent.tenant_id != resolved_tenant:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Action intent {intent_id} not found")
         return staging_ledger.execute_intent(intent_id, webauthn_assertion=assertion)
     except IntentNotFoundError as exc:
@@ -134,12 +164,15 @@ async def execute_action_intent(
 @router.post("/{intent_id}/reject", response_model=StagedActionIntent)
 async def reject_action_intent(
     intent_id: str,
+    x_tenant_token: Optional[str] = Header(default=None, alias="X-Tenant-Token"),
+    authorization: Optional[str] = Header(default=None, alias="Authorization"),
     x_tenant_id: Optional[str] = Header(default=None, alias="X-Tenant-ID"),
 ) -> StagedActionIntent:
     """Rejects a staged proposal."""
+    resolved_tenant = _resolve_tenant(x_tenant_token, authorization, x_tenant_id)
     try:
         intent = staging_ledger.get_intent(intent_id)
-        if x_tenant_id and intent.tenant_id != x_tenant_id:
+        if resolved_tenant and intent.tenant_id != resolved_tenant:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Action intent {intent_id} not found")
         return staging_ledger.reject_intent(intent_id)
     except IntentNotFoundError as exc:

@@ -24,8 +24,10 @@ from services.matcher.liquidity_matcher import (
     match_financing_options,
 )
 
+from services.security.tenant_token import TenantTokenError, resolve_tenant_identity
+
 router = APIRouter(prefix="/api/v1", tags=["Digital Underwriting"])
-MAX_UPLOAD_BYTES = int(os.getenv("MAX_ANALYSIS_UPLOAD_BYTES", "1048576"))
+MAX_UPLOAD_BYTES = int(os.getenv("MAX_ANALYSIS_UPLOAD_BYTES", "10485760"))
 
 
 class UnderwritingDossierResponse(BaseModel):
@@ -75,9 +77,20 @@ async def underwrite_statement(
     file: UploadFile = File(...),
     nsf_count: int = Form(0, ge=0),
     x_session_id: Optional[str] = Header(default=None, alias="X-Session-ID"),
+    x_tenant_token: Optional[str] = Header(default=None, alias="X-Tenant-Token"),
+    authorization: Optional[str] = Header(default=None, alias="Authorization"),
     x_tenant_id: Optional[str] = Header(default=None, alias="X-Tenant-ID"),
 ) -> UnderwriteApiResponse | JSONResponse:
     """Performs digital underwriting on transaction CSV and matches credit options."""
+    try:
+        effective_tenant = resolve_tenant_identity(
+            x_tenant_token=x_tenant_token,
+            authorization=authorization,
+            x_tenant_id=x_tenant_id,
+        )
+    except TenantTokenError as exc:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=str(exc))
+
     content = await file.read(MAX_UPLOAD_BYTES + 1)
     if len(content) > MAX_UPLOAD_BYTES:
         return JSONResponse(
@@ -108,7 +121,7 @@ async def underwrite_statement(
             session_store.update_statement(
                 session_id=x_session_id,
                 csv_content=csv_str,
-                tenant_id=x_tenant_id or "SME-DEFAULT",
+                tenant_id=effective_tenant,
             )
         except Exception:
             pass

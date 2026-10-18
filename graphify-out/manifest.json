@@ -924,9 +924,9 @@
     "semantic_hash": ""
   },
   "AGENTS.md": {
-    "mtime": 1792352747.7751153,
-    "seen": 1792353318.9449446,
-    "ast_hash": "60328ca29134580ea5e807e0d95dd4c2",
+    "mtime": 1792353339.987578,
+    "seen": 1792354906.7549248,
+    "ast_hash": "4b14c614057023e84eeca9d5c1abf838",
     "semantic_hash": ""
   },
   "GEMINI.md": {
@@ -984,9 +984,9 @@
     "semantic_hash": ""
   },
   "README.md": {
-    "mtime": 1792352005.6630447,
-    "seen": 1792352071.264516,
-    "ast_hash": "55e5f5a94b1970985462667292cb7e3c",
+    "mtime": 1792353363.2545843,
+    "seen": 1792354906.755239,
+    "ast_hash": "97080b612d9497a067fbdef650ed69f4",
     "semantic_hash": ""
   },
   "requirements.txt": {
@@ -1074,9 +1074,9 @@
     "semantic_hash": ""
   },
   "api/main.py": {
-    "mtime": 1792346552.4263391,
-    "seen": 1792346713.7542453,
-    "ast_hash": "6232cc7dfe3f755a3a8a2f6815a6c24f",
+    "mtime": 1792354476.3013754,
+    "seen": 1792354906.7207778,
+    "ast_hash": "5c0ba254ebde42699d3f67fe3086df13",
     "semantic_hash": ""
   },
   "api/routes/__init__.py": {
@@ -1164,9 +1164,9 @@
     "semantic_hash": ""
   },
   "api/routes/analyze.py": {
-    "mtime": 1792283174.7731743,
-    "seen": 1792283384.0997705,
-    "ast_hash": "cb8e0ef42396841ec9fd9ef0a62b6f8c",
+    "mtime": 1792354680.4211776,
+    "seen": 1792354906.7210066,
+    "ast_hash": "eaf4dc4f3fa6b9207d83ccb6ca030d8c",
     "semantic_hash": ""
   },
   "app/layout.tsx": {
@@ -1176,9 +1176,9 @@
     "semantic_hash": ""
   },
   "app/page.tsx": {
-    "mtime": 1792351991.7069666,
-    "seen": 1792352071.2277246,
-    "ast_hash": "067fb47770e1a67497d6b566f0834344",
+    "mtime": 1792353372.855837,
+    "seen": 1792354906.7214003,
+    "ast_hash": "5e89950797ed994f787baf3b4313beee",
     "semantic_hash": ""
   },
   "next-env.d.ts": {
@@ -1242,15 +1242,15 @@
     "semantic_hash": ""
   },
   "api/routes/actions.py": {
-    "mtime": 1792353160.4289584,
-    "seen": 1792353318.9064975,
-    "ast_hash": "c85a0a867a61e7df29c4d412ad79b9f5",
+    "mtime": 1792354518.9044578,
+    "seen": 1792354906.7210007,
+    "ast_hash": "da92dee07a4e5dbd6c3be002b020c99f",
     "semantic_hash": ""
   },
   "api/routes/underwrite.py": {
-    "mtime": 1792353131.1941562,
-    "seen": 1792353318.9069924,
-    "ast_hash": "ad49a17c3a27fd1cc21241e150b7b82b",
+    "mtime": 1792354592.391516,
+    "seen": 1792354906.7212884,
+    "ast_hash": "d42e762318c6eca0b13eb2a05f18eaf5",
     "semantic_hash": ""
   },
   "services/blockchain/__init__.py": {
@@ -1260,9 +1260,9 @@
     "semantic_hash": ""
   },
   "services/blockchain/invoice_hasher.py": {
-    "mtime": 1791980372.844837,
-    "seen": 1791980414.9038486,
-    "ast_hash": "2163b90757cdf6f16c153fd9e5f95b5a",
+    "mtime": 1792354386.365087,
+    "seen": 1792354906.726655,
+    "ast_hash": "c7cabcbeef0a9afda0cf98b6da448630",
     "semantic_hash": ""
   },
   "services/matcher/__init__.py": {
@@ -1278,9 +1278,9 @@
     "semantic_hash": ""
   },
   "services/security/staging_ledger.py": {
-    "mtime": 1792248860.709624,
-    "seen": 1792249072.729259,
-    "ast_hash": "63187ae0411915df00cf363059c3c143",
+    "mtime": 1792354342.1968112,
+    "seen": 1792354906.7314842,
+    "ast_hash": "f71241749f6eea85f3a3734f1e5c5dec",
     "semantic_hash": ""
   },
   "tests/integration/test_backbone_apis.py": {
@@ -1338,9 +1338,9 @@
     "semantic_hash": ""
   },
   "api/routes/agent.py": {
-    "mtime": 1792351388.6070824,
-    "seen": 1792351439.877817,
-    "ast_hash": "deee293d574d150518de8e2d41e784b4",
+    "mtime": 1792354794.6706927,
+    "seen": 1792354906.721004,
+    "ast_hash": "7cd1155f2ac996e890760d83087cd7c0",
     "semantic_hash": ""
   },
   "services/agent/__init__.py": {
@@ -1902,9 +1902,9 @@
     "semantic_hash": ""
   },
   "services/security/passkeys.py": {
-    "mtime": 1792248846.120104,
-    "seen": 1792249072.7292562,
-    "ast_hash": "b1fe3d5296eab56832bff8f50b2101a2",
+    "mtime": 1792354318.6678214,
+    "seen": 1792354906.7314818,
+    "ast_hash": "c5128ce7b03e95e5fae1900037e7ce90",
     "semantic_hash": ""
   },
   "tests/passkey_authenticator.py": {
@@ -2088,21 +2088,45 @@
     "semantic_hash": ""
   },
   "types/api.ts": {
-    "mtime": 1792353229.0104039,
-    "seen": 1792353318.9249718,
-    "ast_hash": "44813878cc1e30dd7fa729452c2535b3",
+    "mtime": 1792354713.2572494,
+    "seen": 1792354906.7364633,
+    "ast_hash": "7492ac0a9a824e3903e3de2676848a12",
     "semantic_hash": ""
   },
   "tests/conftest.py": {
-    "mtime": 1792351064.249318,
-    "seen": 1792351439.8889847,
-    "ast_hash": "aef02feb60c7ecff4234c2a0254b2d58",
+    "mtime": 1792354351.1474397,
+    "seen": 1792354906.731812,
+    "ast_hash": "945a9a8f01a097a765f3e4a472b1bfe6",
     "semantic_hash": ""
   },
   "scripts/run_deterministic_eval.py": {
     "mtime": 1792352637.6717217,
     "seen": 1792352736.5116138,
     "ast_hash": "7f9806cf54453338f8d53f5e917062c8",
+    "semantic_hash": ""
+  },
+  "api/routes/auth.py": {
+    "mtime": 1792354460.6406167,
+    "seen": 1792354906.7210095,
+    "ast_hash": "76e636e794309cf3a5db0d2ddc3c2e69",
+    "semantic_hash": ""
+  },
+  "services/security/tenant_token.py": {
+    "mtime": 1792354420.760736,
+    "seen": 1792354906.7314858,
+    "ast_hash": "69249be5d27c688bc08da8c5bd4ab8d0",
+    "semantic_hash": ""
+  },
+  "tests/unit/test_persistence.py": {
+    "mtime": 1792354400.858514,
+    "seen": 1792354906.7353559,
+    "ast_hash": "e9331e6f1c8be4b6ea0906f4b9d82636",
+    "semantic_hash": ""
+  },
+  "tests/unit/test_tenant_token.py": {
+    "mtime": 1792354692.3027236,
+    "seen": 1792354906.736212,
+    "ast_hash": "b55a5e9fc0c380cbda51bee7ae4436ae",
     "semantic_hash": ""
   }
 }

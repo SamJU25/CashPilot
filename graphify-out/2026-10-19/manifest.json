@@ -924,9 +924,9 @@
     "semantic_hash": ""
   },
   "AGENTS.md": {
-    "mtime": 1792352090.6312866,
-    "seen": 1792352736.5458772,
-    "ast_hash": "3273118e9ad57eeeba113b175d0a2cf6",
+    "mtime": 1792352747.7751153,
+    "seen": 1792353318.9449446,
+    "ast_hash": "60328ca29134580ea5e807e0d95dd4c2",
     "semantic_hash": ""
   },
   "GEMINI.md": {
@@ -1242,15 +1242,15 @@
     "semantic_hash": ""
   },
   "api/routes/actions.py": {
-    "mtime": 1792248897.5140288,
-    "seen": 1792249072.717258,
-    "ast_hash": "1d43a56d69afb8e8508df2c59da26a37",
+    "mtime": 1792353160.4289584,
+    "seen": 1792353318.9064975,
+    "ast_hash": "c85a0a867a61e7df29c4d412ad79b9f5",
     "semantic_hash": ""
   },
   "api/routes/underwrite.py": {
-    "mtime": 1792224626.1508553,
-    "seen": 1792224754.56608,
-    "ast_hash": "8b4c06c0afdd3b49d6349bdf1948c7f2",
+    "mtime": 1792353131.1941562,
+    "seen": 1792353318.9069924,
+    "ast_hash": "ad49a17c3a27fd1cc21241e150b7b82b",
     "semantic_hash": ""
   },
   "services/blockchain/__init__.py": {
@@ -1284,9 +1284,9 @@
     "semantic_hash": ""
   },
   "tests/integration/test_backbone_apis.py": {
-    "mtime": 1792248897.5140288,
-    "seen": 1792249072.7299266,
-    "ast_hash": "6575a189ac4f048e06417b4a38101826",
+    "mtime": 1792353233.988369,
+    "seen": 1792353318.92042,
+    "ast_hash": "4f3da97a306e47700fab53706d340157",
     "semantic_hash": ""
   },
   "tests/unit/test_blockchain_registry.py": {
@@ -1374,9 +1374,9 @@
     "semantic_hash": ""
   },
   "services/agent/llm_bridge.py": {
-    "mtime": 1792252332.140149,
-    "seen": 1792252487.5210192,
-    "ast_hash": "c49ce2ee6705bfc82737c7ecd17bccdc",
+    "mtime": 1792352978.9172122,
+    "seen": 1792353318.9117558,
+    "ast_hash": "9a84b472a4dea6d3f5c3e360333c478f",
     "semantic_hash": ""
   },
   "services/calculations/predictive_cash.py": {
@@ -1422,9 +1422,9 @@
     "semantic_hash": ""
   },
   "services/calculations/concentration_risk.py": {
-    "mtime": 1792141685.068523,
-    "seen": 1792141744.9868264,
-    "ast_hash": "3553406cf3bf1a48c728ef8b84a3bcd0",
+    "mtime": 1792352983.13068,
+    "seen": 1792353318.9141316,
+    "ast_hash": "d7e23c513b6353ed671eaa32891067e4",
     "semantic_hash": ""
   },
   "services/calculations/debt_service.py": {
@@ -2088,9 +2088,9 @@
     "semantic_hash": ""
   },
   "types/api.ts": {
-    "mtime": 1792224659.335347,
-    "seen": 1792345845.695669,
-    "ast_hash": "d25d5f9a1b8c192b227206615987e96d",
+    "mtime": 1792353229.0104039,
+    "seen": 1792353318.9249718,
+    "ast_hash": "44813878cc1e30dd7fa729452c2535b3",
     "semantic_hash": ""
   },
   "tests/conftest.py": {

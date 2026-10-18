@@ -14,6 +14,7 @@ from fastapi import APIRouter, Header, HTTPException, status
 from starlette.concurrency import run_in_threadpool
 
 from services.agent.llm_bridge import fetch_remote_models, test_llm_connection
+from services.security.tenant_token import TenantTokenError, resolve_tenant_identity
 from services.agent.schema import (
     AgentChatRequest,
     CopilotResponse,
@@ -97,6 +98,22 @@ async def agent_delete_model(
     return DeleteModelResponse(**res)
 
 
+def _resolve_agent_tenant(
+    x_tenant_token: Optional[str] = None,
+    authorization: Optional[str] = None,
+    x_tenant_id: Optional[str] = None,
+    fallback_id: Optional[str] = None,
+) -> str:
+    try:
+        return resolve_tenant_identity(
+            x_tenant_token=x_tenant_token,
+            authorization=authorization,
+            x_tenant_id=x_tenant_id or fallback_id,
+        )
+    except TenantTokenError as exc:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=str(exc))
+
+
 @router.get(
     "/session/{session_id}",
     response_model=Optional[SessionRecord],
@@ -106,11 +123,14 @@ async def agent_delete_model(
 )
 async def get_session(
     session_id: str,
+    x_tenant_token: Optional[str] = Header(default=None, alias="X-Tenant-Token"),
+    authorization: Optional[str] = Header(default=None, alias="Authorization"),
     x_tenant_id: Optional[str] = Header(default=None, alias="X-Tenant-ID"),
 ) -> Optional[SessionRecord]:
     """Retrieves session record from the persistent store."""
+    tenant = _resolve_agent_tenant(x_tenant_token, authorization, x_tenant_id)
     # The record holds the raw statement: another tenant gets the same 404 as a missing session.
-    rec = session_store.get_for_tenant(session_id, x_tenant_id or "SME-DEFAULT")
+    rec = session_store.get_for_tenant(session_id, tenant)
     if not rec:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -127,10 +147,13 @@ async def get_session(
 )
 async def clear_session(
     session_id: str,
+    x_tenant_token: Optional[str] = Header(default=None, alias="X-Tenant-Token"),
+    authorization: Optional[str] = Header(default=None, alias="Authorization"),
     x_tenant_id: Optional[str] = Header(default=None, alias="X-Tenant-ID"),
 ) -> dict:
     """Clears session record from memory and removes serialized disk cache."""
-    owned = session_store.get_for_tenant(session_id, x_tenant_id or "SME-DEFAULT") is not None
+    tenant = _resolve_agent_tenant(x_tenant_token, authorization, x_tenant_id)
+    owned = session_store.get_for_tenant(session_id, tenant) is not None
     removed = session_store.clear(session_id) if owned else False
     return {"session_id": session_id, "cleared": removed}
 
@@ -143,10 +166,13 @@ async def clear_session(
 )
 async def clear_session_statement(
     session_id: str,
+    x_tenant_token: Optional[str] = Header(default=None, alias="X-Tenant-Token"),
+    authorization: Optional[str] = Header(default=None, alias="Authorization"),
     x_tenant_id: Optional[str] = Header(default=None, alias="X-Tenant-ID"),
 ) -> dict:
     """Clears statement CSV and cached calculation metrics for the session."""
-    owned = session_store.get_for_tenant(session_id, x_tenant_id or "SME-DEFAULT") is not None
+    tenant = _resolve_agent_tenant(x_tenant_token, authorization, x_tenant_id)
+    owned = session_store.get_for_tenant(session_id, tenant) is not None
     rec = session_store.clear_statement(session_id) if owned else None
     return {"session_id": session_id, "statement_cleared": rec is not None}
 
@@ -160,13 +186,20 @@ async def clear_session_statement(
 )
 async def agent_chat(
     request: AgentChatRequest,
+    x_tenant_token: Optional[str] = Header(default=None, alias="X-Tenant-Token"),
+    authorization: Optional[str] = Header(default=None, alias="Authorization"),
     x_tenant_id: Optional[str] = Header(default=None, alias="X-Tenant-ID"),
     x_llm_config: Optional[str] = Header(default=None, alias="X-LLM-Config"),
     x_session_id: Optional[str] = Header(default=None, alias="X-Session-ID"),
 ) -> CopilotResponse:
     """Dispatches user prompt to the Agent Supervisor with authoritative header-based tenant and session isolation."""
     try:
-        effective_tenant = x_tenant_id or request.tenant_id or "SME-DEFAULT"
+        effective_tenant = _resolve_agent_tenant(
+            x_tenant_token=x_tenant_token,
+            authorization=authorization,
+            x_tenant_id=x_tenant_id,
+            fallback_id=request.tenant_id,
+        )
         effective_session_id = x_session_id or request.session_id
         if not effective_session_id:
             import uuid
