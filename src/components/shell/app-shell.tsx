@@ -121,6 +121,7 @@ function RailFooter() {
       </div>
       <Link
         href="/settings"
+        prefetch={true}
         className={cn(
           'flex h-9 items-center gap-2.5 rounded-md px-3 text-sm text-ink-2 transition-colors hover:bg-muted hover:text-foreground',
           pathname.startsWith('/settings') && 'bg-card font-medium text-foreground shadow-[0_0_0_1px_rgb(var(--border))]',

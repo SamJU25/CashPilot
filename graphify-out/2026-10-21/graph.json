@@ -79,7 +79,7 @@
       "file_type": "code",
       "norm_label": "agentactionproposal",
       "source_file": "services/agent/schema.py",
-      "source_location": "L198"
+      "source_location": "L201"
     },
     {
       "id": "services_agent_schema_agentmatchedoption",
@@ -92,7 +92,7 @@
       "file_type": "code",
       "norm_label": "agentmatchedoption",
       "source_file": "services/agent/schema.py",
-      "source_location": "L184"
+      "source_location": "L187"
     },
     {
       "id": "services_agent_schema_copilotresponse",
@@ -105,7 +105,7 @@
       "file_type": "code",
       "norm_label": "copilotresponse",
       "source_file": "services/agent/schema.py",
-      "source_location": "L220"
+      "source_location": "L223"
     },
     {
       "id": "services_agent_schema_deletemodelrequest",
@@ -118,7 +118,7 @@
       "file_type": "code",
       "norm_label": "deletemodelrequest",
       "source_file": "services/agent/schema.py",
-      "source_location": "L88"
+      "source_location": "L91"
     },
     {
       "id": "services_agent_schema_deletemodelresponse",
@@ -131,7 +131,7 @@
       "file_type": "code",
       "norm_label": "deletemodelresponse",
       "source_file": "services/agent/schema.py",
-      "source_location": "L97"
+      "source_location": "L100"
     },
     {
       "id": "services_agent_schema_downloadmodelrequest",
@@ -144,7 +144,7 @@
       "file_type": "code",
       "norm_label": "downloadmodelrequest",
       "source_file": "services/agent/schema.py",
-      "source_location": "L69"
+      "source_location": "L72"
     },
     {
       "id": "services_agent_schema_downloadmodelresponse",
@@ -157,7 +157,7 @@
       "file_type": "code",
       "norm_label": "downloadmodelresponse",
       "source_file": "services/agent/schema.py",
-      "source_location": "L78"
+      "source_location": "L81"
     },
     {
       "id": "services_agent_schema_fetchmodelsrequest",
@@ -170,7 +170,7 @@
       "file_type": "code",
       "norm_label": "fetchmodelsrequest",
       "source_file": "services/agent/schema.py",
-      "source_location": "L44"
+      "source_location": "L47"
     },
     {
       "id": "services_agent_schema_fetchmodelsresponse",
@@ -183,7 +183,7 @@
       "file_type": "code",
       "norm_label": "fetchmodelsresponse",
       "source_file": "services/agent/schema.py",
-      "source_location": "L52"
+      "source_location": "L55"
     },
     {
       "id": "services_agent_schema_modelitem",
@@ -209,7 +209,7 @@
       "file_type": "code",
       "norm_label": "proposedentry",
       "source_file": "services/agent/schema.py",
-      "source_location": "L208"
+      "source_location": "L211"
     },
     {
       "id": "services_agent_schema_testconnectionrequest",
@@ -937,7 +937,7 @@
       "file_type": "code",
       "norm_label": "chathistoryitem",
       "source_file": "services/agent/schema.py",
-      "source_location": "L108"
+      "source_location": "L111"
     },
     {
       "id": "services_calculations_predictive_cash_cashscenario",
@@ -1938,7 +1938,7 @@
       "file_type": "code",
       "norm_label": "localtransformersengine",
       "source_file": "services/agent/local_transformers.py",
-      "source_location": "L632"
+      "source_location": "L633"
     },
     {
       "id": "src_components_overview_quick_cash_dialog_mode",
@@ -2055,7 +2055,7 @@
       "file_type": "code",
       "norm_label": "ageingbucketmodel",
       "source_file": "src/types/api.ts",
-      "source_location": "L286"
+      "source_location": "L289"
     },
     {
       "id": "src_types_api_agentactionproposal",
@@ -2146,7 +2146,7 @@
       "file_type": "code",
       "norm_label": "customerdebtormodel",
       "source_file": "src/types/api.ts",
-      "source_location": "L293"
+      "source_location": "L296"
     },
     {
       "id": "src_types_api_decisionapirequest",
@@ -2159,7 +2159,7 @@
       "file_type": "code",
       "norm_label": "decisionapirequest",
       "source_file": "src/types/api.ts",
-      "source_location": "L247"
+      "source_location": "L250"
     },
     {
       "id": "src_types_api_decisionapiresponse",
@@ -2172,7 +2172,7 @@
       "file_type": "code",
       "norm_label": "decisionapiresponse",
       "source_file": "src/types/api.ts",
-      "source_location": "L256"
+      "source_location": "L259"
     },
     {
       "id": "src_types_api_decisiondomain",
@@ -2185,7 +2185,7 @@
       "file_type": "code",
       "norm_label": "decisiondomain",
       "source_file": "src/types/api.ts",
-      "source_location": "L220"
+      "source_location": "L223"
     },
     {
       "id": "src_types_api_decisionengineinfo",
@@ -2198,7 +2198,7 @@
       "file_type": "code",
       "norm_label": "decisionengineinfo",
       "source_file": "src/types/api.ts",
-      "source_location": "L235"
+      "source_location": "L238"
     },
     {
       "id": "src_types_api_decisionenginesresponse",
@@ -2211,7 +2211,7 @@
       "file_type": "code",
       "norm_label": "decisionenginesresponse",
       "source_file": "src/types/api.ts",
-      "source_location": "L241"
+      "source_location": "L244"
     },
     {
       "id": "src_types_api_deletemodelresponse",
@@ -2224,7 +2224,7 @@
       "file_type": "code",
       "norm_label": "deletemodelresponse",
       "source_file": "src/types/api.ts",
-      "source_location": "L277"
+      "source_location": "L280"
     },
     {
       "id": "src_types_api_downloadmodelresponse",
@@ -2237,7 +2237,7 @@
       "file_type": "code",
       "norm_label": "downloadmodelresponse",
       "source_file": "src/types/api.ts",
-      "source_location": "L269"
+      "source_location": "L272"
     },
     {
       "id": "src_types_api_fetchmodelsrequest",
@@ -2250,7 +2250,7 @@
       "file_type": "code",
       "norm_label": "fetchmodelsrequest",
       "source_file": "src/types/api.ts",
-      "source_location": "L206"
+      "source_location": "L209"
     },
     {
       "id": "src_types_api_fetchmodelsresponse",
@@ -2263,7 +2263,7 @@
       "file_type": "code",
       "norm_label": "fetchmodelsresponse",
       "source_file": "src/types/api.ts",
-      "source_location": "L212"
+      "source_location": "L215"
     },
     {
       "id": "src_types_api_financingoption",
@@ -2341,7 +2341,7 @@
       "file_type": "code",
       "norm_label": "receivablesageingresponse",
       "source_file": "src/types/api.ts",
-      "source_location": "L304"
+      "source_location": "L307"
     },
     {
       "id": "src_types_api_rejectedrow",
@@ -2380,7 +2380,7 @@
       "file_type": "code",
       "norm_label": "sessionrecord",
       "source_file": "src/types/api.ts",
-      "source_location": "L329"
+      "source_location": "L332"
     },
     {
       "id": "src_types_api_sessionturn",
@@ -2393,7 +2393,7 @@
       "file_type": "code",
       "norm_label": "sessionturn",
       "source_file": "src/types/api.ts",
-      "source_location": "L323"
+      "source_location": "L326"
     },
     {
       "id": "src_types_api_stagedactionintent",
@@ -2458,7 +2458,7 @@
       "file_type": "code",
       "norm_label": "tokenresponse",
       "source_file": "src/types/api.ts",
-      "source_location": "L343"
+      "source_location": "L346"
     },
     {
       "id": "src_types_api_underwriteapiresponse",
@@ -2497,7 +2497,7 @@
       "file_type": "code",
       "norm_label": "verifyresponse",
       "source_file": "src/types/api.ts",
-      "source_location": "L350"
+      "source_location": "L353"
     },
     {
       "id": "api_routes_analyze_accountbalancein",
@@ -2900,7 +2900,7 @@
       "file_type": "code",
       "norm_label": "dynamicmodelcatalog",
       "source_file": "services/agent/local_transformers.py",
-      "source_location": "L545"
+      "source_location": "L546"
     },
     {
       "id": "tests_unit_test_treasury_dupont_lease_testleasevsbuycalculations",
@@ -3251,7 +3251,7 @@
       "file_type": "code",
       "norm_label": "agentchatrequest",
       "source_file": "services/agent/schema.py",
-      "source_location": "L125"
+      "source_location": "L128"
     },
     {
       "id": "tests_unit_test_enterprise_finance_tools_testsubagentroutingandsupervisor",
@@ -3290,7 +3290,7 @@
       "file_type": "code",
       "norm_label": "agentmetricssummary",
       "source_file": "services/agent/schema.py",
-      "source_location": "L148"
+      "source_location": "L151"
     },
     {
       "id": "services_agent_subagents_credit_subagent_creditsubagent",
@@ -7245,7 +7245,7 @@
       "file_type": "code",
       "norm_label": ".normalize_fields()",
       "source_file": "services/agent/schema.py",
-      "source_location": "L116"
+      "source_location": "L119"
     },
     {
       "id": "tests_unit_test_context_summarizer_test_append_session_context_injects_facts_and_summary",
@@ -11157,7 +11157,7 @@
       "file_type": "code",
       "norm_label": "download_single_model()",
       "source_file": "scripts/download_model.py",
-      "source_location": "L41"
+      "source_location": "L42"
     },
     {
       "id": "scripts_download_model_list_models",
@@ -11181,7 +11181,7 @@
       "file_type": "code",
       "norm_label": "main()",
       "source_file": "scripts/download_model.py",
-      "source_location": "L68"
+      "source_location": "L69"
     },
     {
       "id": "services_agent_local_transformers_get_default_model_id",
@@ -11205,7 +11205,7 @@
       "file_type": "code",
       "norm_label": ".get_instance()",
       "source_file": "services/agent/local_transformers.py",
-      "source_location": "L645"
+      "source_location": "L646"
     },
     {
       "id": "services_agent_schema_get_active_default_model",
@@ -11217,7 +11217,7 @@
       "file_type": "code",
       "norm_label": "_get_active_default_model()",
       "source_file": "services/agent/schema.py",
-      "source_location": "L61"
+      "source_location": "L64"
     },
     {
       "id": "tests_unit_test_download_model_client",
@@ -13593,7 +13593,7 @@
       "file_type": "code",
       "norm_label": ".__contains__()",
       "source_file": "services/agent/local_transformers.py",
-      "source_location": "L564"
+      "source_location": "L565"
     },
     {
       "id": "services_agent_local_transformers_dynamicmodelcatalog_get",
@@ -13605,7 +13605,7 @@
       "file_type": "code",
       "norm_label": ".get()",
       "source_file": "services/agent/local_transformers.py",
-      "source_location": "L560"
+      "source_location": "L561"
     },
     {
       "id": "services_agent_local_transformers_dynamicmodelcatalog_getitem",
@@ -13617,7 +13617,7 @@
       "file_type": "code",
       "norm_label": ".__getitem__()",
       "source_file": "services/agent/local_transformers.py",
-      "source_location": "L556"
+      "source_location": "L557"
     },
     {
       "id": "services_agent_local_transformers_dynamicmodelcatalog_init",
@@ -13629,7 +13629,7 @@
       "file_type": "code",
       "norm_label": ".__init__()",
       "source_file": "services/agent/local_transformers.py",
-      "source_location": "L548"
+      "source_location": "L549"
     },
     {
       "id": "services_agent_local_transformers_dynamicmodelcatalog_items",
@@ -13641,7 +13641,7 @@
       "file_type": "code",
       "norm_label": ".items()",
       "source_file": "services/agent/local_transformers.py",
-      "source_location": "L568"
+      "source_location": "L569"
     },
     {
       "id": "services_agent_local_transformers_dynamicmodelcatalog_keys",
@@ -13653,7 +13653,7 @@
       "file_type": "code",
       "norm_label": ".keys()",
       "source_file": "services/agent/local_transformers.py",
-      "source_location": "L572"
+      "source_location": "L573"
     },
     {
       "id": "services_agent_local_transformers_dynamicmodelcatalog_refresh",
@@ -13665,7 +13665,7 @@
       "file_type": "code",
       "norm_label": ".refresh()",
       "source_file": "services/agent/local_transformers.py",
-      "source_location": "L552"
+      "source_location": "L553"
     },
     {
       "id": "services_agent_local_transformers_dynamicmodelcatalog_values",
@@ -13677,7 +13677,7 @@
       "file_type": "code",
       "norm_label": ".values()",
       "source_file": "services/agent/local_transformers.py",
-      "source_location": "L576"
+      "source_location": "L577"
     },
     {
       "id": "services_agent_local_transformers_localtransformersengine_init",
@@ -13689,7 +13689,7 @@
       "file_type": "code",
       "norm_label": ".__init__()",
       "source_file": "services/agent/local_transformers.py",
-      "source_location": "L638"
+      "source_location": "L639"
     },
     {
       "id": "services_calculations_lease_vs_buy_calculate_lease_vs_buy",
@@ -18237,7 +18237,7 @@
       "file_type": "code",
       "norm_label": ".delete_model()",
       "source_file": "services/agent/local_transformers.py",
-      "source_location": "L964"
+      "source_location": "L965"
     },
     {
       "id": "services_agent_local_transformers_localtransformersengine_download_model",
@@ -18249,7 +18249,7 @@
       "file_type": "code",
       "norm_label": ".download_model()",
       "source_file": "services/agent/local_transformers.py",
-      "source_location": "L846"
+      "source_location": "L847"
     },
     {
       "id": "services_agent_local_transformers_localtransformersengine_ensure_loaded",
@@ -18261,7 +18261,7 @@
       "file_type": "code",
       "norm_label": "._ensure_loaded()",
       "source_file": "services/agent/local_transformers.py",
-      "source_location": "L747"
+      "source_location": "L748"
     },
     {
       "id": "services_agent_local_transformers_localtransformersengine_generate",
@@ -18273,7 +18273,7 @@
       "file_type": "code",
       "norm_label": ".generate()",
       "source_file": "services/agent/local_transformers.py",
-      "source_location": "L1071"
+      "source_location": "L1072"
     },
     {
       "id": "services_agent_local_transformers_localtransformersengine_get_model_path",
@@ -18285,7 +18285,7 @@
       "file_type": "code",
       "norm_label": ".get_model_path()",
       "source_file": "services/agent/local_transformers.py",
-      "source_location": "L709"
+      "source_location": "L710"
     },
     {
       "id": "services_agent_local_transformers_localtransformersengine_is_available",
@@ -18297,7 +18297,7 @@
       "file_type": "code",
       "norm_label": ".is_available()",
       "source_file": "services/agent/local_transformers.py",
-      "source_location": "L651"
+      "source_location": "L652"
     },
     {
       "id": "services_agent_local_transformers_read_models_manifest",
@@ -18321,7 +18321,7 @@
       "file_type": "code",
       "norm_label": "resolve_canonical_model_name()",
       "source_file": "services/agent/local_transformers.py",
-      "source_location": "L584"
+      "source_location": "L585"
     },
     {
       "id": "services_agent_local_transformers_scan_models_directory",
@@ -20923,7 +20923,7 @@
       "source_location": "L1"
     },
     {
-      "id": "services_agent_schema_rationale_209",
+      "id": "services_agent_schema_rationale_212",
       "label": "A cash entry read from the owner's message. Nothing is recorded until they\u2026",
       "_origin": "ast",
       "community": 11,
@@ -20931,7 +20931,7 @@
       "file_type": "rationale",
       "norm_label": "a cash entry read from the owner's message. nothing is recorded until they...",
       "source_file": "services/agent/schema.py",
-      "source_location": "L209"
+      "source_location": "L212"
     },
     {
       "id": "tests_unit_test_download_model_rationale_373",
@@ -36381,7 +36381,7 @@
       "source_location": "L180"
     },
     {
-      "id": "services_agent_local_transformers_rationale_633",
+      "id": "services_agent_local_transformers_rationale_634",
       "label": "Singleton runner for local GGUF models powered by llama.cpp.",
       "_origin": "ast",
       "community": 229,
@@ -36389,7 +36389,7 @@
       "file_type": "rationale",
       "norm_label": "singleton runner for local gguf models powered by llama.cpp.",
       "source_file": "services/agent/local_transformers.py",
-      "source_location": "L633"
+      "source_location": "L634"
     },
     {
       "id": "tests_unit_test_download_model_rationale_1",
@@ -39655,7 +39655,7 @@
       "source_location": ""
     },
     {
-      "id": "services_agent_local_transformers_rationale_546",
+      "id": "services_agent_local_transformers_rationale_547",
       "label": "Dictionary that dynamically re-scans models/ on every access.",
       "_origin": "ast",
       "community": 254,
@@ -39663,7 +39663,7 @@
       "file_type": "rationale",
       "norm_label": "dictionary that dynamically re-scans models/ on every access.",
       "source_file": "services/agent/local_transformers.py",
-      "source_location": "L546"
+      "source_location": "L547"
     },
     {
       "id": "agent_skills_docker_patterns_skill",
@@ -46512,7 +46512,7 @@
       "source_location": "L102"
     },
     {
-      "id": "services_agent_local_transformers_rationale_1080",
+      "id": "services_agent_local_transformers_rationale_1081",
       "label": "Generates contextual response using local GGUF model via llama.cpp.",
       "_origin": "ast",
       "community": 329,
@@ -46520,7 +46520,7 @@
       "file_type": "rationale",
       "norm_label": "generates contextual response using local gguf model via llama.cpp.",
       "source_file": "services/agent/local_transformers.py",
-      "source_location": "L1080"
+      "source_location": "L1081"
     },
     {
       "id": "services_agent_local_transformers_rationale_126",
@@ -46622,7 +46622,7 @@
       "source_location": "L51"
     },
     {
-      "id": "services_agent_local_transformers_rationale_585",
+      "id": "services_agent_local_transformers_rationale_586",
       "label": "Normalizes model aliases to canonical IDs dynamically from disk scan and\u2026",
       "_origin": "ast",
       "community": 329,
@@ -46630,10 +46630,10 @@
       "file_type": "rationale",
       "norm_label": "normalizes model aliases to canonical ids dynamically from disk scan and...",
       "source_file": "services/agent/local_transformers.py",
-      "source_location": "L585"
+      "source_location": "L586"
     },
     {
-      "id": "services_agent_local_transformers_rationale_652",
+      "id": "services_agent_local_transformers_rationale_653",
       "label": "Checks if target GGUF model is present on disk locally with zero network calls.",
       "_origin": "ast",
       "community": 329,
@@ -46641,7 +46641,7 @@
       "file_type": "rationale",
       "norm_label": "checks if target gguf model is present on disk locally with zero network calls.",
       "source_file": "services/agent/local_transformers.py",
-      "source_location": "L652"
+      "source_location": "L653"
     },
     {
       "id": "services_agent_local_transformers_rationale_71",
@@ -46655,7 +46655,7 @@
       "source_location": "L71"
     },
     {
-      "id": "services_agent_local_transformers_rationale_710",
+      "id": "services_agent_local_transformers_rationale_711",
       "label": "Returns the primary path or repo_id for local model weights.",
       "_origin": "ast",
       "community": 329,
@@ -46663,10 +46663,10 @@
       "file_type": "rationale",
       "norm_label": "returns the primary path or repo_id for local model weights.",
       "source_file": "services/agent/local_transformers.py",
-      "source_location": "L710"
+      "source_location": "L711"
     },
     {
-      "id": "services_agent_local_transformers_rationale_847",
+      "id": "services_agent_local_transformers_rationale_848",
       "label": "Explicitly downloads target GGUF model weights on demand with robust exception\u2026",
       "_origin": "ast",
       "community": 329,
@@ -46674,10 +46674,10 @@
       "file_type": "rationale",
       "norm_label": "explicitly downloads target gguf model weights on demand with robust exception...",
       "source_file": "services/agent/local_transformers.py",
-      "source_location": "L847"
+      "source_location": "L848"
     },
     {
-      "id": "services_agent_local_transformers_rationale_965",
+      "id": "services_agent_local_transformers_rationale_966",
       "label": "Explicitly deletes downloaded model weights to reclaim disk space.",
       "_origin": "ast",
       "community": 329,
@@ -46685,7 +46685,7 @@
       "file_type": "rationale",
       "norm_label": "explicitly deletes downloaded model weights to reclaim disk space.",
       "source_file": "services/agent/local_transformers.py",
-      "source_location": "L965"
+      "source_location": "L966"
     },
     {
       "id": "agent_skills_code_optimizer_skill",
@@ -58909,7 +58909,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "scripts/download_model.py",
-      "source_location": "L42",
+      "source_location": "L43",
       "weight": 1.0
     },
     {
@@ -58921,7 +58921,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "scripts/download_model.py",
-      "source_location": "L109",
+      "source_location": "L110",
       "weight": 1.0
     },
     {
@@ -58933,7 +58933,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "scripts/download_model.py",
-      "source_location": "L121",
+      "source_location": "L122",
       "weight": 1.0
     },
     {
@@ -58945,7 +58945,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "scripts/download_model.py",
-      "source_location": "L70",
+      "source_location": "L71",
       "weight": 1.0
     },
     {
@@ -58957,7 +58957,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "scripts/download_model.py",
-      "source_location": "L95",
+      "source_location": "L96",
       "weight": 1.0
     },
     {
@@ -58969,7 +58969,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "scripts/download_model.py",
-      "source_location": "L98",
+      "source_location": "L99",
       "weight": 1.0
     },
     {
@@ -59461,7 +59461,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/agent/llm_bridge.py",
-      "source_location": "L600",
+      "source_location": "L601",
       "weight": 1.0
     },
     {
@@ -59473,7 +59473,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/agent/llm_bridge.py",
-      "source_location": "L612",
+      "source_location": "L616",
       "weight": 1.0
     },
     {
@@ -59485,7 +59485,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/agent/llm_bridge.py",
-      "source_location": "L641",
+      "source_location": "L645",
       "weight": 1.0
     },
     {
@@ -59929,7 +59929,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/agent/local_transformers.py",
-      "source_location": "L565",
+      "source_location": "L566",
       "weight": 1.0
     },
     {
@@ -59941,7 +59941,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/agent/local_transformers.py",
-      "source_location": "L566",
+      "source_location": "L567",
       "weight": 1.0
     },
     {
@@ -59953,7 +59953,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/agent/local_transformers.py",
-      "source_location": "L561",
+      "source_location": "L562",
       "weight": 1.0
     },
     {
@@ -59965,7 +59965,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/agent/local_transformers.py",
-      "source_location": "L562",
+      "source_location": "L563",
       "weight": 1.0
     },
     {
@@ -59977,7 +59977,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/agent/local_transformers.py",
-      "source_location": "L557",
+      "source_location": "L558",
       "weight": 1.0
     },
     {
@@ -59989,7 +59989,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/agent/local_transformers.py",
-      "source_location": "L558",
+      "source_location": "L559",
       "weight": 1.0
     },
     {
@@ -60001,7 +60001,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/agent/local_transformers.py",
-      "source_location": "L549",
+      "source_location": "L550",
       "weight": 1.0
     },
     {
@@ -60013,7 +60013,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/agent/local_transformers.py",
-      "source_location": "L550",
+      "source_location": "L551",
       "weight": 1.0
     },
     {
@@ -60025,7 +60025,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/agent/local_transformers.py",
-      "source_location": "L569",
+      "source_location": "L570",
       "weight": 1.0
     },
     {
@@ -60037,7 +60037,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/agent/local_transformers.py",
-      "source_location": "L570",
+      "source_location": "L571",
       "weight": 1.0
     },
     {
@@ -60049,7 +60049,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/agent/local_transformers.py",
-      "source_location": "L573",
+      "source_location": "L574",
       "weight": 1.0
     },
     {
@@ -60061,7 +60061,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/agent/local_transformers.py",
-      "source_location": "L574",
+      "source_location": "L575",
       "weight": 1.0
     },
     {
@@ -60073,7 +60073,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/agent/local_transformers.py",
-      "source_location": "L554",
+      "source_location": "L555",
       "weight": 1.0
     },
     {
@@ -60085,7 +60085,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/agent/local_transformers.py",
-      "source_location": "L577",
+      "source_location": "L578",
       "weight": 1.0
     },
     {
@@ -60097,7 +60097,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/agent/local_transformers.py",
-      "source_location": "L578",
+      "source_location": "L579",
       "weight": 1.0
     },
     {
@@ -60205,7 +60205,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/agent/local_transformers.py",
-      "source_location": "L969",
+      "source_location": "L970",
       "weight": 1.0
     },
     {
@@ -60217,7 +60217,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/agent/local_transformers.py",
-      "source_location": "L990",
+      "source_location": "L991",
       "weight": 1.0
     },
     {
@@ -60229,7 +60229,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/agent/local_transformers.py",
-      "source_location": "L994",
+      "source_location": "L995",
       "weight": 1.0
     },
     {
@@ -60241,7 +60241,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/agent/local_transformers.py",
-      "source_location": "L995",
+      "source_location": "L996",
       "weight": 1.0
     },
     {
@@ -60253,7 +60253,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/agent/local_transformers.py",
-      "source_location": "L848",
+      "source_location": "L849",
       "weight": 1.0
     },
     {
@@ -60265,7 +60265,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/agent/local_transformers.py",
-      "source_location": "L861",
+      "source_location": "L862",
       "weight": 1.0
     },
     {
@@ -60277,7 +60277,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/agent/local_transformers.py",
-      "source_location": "L748",
+      "source_location": "L749",
       "weight": 1.0
     },
     {
@@ -60289,7 +60289,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/agent/local_transformers.py",
-      "source_location": "L769",
+      "source_location": "L770",
       "weight": 1.0
     },
     {
@@ -60301,7 +60301,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/agent/local_transformers.py",
-      "source_location": "L779",
+      "source_location": "L780",
       "weight": 1.0
     },
     {
@@ -60313,7 +60313,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/agent/local_transformers.py",
-      "source_location": "L1083",
+      "source_location": "L1084",
       "weight": 1.0
     },
     {
@@ -60325,7 +60325,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/agent/local_transformers.py",
-      "source_location": "L1084",
+      "source_location": "L1085",
       "weight": 1.0
     },
     {
@@ -60337,7 +60337,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/agent/local_transformers.py",
-      "source_location": "L648",
+      "source_location": "L649",
       "weight": 1.0
     },
     {
@@ -60349,7 +60349,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/agent/local_transformers.py",
-      "source_location": "L712",
+      "source_location": "L713",
       "weight": 1.0
     },
     {
@@ -60361,7 +60361,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/agent/local_transformers.py",
-      "source_location": "L716",
+      "source_location": "L717",
       "weight": 1.0
     },
     {
@@ -60373,7 +60373,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/agent/local_transformers.py",
-      "source_location": "L742",
+      "source_location": "L743",
       "weight": 1.0
     },
     {
@@ -60385,7 +60385,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/agent/local_transformers.py",
-      "source_location": "L654",
+      "source_location": "L655",
       "weight": 1.0
     },
     {
@@ -60397,7 +60397,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/agent/local_transformers.py",
-      "source_location": "L661",
+      "source_location": "L662",
       "weight": 1.0
     },
     {
@@ -60409,7 +60409,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/agent/local_transformers.py",
-      "source_location": "L687",
+      "source_location": "L688",
       "weight": 1.0
     },
     {
@@ -60421,7 +60421,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/agent/local_transformers.py",
-      "source_location": "L690",
+      "source_location": "L691",
       "weight": 1.0
     },
     {
@@ -60433,7 +60433,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/agent/local_transformers.py",
-      "source_location": "L693",
+      "source_location": "L694",
       "weight": 1.0
     },
     {
@@ -60445,7 +60445,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/agent/local_transformers.py",
-      "source_location": "L694",
+      "source_location": "L695",
       "weight": 1.0
     },
     {
@@ -60457,7 +60457,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/agent/local_transformers.py",
-      "source_location": "L587",
+      "source_location": "L588",
       "weight": 1.0
     },
     {
@@ -61657,7 +61657,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/agent/schema.py",
-      "source_location": "L64",
+      "source_location": "L67",
       "weight": 1.0
     },
     {
@@ -71893,7 +71893,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/settings/page.tsx",
-      "source_location": "L394",
+      "source_location": "L404",
       "weight": 1.0
     },
     {
@@ -71905,7 +71905,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/settings/page.tsx",
-      "source_location": "L421",
+      "source_location": "L431",
       "weight": 1.0
     },
     {
@@ -71917,7 +71917,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/settings/page.tsx",
-      "source_location": "L431",
+      "source_location": "L441",
       "weight": 1.0
     },
     {
@@ -71929,7 +71929,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/settings/page.tsx",
-      "source_location": "L434",
+      "source_location": "L444",
       "weight": 1.0
     },
     {
@@ -71941,7 +71941,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/settings/page.tsx",
-      "source_location": "L483",
+      "source_location": "L493",
       "weight": 1.0
     },
     {
@@ -71953,7 +71953,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/settings/page.tsx",
-      "source_location": "L484",
+      "source_location": "L494",
       "weight": 1.0
     },
     {
@@ -71965,7 +71965,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/settings/page.tsx",
-      "source_location": "L485",
+      "source_location": "L495",
       "weight": 1.0
     },
     {
@@ -71977,7 +71977,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/settings/page.tsx",
-      "source_location": "L486",
+      "source_location": "L496",
       "weight": 1.0
     },
     {
@@ -71989,7 +71989,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/settings/page.tsx",
-      "source_location": "L488",
+      "source_location": "L498",
       "weight": 1.0
     },
     {
@@ -72001,7 +72001,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/settings/page.tsx",
-      "source_location": "L505",
+      "source_location": "L515",
       "weight": 1.0
     },
     {
@@ -72013,7 +72013,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/settings/page.tsx",
-      "source_location": "L508",
+      "source_location": "L518",
       "weight": 1.0
     },
     {
@@ -72025,7 +72025,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/settings/page.tsx",
-      "source_location": "L529",
+      "source_location": "L539",
       "weight": 1.0
     },
     {
@@ -72037,7 +72037,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/settings/page.tsx",
-      "source_location": "L530",
+      "source_location": "L540",
       "weight": 1.0
     },
     {
@@ -72049,7 +72049,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/settings/page.tsx",
-      "source_location": "L541",
+      "source_location": "L551",
       "weight": 1.0
     },
     {
@@ -72061,7 +72061,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/settings/page.tsx",
-      "source_location": "L542",
+      "source_location": "L552",
       "weight": 1.0
     },
     {
@@ -72073,7 +72073,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/settings/page.tsx",
-      "source_location": "L551",
+      "source_location": "L561",
       "weight": 1.0
     },
     {
@@ -86557,7 +86557,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "services/agent/schema.py",
-      "source_location": "L114",
+      "source_location": "L117",
       "weight": 1.0
     },
     {
@@ -87853,7 +87853,7 @@
       "confidence_score": 1.0,
       "context": "generic_arg",
       "source_file": "services/agent/local_transformers.py",
-      "source_location": "L1071",
+      "source_location": "L1072",
       "weight": 1.0
     },
     {
@@ -91938,18 +91938,6 @@
     },
     {
       "source": "scripts_download_model",
-      "target": "services_agent_local_transformers_get_default_model_id",
-      "relation": "imports",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "import",
-      "source_file": "scripts/download_model.py",
-      "source_location": "L69",
-      "weight": 1.0
-    },
-    {
-      "source": "scripts_download_model",
       "target": "argparse",
       "relation": "imports",
       "_origin": "ast",
@@ -91958,6 +91946,18 @@
       "context": "import",
       "source_file": "scripts/download_model.py",
       "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_download_model",
+      "target": "services_agent_local_transformers_get_default_model_id",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "scripts/download_model.py",
+      "source_location": "L70",
       "weight": 1.0
     },
     {
@@ -92857,7 +92857,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "services/agent/schema.py",
-      "source_location": "L63",
+      "source_location": "L66",
       "weight": 1.0
     },
     {
@@ -125118,7 +125118,7 @@
       "confidence_score": 1.0,
       "context": "return_type",
       "source_file": "services/agent/local_transformers.py",
-      "source_location": "L560",
+      "source_location": "L561",
       "weight": 1.0
     },
     {
@@ -143878,7 +143878,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "scripts/download_model.py",
-      "source_location": "L41",
+      "source_location": "L42",
       "weight": 1.0
     },
     {
@@ -143889,7 +143889,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "scripts/download_model.py",
-      "source_location": "L68",
+      "source_location": "L69",
       "weight": 1.0
     },
     {
@@ -144472,7 +144472,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "services/agent/local_transformers.py",
-      "source_location": "L545",
+      "source_location": "L546",
       "weight": 1.0
     },
     {
@@ -144483,7 +144483,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "services/agent/local_transformers.py",
-      "source_location": "L584",
+      "source_location": "L585",
       "weight": 1.0
     },
     {
@@ -144494,7 +144494,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "services/agent/local_transformers.py",
-      "source_location": "L632",
+      "source_location": "L633",
       "weight": 1.0
     },
     {
@@ -145214,13 +145214,24 @@
     },
     {
       "source": "services_agent_schema",
+      "target": "services_agent_schema_deletemodelresponse",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "services/agent/schema.py",
+      "source_location": "L100",
+      "weight": 1.0
+    },
+    {
+      "source": "services_agent_schema",
       "target": "services_agent_schema_chathistoryitem",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "services/agent/schema.py",
-      "source_location": "L108",
+      "source_location": "L111",
       "weight": 1.0
     },
     {
@@ -145231,7 +145242,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "services/agent/schema.py",
-      "source_location": "L125",
+      "source_location": "L128",
       "weight": 1.0
     },
     {
@@ -145242,7 +145253,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "services/agent/schema.py",
-      "source_location": "L148",
+      "source_location": "L151",
       "weight": 1.0
     },
     {
@@ -145264,7 +145275,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "services/agent/schema.py",
-      "source_location": "L184",
+      "source_location": "L187",
       "weight": 1.0
     },
     {
@@ -145275,7 +145286,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "services/agent/schema.py",
-      "source_location": "L198",
+      "source_location": "L201",
       "weight": 1.0
     },
     {
@@ -145286,7 +145297,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "services/agent/schema.py",
-      "source_location": "L208",
+      "source_location": "L211",
       "weight": 1.0
     },
     {
@@ -145297,7 +145308,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "services/agent/schema.py",
-      "source_location": "L220",
+      "source_location": "L223",
       "weight": 1.0
     },
     {
@@ -145330,7 +145341,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "services/agent/schema.py",
-      "source_location": "L44",
+      "source_location": "L47",
       "weight": 1.0
     },
     {
@@ -145341,7 +145352,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "services/agent/schema.py",
-      "source_location": "L52",
+      "source_location": "L55",
       "weight": 1.0
     },
     {
@@ -145352,7 +145363,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "services/agent/schema.py",
-      "source_location": "L61",
+      "source_location": "L64",
       "weight": 1.0
     },
     {
@@ -145363,7 +145374,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "services/agent/schema.py",
-      "source_location": "L69",
+      "source_location": "L72",
       "weight": 1.0
     },
     {
@@ -145374,18 +145385,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "services/agent/schema.py",
-      "source_location": "L78",
-      "weight": 1.0
-    },
-    {
-      "source": "services_agent_schema",
-      "target": "services_agent_schema_deletemodelrequest",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "services/agent/schema.py",
-      "source_location": "L88",
+      "source_location": "L81",
       "weight": 1.0
     },
     {
@@ -145401,13 +145401,13 @@
     },
     {
       "source": "services_agent_schema",
-      "target": "services_agent_schema_deletemodelresponse",
+      "target": "services_agent_schema_deletemodelrequest",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "services/agent/schema.py",
-      "source_location": "L97",
+      "source_location": "L91",
       "weight": 1.0
     },
     {
@@ -152425,7 +152425,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/types/api.ts",
-      "source_location": "L206",
+      "source_location": "L209",
       "weight": 1.0
     },
     {
@@ -152436,7 +152436,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/types/api.ts",
-      "source_location": "L212",
+      "source_location": "L215",
       "weight": 1.0
     },
     {
@@ -152447,7 +152447,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/types/api.ts",
-      "source_location": "L220",
+      "source_location": "L223",
       "weight": 1.0
     },
     {
@@ -152458,7 +152458,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/types/api.ts",
-      "source_location": "L235",
+      "source_location": "L238",
       "weight": 1.0
     },
     {
@@ -152469,7 +152469,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/types/api.ts",
-      "source_location": "L241",
+      "source_location": "L244",
       "weight": 1.0
     },
     {
@@ -152480,7 +152480,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/types/api.ts",
-      "source_location": "L247",
+      "source_location": "L250",
       "weight": 1.0
     },
     {
@@ -152491,18 +152491,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/types/api.ts",
-      "source_location": "L256",
-      "weight": 1.0
-    },
-    {
-      "source": "src_types_api",
-      "target": "src_types_api_downloadmodelresponse",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/types/api.ts",
-      "source_location": "L269",
+      "source_location": "L259",
       "weight": 1.0
     },
     {
@@ -152518,13 +152507,24 @@
     },
     {
       "source": "src_types_api",
+      "target": "src_types_api_downloadmodelresponse",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/types/api.ts",
+      "source_location": "L272",
+      "weight": 1.0
+    },
+    {
+      "source": "src_types_api",
       "target": "src_types_api_deletemodelresponse",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/types/api.ts",
-      "source_location": "L277",
+      "source_location": "L280",
       "weight": 1.0
     },
     {
@@ -152535,7 +152535,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/types/api.ts",
-      "source_location": "L286",
+      "source_location": "L289",
       "weight": 1.0
     },
     {
@@ -152546,7 +152546,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/types/api.ts",
-      "source_location": "L293",
+      "source_location": "L296",
       "weight": 1.0
     },
     {
@@ -152557,7 +152557,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/types/api.ts",
-      "source_location": "L304",
+      "source_location": "L307",
       "weight": 1.0
     },
     {
@@ -152568,7 +152568,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/types/api.ts",
-      "source_location": "L323",
+      "source_location": "L326",
       "weight": 1.0
     },
     {
@@ -152579,7 +152579,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/types/api.ts",
-      "source_location": "L329",
+      "source_location": "L332",
       "weight": 1.0
     },
     {
@@ -152590,7 +152590,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/types/api.ts",
-      "source_location": "L343",
+      "source_location": "L346",
       "weight": 1.0
     },
     {
@@ -152601,7 +152601,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/types/api.ts",
-      "source_location": "L350",
+      "source_location": "L353",
       "weight": 1.0
     },
     {
@@ -159571,7 +159571,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "services/agent/local_transformers.py",
-      "source_location": "L545",
+      "source_location": "L546",
       "weight": 1.0
     },
     {
@@ -159593,7 +159593,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "services/agent/schema.py",
-      "source_location": "L198",
+      "source_location": "L201",
       "weight": 1.0
     },
     {
@@ -159604,7 +159604,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "services/agent/schema.py",
-      "source_location": "L125",
+      "source_location": "L128",
       "weight": 1.0
     },
     {
@@ -159615,7 +159615,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "services/agent/schema.py",
-      "source_location": "L184",
+      "source_location": "L187",
       "weight": 1.0
     },
     {
@@ -159626,7 +159626,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "services/agent/schema.py",
-      "source_location": "L148",
+      "source_location": "L151",
       "weight": 1.0
     },
     {
@@ -159637,7 +159637,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "services/agent/schema.py",
-      "source_location": "L108",
+      "source_location": "L111",
       "weight": 1.0
     },
     {
@@ -159648,7 +159648,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "services/agent/schema.py",
-      "source_location": "L220",
+      "source_location": "L223",
       "weight": 1.0
     },
     {
@@ -159659,7 +159659,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "services/agent/schema.py",
-      "source_location": "L88",
+      "source_location": "L91",
       "weight": 1.0
     },
     {
@@ -159670,7 +159670,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "services/agent/schema.py",
-      "source_location": "L97",
+      "source_location": "L100",
       "weight": 1.0
     },
     {
@@ -159681,7 +159681,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "services/agent/schema.py",
-      "source_location": "L69",
+      "source_location": "L72",
       "weight": 1.0
     },
     {
@@ -159692,7 +159692,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "services/agent/schema.py",
-      "source_location": "L78",
+      "source_location": "L81",
       "weight": 1.0
     },
     {
@@ -159703,7 +159703,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "services/agent/schema.py",
-      "source_location": "L44",
+      "source_location": "L47",
       "weight": 1.0
     },
     {
@@ -159714,7 +159714,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "services/agent/schema.py",
-      "source_location": "L52",
+      "source_location": "L55",
       "weight": 1.0
     },
     {
@@ -159747,7 +159747,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "services/agent/schema.py",
-      "source_location": "L208",
+      "source_location": "L211",
       "weight": 1.0
     },
     {
@@ -160528,7 +160528,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "services/agent/local_transformers.py",
-      "source_location": "L548",
+      "source_location": "L549",
       "weight": 1.0
     },
     {
@@ -160539,7 +160539,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "services/agent/local_transformers.py",
-      "source_location": "L552",
+      "source_location": "L553",
       "weight": 1.0
     },
     {
@@ -160550,7 +160550,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "services/agent/local_transformers.py",
-      "source_location": "L556",
+      "source_location": "L557",
       "weight": 1.0
     },
     {
@@ -160561,7 +160561,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "services/agent/local_transformers.py",
-      "source_location": "L560",
+      "source_location": "L561",
       "weight": 1.0
     },
     {
@@ -160572,7 +160572,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "services/agent/local_transformers.py",
-      "source_location": "L564",
+      "source_location": "L565",
       "weight": 1.0
     },
     {
@@ -160583,7 +160583,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "services/agent/local_transformers.py",
-      "source_location": "L568",
+      "source_location": "L569",
       "weight": 1.0
     },
     {
@@ -160594,7 +160594,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "services/agent/local_transformers.py",
-      "source_location": "L572",
+      "source_location": "L573",
       "weight": 1.0
     },
     {
@@ -160605,7 +160605,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "services/agent/local_transformers.py",
-      "source_location": "L576",
+      "source_location": "L577",
       "weight": 1.0
     },
     {
@@ -160616,7 +160616,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "services/agent/local_transformers.py",
-      "source_location": "L1071",
+      "source_location": "L1072",
       "weight": 1.0
     },
     {
@@ -160627,7 +160627,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "services/agent/local_transformers.py",
-      "source_location": "L638",
+      "source_location": "L639",
       "weight": 1.0
     },
     {
@@ -160638,7 +160638,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "services/agent/local_transformers.py",
-      "source_location": "L651",
+      "source_location": "L652",
       "weight": 1.0
     },
     {
@@ -160649,7 +160649,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "services/agent/local_transformers.py",
-      "source_location": "L709",
+      "source_location": "L710",
       "weight": 1.0
     },
     {
@@ -160660,7 +160660,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "services/agent/local_transformers.py",
-      "source_location": "L747",
+      "source_location": "L748",
       "weight": 1.0
     },
     {
@@ -160671,7 +160671,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "services/agent/local_transformers.py",
-      "source_location": "L846",
+      "source_location": "L847",
       "weight": 1.0
     },
     {
@@ -160682,7 +160682,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "services/agent/local_transformers.py",
-      "source_location": "L964",
+      "source_location": "L965",
       "weight": 1.0
     },
     {
@@ -160847,7 +160847,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "services/agent/schema.py",
-      "source_location": "L116",
+      "source_location": "L119",
       "weight": 1.0
     },
     {
@@ -164459,14 +164459,14 @@
       "weight": 1.0
     },
     {
-      "source": "services_agent_local_transformers_rationale_1080",
+      "source": "services_agent_local_transformers_rationale_1081",
       "target": "services_agent_local_transformers_localtransformersengine_generate",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "services/agent/local_transformers.py",
-      "source_location": "L1080",
+      "source_location": "L1081",
       "weight": 1.0
     },
     {
@@ -164591,47 +164591,47 @@
       "weight": 1.0
     },
     {
-      "source": "services_agent_local_transformers_rationale_546",
+      "source": "services_agent_local_transformers_rationale_547",
       "target": "services_agent_local_transformers_dynamicmodelcatalog",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "services/agent/local_transformers.py",
-      "source_location": "L546",
+      "source_location": "L547",
       "weight": 1.0
     },
     {
-      "source": "services_agent_local_transformers_rationale_585",
+      "source": "services_agent_local_transformers_rationale_586",
       "target": "services_agent_local_transformers_resolve_canonical_model_name",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "services/agent/local_transformers.py",
-      "source_location": "L585",
+      "source_location": "L586",
       "weight": 1.0
     },
     {
-      "source": "services_agent_local_transformers_rationale_633",
+      "source": "services_agent_local_transformers_rationale_634",
       "target": "services_agent_local_transformers_localtransformersengine",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "services/agent/local_transformers.py",
-      "source_location": "L633",
+      "source_location": "L634",
       "weight": 1.0
     },
     {
-      "source": "services_agent_local_transformers_rationale_652",
+      "source": "services_agent_local_transformers_rationale_653",
       "target": "services_agent_local_transformers_localtransformersengine_is_available",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "services/agent/local_transformers.py",
-      "source_location": "L652",
+      "source_location": "L653",
       "weight": 1.0
     },
     {
@@ -164646,36 +164646,36 @@
       "weight": 1.0
     },
     {
-      "source": "services_agent_local_transformers_rationale_710",
+      "source": "services_agent_local_transformers_rationale_711",
       "target": "services_agent_local_transformers_localtransformersengine_get_model_path",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "services/agent/local_transformers.py",
-      "source_location": "L710",
+      "source_location": "L711",
       "weight": 1.0
     },
     {
-      "source": "services_agent_local_transformers_rationale_847",
+      "source": "services_agent_local_transformers_rationale_848",
       "target": "services_agent_local_transformers_localtransformersengine_download_model",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "services/agent/local_transformers.py",
-      "source_location": "L847",
+      "source_location": "L848",
       "weight": 1.0
     },
     {
-      "source": "services_agent_local_transformers_rationale_965",
+      "source": "services_agent_local_transformers_rationale_966",
       "target": "services_agent_local_transformers_localtransformersengine_delete_model",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "services/agent/local_transformers.py",
-      "source_location": "L965",
+      "source_location": "L966",
       "weight": 1.0
     },
     {
@@ -165372,14 +165372,14 @@
       "weight": 1.0
     },
     {
-      "source": "services_agent_schema_rationale_209",
+      "source": "services_agent_schema_rationale_212",
       "target": "services_agent_schema_proposedentry",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "services/agent/schema.py",
-      "source_location": "L209",
+      "source_location": "L212",
       "weight": 1.0
     },
     {
@@ -173495,7 +173495,7 @@
       "confidence_score": 0.95,
       "context": "parameter_type",
       "source_file": "scripts/download_model.py",
-      "source_location": "L41",
+      "source_location": "L42",
       "weight": 0.8
     },
     {
@@ -174077,7 +174077,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.95,
       "source_file": "scripts/download_model.py",
-      "source_location": "L95",
+      "source_location": "L96",
       "weight": 0.8
     },
     {
@@ -174132,7 +174132,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.95,
       "source_file": "services/agent/llm_bridge.py",
-      "source_location": "L642",
+      "source_location": "L646",
       "weight": 0.8
     },
     {
@@ -175732,5 +175732,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "2b17faad8180c284cf865b52fb2a05c2998dcad3"
+  "built_at_commit": "fe081661afc7817d78b3a05de8369585d99cf669"
 }

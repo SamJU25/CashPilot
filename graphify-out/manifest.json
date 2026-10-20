@@ -1128,9 +1128,9 @@
     "semantic_hash": ""
   },
   "next.config.js": {
-    "mtime": 1792504555.2742057,
-    "seen": 1792505484.0981953,
-    "ast_hash": "7d07d5ed6ecef6535fbe9a286c07616d",
+    "mtime": 1792520946.8566668,
+    "seen": 1792521033.6582174,
+    "ast_hash": "d8055d76e8bd201022cea4535179f8cc",
     "semantic_hash": ""
   },
   "services/calculations/cash_analysis.py": {
@@ -2226,9 +2226,9 @@
     "semantic_hash": ""
   },
   "src/components/shell/app-shell.tsx": {
-    "mtime": 1792485804.1939583,
-    "seen": 1792486952.281767,
-    "ast_hash": "baeaf529ced1d342b533928b8a03e839",
+    "mtime": 1792520921.1946344,
+    "seen": 1792521033.671063,
+    "ast_hash": "1fdd8d367a46b8e368c514abf384c43f",
     "semantic_hash": ""
   },
   "src/components/shell/brand.tsx": {
