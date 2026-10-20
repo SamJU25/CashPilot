@@ -24,7 +24,7 @@ import { PageHeader } from '@/components/common/bits';
 import { BlueprintMark, CashPilotMark, Wordmark } from '@/components/shell/brand';
 import { LANGUAGES, useT, type Lang } from '@/lib/i18n';
 import { fade } from '@/lib/motion';
-import { DEFAULT_PROVIDER_MODELS, PROVIDER_CATALOGS, PROVIDERS, providerName } from '@/lib/providers';
+import { DEFAULT_PROVIDER_MODELS, PROVIDERS, providerName } from '@/lib/providers';
 import { ApiError, api, llmConfig } from '@/lib/api';
 import { cn } from '@/lib/utils';
 import { useWorkspace, type Theme } from '@/lib/workspace';
@@ -261,53 +261,48 @@ export default function SettingsPage() {
   const [modelActionState, setModelActionState] = useState<'idle' | 'downloading' | 'deleting'>('idle');
   const [modelActionMsg, setModelActionMsg] = useState<{ ok: boolean; text: string } | null>(null);
 
-  const [customDiscoverStatus, setCustomDiscoverStatus] = useState<string>('');
-  const [customModels, setCustomModels] = useState<string[]>([]);
+  const [dynamicModels, setDynamicModels] = useState<Record<string, Array<{ id: string; name: string }>>>({});
+  const [fetchingModels, setFetchingModels] = useState<boolean>(false);
+  const [fetchMsg, setFetchMsg] = useState<string | null>(null);
+  const [manualInputMode, setManualInputMode] = useState<Record<string, boolean>>({});
 
-  const discoverCustomModels = useCallback(async () => {
-    try {
-      const rawUrl = ws.providerUrls['custom'] || '';
-      if (!rawUrl) {
-        setCustomDiscoverStatus('Please enter a Base URL first (e.g. http://localhost:1234/v1).');
-        return;
-      }
-      setCustomDiscoverStatus('Probing /models endpoint...');
-      const key = ws.providerKeys['custom'] || undefined;
-      const res = await api.fetchModels('custom', key, rawUrl);
-      if (res.success && res.models && res.models.length > 0) {
-        const ids = res.models.map((m) => m.id);
-        setCustomModels(ids);
-        setCustomDiscoverStatus(`Discovered ${ids.length} models from custom endpoint.`);
-      } else {
-        setCustomModels([]);
-        setCustomDiscoverStatus(res.message || 'Custom server reachable, but /models returned 0 models. Enter model tag manually.');
-      }
-    } catch {
-      setCustomModels([]);
-      setCustomDiscoverStatus('Unable to reach custom endpoint /models. Enter model tag manually.');
+  const fetchLiveModels = useCallback(async (targetProviderId = provider.id, manual = false) => {
+    if (targetProviderId === 'local') return;
+    const key = ws.providerKeys[targetProviderId]?.trim();
+    const defaultUrl = PROVIDERS.find((p) => p.id === targetProviderId)?.baseUrl ?? '';
+    const url = ws.providerUrls[targetProviderId]?.trim() || defaultUrl;
+
+    const pDef = PROVIDERS.find((p) => p.id === targetProviderId);
+    if (pDef?.needsKey && !key) {
+      if (manual) setFetchMsg(`Please enter your ${pDef.label} API key first.`);
+      return;
     }
-  }, [ws.providerUrls, ws.providerKeys]);
-
-  const [ollamaModels, setOllamaModels] = useState<string[]>([]);
-  const [ollamaStatus, setOllamaStatus] = useState<string>('');
-
-  const refreshOllama = useCallback(async () => {
-    try {
-      const rawUrl = ws.providerUrls['ollama'] || 'http://localhost:11434';
-      const res = await api.fetchModels('ollama', undefined, rawUrl);
-      if (res.success && res.models && res.models.length > 0) {
-        const ids = res.models.map((m) => m.id);
-        setOllamaModels(ids);
-        setOllamaStatus(`Discovered ${ids.length} models installed in Ollama.`);
-      } else {
-        setOllamaModels([]);
-        setOllamaStatus('Ollama is running but has no models installed. Run "ollama pull llama3.2"');
-      }
-    } catch {
-      setOllamaModels([]);
-      setOllamaStatus('Ollama daemon not detected on http://localhost:11434. Run "ollama serve" in terminal.');
+    if (targetProviderId === 'custom' && !url) {
+      if (manual) setFetchMsg('Please enter your custom endpoint Base URL first.');
+      return;
     }
-  }, [ws.providerUrls]);
+
+    setFetchingModels(true);
+    setFetchMsg('Fetching live models from provider...');
+    try {
+      const res = await api.fetchModels(targetProviderId, key, url);
+      if (res.success && res.models && res.models.length > 0) {
+        setDynamicModels((prev) => ({ ...prev, [targetProviderId]: res.models }));
+        setFetchMsg(res.message || `Discovered ${res.models.length} live models.`);
+        // Auto-select first model if not yet set
+        if (!ws.providerModels?.[targetProviderId]) {
+          const firstId = res.models[0].id;
+          ws.update({ providerModels: { ...ws.providerModels, [targetProviderId]: firstId } });
+        }
+      } else {
+        setFetchMsg(res.message || `No models returned by ${targetProviderId}. You can enter your model tag manually.`);
+      }
+    } catch (e) {
+      setFetchMsg(e instanceof ApiError ? e.message : 'Unable to query live models.');
+    } finally {
+      setFetchingModels(false);
+    }
+  }, [provider.id, ws.providerKeys, ws.providerUrls, ws.providerModels, ws.update]);
 
   const refreshModels = useCallback(async () => {
     try {
@@ -323,12 +318,18 @@ export default function SettingsPage() {
 
   useEffect(() => {
     setTest({ state: 'idle' });
+    setFetchMsg(null);
     if (provider.id === 'local') {
       void refreshModels();
-    } else if (provider.id === 'ollama') {
-      void refreshOllama();
+    } else {
+      // Auto-fetch models if credentials exist
+      const key = ws.providerKeys[provider.id]?.trim();
+      const pDef = PROVIDERS.find((p) => p.id === provider.id);
+      if (!pDef?.needsKey || key) {
+        void fetchLiveModels(provider.id, false);
+      }
     }
-  }, [provider, refreshModels, refreshOllama]);
+  }, [provider.id, refreshModels, fetchLiveModels, ws.providerKeys]);
 
   const FALLBACK_GGUF_MODELS = useMemo(() => [
     { id: 'qwen2.5-3b-instruct', name: 'Qwen 2.5 3B Instruct (GGUF · 2.0 GB · Recommended · Tools: Native)', tool_calling: 'Native (Hermes / Function Calling)' },
@@ -496,109 +497,93 @@ export default function SettingsPage() {
           </Row>
         )}
 
-        {provider.id === 'ollama' && (
-          <Row title={t('set.model')} description="Ollama model tag to query (e.g. llama3.2, qwen2.5, mistral).">
-            {ollamaModels.length > 0 ? (
+        {provider.id !== 'local' && (
+          <Row title={t('set.model')} description={`Live models dynamically discovered from ${provider.label}.`}>
+            {dynamicModels[provider.id]?.length && !manualInputMode[provider.id] ? (
               <div className="space-y-2">
                 <div className="flex items-center gap-2">
-                  <Select value={ws.providerModels?.['ollama'] || ws.localModel || ollamaModels[0]} onValueChange={(v) => ws.update({ providerModels: { ...ws.providerModels, ollama: v }, localModel: v })}>
-                    <SelectTrigger className="max-w-sm font-mono text-sm" aria-label={t('set.model')}>
+                  <Select
+                    value={ws.providerModels?.[provider.id] || dynamicModels[provider.id][0].id}
+                    onValueChange={(v) => ws.update({ providerModels: { ...ws.providerModels, [provider.id]: v } })}
+                  >
+                    <SelectTrigger className="max-w-md font-mono text-xs" aria-label={t('set.model')}>
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      {ollamaModels.map((m) => (
-                        <SelectItem key={m} value={m} className="font-mono text-xs">
-                          {m}
+                      {dynamicModels[provider.id].map((m) => (
+                        <SelectItem key={m.id} value={m.id} className="font-mono text-xs">
+                          {m.name || m.id}
                         </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
-                  <Button variant="outline" size="sm" onClick={() => void refreshOllama()} className="h-9 text-xs">
-                    Scan Ollama
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => void fetchLiveModels(provider.id, true)}
+                    disabled={fetchingModels}
+                    className="h-9 text-xs"
+                  >
+                    {fetchingModels ? 'Fetching...' : 'Fetch Models'}
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setManualInputMode((prev) => ({ ...prev, [provider.id]: true }))}
+                    className="h-9 text-xs text-muted-foreground hover:text-foreground"
+                  >
+                    Type Tag
                   </Button>
                 </div>
-                <p className="text-xs text-good-text">{ollamaStatus}</p>
+                {fetchMsg && <p className="text-xs text-good-text">{fetchMsg}</p>}
               </div>
             ) : (
               <div className="space-y-2">
                 <div className="flex items-center gap-2">
                   <Input
-                    id="ollama-model"
-                    value={ws.providerModels?.['ollama'] || ws.localModel || 'llama3.2'}
-                    onChange={(e) => {
-                      const val = e.target.value;
-                      ws.update({ providerModels: { ...ws.providerModels, ollama: val }, localModel: val });
-                    }}
-                    placeholder="llama3.2"
+                    id="dynamic-model-input"
+                    value={ws.providerModels?.[provider.id] || DEFAULT_PROVIDER_MODELS[provider.id] || ''}
+                    onChange={(e) => ws.update({ providerModels: { ...ws.providerModels, [provider.id]: e.target.value } })}
+                    placeholder={`e.g. ${DEFAULT_PROVIDER_MODELS[provider.id] || 'model-name'}`}
                     className="max-w-sm font-mono text-sm"
                   />
-                  <Button variant="outline" size="sm" onClick={() => void refreshOllama()} className="h-9 text-xs">
-                    Scan Ollama
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => void fetchLiveModels(provider.id, true)}
+                    disabled={fetchingModels}
+                    className="h-9 text-xs"
+                  >
+                    {fetchingModels ? 'Fetching...' : 'Fetch Models'}
                   </Button>
+                  {dynamicModels[provider.id]?.length ? (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setManualInputMode((prev) => ({ ...prev, [provider.id]: false }))}
+                      className="h-9 text-xs text-muted-foreground hover:text-foreground"
+                    >
+                      Show List ({dynamicModels[provider.id].length})
+                    </Button>
+                  ) : null}
                 </div>
-                {ollamaStatus && <p className="text-xs text-muted-foreground">{ollamaStatus}</p>}
+                {fetchMsg ? (
+                  <p className="text-xs text-muted-foreground">{fetchMsg}</p>
+                ) : provider.needsKey && !apiKey ? (
+                  <p className="text-xs text-muted-foreground">
+                    Enter your {provider.label} API key below, then click &apos;Fetch Models&apos; to load models directly from the provider.
+                  </p>
+                ) : provider.id === 'ollama' ? (
+                  <p className="text-xs text-muted-foreground">
+                    Ensure Ollama is running (&apos;ollama serve&apos;) and click &apos;Fetch Models&apos; to query pulled models.
+                  </p>
+                ) : provider.id === 'custom' ? (
+                  <p className="text-xs text-muted-foreground">
+                    Enter your Base URL above and click &apos;Fetch Models&apos; to probe /v1/models.
+                  </p>
+                ) : null}
               </div>
             )}
-          </Row>
-        )}
-
-        {provider.id === 'custom' && (
-          <Row title={t('set.model')} description="Target model identifier for your custom endpoint.">
-            <div className="space-y-2">
-              <div className="flex items-center gap-2">
-                {customModels.length > 0 ? (
-                  <Select
-                    value={ws.providerModels?.['custom'] || customModels[0]}
-                    onValueChange={(v) => ws.update({ providerModels: { ...ws.providerModels, custom: v } })}
-                  >
-                    <SelectTrigger className="max-w-sm font-mono text-sm" aria-label={t('set.model')}>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {customModels.map((m) => (
-                        <SelectItem key={m} value={m} className="font-mono text-xs">
-                          {m}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                ) : (
-                  <Input
-                    id="custom-model"
-                    value={ws.providerModels?.['custom'] || 'custom-model'}
-                    onChange={(e) => ws.update({ providerModels: { ...ws.providerModels, custom: e.target.value } })}
-                    placeholder="custom-model (e.g. mistral-7b)"
-                    className="max-w-sm font-mono text-sm"
-                  />
-                )}
-                <Button variant="outline" size="sm" onClick={() => void discoverCustomModels()} className="h-9 text-xs">
-                  Discover Models
-                </Button>
-              </div>
-              {customDiscoverStatus && <p className="text-xs text-muted-foreground">{customDiscoverStatus}</p>}
-            </div>
-          </Row>
-        )}
-
-        {PROVIDER_CATALOGS[provider.id] && (
-          <Row title={t('set.model')} description="Select AI model tier or reasoning capability.">
-            <div className="space-y-2">
-              <Select
-                value={ws.providerModels?.[provider.id] || DEFAULT_PROVIDER_MODELS[provider.id]}
-                onValueChange={(v) => ws.update({ providerModels: { ...ws.providerModels, [provider.id]: v } })}
-              >
-                <SelectTrigger className="max-w-md font-mono text-xs" aria-label={t('set.model')}>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {PROVIDER_CATALOGS[provider.id].map((m) => (
-                    <SelectItem key={m.id} value={m.id} className="font-mono text-xs">
-                      {m.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
           </Row>
         )}
 

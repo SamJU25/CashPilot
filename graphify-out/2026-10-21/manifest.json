@@ -1314,9 +1314,9 @@
     "semantic_hash": ""
   },
   "services/agent/llm_bridge.py": {
-    "mtime": 1792522116.1930118,
-    "seen": 1792522462.8793774,
-    "ast_hash": "afef60764b7a7e028789ccd2595f6c2d",
+    "mtime": 1792523010.8222282,
+    "seen": 1792523565.3543117,
+    "ast_hash": "11130a34c1f692c7841346937a14fb19",
     "semantic_hash": ""
   },
   "services/calculations/predictive_cash.py": {
@@ -2112,9 +2112,9 @@
     "semantic_hash": ""
   },
   "src/app/assistant/page.tsx": {
-    "mtime": 1792519746.706697,
-    "seen": 1792520017.4568384,
-    "ast_hash": "70db35a4fec4bbdd3bbb967a48d4e115",
+    "mtime": 1792523254.2638326,
+    "seen": 1792523565.3623502,
+    "ast_hash": "b7ad26fd2291ab1aba809b9803967800",
     "semantic_hash": ""
   },
   "src/app/funding/page.tsx": {
@@ -2142,9 +2142,9 @@
     "semantic_hash": ""
   },
   "src/app/settings/page.tsx": {
-    "mtime": 1792522159.4119804,
-    "seen": 1792522462.8913085,
-    "ast_hash": "b1e55cceed31394461e31f79dedf4478",
+    "mtime": 1792523292.9963615,
+    "seen": 1792523565.362832,
+    "ast_hash": "a476a96753e905af5da45dd4b463160c",
     "semantic_hash": ""
   },
   "src/app/statements/page.tsx": {
@@ -2466,9 +2466,9 @@
     "semantic_hash": ""
   },
   "src/lib/api.ts": {
-    "mtime": 1792522133.0322785,
-    "seen": 1792522462.8968546,
-    "ast_hash": "04b34126d81587712a5f772f77cfa43e",
+    "mtime": 1792523178.8081627,
+    "seen": 1792523565.3681564,
+    "ast_hash": "ef9a8e90bfdc9ddc45f637f5308ce4cc",
     "semantic_hash": ""
   },
   "src/lib/currencies.ts": {
@@ -2592,9 +2592,9 @@
     "semantic_hash": ""
   },
   "src/lib/providers.ts": {
-    "mtime": 1792518700.0120971,
-    "seen": 1792519063.4830728,
-    "ast_hash": "b2eceedb0fe70a1f816c3238d2b3495c",
+    "mtime": 1792523071.4070628,
+    "seen": 1792523565.3704119,
+    "ast_hash": "e0259a3d058568830374d35a8f3fcf44",
     "semantic_hash": ""
   },
   "src/lib/types.ts": {
@@ -2622,9 +2622,9 @@
     "semantic_hash": ""
   },
   "src/lib/workspace.tsx": {
-    "mtime": 1792518723.6899526,
-    "seen": 1792519063.4835584,
-    "ast_hash": "12c24cf0a237e0be7a1a49ca052a0af9",
+    "mtime": 1792523120.7739897,
+    "seen": 1792523565.3708673,
+    "ast_hash": "9acc61125b5e762c8ece1ca4c990528b",
     "semantic_hash": ""
   },
   "docs/GLOSSARY.md": {
@@ -2646,9 +2646,15 @@
     "semantic_hash": ""
   },
   "tests/unit/test_ollama_bridge.py": {
-    "mtime": 1792522338.4374087,
-    "seen": 1792522462.9054286,
-    "ast_hash": "e7cc43877ae4bca66b7d14a575a3d93a",
+    "mtime": 1792523406.9572895,
+    "seen": 1792523565.3761237,
+    "ast_hash": "eae2b4d9ccdd2189103f041edea49511",
+    "semantic_hash": ""
+  },
+  "tests/unit/test_llm_providers.py": {
+    "mtime": 1792523351.6311886,
+    "seen": 1792523565.3758888,
+    "ast_hash": "c32b6fbdf474c854cf24c25775f1504d",
     "semantic_hash": ""
   }
 }
