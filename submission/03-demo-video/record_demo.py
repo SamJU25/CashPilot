@@ -9,6 +9,7 @@ Outputs: submission/03-demo-video/CashPilot_Demo.mp4 and screenshots/NN-scene.pn
 
 from __future__ import annotations
 
+import json
 import shutil
 import subprocess
 import sys
@@ -52,13 +53,18 @@ CARD_JS = """([title, lines]) => {
 }"""
 
 shot_no = 0
+# Scene start offsets (seconds from the first video frame), read by add_voiceover.py.
+scene_times: dict[str, float] = {}
+T0 = 0.0
 
 
 def caption(page: Page, title: str, body: str) -> None:
+    scene_times.setdefault(title, round(time.time() - T0, 2))
     page.evaluate(CAPTION_JS, [title, body])
 
 
 def card(page: Page, title: str, lines: list[str], seconds: float) -> None:
+    scene_times.setdefault("card:" + title, round(time.time() - T0, 2))
     page.evaluate(CARD_JS, [title, lines])
     time.sleep(seconds)
     page.evaluate("() => document.getElementById('__demo_card')?.remove()")
@@ -108,6 +114,8 @@ def run() -> int:
         context = browser.new_context(viewport=SIZE, record_video_dir=str(video_dir), record_video_size=SIZE,
                                       color_scheme="dark")
         page = context.new_page()
+        global T0
+        T0 = time.time()
 
         goto(page, "/")
         page.evaluate("() => localStorage.clear()")
@@ -187,7 +195,7 @@ def run() -> int:
         except Exception as exc:  # noqa: BLE001
             print("upload step skipped:", exc)
 
-        card(page, "Verified", ["963 automated tests passing · 34/34 sandbox operations as expected",
+        card(page, "Verified", ["969 automated tests passing · 34/34 sandbox operations as expected",
                                 "Tier 1 observe · Tier 2 draft · Tier 3 owner-sent — $0 moved by the AI",
                                 "github.com/SamJU25/F-SME-Finance-Copilot"], 6)
 
@@ -197,9 +205,13 @@ def run() -> int:
 
     out = HERE / "CashPilot_Demo.mp4"
     ffmpeg = imageio_ffmpeg.get_ffmpeg_exe()
-    subprocess.run([ffmpeg, "-y", "-loglevel", "error", "-i", str(video_path), "-c:v", "libx264", "-preset", "medium",
+    # Drop the page-load frames before the title card so the video opens on it.
+    trim = max(0.0, scene_times.get("card:CashPilot", 0.0) - 0.1)
+    scene_times.update({k: round(v - trim, 2) for k, v in scene_times.items()})
+    subprocess.run([ffmpeg, "-y", "-loglevel", "error", "-i", str(video_path), "-ss", f"{trim:.2f}", "-c:v", "libx264", "-preset", "medium",
                     "-crf", "22", "-pix_fmt", "yuv420p", "-movflags", "+faststart", str(out)], check=True)
     shutil.rmtree(video_dir, ignore_errors=True)
+    (HERE / "scene_times.json").write_text(json.dumps(scene_times, indent=2), encoding="utf-8")
     print("video:", out, f"{out.stat().st_size / 1e6:.1f} MB")
     print("screenshots:", len(list(SHOTS.glob('*.png'))))
     return 0

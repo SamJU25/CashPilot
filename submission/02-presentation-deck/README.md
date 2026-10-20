@@ -46,11 +46,11 @@ Security is 30% of the score, and our answer is structural. Tier 1 is read-only 
 
 ### Slide 9 — We attacked our own agent: every attempt was refused
 
-We did not just design this; we attacked it. Our sandbox replay runs 34 operations against the real API, including forged tokens, cross-tenant access, calling an execute route, smuggling an execute-now field, and a prompt injection asking to wire $50,000 sent with a valid token. Every one was refused, and the logs are in our execution evidence. Our self-assessment also lists 14 known risks openly, such as single-process storage and regex-only name masking. (60 s)
+We did not just design this; we attacked it. Our sandbox replay runs 34 operations against the real API, including forged tokens, cross-tenant access, calling an execute route, smuggling an execute-now field, and a prompt injection asking to wire $50,000 sent with a valid token. Every one was refused, and the logs are in our execution evidence. Our self-assessment also lists 14 known risks openly, such as single-process storage and 30-day tokens with no revocation. (60 s)
 
 ### Slide 10 — Verified, not claimed
 
-Everything here is reproducible. 963 tests pass. The demo video drives the real UI against the live backend and the local model. When we upload a 94-transaction statement, the backend parses, scores and forecasts it in about a tenth of a second. Every claim in our documents points to a test, a log line or a file. (45 s)
+Everything here is reproducible. 969 tests pass. The demo video drives the real UI against the live backend and the local model. When we upload a 94-transaction statement, the backend parses, scores and forecasts it in about a tenth of a second. Every claim in our documents points to a test, a log line or a file. (45 s)
 
 ### Slide 11 — What is built today, and what comes next
 

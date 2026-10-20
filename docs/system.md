@@ -1,7 +1,7 @@
 # SME Finance Copilot: Master System Design (`system.md`)
 
 - **Document Role**: Concrete Technical Specifications, Schemas, Algorithms & Code Contracts
-- **Status**: Active Technical Blueprint & Contract (Verified Baseline: 963 Passed Tests, 1 Skipped)
+- **Status**: Active Technical Blueprint & Contract (Verified Baseline: 969 Passed Tests, 1 Skipped)
 - **Date**: 2026-10-17
 - **Competition Target**: FinTechathon 2026 Track E (Tsinghua University PBCSF & WeBank)
 
@@ -250,7 +250,7 @@ Intent classification uses FastEmbed ONNX (`BAAI/bge-small-en-v1.5`) vector embe
                                │
                                ▼
                    [ Pre-Flight PII Redaction ]
-                   (regex scrubber in llm_bridge.mask_pii)
+                   (mask_pii identifiers + name_masking [PARTY_n])
                                │
                                ▼
                    [ Universal LLM Bridge ]

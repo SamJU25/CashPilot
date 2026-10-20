@@ -147,7 +147,7 @@ img(s, "07-assistant-answer.png", 0.6, 3.85, 4.9);
 T(s, "Why this is different", { x: 5.9, y: 3.85, w: 6.8, h: 0.5, fontSize: 20, bold: true, color: MINT });
 T(s, [
   { text: "Every number in a reply comes from Python Decimal code; numbers_are_grounded() rejects any reply quoting a figure the engine did not produce", options: { bullet: true, breakLine: true } },
-  { text: "Runs fully on the owner's computer with a 2B model; cloud providers (Gemini, Claude, OpenAI, DeepSeek, Groq) are optional and PII-masked", options: { bullet: true, breakLine: true } },
+  { text: "Runs fully on the owner's computer with a 2B model; cloud providers (Gemini, Claude, OpenAI, DeepSeek, Groq) are optional; account numbers and customer names are masked before text leaves", options: { bullet: true, breakLine: true } },
   { text: "Lending rules live in 15 JSON decision tables, so a credit policy change is reviewed data, not new code", options: { bullet: true } },
 ], { x: 5.9, y: 4.4, w: 6.8, h: 2.4, fontSize: 15, color: SOFT, paraSpaceAfter: 8, valign: "top" });
 s.addNotes("The core design choice: separate language from arithmetic. Guardrails run first, an embedding router picks the intent, subagents call deterministic Decimal engines, and only then does the model write sentences. If its answer quotes any figure the engine didn't produce, we throw the answer away. It runs on a 2-billion-parameter model on the owner's own computer, so statements never have to leave the machine. (60 s)");
@@ -216,12 +216,12 @@ s.addTable(rows.map((r, i) => r.map((cell, j) => ({
   T(s, big, { x: 9.55, y: y + 0.1, w: 3.0, h: 0.75, fontSize: 36, bold: true, color: MINT });
   T(s, small, { x: 9.55, y: y + 0.82, w: 3.0, h: 0.55, fontSize: 13, color: SOFT });
 });
-s.addNotes("We did not just design this; we attacked it. Our sandbox replay runs 34 operations against the real API, including forged tokens, cross-tenant access, calling an execute route, smuggling an execute-now field, and a prompt injection asking to wire $50,000 sent with a valid token. Every one was refused, and the logs are in our execution evidence. Our self-assessment also lists 14 known risks openly, such as single-process storage and regex-only name masking. (60 s)");
+s.addNotes("We did not just design this; we attacked it. Our sandbox replay runs 34 operations against the real API, including forged tokens, cross-tenant access, calling an execute route, smuggling an execute-now field, and a prompt injection asking to wire $50,000 sent with a valid token. Every one was refused, and the logs are in our execution evidence. Our self-assessment also lists 14 known risks openly, such as single-process storage and 30-day tokens with no revocation. (60 s)");
 
 // 10 · Evidence -----------------------------------------------------------------
 pres.addSection({ title: "Evidence" });
 s = content("Verified, not claimed", "Evidence");
-const stats = [["963", "automated tests passing", "unit 803 · integration 104 · security 54 (+1 skip) · e2e 2"], ["25", "Decimal finance engines", "money never touches float or the LLM"], ["15", "JSON policy tables", "credit, usury, covenants, security gate"], ["2:07", "demo video", "narrated · real UI, live backend, local model"]];
+const stats = [["969", "automated tests passing", "unit 809 · integration 104 · security 54 (+1 skip) · e2e 2"], ["25", "Decimal finance engines", "money never touches float or the LLM"], ["15", "JSON policy tables", "credit, usury, covenants, security gate"], ["2:04", "demo video", "narrated · real UI, live backend, local model"]];
 stats.forEach(([big, head, sub], i) => {
   const x = 0.6 + i * 3.07;
   card(s, x, 1.55, 2.87, 2.5);
@@ -236,7 +236,7 @@ T(s, [
   { text: "Sandbox logs record every request and response with UTC timestamps; tokens and keys are redacted", options: { bullet: true, breakLine: true } },
   { text: "Docker compose, CI container smoke test, MIT licence, one-command reproduction scripts", options: { bullet: true } },
 ], { x: 4.85, y: 4.9, w: 7.8, h: 1.9, fontSize: 15, color: SOFT, paraSpaceAfter: 8, valign: "top" });
-s.addNotes("Everything here is reproducible. 963 tests pass. The demo video drives the real UI against the live backend and the local model. When we upload a 94-transaction statement, the backend parses, scores and forecasts it in about a tenth of a second. Every claim in our documents points to a test, a log line or a file. (45 s)");
+s.addNotes("Everything here is reproducible. 969 tests pass. The demo video drives the real UI against the live backend and the local model. When we upload a 94-transaction statement, the backend parses, scores and forecasts it in about a tenth of a second. Every claim in our documents points to a test, a log line or a file. (45 s)");
 
 // 11 · Roadmap ------------------------------------------------------------------
 s = content("What is built today, and what comes next", "Evidence");
@@ -257,7 +257,7 @@ T(s, [
   { text: "PostgreSQL with row-level security and append-only ledger tables", options: { bullet: true, breakLine: true } },
   { text: "Read-only open-banking feeds in place of uploads (still no write scope)", options: { bullet: true, breakLine: true } },
   { text: "Push alerts when the forecast crosses the owner's threshold", options: { bullet: true, breakLine: true } },
-  { text: "Named-entity masking for cloud models; OIDC sign-in and token revocation", options: { bullet: true } },
+  { text: "OIDC sign-in and token revocation; an NER model for one-word names", options: { bullet: true } },
 ], { x: 7.15, y: 2.35, w: 5.3, h: 4.1, fontSize: 15, color: SOFT, paraSpaceAfter: 8, valign: "top" });
 s.addNotes("We are explicit about the line between built and planned. Everything on the left runs and is tested today. On the right: deploying the invoice registry on a FISCO BCOS consortium chain so lenders share one source of truth, moving storage to PostgreSQL with row-level security, read-only open-banking feeds, push alerts, and stronger masking and sign-in. (45 s)");
 

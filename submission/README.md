@@ -21,7 +21,7 @@ This folder holds every item on the competition's submission checklist. Product 
 |---|---|---|---|---|
 | 01 | **Technical documentation** | System architecture, core algorithm description, security design | [`01-technical-documentation/TECHNICAL_DOCUMENTATION.pdf`](01-technical-documentation/TECHNICAL_DOCUMENTATION.pdf) (+ `.md` source) | Ready |
 | 02 | **Presentation deck** | Final presentation no longer than 10 minutes | [`02-presentation-deck/CashPilot_Presentation.pptx`](02-presentation-deck/CashPilot_Presentation.pptx) and `.pdf`; 12 slides, speaker script in [`README`](02-presentation-deck/README.md) (~6 min of narration) | Ready |
-| 03 | **Demo video** (optional) | No longer than 5 minutes | [`03-demo-video/CashPilot_Demo.mp4`](03-demo-video/CashPilot_Demo.mp4), 2:07, narrated, real UI against the live backend | Ready |
+| 03 | **Demo video** (optional) | No longer than 5 minutes | [`03-demo-video/CashPilot_Demo.mp4`](03-demo-video/CashPilot_Demo.mp4), 2:04, narrated, real UI against the live backend | Ready |
 | 04 | **Source code** | README, GitHub repository link, deployment instructions, test cases | Repository root [`README.md`](../README.md); reviewer guide [`04-source-code/SOURCE_CODE.md`](04-source-code/SOURCE_CODE.md) | Ready; the repository must be pushed so reviewers see this folder |
 | 05 | **Security self-assessment report** | Permission-tier implementation and known-risk list | [`05-security-self-assessment/SECURITY_SELF_ASSESSMENT.pdf`](05-security-self-assessment/SECURITY_SELF_ASSESSMENT.pdf) (+ `.md`, `evidence/`) | Ready |
 | 06 | **Execution evidence** | Non-on-chain topics: simulated-account / sandbox operation logs and demo video | [`06-execution-evidence/`](06-execution-evidence/README.md): 34-operation sandbox log (`.md` + `.jsonl`), final ledger state, full test log; video in `03-demo-video/` | Ready |
@@ -30,7 +30,7 @@ This folder holds every item on the competition's submission checklist. Product 
 
 | Figure | Source |
 |---|---|
-| 963 tests passed, 1 skipped | `06-execution-evidence/logs/pytest_full_run.log` (2026-10-20) |
+| 969 tests passed, 1 skipped | `06-execution-evidence/logs/pytest_full_run.log` (2026-10-20) |
 | 54 security tests passed, 1 skipped | `05-security-self-assessment/evidence/pytest_security_suite.log` |
 | 34/34 sandbox operations as expected, $0.00 moved | `06-execution-evidence/logs/sandbox_operation_log.md` |
 | 0 known Python dependency vulnerabilities | `05-security-self-assessment/evidence/pip_audit_requirements.txt` |

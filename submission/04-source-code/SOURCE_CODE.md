@@ -119,7 +119,7 @@ Run everything:
 python -m pytest -q
 ```
 
-Latest result (2026-10-20, Windows 11, Python 3.14): **963 passed, 1 skipped in 27.28 s**. The skip is a POSIX file-mode assertion that does not apply on Windows. Full log: `../06-execution-evidence/logs/pytest_full_run.log`.
+Latest result (2026-10-20, Windows 11, Python 3.14): **969 passed, 1 skipped in 25.37 s**. The skip is a POSIX file-mode assertion that does not apply on Windows. Full log: `../06-execution-evidence/logs/pytest_full_run.log`.
 
 Frontend checks:
 
@@ -132,7 +132,7 @@ npm run build
 
 | Suite | Count | What it proves |
 |---|---|---|
-| `tests/unit/` (38 files) | 803 | Every financial engine against fixed Decimal fixtures; parser row errors; decision tables; tenant tokens; session store; blockchain registry |
+| `tests/unit/` (37 files) | 809 | Every financial engine against fixed Decimal fixtures; parser row errors; decision tables; tenant tokens; session store; blockchain registry |
 | `tests/integration/` (7 files) | 104 | Each API route end to end through FastAPI, including PDF upload, LLM bridge, model discovery, session memory |
 | `tests/security/` (6 files) | 55 | Tier invariants, tenant auth and isolation, hardening, encryption at rest, rate limit, SSRF guard |
 | `tests/e2e/` (1 file) | 2 | Full owner journey via REST and via chat |
@@ -149,7 +149,7 @@ npm run build
 | Tier 3 never executes | `/execute` returns 404/405; prepare → `PREPARED`; second decision → 409 | `tests/e2e/`, `tests/security/test_action_gate_auth.py` |
 | Tenant isolation | Cross-tenant read/prepare returns 404; client `tenant_id` ignored | `tests/security/test_action_gate_auth.py` |
 | Schema boundary | Extra fields rejected | `tests/security/test_invariants.py` |
-| PII masking | IBAN and phone redacted | `tests/security/test_invariants.py` |
+| PII masking | IBAN and phone redacted; company and person names replaced in the exact outgoing cloud payload and restored in the reply | `tests/security/test_invariants.py`, `tests/unit/test_name_masking.py` |
 | SSRF guard | Loopback, private, metadata and credentialed URLs rejected | `tests/security/test_url_guard.py` |
 | Encryption at rest | Sealed files carry `enc:v1:`; production refuses to start without key | `tests/security/test_encryption_at_rest.py` |
 | Double-pledge prevention | Second pledge raises `ERR_INVOICE_ALREADY_PLEDGED` | `tests/unit/test_blockchain_registry.py` |

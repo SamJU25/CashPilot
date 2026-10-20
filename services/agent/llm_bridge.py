@@ -25,6 +25,7 @@ from services.agent.schema import (
     TestConnectionRequest,
     TestConnectionResponse,
 )
+from services.agent.name_masking import NameMasker
 from services.agent.url_guard import BlockedEndpointError, validate_llm_endpoint
 
 # Pre-compiled PII Sanitization Patterns
@@ -351,6 +352,27 @@ def query_external_llm(
             temperature=0.1,
         )
 
+    # Text is about to leave the machine: names become [PARTY_n] and come back in the reply.
+    masker = NameMasker()
+    for text in (system_instruction, prompt, *(_extract_history_turn(h)[1] for h in (history or [])[-6:])):
+        masker.collect(text)
+    system_instruction = masker.mask(system_instruction)
+    sanitized_prompt = masker.mask(sanitized_prompt)
+    reply = _query_cloud_provider(provider, sanitized_prompt, system_instruction, config, history, masker)
+    return masker.unmask(reply)
+
+
+def _query_cloud_provider(
+    provider: str,
+    sanitized_prompt: str,
+    system_instruction: str,
+    config: LLMConfig,
+    history: Optional[List[Any]],
+    masker: NameMasker,
+) -> Optional[str]:
+    def scrub(txt: str) -> str:
+        return masker.mask(mask_pii(txt))
+
     api_key = (config.api_key or "").strip() if config.api_key else None
     base_url = (config.base_url or "").strip() if config.base_url else None
     try:
@@ -371,7 +393,7 @@ def query_external_llm(
                         r, txt = _extract_history_turn(h)
                         role_str = "Assistant" if r == "agent" else "User"
                         if txt:
-                            h_parts.append(f"{role_str}: {mask_pii(txt)}")
+                            h_parts.append(f"{role_str}: {scrub(txt)}")
                     if h_parts:
                         history_text = "Conversation History:\n" + "\n".join(h_parts) + "\n\n"
 
@@ -398,7 +420,7 @@ def query_external_llm(
                         r, txt = _extract_history_turn(h)
                         h_role = "assistant" if r == "agent" else "user"
                         if txt:
-                            anthropic_msgs.append({"role": h_role, "content": mask_pii(txt)})
+                            anthropic_msgs.append({"role": h_role, "content": scrub(txt)})
                 anthropic_msgs.append({"role": "user", "content": sanitized_prompt})
 
                 payload = {
@@ -423,7 +445,7 @@ def query_external_llm(
                         r, txt = _extract_history_turn(h)
                         h_role = "assistant" if r == "agent" else "user"
                         if txt:
-                            openai_msgs.append({"role": h_role, "content": mask_pii(txt)})
+                            openai_msgs.append({"role": h_role, "content": scrub(txt)})
                 openai_msgs.append({"role": "user", "content": sanitized_prompt})
 
                 payload = {

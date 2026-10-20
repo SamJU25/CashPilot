@@ -16,10 +16,10 @@ This report covers (1) how the permission tiers are implemented and enforced, (2
 | Can the AI agent move money? | **No.** There is no execution route, no payment SDK, and no bank or lender credential anywhere in the system. |
 | Permission tiers | 3 tiers enforced server-side: Observe (autonomous) → Draft (signed tenant only) → Owner-sent (human only, never executed) |
 | Security test suite | `tests/security/`: **54 passed, 1 skipped** (POSIX file-mode check, not applicable on Windows) |
-| Full suite | **963 passed, 1 skipped** |
+| Full suite | **969 passed, 1 skipped** |
 | Sandbox attack replay | **34/34** operations behaved as expected, including forged token, cross-tenant access, parameter smuggling, prompt injection with a valid token, and invoice double pledge |
 | Dependency audit | Python (`pip-audit -r requirements.txt`): **no known vulnerabilities**. Frontend (`npm audit --omit=dev`): 13 advisories; the critical one is disabled at the config level, the rest are build-time tooling or low severity (R9) |
-| Open risks | 14 tracked (0 critical, 3 high, 6 medium, 5 low); see Section 5 |
+| Open risks | 14 tracked (0 critical, 2 high, 7 medium, 5 low); see Section 5 |
 
 ---
 
@@ -83,7 +83,7 @@ Each staged intent is bound to the token's tenant. A lookup for another tenant's
 | C1 | Per-IP token-bucket rate limit (default 60/min), honours `TRUSTED_PROXY_HOPS` | Implemented | `api/rate_limit.py`; `tests/security/test_rate_limit.py` (6 tests) |
 | C2 | Upload size limit (`MAX_ANALYSIS_UPLOAD_BYTES`, 10 MB) and PDF page/structure validation | Implemented | `services/ingestion/pdf_validator.py` |
 | C3 | Row-level rejection with reason codes; bad rows never change metrics silently | Implemented | `services/ingestion/csv_parser.py`; sandbox log #5 |
-| C4 | PII masking before any cloud LLM call: account numbers, tax IDs, emails, phones, IBANs, API keys | Implemented (regex) | `services/agent/llm_bridge.py::mask_pii`; `tests/security/test_invariants.py` |
+| C4 | PII masking before any cloud LLM call: account numbers, tax IDs, emails, phones, IBANs and API keys (regex), plus company and person names replaced with reversible `[PARTY_n]` placeholders that are restored in the reply | Implemented | `services/agent/llm_bridge.py::mask_pii`, `services/agent/name_masking.py`; `tests/security/test_invariants.py`, `tests/unit/test_name_masking.py` (6 tests, including the exact outgoing HTTP payload) |
 | C5 | SSRF guard on user-supplied LLM endpoints: blocks non-HTTP(S), embedded credentials, loopback, private ranges, link-local/metadata hosts; upstream error bodies not reflected | Implemented | `services/agent/url_guard.py`; `tests/security/test_url_guard.py` (12 tests) |
 | C6 | Local, air-gapped model option (MiniCPM5-2B); statement data never leaves the host in this mode | Implemented | `services/agent/local_transformers.py` |
 | C7 | Owner-only file permissions (`0700` dirs / `0600` files) and atomic writes for ledger, sessions, registry | Implemented | `services/security/file_utils.py`; `test_backend_hardening.py` |
@@ -110,7 +110,7 @@ Each staged intent is bound to the token's tenant. A lookup for another tenant's
 | Token forgery / theft | Craft or replay a bearer token | HMAC-SHA256 signature with expiry | Stolen tokens stay valid up to 30 days; no revocation (R2) |
 | Parameter smuggling | Extra fields such as `execute_now`, negative amounts | `extra="forbid"`, positive-integer cents | Low |
 | SSRF | Point the LLM base URL at internal or metadata hosts | URL guard | DNS rebinding between check and connect not fully covered (R8) |
-| Data leakage to cloud LLM | Statement text sent to a third-party model | Regex PII masking; local-model option | Counterparty and person names are not masked (R3) |
+| Data leakage to cloud LLM | Statement text sent to a third-party model | Identifier masking + reversible name masking; local-model option | One-word names and names built only from CashPilot's own vocabulary are not masked (R3) |
 | Invoice double financing | Pledge one invoice to two lenders | Canonical hash registry, first pledge wins | Registry is local, so lenders outside this instance are not covered until on-chain deployment (R5) |
 | Denial of service | Request floods, large uploads, proposal flooding | Rate limit, upload limits, TTL + dedupe, staging needs token | In-memory limiter per process (R7) |
 | Stolen disk / backup | Copy `.data/` or `.sessions/` | Owner-only files; Fernet sealing with `COPILOT_DATA_KEY` | Encryption is opt-in for local development (R6) |
@@ -125,7 +125,7 @@ Severity uses likelihood × impact for a production deployment of the current bu
 |---|---|---|---|---|---|
 | R1 | **Single-process JSON storage.** Ledger, sessions and registry use process-local locks; running several API workers could interleave writes. | High | Open | Single worker in Docker/compose; atomic file replace | PostgreSQL 16 with row locks and RLS (C15) |
 | R2 | **Bearer tokens last 30 days with no revocation list.** A leaked token allows staging and reading that tenant's proposals until expiry. It cannot move money. | High | Open | HMAC signature, expiry, tenant-scoped; Tier 3 never executes | Shorter TTL + refresh tokens, revocation list, OIDC (C17) |
-| R3 | **PII masking is regex-based** and does not mask counterparty or person names; unusual account formats may pass through. (The Settings page previously implied names were masked; its text and example were corrected on 2026-10-20 to state exactly what is masked.) | High | Open | Masks accounts, IBANs, tax IDs, emails, phones, API keys; the default local model keeps all data on the host; Settings tells the owner names are sent as written | Named-entity masking with reversible placeholders for cloud providers |
+| R3 | **Name masking is heuristic.** Cloud-bound text has multi-word company and person names (Title Case or ALL CAPS, e.g. "Northwind Foods", "JOHN SMITH") replaced with `[PARTY_n]`, and the real names are restored in the reply. A one-word name ("Sarah") or a name made only of words CashPilot itself uses ("Capital Partners") is still sent as written. | Medium | Mitigated | `services/agent/name_masking.py` (stoplist harvested from CashPilot's own prompts, engines, policy tables and knowledge cards, so prompt headings stay readable); regex masking of identifiers; the default local model keeps all text on the host | Named-entity recognition model for single-word names |
 | R4 | **Prompt-injection detection uses patterns and a policy table**, so novel phrasing can evade it. | Medium | Mitigated | Even a missed injection can only produce a Tier 2 draft, and only for an authenticated tenant; the owner decides | Embedding-based classifier and red-team corpus (PyRIT/garak) in CI |
 | R5 | **Blockchain registry is simulated locally.** `tx_hash`/`block_number` in the registry are generated locally, not real chain data; double-pledge protection covers only this instance. | Medium | Open | Same hashing and first-pledge rule as the contract | Deploy `InvoiceRegistry.sol` on FISCO BCOS (C16) |
 | R6 | **Encryption at rest is optional** outside production/staging mode. | Medium | Mitigated | Startup refuses `COPILOT_ENV=production|staging` without `COPILOT_DATA_KEY`; owner-only file modes | Key management via KMS/HSM; key rotation |
@@ -147,7 +147,7 @@ No risk in this register allows funds to be moved by the system, because Tier 3 
 | Evidence | File |
 |---|---|
 | Security test suite run (54 passed, 1 skipped) | `evidence/pytest_security_suite.log` |
-| Full test suite run (963 passed, 1 skipped) | `../06-execution-evidence/logs/pytest_full_run.log` |
+| Full test suite run (969 passed, 1 skipped) | `../06-execution-evidence/logs/pytest_full_run.log` |
 | Sandbox attack and operation replay (34/34) | `../06-execution-evidence/logs/sandbox_operation_log.md` / `.jsonl` |
 | Ledger and registry state after the replay | `../06-execution-evidence/logs/sandbox_final_state.json` |
 | Frontend production dependency audit | `evidence/npm_audit_production.txt` |

@@ -4,7 +4,7 @@
 > *FinTechathon 2026 Topic E: AI as a Financial Participant | Tsinghua University PBCSF & WeBank*
 
 [![CI](https://github.com/SamJU25/F-SME-Finance-Copilot/actions/workflows/ci.yml/badge.svg)](https://github.com/SamJU25/F-SME-Finance-Copilot/actions/workflows/ci.yml)
-[![Tests](https://img.shields.io/badge/pytest-963_passed-brightgreen.svg)](tests/)
+[![Tests](https://img.shields.io/badge/pytest-969_passed-brightgreen.svg)](tests/)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.115+-009688.svg)](https://fastapi.tiangolo.com/)
 [![Next.js 14](https://img.shields.io/badge/Next.js-14_App_Router-black.svg)](https://nextjs.org/)
@@ -12,7 +12,7 @@
 [![Solidity 0.8.20](https://img.shields.io/badge/Solidity-0.8.20-363636.svg)](contracts/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-**Audited Technical Baseline (2026-10-20)**: **963 automated tests passing (1 POSIX-only skip)** across multi-format statement ingestion (CSV and PDF), 25+ deterministic financial engines in pure Python `decimal.Decimal`, dynamic semantic intent routing (FastEmbed ONNX), on-device local SLM inference (foundation `openbmb/MiniCPM5-2B`, optional dependencies), Universal Cloud LLM Bridge with live dynamic model discovery, Three-Tier Security Gate with owner-sent Tier 3 requests (no execution route), and Next.js 14 executive dashboard with 7 functional workspaces.
+**Audited Technical Baseline (2026-10-20)**: **969 automated tests passing (1 POSIX-only skip)** across multi-format statement ingestion (CSV and PDF), 25+ deterministic financial engines in pure Python `decimal.Decimal`, dynamic semantic intent routing (FastEmbed ONNX), on-device local SLM inference (foundation `openbmb/MiniCPM5-2B`, optional dependencies), Universal Cloud LLM Bridge with live dynamic model discovery, Three-Tier Security Gate with owner-sent Tier 3 requests (no execution route), and Next.js 14 executive dashboard with 7 functional workspaces.
 
 ---
 
@@ -250,7 +250,7 @@ Open <http://127.0.0.1:3000> in your browser. Download the sample bank statement
 Run the full verification suite from the repository root with the virtual environment active:
 
 ```bash
-# Run backend test suite (963 tests, 1 POSIX-only skip)
+# Run backend test suite (969 tests, 1 POSIX-only skip)
 python -m pytest -q
 
 # Run frontend type checking
@@ -262,11 +262,11 @@ npm run build
 
 ### Verified Test Breakdown
 ```
-tests/unit/            803 passed            (Ingestion, Pure Decimal Math, Underwriting, Decision Tables, Session Store)
+tests/unit/            809 passed            (Ingestion, Pure Decimal Math, Underwriting, Decision Tables, Session Store)
 tests/integration/     104 passed            (FastAPI Endpoints, LLM Bridge, Model Discovery, Action Ledger, Session Memory)
 tests/security/         54 passed, 1 skipped (Three-Tier Gate Invariants, PII Sanitization, Tampering, Hardening, Encryption)
 tests/e2e/               2 passed            (Full Statement Ingestion to Prepared-Request Flows)
-========================= 963 passed, 1 skipped in 26.98s =========================
+========================= 969 passed, 1 skipped in 25.37s =========================
 ```
 
 ---

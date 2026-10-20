@@ -30,16 +30,17 @@ import { cn } from '@/lib/utils';
 import { useWorkspace, type Theme } from '@/lib/workspace';
 import { WORLD_CURRENCIES } from '@/lib/currencies';
 
-// Stays in English in every language. Illustrative; the tags are the ones mask_pii in services/agent/llm_bridge.py writes.
-const REDACTED_EXAMPLE = `Question: When does cash run short?
+// Stays in English in every language. Illustrative; the tags are the ones services/agent/llm_bridge.py
+// (mask_pii) and services/agent/name_masking.py write before text goes to a cloud provider.
+const REDACTED_EXAMPLE = `Question: Is [PARTY_1] paying us late?
 Context (calculated, not estimated):
   accounts: Operating [REDACTED_ACCOUNT], Payroll [REDACTED_ACCOUNT]
   current_balance: 29922.08 USD
   first_negative_day: 2026-10-28, trigger PAYROLL
   shortfall: 5866.76 USD
-  largest_customer: Northwind Foods ([REDACTED_EMAIL]), 47 days overdue
-Masked before sending: account numbers, IBANs, tax IDs, emails, phone numbers.
-Sent as written: customer and supplier names.`;
+  largest_customer: [PARTY_1] ([REDACTED_EMAIL]), 47 days overdue
+Masked before sending: account numbers, IBANs, tax IDs, emails, phone numbers, names.
+The reply you see has the real names put back.`;
 
 function Row({ title, description, children }: { title: string; description: string; children: React.ReactNode }) {
   return (
