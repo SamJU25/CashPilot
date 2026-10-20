@@ -1,9 +1,9 @@
-# SME Finance Copilot
+# CashPilot
 
 > **Autonomous AI CFO & Financial Participant for Small & Medium Enterprises**  
 > *FinTechathon 2026 Topic E: AI as a Financial Participant | Tsinghua University PBCSF & WeBank*
 
-[![CI](https://github.com/SamJU25/F-SME-Finance-Copilot/actions/workflows/ci.yml/badge.svg)](https://github.com/SamJU25/F-SME-Finance-Copilot/actions/workflows/ci.yml)
+[![CI](https://github.com/SamJU25/CashPilot/actions/workflows/ci.yml/badge.svg)](https://github.com/SamJU25/CashPilot/actions/workflows/ci.yml)
 [![Tests](https://img.shields.io/badge/pytest-970_passed-brightgreen.svg)](tests/)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.115+-009688.svg)](https://fastapi.tiangolo.com/)
@@ -180,8 +180,8 @@ Requires [Docker Desktop](https://www.docker.com/products/docker-desktop/) or Do
 
 ```bash
 # Clone the repository
-git clone https://github.com/SamJU25/F-SME-Finance-Copilot.git
-cd F-SME-Finance-Copilot
+git clone https://github.com/SamJU25/CashPilot.git
+cd CashPilot
 
 # Build and start all services in rootless containers
 docker compose up --build -d
