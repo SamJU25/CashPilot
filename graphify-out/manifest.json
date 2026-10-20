@@ -1416,9 +1416,9 @@
     "semantic_hash": ""
   },
   "services/agent/param_extractor.py": {
-    "mtime": 1792459229.410783,
-    "seen": 1792459539.9407086,
-    "ast_hash": "fa21aaac2a84a08c39d397a3d4bb3e7f",
+    "mtime": 1792460200.3828824,
+    "seen": 1792460267.179005,
+    "ast_hash": "cfd22945efc778738e9ebd03742f87ae",
     "semantic_hash": ""
   },
   "services/calculations/concentration_risk.py": {
@@ -1776,9 +1776,9 @@
     "semantic_hash": ""
   },
   "tests/unit/test_currency_calculations.py": {
-    "mtime": 1792459969.411921,
-    "seen": 1792460030.054976,
-    "ast_hash": "65ea6ae1c87999d4010a7b146d8fccfb",
+    "mtime": 1792460208.359502,
+    "seen": 1792460267.190589,
+    "ast_hash": "12753ecfcb379b7d4b7876461ab3ccb3",
     "semantic_hash": ""
   },
   "services/calculations/currency_registry.py": {
