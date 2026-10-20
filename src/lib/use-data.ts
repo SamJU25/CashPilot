@@ -17,26 +17,30 @@ export type DataState<T> =
  */
 export function useData<T>(load: () => T, fromLive?: (live: LiveData) => T | null | undefined): DataState<T> {
   const { hasData, ready, source, live } = useWorkspace();
-  const [state, setState] = useState<DataState<T>>({ status: 'loading' });
   const [attempt, setAttempt] = useState(0);
   const retry = useCallback(() => setAttempt((n) => n + 1), []);
 
-  useEffect(() => {
-    if (!ready) return;
-    const forced = new URLSearchParams(window.location.search).get('state');
-    if (forced === 'loading') return setState({ status: 'loading' });
-    if (forced === 'empty' || !hasData) return setState({ status: 'empty' });
-    if (forced === 'error' && attempt === 0) {
-      return setState({ status: 'error', message: 'common.timeout', retry });
+  const resolve = useCallback((): DataState<T> => {
+    if (!ready) return { status: 'loading' };
+    if (typeof window !== 'undefined') {
+      const forced = new URLSearchParams(window.location.search).get('state');
+      if (forced === 'loading') return { status: 'loading' };
+      if (forced === 'empty') return { status: 'empty' };
+      if (forced === 'error' && attempt === 0) return { status: 'error', message: 'common.timeout', retry };
     }
+    if (!hasData) return { status: 'empty' };
     if (source === 'live') {
       const data = fromLive?.(live);
-      return setState(data == null ? { status: 'empty' } : { status: 'ready', data });
+      return data == null ? { status: 'empty' } : { status: 'ready', data };
     }
-    setState({ status: 'ready', data: load() });
-    // load and fromLive are selectors; live is the data they read.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ready, hasData, attempt, retry, source, live]);
+    return { status: 'ready', data: load() };
+  }, [ready, hasData, source, live, attempt, retry, fromLive, load]);
+
+  const [state, setState] = useState<DataState<T>>(resolve);
+
+  useEffect(() => {
+    setState(resolve());
+  }, [resolve]);
 
   return state;
 }

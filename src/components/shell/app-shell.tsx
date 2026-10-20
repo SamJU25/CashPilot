@@ -44,7 +44,7 @@ const NAV: { group: Key; items: { href: string; label: Key; icon: typeof LineCha
   },
 ];
 
-function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
+function NavLinks({ onNavigate, id = 'desktop' }: { onNavigate?: () => void; id?: string }) {
   const pathname = usePathname();
   const { t } = useT();
   const pending = useIntents().filter((i) => i.status === 'STAGED_PENDING_HITL').length;
@@ -62,6 +62,7 @@ function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
                   <Link
                     href={item.href}
                     onClick={onNavigate}
+                    prefetch={true}
                     aria-current={active ? 'page' : undefined}
                     className={cn(
                       'relative flex h-9 items-center gap-2.5 rounded-md px-3 text-sm transition-colors',
@@ -69,7 +70,7 @@ function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
                     )}
                   >
                     {active && (
-                      <motion.span layoutId="nav-active" transition={spring.snappy} className="absolute inset-0 rounded-md bg-card shadow-[0_0_0_1px_rgb(var(--border))]" />
+                      <motion.span layoutId={`nav-active-${id}`} transition={spring.snappy} className="absolute inset-0 rounded-md bg-card shadow-[0_0_0_1px_rgb(var(--border))]" />
                     )}
                     <item.icon className="relative size-4 shrink-0" aria-hidden />
                     <span className="relative">{t(item.label)}</span>
@@ -221,7 +222,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               <SheetTitle className="sr-only">{t('nav.menuTitle')}</SheetTitle>
               <Brand />
               <div className="flex-1">
-                <NavLinks onNavigate={() => setOpen(false)} />
+                <NavLinks onNavigate={() => setOpen(false)} id="mobile" />
               </div>
               <RailFooter />
             </SheetContent>
