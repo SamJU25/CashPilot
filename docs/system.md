@@ -49,7 +49,7 @@ Replaces audited financial statements with verified transactional liquidity.
 Separates total transactional flows into gross inflows and gross operating debits:
 $$\text{Net Cash Flow} = \sum \text{Operating Credits} - \sum \text{Operating Debits}$$
 $$\text{Net Daily Burn} = \frac{\sum \text{Operating Debits} - \sum \text{Operating Credits}}{\text{Period Days}}$$
-$$\text{Runway (Days)} = \begin{cases} 999 & \text{if Net Daily Burn} \le 0 \\ \lfloor \frac{\text{Cash Balance}}{\text{Net Daily Burn}} \rfloor & \text{if Net Daily Burn} > 0 \end{cases}$$
+$$\text{Runway (Days)} = \begin{cases} \text{null (not burning)} & \text{if Net Daily Burn} \le 0 \\ \lfloor \frac{\text{Cash Balance}}{\text{Net Daily Burn}} \rfloor & \text{if Net Daily Burn} > 0 \end{cases}$$
 
 ### 2.3 Predictive Cash Crunch & Overdraft Pinpointing
 Projects daily closing balances across 30, 60, and 90-day forward horizons. Simulates scheduled accounts payable outflows against historical revenue recurrence:
@@ -61,10 +61,11 @@ Projects daily closing balances across 30, 60, and 90-day forward horizons. Simu
 Aggregates inflows into 7-day intervals, computing sample mean ($\mu$) and standard deviation ($\sigma$):
 $$\text{CV} = \frac{\sigma}{\mu}$$
 Maps into calibrated underwriting risk tiers:
-- **LOW**: $\text{CV} < 0.25$
-- **MEDIUM**: $0.25 \le \text{CV} < 0.50$
-- **HIGH**: $0.50 \le \text{CV} < 0.75$
-- **CRITICAL**: $\text{CV} \ge 0.75$
+- **LOW**: $\text{CV} \le 0.35$
+- **MODERATE**: $0.35 < \text{CV} \le 0.75$
+- **HIGH**: $\text{CV} > 0.75$
+
+Thresholds live in `contracts/decision_tables/revenue_volatility_policy.json`.
 
 ### 2.5 Working Capital Cash Conversion Cycle (CCC)
 Measures the days required to turn capital investments into cash:
@@ -116,10 +117,13 @@ $$\text{APR}_{\text{trade}} = \left(\frac{\text{Discount \%}}{100 - \text{Discou
 Provides currency precision, conversion rates, and ISO 4217 validation via `services/calculations/currency.py`.
 
 ### 2.14 Continuous Liquidity Scoring (0–100) & Gray-Zone Triage
-Evaluates continuous score across weighted sub-components (DAB stability 35%, Runway 25%, Debt service 20%, Volatility 20%). Triage categories:
-- **Prime Tier** ($\ge 75$): Unsecured revolving credit line recommendation.
-- **Conditional / Gray Tier** ($50–74$): Asset-backed invoice factoring / PO financing.
-- **Declined / Distressed** ($< 50$): Working capital restructuring guidance; credit drawing blocked.
+`calculate_continuous_liquidity_score` (`services/calculations/liquidity_score.py`) adds four components, clamped to 0–100:
+- **Daily Average Balance** (max 50): 40–50 at or above the $10k prime threshold, 20–40 linear between $3k and $10k, 0–20 below $3k.
+- **Revenue volatility** (max 25): 25 at CV ≤ 0.30, sliding to 10 at CV 0.80, 5 above.
+- **NSF record** (max 15): +15 for none, +5 for one, −5 for two, −20 for three or more.
+- **Transaction density** (max 10): 10 at 15+ transactions, 7 at 5+, 4 below.
+
+Tiers: **PRIME** (≥ 75), **NEAR_PRIME** (55–74), **HIGH_RISK** (< 55). Borderline applicants get a conditional proposal, for example asset-backed invoice factoring instead of an unsecured line.
 
 ---
 
@@ -160,17 +164,24 @@ All UI components implement 4 strict states:
 - **Tenant Isolation**: Action routes require a signed HMAC tenant token (`X-Tenant-Token` or `Authorization: Bearer`) resolved by `require_tenant_identity`; the client-asserted `X-Tenant-ID` header is never trusted for these routes. Tier 1 analysis/chat routes still accept the header for scoping read-only requests.
 
 ### 4.2 Multi-Format Statement Ingestion
-Ingests both bank CSVs and PDF statements (`services/ingestion/statement_parser.py`, `pdf_parser.py`, `csv_parser.py`):
+Ingests both bank CSVs and PDF statements (`services/ingestion/csv_parser.py`, `financial_parsers.py`, `pdf_parser.py`):
 - Line-item extraction with column normalization (date, amount, counterparty, reference).
 - Mathematical balance tie-out: $\text{opening\_balance} + \sum \text{inflows} - \sum \text{outflows} == \text{closing\_balance}$.
 - Row-level error provenance codes: `INVALID_ROW_SHAPE`, `INVALID_DATE`, `INVALID_AMOUNT`, `INVALID_CURRENCY`, `DUPLICATE_TRANSACTION_ID`, `OUT_OF_ORDER_DATE`.
 
 ### 4.3 Policy Decision Tables (ZenEngine)
 Policy rules are defined in declarative JSON decision tables (`contracts/decision_tables/`):
-- `loan_covenants.json`: Enforces minimum DSCR, maximum leverage, and liquidity floors.
-- `unit_economics.json`: Evaluates LTV/CAC, Magic Number, and gross margin thresholds.
-- `working_capital.json`: Evaluates CCC, inventory turnover, and DSO health.
-- `persona_risk_policy.json`: Tunes underwriting appetite per business persona.
+- `debt_covenant_policy.json`: Minimum DSCR, maximum leverage and liquidity floors.
+- `underwriting_policy.json`, `facility_matching_policy.json`: Risk tiers, limit multipliers and facility eligibility.
+- `usury_policy.json`: Predatory APR ceiling (36%).
+- `working_capital_policy.json`: CCC, DSO, DPO and inventory health.
+- `unit_economics_policy.json`: LTV/CAC, payback and margin thresholds.
+- `revenue_volatility_policy.json`, `deficit_severity_policy.json`, `concentration_policy.json`: Volatility tiers, cash status and client concentration.
+- `security_gate_policy.json`: Tier 3 action types, prompt-injection and credential-paste checks.
+- `agent_persona_policy.json`, `semantic_intent_prototypes.json`: Assistant persona rules and intent prototypes for the router.
+- `bank_statement_profile_policy.json`, `expense_categorization_policy.json`, `reconciliation_tolerance_policy.json`: Statement profiling, expense categories and tie-out tolerance.
+
+15 tables in total.
 
 ### 4.4 Data Models & Schema Contracts
 
@@ -220,9 +231,8 @@ class ActionIntent(BaseModel):
 ## 5. LLM Brain, Semantic Routing & Universal Bridge
 
 ### 5.1 Dynamic Semantic Intent Routing
-Intent classification uses FastEmbed ONNX (`BAAI/bge-small-en-v1.5`) vector embeddings (`services/agent/semantic_router.py`):
-- Computes cosine similarity against canonical financial intent embeddings (`CFO_DIAGNOSTIC`, `CASH_CRUNCH_FORECAST`, `UNDERWRITING_PROPOSAL`, `LEDGER_AUDIT`, `GENERAL_FINANCE`).
-- Eliminates hardcoded keyword intercepts and brittle regex matching.
+Intent classification uses FastEmbed ONNX (`BAAI/bge-small-en-v1.5`) vector embeddings (`services/agent/dynamic_router.py`):
+- Computes cosine similarity against canonical financial intent embeddings (`CASH_DIAGNOSTIC`, `CREDIT_UNDERWRITING`, `ACTION_STAGING`, `GENERAL_ASSISTANCE`, `OFF_TOPIC`) defined in `contracts/decision_tables/semantic_intent_prototypes.json`. When an LLM provider is configured it classifies the intent first; the embedding router decides when it is not configured or returns no label.
 - Dispatches query to corresponding deterministic engine before invoking LLM synthesis.
 
 ### 5.2 Local SLM Inference Engine
@@ -246,7 +256,7 @@ Intent classification uses FastEmbed ONNX (`BAAI/bge-small-en-v1.5`) vector embe
                    [ Universal LLM Bridge ]
       ┌────────────────────────┼────────────────────────┐
       ▼                        ▼                        ▼
-[ Local SLM LoRA ]     [ Gemini 2.0 Flash ]     [ Claude / GPT-4o / DeepSeek ]
+[ Local MiniCPM5-2B ]     [ Gemini 2.0 Flash ]     [ Claude / GPT-4o / DeepSeek ]
       │                        │                        │
       └────────────────────────┬────────────────────────┘
                                │

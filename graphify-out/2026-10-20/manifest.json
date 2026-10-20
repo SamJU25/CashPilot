@@ -924,9 +924,9 @@
     "semantic_hash": ""
   },
   "AGENTS.md": {
-    "mtime": 1792496472.0439193,
-    "seen": 1792496664.130775,
-    "ast_hash": "f95a0985f19705fe62438fb3063c885e",
+    "mtime": 1792497567.5003839,
+    "seen": 1792497702.2120066,
+    "ast_hash": "e638a6454ec077bbd1448a6f4ff2a9f4",
     "semantic_hash": ""
   },
   "GEMINI.md": {
@@ -978,9 +978,9 @@
     "semantic_hash": ""
   },
   "README.md": {
-    "mtime": 1792496526.4425032,
-    "seen": 1792496664.1307805,
-    "ast_hash": "43914b989a952f07f48f7fde3e247c16",
+    "mtime": 1792497480.3406334,
+    "seen": 1792497702.212229,
+    "ast_hash": "fe1595b471b2ec4142e542873b370c8c",
     "semantic_hash": ""
   },
   "requirements.txt": {
@@ -996,21 +996,21 @@
     "semantic_hash": ""
   },
   "docs/architecture.md": {
-    "mtime": 1792496539.2671812,
-    "seen": 1792496664.1308935,
-    "ast_hash": "dbe019ed4542b8943b6334a9ab50b657",
+    "mtime": 1792497156.2111094,
+    "seen": 1792497702.2123415,
+    "ast_hash": "76083e008bfa7c9a72d4f49c151e6770",
     "semantic_hash": ""
   },
   "docs/security.md": {
-    "mtime": 1792496553.1187088,
-    "seen": 1792496664.1308954,
-    "ast_hash": "70f76988d5ca5ff8d6d45ee91bd4e562",
+    "mtime": 1792497310.9774518,
+    "seen": 1792497702.212343,
+    "ast_hash": "243d9f270cc3e83722317fcc1328e42b",
     "semantic_hash": ""
   },
   "docs/system.md": {
-    "mtime": 1792496562.941082,
-    "seen": 1792496664.1308968,
-    "ast_hash": "c9771a54f84155b18b9a342cf8650d71",
+    "mtime": 1792497052.0128193,
+    "seen": 1792497702.2123446,
+    "ast_hash": "d8021fcd8bb97b9c9427f7260d5ee029",
     "semantic_hash": ""
   },
   ".agent/workflows/sprint-workflow.md": {
@@ -2628,9 +2628,9 @@
     "semantic_hash": ""
   },
   "docs/GLOSSARY.md": {
-    "mtime": 1791903703.3761842,
-    "seen": 1792496664.1308916,
-    "ast_hash": "5eea6556c7170fc1d89f9fcdddf1c7ef",
+    "mtime": 1792497025.175397,
+    "seen": 1792497702.212339,
+    "ast_hash": "61bad7453fdcb06d8fafe0b4869b1d4a",
     "semantic_hash": ""
   }
 }

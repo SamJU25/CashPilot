@@ -25,6 +25,7 @@ Read [`AGENTS.md`](AGENTS.md) for instruction precedence and verified baseline s
 | 📘 [System Design Specification](docs/system.md) | Concrete implementation mechanics, mathematical formulas, JSON schemas & smart contracts |
 | 🏛️ [Architectural Plan & Roadmap](docs/architecture.md) | 6-layer topology, local SLM inference, dynamic vector routing & multi-agent suites |
 | 🛡️ [Security Architecture](docs/security.md) | 5 Invariants, threat modeling, Three-Tier Gate (owner-sent Tier 3) & decadal defense |
+| 📦 [Competition Submission Package](submission/README.md) | Technical documentation, deck, demo video, security self-assessment, sandbox execution evidence |
 
 | 📖 [Ubiquitous Domain Glossary](docs/GLOSSARY.md) | Standardized fintech, underwriting, and treasury terminology (CCC, DAB, DSCR, APR) |
 
@@ -75,7 +76,7 @@ Traditional banks require 4 to 8 weeks to underwrite working capital loans and r
 ```
 
 ### 2.1 Multi-Format Statement Ingestion Engine (`services/ingestion/`)
-- Unified parser (`statement_parser.py`) supporting both UTF-8 CSV statements and multi-page vector/raster PDF bank statements (`pdf_parser.py`, `csv_parser.py`).
+- Parsers for UTF-8 CSV statements in common bank layouts and multi-page text-based PDF bank statements (`csv_parser.py`, `financial_parsers.py`, `pdf_parser.py`). Scanned image-only PDFs need OCR, which is not included.
 - Line-item transaction extraction with opening and closing balance mathematical tie-out:
   $$\text{Opening Balance} + \sum \text{Credits} - \sum \text{Debits} == \text{Closing Balance}$$
 - Deterministic row-level error provenance tracking: `INVALID_ROW_SHAPE`, `INVALID_DATE`, `INVALID_AMOUNT`, `INVALID_CURRENCY`, `DUPLICATE_TRANSACTION_ID`, `OUT_OF_ORDER_DATE`.

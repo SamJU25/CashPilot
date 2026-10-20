@@ -157,7 +157,7 @@ For runtime request handling, specialized specialists collaborate across 4 funct
 
 ### Squad Responsibilities & Boundaries
 1. **Lead Financial Orchestrator**: Read-only supervisor. Dispatches user intent via FastEmbed ONNX vector triage, packages pre-calculated deterministic context, and invokes the Universal LLM Bridge. Zero database write permissions.
-2. **Squad 1 (Ingestion & Privacy Core)**: Ingests CSV and PDF bank statements via `statement_parser.py`, `pdf_parser.py`, and `csv_parser.py`. Executes line-item extraction, opening/closing balance tie-out, assigns row-level error provenance codes, and strips PII before any LLM ingestion.
+2. **Squad 1 (Ingestion & Privacy Core)**: Ingests CSV and PDF bank statements via `pdf_parser.py` and `csv_parser.py`. Executes line-item extraction, opening/closing balance tie-out, assigns row-level error provenance codes, and strips PII before any LLM ingestion.
 3. **Squad 2 (Diagnostic CFO Engine)**: 0% LLM math. Pure Python `decimal.Decimal` computation of DAB, Net Daily Flow, Cash Conversion Cycle (DSO/DIO/DPO), DSCR, FCCR, Altman Z'-score, DuPont ROE 3-stage, and ROIC/EVA.
 4. **Squad 3 (Predictive & Risk Engine)**: Evaluates daily cash trajectories, pinpoints exact overdraft dates and deficit shortfalls, and computes weekly revenue inflow volatility index and risk tier.
 5. **Squad 4 (Underwriting & Matching)**: Computes continuous liquidity scoring (0–100), evaluates loan covenants and persona risk policies using ZenEngine JSON decision tables, and flags loans $>36\%$ APR as predatory.

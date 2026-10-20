@@ -30,15 +30,16 @@ import { cn } from '@/lib/utils';
 import { useWorkspace, type Theme } from '@/lib/workspace';
 import { WORLD_CURRENCIES } from '@/lib/currencies';
 
-// Stays in English in both languages: it is the literal text the backend sends to the model.
+// Stays in English in every language. Illustrative; the tags are the ones mask_pii in services/agent/llm_bridge.py writes.
 const REDACTED_EXAMPLE = `Question: When does cash run short?
 Context (calculated, not estimated):
-  accounts: [ACCOUNT_1] (operating), [ACCOUNT_2] (payroll)
+  accounts: Operating [REDACTED_ACCOUNT], Payroll [REDACTED_ACCOUNT]
   current_balance: 29922.08 USD
   first_negative_day: 2026-10-28, trigger PAYROLL
   shortfall: 5866.76 USD
-  largest_customer: [CUSTOMER_1], 47 days overdue
-Masked before sending: 2 account numbers, 1 email, 6 names`;
+  largest_customer: Northwind Foods ([REDACTED_EMAIL]), 47 days overdue
+Masked before sending: account numbers, IBANs, tax IDs, emails, phone numbers.
+Sent as written: customer and supplier names.`;
 
 function Row({ title, description, children }: { title: string; description: string; children: React.ReactNode }) {
   return (

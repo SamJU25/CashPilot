@@ -28,7 +28,7 @@ Our architecture relies on **Provable Invariants**: mathematical, kernel-enforce
 │ 1. Type Boundary       │ Rust Pydantic v2 drops 422 on extra/bad keys  │
 │ 2. Storage Boundary    │ Signed tenant tokens + per-tenant JSON store  │
 │ 3. Air-Gap Boundary    │ Zero banking credentials for AI agents        │
-│ 4. Atomicity Boundary  │ Row locks + FISCO BCOS PBFT double-pledge stop│
+│ 4. Atomicity Boundary  │ Ledger lock + first-pledge invoice registry   │
 │ 5. Owner Boundary      │ Tier 3 is owner-sent; no execution route      │
 └────────────────────────┴───────────────────────────────────────────────┘
 ```
@@ -45,7 +45,7 @@ Every financial event flows through an immutable, permission-gated lifecycle bef
                  ▼
 ┌────────────────────────────────────────────────────────┐
 │ TIER 1: OBSERVATION (Autonomous Read-Only)             │
-│ • Bank statement CSV/PDF ingestion & OCR               │
+│ • Bank statement CSV/PDF ingestion (text-based PDFs)   │
 │ • Line-item extraction & balance tie-out               │
 │ • Deterministic CFO calculations (DAB, CCC, DSCR)      │
 │ • Predictive cash overdraft pinpointing                │
@@ -80,18 +80,20 @@ Security is designed to withstand both automated AI attacks and specialized pene
 
 | Threat Vector / Tool | Attack Mechanism | Mathematical & Physical Invariant Defense |
 |---|---|---|
-| **Prompt Injection (PyRIT, Garak)** | Malicious instructions hidden in CSV/PDF statement counterparty descriptions | FastEmbed ONNX vector triage routes intent before prompt assembly. Pre-flight PII redaction strips adversarial payloads. The LLM has zero bank API credentials and zero write access to financial database columns. It can only emit a proposal into `action_intents` with status `STAGED_PENDING_HITL`. |
-| **SQL Injection (SQLmap)** | Malformed query parameters to extract ledgers | Payloads are strictly parsed by Pydantic v2 (compiled in Rust). Database drivers use binary parameterized prepared statements (`asyncpg`); SQL command syntax and parameter values travel across separate binary channels. |
+| **Prompt Injection (PyRIT, Garak)** | Malicious instructions in chat or in CSV/PDF statement descriptions | `inspect_for_prompt_injection` (SECURITY_GATE decision table) runs before intent routing and stops the turn with `SECURITY_DEFENSE_TRIGGERED`, even for an authenticated caller with staging parameters. Detection is pattern-based, so the structural limit matters more: the LLM has no bank credentials and no write path except a Tier 2 proposal (`STAGED_PENDING_HITL`), and only for a signed tenant. |
+| **SQL Injection (SQLmap)** | Malformed query parameters to extract ledgers | The current build has no SQL database (stores are JSON files), so there is no query to inject into. All payloads are parsed by Pydantic v2 with `extra="forbid"`. The planned PostgreSQL layer will use parameterized statements only. |
 | **BOLA / IDOR / Tenant Hop** | Tampering with `tenant_id` to steal records | Action routes require an HMAC-signed tenant token (`require_tenant_identity` in `services/security/tenant_token.py`) and ignore the client-asserted `X-Tenant-ID`; every intent lookup checks ownership and returns 404 on mismatch. Chat-driven staging and model management require the same verified token. Token issuance is gated by an enrollment key; with `TENANT_ENROLLMENT_KEYS` configured, the single key is not a wildcard, a lone key must be bound with `TENANT_ENROLLMENT_TENANT_ID` (unbound issuance is fail-closed), and `TENANT_ENROLLMENT_ALLOW_ANY_TENANT=1` is an explicit local-development escape hatch. Provider probes (`test-connection`, `fetch-models`) also require a verified token. PostgreSQL RLS is the target storage-layer defence, not yet built. |
 | **Stolen Disk / Backup** | Reading `.sessions/` or `.data/` copied off the host | Stores are owner-only (`0700`/`0600`); setting `COPILOT_DATA_KEY` seals session statements, staging intents and the invoice registry with Fernet (`enc:v1:` prefix), and `COPILOT_ENV=production|staging` makes that key mandatory at startup. Legacy plaintext files stay readable and are re-encrypted on the next write. |
 | **Queue Flooding / DoS** | Anonymous chat minting proposals or exhausting a shared rate-limit bucket | Staging refuses anonymous callers; pending proposals expire after `STAGED_INTENT_TTL_HOURS` and identical instructions dedupe inside `STAGED_INTENT_DEDUPE_SECONDS`. Token-bucket limiting keys on the client IP and honours `TRUSTED_PROXY_HOPS` when deployed behind a trusted proxy chain. |
 | **SSRF via LLM endpoint** | Supplying a `base_url` aimed at loopback, RFC 1918 or cloud metadata hosts | `services/agent/url_guard.py` rejects non-http(s) schemes, embedded credentials, link-local/metadata addresses, and (by default) loopback and private ranges. Upstream error bodies are no longer reflected. |
-| **Race Conditions (Turbo Intruder)** | Single-packet bursts attempting duplicate loan draws | Transactions execute `SELECT ... FOR UPDATE` (pessimistic row locks). Pledging invoices across lenders is anchored on FISCO BCOS via `InvoiceRegistry.sol`; PBFT consensus guarantees only the first pledge succeeds. |
+| **Race Conditions (Turbo Intruder)** | Single-packet bursts attempting duplicate loan draws | No draw can execute at all (Tier 3 has no route). Staging and pledging take a process lock and write with atomic file replace; identical instructions inside 5 minutes return the existing proposal. Cross-lender pledge exclusivity on FISCO BCOS (`InvoiceRegistry.sol`, PBFT) is the target; today the registry is a local simulation of the same first-pledge rule. |
 | **Client Hooking (REA, Frida)** | Client-side memory tampering & variable hooking | Zero financial calculation or approval logic executes in the browser. The frontend is treated as an untrusted display terminal; the backend validates 100% of state deterministically. |
 
 ---
 
 ## 4. Automated Self-Healing & Resilience Protocol
+
+> **Status: design target, not implemented in the current build.** None of the four tiers below runs today; the current build relies on fail-closed configuration checks, owner-only stores and atomic writes.
 
 When anomalies or process crashes occur, recovery executes across four automated tiers:
 
@@ -125,6 +127,8 @@ When anomalies or process crashes occur, recovery executes across four automated
 
 ## 5. Database Defense-in-Depth
 
+> **Status: target deployment design.** The current build stores the ledger, sessions and invoice registry as owner-only JSON files (optionally Fernet-encrypted); PostgreSQL, RLS and revoked UPDATE/DELETE arrive with the database migration.
+
 ```
 [ Public Internet ]
         │
@@ -154,9 +158,9 @@ When anomalies or process crashes occur, recovery executes across four automated
 
 ## 6. LLM Connection Security & Data Privacy
 
-1. **Pre-Flight PII Redaction**: Customer names, phone numbers, tax IDs, and bank account numbers are scrubbed before prompt assembly; external AI models receive only synthetic tokens (`<CUSTOMER_1>`, `[REDACTED_IBAN]`).
+1. **Pre-Flight PII Redaction**: `mask_pii` (`services/agent/llm_bridge.py`) replaces account numbers, IBANs, tax IDs, emails, phone numbers and API-key patterns with tags such as `[REDACTED_ACCOUNT]` and `[REDACTED_IBAN]` before text reaches a cloud model. Customer and supplier names are not masked yet (named-entity masking is on the roadmap); the default local model keeps all text on the machine.
 2. **Air-Gapped Local Inference Engine**: In local mode, `LocalTransformersEngine` runs foundation 2B (`openbmb/MiniCPM5-2B` under `models/base/`) directly via PyTorch CUDA, or connects to Ollama on `127.0.0.1:11434`. Zero internet packets leave the machine.
-3. **Enterprise Zero-Data Retention (TLS 1.3)**: Cloud provider API connections enforce `store=False`, ensuring prompts are not logged or used for model training.
+3. **Cloud Provider Transport**: Cloud calls use each provider's HTTPS API. Data retention follows the provider's own policy; CashPilot does not set a no-retention flag, so owners who need zero retention should use the local model.
 4. **Encrypted Client Key Storage**: When custom API keys are used in the dashboard, they reside in client `localStorage` and are passed per-session via authenticated headers; they are never committed to disk on shared servers.
 
 ---
@@ -165,12 +169,14 @@ When anomalies or process crashes occur, recovery executes across four automated
 
 1. **Canonical Hashing**: Every ingested invoice produces a deterministic cryptographic hash:
    $$\text{hash} = \text{SHA256}\left(\text{tax\_id} \,\|\, \text{buyer\_id} \,\|\, \text{invoice\_num} \,\|\, \text{amount\_cents}\right)$$
-2. **PBFT Consensus Anchor**: Invoices submitted for factoring or credit collateral are registered on the consortium blockchain (`contracts/InvoiceRegistry.sol`).
+2. **PBFT Consensus Anchor (target)**: Invoices submitted for factoring or credit collateral are to be registered on the consortium blockchain (`contracts/InvoiceRegistry.sol`). The current build runs the same rule in a local registry (`services/blockchain/invoice_hasher.py`); the contract is not yet deployed.
 3. **Double-Pledge Prevention**: If a fraudulent SME attempts to pledge the same invoice to two separate commercial lenders, the second transaction reverts with `ERR_INVOICE_ALREADY_PLEDGED`.
 
 ---
 
 ## 8. Decadal Security Blueprint (30-Year Resilience)
+
+> **Status: long-term research roadmap.** None of these items is implemented.
 
 1. **Post-Quantum Cryptography (NIST FIPS 203/204)**: Hybrid ML-KEM + ML-DSA dual signatures protect financial audit logs against Harvest-Now-Decrypt-Later quantum attacks.
 2. **Formal Verification (TLA+ & Dafny)**: State machine transitions mathematically proven to guarantee mutual exclusion on invoice pledges across infinite interleavings.
