@@ -10,7 +10,7 @@ import logging
 
 import json
 from typing import Optional
-from fastapi import APIRouter, Depends, Header, HTTPException, status
+from fastapi import APIRouter, Depends, File, Header, HTTPException, UploadFile, status
 from starlette.concurrency import run_in_threadpool
 
 from api.dependencies import require_tenant
@@ -33,6 +33,9 @@ from services.agent.schema import (
     LLMConfig,
     TestConnectionRequest,
     TestConnectionResponse,
+    RegisterGGUFRequest,
+    RegisterGGUFResponse,
+    UploadGGUFResponse,
 )
 from services.agent.supervisor import run_copilot_supervisor
 
@@ -106,6 +109,40 @@ async def agent_delete_model(
     engine = LocalTransformersEngine.get_instance()
     res = await run_in_threadpool(engine.delete_model, request.model_name)
     return DeleteModelResponse(**res)
+
+
+@router.post(
+    "/register-gguf",
+    response_model=RegisterGGUFResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Register Local GGUF Model Path",
+    description="Registers an existing .gguf file from local filesystem into the offline models directory.",
+)
+async def agent_register_gguf(
+    request: RegisterGGUFRequest,
+    tenant: str = Depends(require_tenant),
+) -> RegisterGGUFResponse:
+    from services.agent.local_transformers import LocalTransformersEngine
+    engine = LocalTransformersEngine.get_instance()
+    res = await run_in_threadpool(engine.register_gguf_file, request.file_path)
+    return RegisterGGUFResponse(**res)
+
+
+@router.post(
+    "/upload-gguf",
+    response_model=UploadGGUFResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Upload Local GGUF Model File",
+    description="Uploads a .gguf model file from disk directly into local models directory.",
+)
+async def agent_upload_gguf(
+    file: UploadFile = File(...),
+    tenant: str = Depends(require_tenant),
+) -> UploadGGUFResponse:
+    from services.agent.local_transformers import LocalTransformersEngine
+    engine = LocalTransformersEngine.get_instance()
+    res = await run_in_threadpool(engine.save_uploaded_gguf, file.filename, file.file)
+    return UploadGGUFResponse(**res)
 
 
 def _resolve_agent_tenant(

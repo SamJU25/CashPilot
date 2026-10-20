@@ -176,6 +176,17 @@ export const api = {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ model_name: modelName }),
     }, 30_000),
+  uploadGGUF: (file: File) =>
+    request<{ success: boolean; model_id: string; model_name: string; message: string; size_gb?: number }>('/api/v1/agent/upload-gguf', {
+      method: 'POST',
+      body: form([['file', file, file.name]]),
+    }, 120_000),
+  registerGGUF: (filePath: string) =>
+    request<{ success: boolean; model_id: string; model_name: string; message: string; size_gb?: number }>('/api/v1/agent/register-gguf', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ file_path: filePath }),
+    }, 15_000),
 };
 
 export interface ChatRequest {

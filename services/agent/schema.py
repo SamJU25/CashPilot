@@ -107,6 +107,32 @@ class DeleteModelResponse(BaseModel):
     freed_mb: Optional[float] = None
 
 
+class RegisterGGUFRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    file_path: str = Field(..., description="Absolute or relative file path to a local .gguf model file")
+
+
+class RegisterGGUFResponse(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    success: bool
+    model_id: str
+    model_name: str
+    message: str
+    size_gb: Optional[float] = None
+
+
+class UploadGGUFResponse(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    success: bool
+    model_id: str
+    model_name: str
+    message: str
+    size_gb: Optional[float] = None
+
+
 
 class ChatHistoryItem(BaseModel):
     model_config = ConfigDict(extra="ignore")

@@ -1069,6 +1069,100 @@ class LocalTransformersEngine:
                 "freed_mb": 0.0,
             }
 
+    def register_gguf_file(self, file_path: str) -> dict:
+        """Registers a local .gguf file from disk into the models directory."""
+        clean_path = os.path.abspath(file_path.strip().strip('"').strip("'"))
+        if not os.path.exists(clean_path):
+            return {
+                "success": False,
+                "model_id": "",
+                "model_name": "",
+                "message": f"File not found: {clean_path}",
+                "size_gb": None,
+            }
+        if not os.path.isfile(clean_path) or not clean_path.lower().endswith(".gguf"):
+            return {
+                "success": False,
+                "model_id": "",
+                "model_name": "",
+                "message": f"Path must be an existing .gguf file: {clean_path}",
+                "size_gb": None,
+            }
+
+        os.makedirs(MODELS_ROOT, exist_ok=True)
+        filename = os.path.basename(clean_path)
+        target_path = os.path.join(MODELS_ROOT, filename)
+
+        # If file is not already inside models directory, hardlink or copy it
+        if os.path.abspath(target_path) != clean_path:
+            try:
+                if os.path.exists(target_path):
+                    os.remove(target_path)
+                try:
+                    os.link(clean_path, target_path)
+                except Exception:
+                    import shutil
+                    shutil.copy2(clean_path, target_path)
+            except Exception as exc:
+                return {
+                    "success": False,
+                    "model_id": "",
+                    "model_name": "",
+                    "message": f"Could not link or copy .gguf file: {exc}",
+                    "size_gb": None,
+                }
+
+        SUPPORTED_LOCAL_MODELS.refresh()
+        m_id = os.path.splitext(filename)[0].lower()
+        sz_gb = round(os.path.getsize(target_path) / (1024**3), 2)
+        clean_title = m_id.replace("-", " ").replace("_", " ").title()
+        return {
+            "success": True,
+            "model_id": m_id,
+            "model_name": f"{clean_title} (GGUF)",
+            "message": f"GGUF model '{filename}' ({sz_gb} GB) registered successfully.",
+            "size_gb": sz_gb,
+        }
+
+    def save_uploaded_gguf(self, filename: str, source_file) -> dict:
+        """Saves an uploaded .gguf file directly into the models directory."""
+        safe_name = os.path.basename(filename)
+        if not safe_name.lower().endswith(".gguf"):
+            return {
+                "success": False,
+                "model_id": "",
+                "model_name": "",
+                "message": "Uploaded file must end with .gguf extension.",
+                "size_gb": None,
+            }
+
+        os.makedirs(MODELS_ROOT, exist_ok=True)
+        target_path = os.path.join(MODELS_ROOT, safe_name)
+        try:
+            with open(target_path, "wb") as out_f:
+                while chunk := source_file.read(1024 * 1024):
+                    out_f.write(chunk)
+        except Exception as exc:
+            return {
+                "success": False,
+                "model_id": "",
+                "model_name": "",
+                "message": f"Failed to save uploaded GGUF file: {exc}",
+                "size_gb": None,
+            }
+
+        SUPPORTED_LOCAL_MODELS.refresh()
+        m_id = os.path.splitext(safe_name)[0].lower()
+        sz_gb = round(os.path.getsize(target_path) / (1024**3), 2)
+        clean_title = m_id.replace("-", " ").replace("_", " ").title()
+        return {
+            "success": True,
+            "model_id": m_id,
+            "model_name": f"{clean_title} (GGUF)",
+            "message": f"GGUF model '{safe_name}' ({sz_gb} GB) loaded successfully.",
+            "size_gb": sz_gb,
+        }
+
     def generate(
         self,
         prompt: str,

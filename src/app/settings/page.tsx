@@ -1,8 +1,8 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { motion } from 'motion/react';
-import { AlertTriangle, Check, ChevronsUpDown, Globe, Search } from 'lucide-react';
+import { AlertTriangle, Check, ChevronsUpDown, FileUp, Globe, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -338,19 +338,80 @@ export default function SettingsPage() {
     { id: 'llama-3.2-1b-instruct', name: 'Llama 3.2 1B Instruct (GGUF · 0.8 GB · Minimal RAM · Tools: Basic)', tool_calling: 'Basic (Lightweight Tools)' },
   ], []);
 
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [customGgufPath, setCustomGgufPath] = useState('');
+  const [pathInputOpen, setPathInputOpen] = useState(false);
+  const [downloadModelId, setDownloadModelId] = useState('qwen2.5-3b-instruct');
+
+  // Filter ONLY local .gguf models detected and ready on disk
+  const localGgufFiles = useMemo(() => {
+    return localModels.filter((m) => m.name.includes('[Ready]'));
+  }, [localModels]);
+
   const displayModels = localModels.length > 0 ? localModels : FALLBACK_GGUF_MODELS;
-  const activeModelId = ws.localModel || 'qwen2.5-3b-instruct';
-  const activeMeta = displayModels.find((m) => m.id === activeModelId);
+  const activeModelId = ws.localModel || localGgufFiles[0]?.id || (displayModels[0]?.id ?? 'qwen2.5-3b-instruct');
+  const activeMeta = localGgufFiles.find((m) => m.id === activeModelId) || displayModels.find((m) => m.id === activeModelId);
   const isModelDownloaded = activeMeta ? activeMeta.name.includes('[Ready]') : false;
 
-  const downloadSelectedModel = async () => {
+  const handleGgufFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
     setModelActionState('downloading');
-    setModelActionMsg(null);
+    setModelActionMsg({ ok: true, text: `Loading ${file.name}...` });
     try {
-      const res = await api.downloadModel(activeModelId);
+      const res = await api.uploadGGUF(file);
       if (res.success) {
         setModelActionMsg({ ok: true, text: res.message });
         await refreshModels();
+        ws.update({ localModel: res.model_id });
+      } else {
+        setModelActionMsg({ ok: false, text: res.message });
+      }
+    } catch (err) {
+      setModelActionMsg({
+        ok: false,
+        text: err instanceof ApiError ? err.message : 'Failed to load GGUF file.',
+      });
+    } finally {
+      setModelActionState('idle');
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    }
+  };
+
+  const handleRegisterGgufPath = async () => {
+    if (!customGgufPath.trim()) return;
+    setModelActionState('downloading');
+    setModelActionMsg({ ok: true, text: 'Registering file path...' });
+    try {
+      const res = await api.registerGGUF(customGgufPath.trim());
+      if (res.success) {
+        setModelActionMsg({ ok: true, text: res.message });
+        await refreshModels();
+        ws.update({ localModel: res.model_id });
+        setCustomGgufPath('');
+        setPathInputOpen(false);
+      } else {
+        setModelActionMsg({ ok: false, text: res.message });
+      }
+    } catch (err) {
+      setModelActionMsg({
+        ok: false,
+        text: err instanceof ApiError ? err.message : 'Failed to register file path.',
+      });
+    } finally {
+      setModelActionState('idle');
+    }
+  };
+
+  const downloadModelById = async (targetId: string) => {
+    setModelActionState('downloading');
+    setModelActionMsg(null);
+    try {
+      const res = await api.downloadModel(targetId);
+      if (res.success) {
+        setModelActionMsg({ ok: true, text: res.message });
+        await refreshModels();
+        ws.update({ localModel: targetId });
       } else {
         setModelActionMsg({ ok: false, text: res.message });
       }
@@ -362,6 +423,10 @@ export default function SettingsPage() {
     } finally {
       setModelActionState('idle');
     }
+  };
+
+  const downloadSelectedModel = async () => {
+    await downloadModelById(activeModelId);
   };
 
   const deleteSelectedModel = async () => {
@@ -422,36 +487,60 @@ export default function SettingsPage() {
         </Row>
 
         {provider.id === 'local' && (
-          <Row title={t('set.model')} description={t('set.modelDesc')}>
-            <Select value={activeModelId} onValueChange={(v) => { ws.update({ localModel: v }); setModelActionMsg(null); }}>
-              <SelectTrigger className="max-w-md" aria-label={t('set.model')}>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {displayModels.map((m) => (
-                  <SelectItem key={m.id} value={m.id}>
-                    {m.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            {deviceMsg && <p className="mt-2 text-xs text-muted-foreground">{deviceMsg}</p>}
-            {activeMeta?.tool_calling && (
-              <div className="mt-2.5 flex items-center gap-2">
-                <span className="inline-flex items-center gap-1 rounded bg-accent/70 px-2 py-0.5 text-[11px] font-mono font-medium text-foreground border border-border/50">
-                  <span className="text-good font-bold">⚡</span> Tool Calling: {activeMeta.tool_calling}
-                </span>
-                <span className="text-[11px] text-muted-foreground">
-                  Required for financial calculation engines & ledger staging.
-                </span>
-              </div>
-            )}
-            <div className="mt-3 flex flex-wrap items-center gap-3">
-              {isModelDownloaded ? (
-                <>
+          <Row title={t('set.model')} description="Select an offline GGUF model file on your local device.">
+            <input
+              type="file"
+              ref={fileInputRef}
+              accept=".gguf"
+              onChange={handleGgufFileUpload}
+              className="hidden"
+            />
+            {localGgufFiles.length > 0 ? (
+              <>
+                <div className="flex flex-wrap items-center gap-2">
+                  <Select
+                    value={activeModelId}
+                    onValueChange={(v) => {
+                      ws.update({ localModel: v });
+                      setModelActionMsg(null);
+                    }}
+                  >
+                    <SelectTrigger className="max-w-md" aria-label={t('set.model')}>
+                      <SelectValue placeholder="Select a local GGUF model" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {localGgufFiles.map((m) => (
+                        <SelectItem key={m.id} value={m.id}>
+                          {m.name.replace(' [Ready]', '')}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={modelActionState !== 'idle'}
+                    className="h-9 gap-1.5 text-xs"
+                  >
+                    <FileUp className="size-3.5" />
+                    Browse .gguf File
+                  </Button>
+                </div>
+                {activeMeta?.tool_calling && (
+                  <div className="mt-2.5 flex items-center gap-2">
+                    <span className="inline-flex items-center gap-1 rounded bg-accent/70 px-2 py-0.5 text-[11px] font-mono font-medium text-foreground border border-border/50">
+                      <span className="text-good font-bold">⚡</span> Tool Calling: {activeMeta.tool_calling}
+                    </span>
+                    <span className="text-[11px] text-muted-foreground">
+                      Required for financial calculation engines & ledger staging.
+                    </span>
+                  </div>
+                )}
+                <div className="mt-3 flex flex-wrap items-center gap-3">
                   <span className="inline-flex items-center gap-1.5 rounded-full bg-good/10 px-2.5 py-0.5 text-xs font-medium text-good-text">
                     <span className="size-1.5 rounded-full bg-good" aria-hidden />
-                    {t('set.modelReady')}
+                    Ready (Offline)
                   </span>
                   <Button
                     variant="outline"
@@ -462,29 +551,102 @@ export default function SettingsPage() {
                   >
                     {modelActionState === 'deleting' ? t('set.deleting') : t('set.deleteModel')}
                   </Button>
-                </>
-              ) : (
-                <>
-                  <span className="inline-flex items-center gap-1.5 rounded-full bg-muted px-2.5 py-0.5 text-xs font-medium text-muted-foreground">
-                    {t('set.modelNotDownloaded')}
-                  </span>
+                  <button
+                    type="button"
+                    onClick={() => setPathInputOpen(!pathInputOpen)}
+                    className="text-xs text-muted-foreground underline hover:text-foreground"
+                  >
+                    {pathInputOpen ? 'Hide Path Input' : 'Add by File Path'}
+                  </button>
+                </div>
+              </>
+            ) : (
+              <div className="rounded-lg border border-dashed border-border p-4 text-center sm:text-left">
+                <p className="text-sm font-medium text-foreground">No local .gguf models found on disk</p>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  Drop a <code className="rounded bg-muted px-1 py-0.5 font-mono text-[11px]">.gguf</code> file into <code className="rounded bg-muted px-1 py-0.5 font-mono text-[11px]">models/</code> or browse to select one from your computer.
+                </p>
+                <div className="mt-3 flex flex-wrap items-center gap-2">
                   <Button
                     variant="default"
                     size="sm"
-                    onClick={downloadSelectedModel}
+                    onClick={() => fileInputRef.current?.click()}
                     disabled={modelActionState !== 'idle'}
-                    className="h-7 text-xs"
+                    className="gap-1.5 text-xs"
                   >
-                    {modelActionState === 'downloading' ? t('set.downloading') : t('set.downloadModel')}
+                    <FileUp className="size-3.5" />
+                    Browse .gguf File
                   </Button>
-                </>
-              )}
-              {modelActionMsg && (
-                <span className={cn('text-xs', modelActionMsg.ok ? 'text-good-text' : 'text-critical-text')}>
-                  {modelActionMsg.text}
-                </span>
-              )}
-            </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setPathInputOpen(!pathInputOpen)}
+                    className="text-xs"
+                  >
+                    {pathInputOpen ? 'Cancel' : 'Enter Local File Path'}
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {pathInputOpen && (
+              <div className="mt-3 flex max-w-lg items-center gap-2">
+                <Input
+                  value={customGgufPath}
+                  onChange={(e) => setCustomGgufPath(e.target.value)}
+                  placeholder="C:\models\my-model.gguf or models/my-model.gguf"
+                  className="font-mono text-xs"
+                />
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  onClick={handleRegisterGgufPath}
+                  disabled={!customGgufPath.trim() || modelActionState !== 'idle'}
+                  className="shrink-0 text-xs"
+                >
+                  Load Path
+                </Button>
+              </div>
+            )}
+
+            {deviceMsg && <p className="mt-2 text-xs text-muted-foreground">{deviceMsg}</p>}
+            {modelActionMsg && (
+              <p className={cn('mt-2 text-xs', modelActionMsg.ok ? 'text-good-text' : 'text-critical-text')}>
+                {modelActionMsg.text}
+              </p>
+            )}
+
+            <details className="mt-4 border-t border-border/40 pt-3 text-xs text-muted-foreground">
+              <summary className="cursor-pointer font-medium hover:text-foreground">
+                Download a pre-tested GGUF model from Hugging Face...
+              </summary>
+              <div className="mt-2.5 flex flex-wrap items-center gap-2">
+                <Select
+                  value={downloadModelId}
+                  onValueChange={(v) => setDownloadModelId(v)}
+                >
+                  <SelectTrigger className="max-w-xs text-xs">
+                    <SelectValue placeholder="Select model to download" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {displayModels.map((m) => (
+                      <SelectItem key={m.id} value={m.id}>
+                        {m.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => downloadModelById(downloadModelId)}
+                  disabled={modelActionState !== 'idle'}
+                  className="h-8 text-xs"
+                >
+                  {modelActionState === 'downloading' ? t('set.downloading') : 'Download'}
+                </Button>
+              </div>
+            </details>
           </Row>
         )}
 

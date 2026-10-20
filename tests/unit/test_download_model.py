@@ -392,3 +392,38 @@ def test_auto_discovery_of_dropped_gguf_file(tmp_path):
     meta = discovered["custom-finance-7b"]
     assert meta["is_gguf"] is True
     assert meta["filename"] == "custom-finance-7b.gguf"
+
+
+def test_register_gguf_endpoint(client, tmp_path):
+    """Verifies POST /api/v1/agent/register-gguf registers a local .gguf file path."""
+    sample_gguf = tmp_path / "offline-analyst.gguf"
+    sample_gguf.write_bytes(b"GGUF" + b"\x00" * 1024 * 1024)
+
+    resp = client.post(
+        "/api/v1/agent/register-gguf",
+        json={"file_path": str(sample_gguf)},
+        headers=tenant_headers(client, "SME-REGISTER-TEST"),
+    )
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["success"] is True
+    assert "offline-analyst" in data["model_id"]
+    assert "registered successfully" in data["message"]
+
+
+def test_upload_gguf_endpoint(client):
+    """Verifies POST /api/v1/agent/upload-gguf streams and stores a .gguf file."""
+    fake_content = b"GGUF" + b"\x00" * 1024 * 100
+    files = {"file": ("uploaded-cfo.gguf", fake_content, "application/octet-stream")}
+
+    resp = client.post(
+        "/api/v1/agent/upload-gguf",
+        files=files,
+        headers=tenant_headers(client, "SME-UPLOAD-TEST"),
+    )
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["success"] is True
+    assert data["model_id"] == "uploaded-cfo"
+    assert "loaded successfully" in data["message"]
+
