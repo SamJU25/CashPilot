@@ -8,18 +8,40 @@ from typing import Any, Dict, List, Optional, Tuple
 
 from services.calculations.currency_registry import SYMBOL_MAP, WORLD_CURRENCIES
 
-_SYMBOLS = sorted(set(SYMBOL_MAP) | {c.symbol for c in WORLD_CURRENCIES.values()}, key=len, reverse=True)
-_AMOUNT = r"[0-9][0-9,]*(?:\.\d+)?[km]?"
-# "€3,000", "৳ 50k", "Rs 900" or "3,000 EUR". Case-sensitive and not mid-word, so "for 3000" is not rand.
-_CURRENCY_AMOUNT = re.compile(
-    r"(?<![A-Za-z])(?:" + "|".join(map(re.escape, _SYMBOLS)) + r")\s?(" + _AMOUNT + r")\b"
-    r"|\b(" + _AMOUNT + r")\s?(?:" + "|".join(WORLD_CURRENCIES) + r")\b"
+_ALL_SYMBOLS = sorted(
+    set(SYMBOL_MAP) | {c.symbol for c in WORLD_CURRENCIES.values()} | {"Rs."},
+    key=len,
+    reverse=True,
 )
+_LETTER_SYMBOLS = sorted([s for s in _ALL_SYMBOLS if any(c.isalpha() for c in s)], key=len, reverse=True)
+_NON_LETTER_SYMBOLS = sorted([s for s in _ALL_SYMBOLS if not any(c.isalpha() for c in s)], key=len, reverse=True)
+_ISO_CODES = sorted(WORLD_CURRENCIES.keys(), key=len, reverse=True)
+_AMOUNT = r"[0-9][0-9,]*(?:\.\d+)?[km]?"
+
+# 1. Prefix symbol: "$3,000", "€3,000", "Rs. 900", "৳ 50k", "CHF 100", "₹1,20,000"
+# 2. Prefix ISO code: "EUR 3,000", "USD 50,000", "BDT 50,000", "INR 1,00,000"
+# 3. Postfix non-letter symbol: "3,000 €", "3000€", "50k ৳", "1,20,000 ₹", "2k$"
+# 4. Postfix letter symbol: "3000 kr", "3000 CHF"
+# 5. Postfix ISO code: "3,000 EUR", "50,000 USD", "50,000 BDT"
+_PATTERNS = [
+    r"(?<![A-Za-z0-9])(?:" + "|".join(map(re.escape, _ALL_SYMBOLS)) + r")\s*(" + _AMOUNT + r")\b",
+    r"\b(?:" + "|".join(_ISO_CODES) + r")\s+(" + _AMOUNT + r")\b",
+    r"\b(" + _AMOUNT + r")\s*(?:" + "|".join(map(re.escape, _NON_LETTER_SYMBOLS)) + r")(?![A-Za-z0-9])",
+    r"\b(" + _AMOUNT + r")\s+(?:" + "|".join(map(re.escape, _LETTER_SYMBOLS)) + r")\b",
+    r"\b(" + _AMOUNT + r")\s*(?:" + "|".join(_ISO_CODES) + r")\b",
+]
+_CURRENCY_AMOUNT = re.compile("|".join(_PATTERNS))
 
 
 def currency_amounts(text: str) -> List[str]:
     """Number tokens written with a currency symbol or ISO code, in order of appearance."""
-    return [m.group(1) or m.group(2) for m in _CURRENCY_AMOUNT.finditer(text)]
+    matches: List[str] = []
+    for m in _CURRENCY_AMOUNT.finditer(text):
+        for g in m.groups():
+            if g:
+                matches.append(g)
+                break
+    return matches
 
 
 def parse_numeric_token(token: str) -> Optional[Decimal]:
@@ -1864,6 +1886,16 @@ def extract_cash_scenario_params(text: str, history: Optional[List[Any]] = None)
     amount = parse_numeric_token(marked[0]) if marked else None
     pct = _SCENARIO_PERCENT.search(text)
     days = _SCENARIO_DAYS.search(text)
+
+    # Fallback for an amount without a currency symbol/code, e.g. "delay the 3000 invoice by 21 days":
+    if amount is None and not pct:
+        for m in re.finditer(r"\b([0-9][0-9,]*(?:\.\d+)?[km]?)\b", text):
+            val = parse_numeric_token(m.group(1))
+            if val is not None:
+                if days and int(val) == int(days.group(1)):
+                    continue
+                amount = val
+                break
 
     scenario: Optional[str] = None
     if _INVOICE_DELAY.search(text) and days:

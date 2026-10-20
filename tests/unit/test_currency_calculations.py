@@ -231,8 +231,8 @@ def test_supervisor_respects_request_currency():
 
     raw_csv = (
         "transaction_id,posted_on,amount,currency,description,closing_balance\n"
-        "tx_001,2026-01-01,1000.00,USD,Initial Client Invoice,10000.00\n"
-        "tx_002,2026-01-05,-1500.00,USD,Supplier Raw Materials,8500.00\n"
+        "tx_001,2026-01-01,1000.00,BDT,Initial Client Invoice,10000.00\n"
+        "tx_002,2026-01-05,-1500.00,BDT,Supplier Raw Materials,8500.00\n"
     )
     req = AgentChatRequest(
         message="What is our current balance?",
@@ -308,10 +308,26 @@ def test_format_money_uses_decimal_and_currency_symbol():
 
 @pytest.mark.parametrize("text, expected", [
     ("delays their €3,000 invoice", ["3,000"]),
+    ("delays their 3,000 € invoice", ["3,000"]),
+    ("delays their 3000€ invoice", ["3000"]),
     ("a 3,000 EUR invoice", ["3,000"]),
+    ("an EUR 3,000 invoice", ["3,000"]),
+    ("USD 50,000 loan", ["50,000"]),
+    ("50,000 USD loan", ["50,000"]),
     ("৳ 50k new cost and ₹1,20,000 loan", ["50k", "1,20,000"]),
+    ("50k ৳ new cost", ["50k"]),
+    ("1,20,000 ₹ loan", ["1,20,000"]),
+    ("Rs 900", ["900"]),
+    ("Rs. 900", ["900"]),
+    ("Rs.900", ["900"]),
     ("$2k monthly", ["2k"]),
+    ("2k$ monthly", ["2k"]),
+    ("3000 kr invoice", ["3000"]),
     ("for 3000 days", []),
+    ("in 30 days", []),
+    ("try 500 times", []),
+    ("net 30", []),
+    ("page 20", []),
 ])
 def test_currency_amounts_reads_any_symbol_or_iso_code(text, expected):
     from services.agent.param_extractor import currency_amounts, parse_numeric_token
@@ -319,3 +335,25 @@ def test_currency_amounts_reads_any_symbol_or_iso_code(text, expected):
     assert currency_amounts(text) == expected
     if expected:
         assert parse_numeric_token(expected[-1]) > 0
+
+
+@pytest.mark.parametrize("query, exp_scenario, exp_amount, exp_days", [
+    ("What if Apex Logistics delays their €3,000 invoice by 21 days?", "INVOICE_DELAY", Decimal("3000"), 21),
+    ("What if Apex Logistics delays their 3,000 € invoice by 21 days?", "INVOICE_DELAY", Decimal("3000"), 21),
+    ("What if Apex Logistics delays their 3000€ invoice by 21 days?", "INVOICE_DELAY", Decimal("3000"), 21),
+    ("What if Apex Logistics delays their 3,000 EUR invoice by 21 days?", "INVOICE_DELAY", Decimal("3000"), 21),
+    ("What if Apex Logistics delays their EUR 3,000 invoice by 21 days?", "INVOICE_DELAY", Decimal("3000"), 21),
+    ("What if Apex delays their 3,000 invoice by 21 days?", "INVOICE_DELAY", Decimal("3000"), 21),
+    ("What if client delays their ৳ 50k invoice by 15 days?", "INVOICE_DELAY", Decimal("50000"), 15),
+    ("What if supplier delays their ₹1,20,000 invoice by 30 days?", "INVOICE_DELAY", Decimal("120000"), 30),
+    ("What if we cut costs by €5,000?", "COST_CUT", Decimal("5000"), None),
+    ("What if we take on $2k monthly expenses?", "NEW_EXPENSE", Decimal("2000"), None),
+])
+def test_what_if_scenario_parses_multi_currency_amounts(query, exp_scenario, exp_amount, exp_days):
+    from services.agent.param_extractor import extract_cash_scenario_params, is_complete_cash_scenario
+
+    params = extract_cash_scenario_params(query)
+    assert params["scenario"] == exp_scenario
+    assert params["amount"] == exp_amount
+    assert params["delay_days"] == exp_days
+    assert is_complete_cash_scenario(params) is True
