@@ -1,9 +1,9 @@
 ---
 name: e2e-testing
-description: "End-to-end testing patterns and test authoring for SME Finance Copilot. Use when designing user flow tests, browser journey automation, CSV upload verification, row-level error provenance assertions, and security staging gates."
+description: "End-to-end testing patterns and test authoring for CashPilot. Use when designing user flow tests, browser journey automation, CSV upload verification, row-level error provenance assertions, and security staging gates."
 ---
 
-# End-to-End (E2E) Testing for SME Finance Copilot
+# End-to-End (E2E) Testing for CashPilot
 
 Methodology for validating the end-to-end user journey across the full stack (API Gateway, Ingestion Parser, Calculation Engine, Security Gate, and Dashboard UI).
 

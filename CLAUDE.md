@@ -1,4 +1,4 @@
-# SME Finance Copilot — Claude Code Operational Protocol
+# CashPilot — Claude Code Operational Protocol
 
 Scope: All software development, research, financial engineering, and testing in this workspace.
 

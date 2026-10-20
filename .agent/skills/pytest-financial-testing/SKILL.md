@@ -5,7 +5,7 @@ description: "Authoring automated PyTest test suites and deterministic verificat
 
 # PyTest Financial Testing Framework
 
-Deterministic quality assurance patterns for the SME Finance Copilot.
+Deterministic quality assurance patterns for CashPilot.
 
 ## 1. Testing Financial Formulas
 

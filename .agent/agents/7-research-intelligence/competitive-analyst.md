@@ -8,7 +8,7 @@ model: inherit
 # competitive-analyst (Suite: 7-research-intelligence)
 
 ## Mission & Domain Focus
-Benchmarks the SME Finance Copilot against leading digital lending platforms. Analyzes competitor fee structures, underwriting data requirements, and user experience.
+Benchmarks CashPilot against leading digital lending platforms. Analyzes competitor fee structures, underwriting data requirements, and user experience.
 
 ## Connected Skills & Squad Handoffs
 - **Primary Skills**: [`competitive-analysis`](.agent/skills/competitive-analysis), [`comps-analysis`](.agent/skills/comps-analysis)

@@ -1,6 +1,6 @@
-# SME Finance Copilot — AI Agents & Task Routing Engine
+# CashPilot — AI Agents & Task Routing Engine
 
-This workspace is engineered specifically for building the **Autonomous AI Agent SME Finance Copilot** (FinTechathon 2026 Topic E: AI as a Financial Participant).
+This workspace is engineered specifically for building the **Autonomous AI Financial Participant CashPilot** (FinTechathon 2026 Topic E: AI as a Financial Participant).
 
 ### Master Documentation & Operational Protocols:
 - 📘 [System Design Specification](docs/system.md) | 🏛️ [Architectural Plan](docs/architecture.md) | 🛡️ [Security Architecture](docs/security.md)
@@ -148,7 +148,7 @@ When a user request arrives, Antigravity Lead Orchestrator routes execution acco
 | User Task / Scenario | Primary Lead Agent | Supporting Agents | Triggered Skills |
 |---|---|---|---|
 | **Domain Research & Explanation** ("How does cash flow work?", "Explain WeBank model") | `research-scout` | `research-analyst`, `statement-auditor` | `agent-reach`, `sector-overview`, `deal-screening` |
-| **Architectural Planning** ("Design the SME Copilot system") | `systems-architect` | `agentic-architect`, `first-principles-thinking` | `writing-plans`, `grill-me`, `domain-modeling` |
+| **Architectural Planning** ("Design the CashPilot system") | `systems-architect` | `agentic-architect`, `first-principles-thinking` | `writing-plans`, `grill-me`, `domain-modeling` |
 | **Financial Calculations & Ingestion** ("Calculate runway and DSCR from CSV") | `sme-cfo-diagnostician` | `fintech-engineer`, `postgres-pro` | `clean-data-xls`, `unit-economics`, `3-statement-model` |
 | **Predictive Cash Crunch Alerting** ("Warn user about payroll deficit in 30 days") | `risk-manager` | `sme-cfo-diagnostician`, `websocket-engineer` | `unit-economics`, `postgres-db-design` |
 | **Digital Underwriting & Matching** ("Match SME with best working capital loan") | `credit-options-matcher` | `risk-manager`, `compliance-auditor` | `deal-screening`, `kyc-rules`, `comps-analysis` |

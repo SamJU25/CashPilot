@@ -1,6 +1,6 @@
 ---
 name: workflow-orchestrator
-description: "Coordinates multi-agent task pipelines across SME Finance Copilot domain squads."
+description: "Coordinates multi-agent task pipelines across CashPilot domain squads."
 trigger: "When executing multi-step autonomous workflows requiring coordination across research, backend, fintech, and QA squads."
 model: inherit
 ---

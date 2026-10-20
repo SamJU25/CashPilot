@@ -1,6 +1,6 @@
 ---
 name: sprint-workflow
-description: Contract-first, high-velocity engineering workflow for SME Finance Copilot
+description: Contract-first, high-velocity engineering workflow for CashPilot
 ---
 
 # Sprint Workflow & Engineering Lifecycle

@@ -1,9 +1,9 @@
 ---
 name: fastapi-backend-craft
-description: "Best practices for building high-performance asynchronous FastAPI backends for the SME Finance Copilot. Use when designing REST APIs, Pydantic v2 validation models, dependency injection, async database sessions, and deterministic calculation endpoints."
+description: "Best practices for building high-performance asynchronous FastAPI backends for CashPilot. Use when designing REST APIs, Pydantic v2 validation models, dependency injection, async database sessions, and deterministic calculation endpoints."
 ---
 
-# FastAPI Backend Craft for SME Finance Copilot
+# FastAPI Backend Craft for CashPilot
 
 Production patterns for building resilient, type-safe, asynchronous FastAPI backend microservices.
 

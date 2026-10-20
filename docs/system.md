@@ -1,4 +1,4 @@
-# SME Finance Copilot: Master System Design (`system.md`)
+# CashPilot: Master System Design (`system.md`)
 
 - **Document Role**: Concrete Technical Specifications, Schemas, Algorithms & Code Contracts
 - **Status**: Active Technical Blueprint & Contract (Verified Baseline: 970 Passed Tests, 1 Skipped)
@@ -17,7 +17,7 @@
 
 ## 1. Executive System Overview & Form Factor
 
-The SME Finance Copilot is an autonomous financial participant designed to solve SME working capital volatility through transactional data ingestion, deterministic financial health diagnostics, predictive cash crunch forecasting, automated financing matching, and consortium blockchain invoice pledge verification.
+CashPilot is an autonomous financial participant designed to solve SME working capital volatility through transactional data ingestion, deterministic financial health diagnostics, predictive cash crunch forecasting, automated financing matching, and consortium blockchain invoice pledge verification.
 
 ### 1.1 Project Form Factor: Responsive Web Application with PWA
 - **Form Factor**: **Responsive Web Application + Progressive Web App (PWA)**.

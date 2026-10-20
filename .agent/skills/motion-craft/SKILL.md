@@ -1,6 +1,6 @@
 ---
 name: motion-craft
-description: Motion rules for the SME Finance Copilot frontend using the `motion` package (Framer Motion successor). Use when adding any animation, transition, number ticker, chart entrance, or layout change to a component.
+description: Motion rules for the CashPilot frontend using the `motion` package (Framer Motion successor). Use when adding any animation, transition, number ticker, chart entrance, or layout change to a component.
 ---
 
 # Motion Craft

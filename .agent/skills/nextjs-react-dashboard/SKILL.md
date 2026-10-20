@@ -1,6 +1,6 @@
 ---
 name: nextjs-react-dashboard
-description: "Best practices for building the SME Finance Copilot executive dashboard in Next.js 14/15 and React. Use when building App Router pages, Server Components, reactive cash flow charts (Recharts), financial metric cards, and streaming real-time alerts."
+description: "Best practices for building the CashPilot executive dashboard in Next.js 14/15 and React. Use when building App Router pages, Server Components, reactive cash flow charts (Recharts), financial metric cards, and streaming real-time alerts."
 ---
 
 # Next.js & React Dashboard Craft

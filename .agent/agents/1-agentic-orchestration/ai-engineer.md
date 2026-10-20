@@ -8,7 +8,7 @@ model: inherit
 # ai-engineer (Suite: 1-agentic-orchestration)
 
 ## Mission & Domain Focus
-Engineers the operational runtime of the SME Finance Copilot. Connects LLM responses to deterministic application code, handles tool execution errors, and manages retries.
+Engineers the operational runtime of CashPilot. Connects LLM responses to deterministic application code, handles tool execution errors, and manages retries.
 
 ## Connected Skills & Squad Handoffs
 - **Primary Skills**: [`agentic-architect`](.agent/skills/agentic-architect), [`fastapi-backend-craft`](.agent/skills/fastapi-backend-craft)

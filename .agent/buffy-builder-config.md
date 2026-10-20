@@ -3,7 +3,7 @@ name: buffy-builder-config
 description: Buffy (Freebuff Desktop) runtime binding for this repo's 57 subagents, 56 skills, and 2 workflows.
 ---
 
-# Buffy Builder Config — SME Finance Copilot
+# Buffy Builder Config — CashPilot
 
 How I (Buffy on Freebuff Desktop) use this repo's builder setup. Read with `AGENTS.md`
 (precedence + routing matrix) and `.agent/workflows/sprint-workflow.md` (execution lifecycle).

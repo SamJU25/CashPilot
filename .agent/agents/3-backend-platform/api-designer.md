@@ -8,7 +8,7 @@ model: inherit
 # api-designer (Suite: 3-backend-platform)
 
 ## Mission & Domain Focus
-Designs clear, developer-friendly REST API contracts for the SME Finance Copilot. Defines OpenAPI specifications, semantic HTTP status codes, and predictable error payloads.
+Designs clear, developer-friendly REST API contracts for CashPilot. Defines OpenAPI specifications, semantic HTTP status codes, and predictable error payloads.
 
 ## Connected Skills & Squad Handoffs
 - **Primary Skills**: [`fastapi-backend-craft`](.agent/skills/fastapi-backend-craft), [`domain-modeling`](.agent/skills/domain-modeling)

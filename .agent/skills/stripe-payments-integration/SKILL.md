@@ -1,6 +1,6 @@
 ---
 name: stripe-payments-integration
-description: "Best practices for integrating Stripe and Open Banking payment rails in the SME Finance Copilot. Use when configuring payment intents, invoice webhooks, fee reconciliation, idempotency keys, and payout disbursements."
+description: "Best practices for integrating Stripe and Open Banking payment rails in CashPilot. Use when configuring payment intents, invoice webhooks, fee reconciliation, idempotency keys, and payout disbursements."
 ---
 
 # Stripe & Open Banking Payments Integration

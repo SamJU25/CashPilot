@@ -5,7 +5,7 @@ description: "Enforces the Three-Tier Permission Matrix for autonomous financial
 
 # Three-Tier Security Gate Protocol
 
-Core security invariant governing all autonomous actions in the SME Finance Copilot.
+Core security invariant governing all autonomous actions in CashPilot.
 
 ## 1. The Permission Matrix
 

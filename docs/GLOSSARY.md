@@ -1,6 +1,6 @@
-# SME Finance Copilot — Ubiquitous Domain Glossary
+# CashPilot — Ubiquitous Domain Glossary
 
-This glossary defines standard financial and technical terms used throughout the SME Finance Copilot codebase, data models, calculations, and agent prompts. Every developer and agent must use these exact terms to prevent semantic drift.
+This glossary defines standard financial and technical terms used throughout the CashPilot codebase, data models, calculations, and agent prompts. Every developer and agent must use these exact terms to prevent semantic drift.
 
 ---
 

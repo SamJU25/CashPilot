@@ -1,4 +1,4 @@
-# SME Finance Copilot — Engineering Rules & Operational Protocol
+# CashPilot — Engineering Rules & Operational Protocol
 
 Scope: All software development, research, financial analysis, and architecture in this workspace.
 

@@ -1,6 +1,6 @@
 ---
 name: mcp-builder
-description: "Design and implementation of Model Context Protocol (MCP) tool servers for the SME Finance Copilot. Use when exposing local databases, ERP connectors, bank statement parsers, and financial calculator tools to LLMs via standard JSON-RPC protocol."
+description: "Design and implementation of Model Context Protocol (MCP) tool servers for CashPilot. Use when exposing local databases, ERP connectors, bank statement parsers, and financial calculator tools to LLMs via standard JSON-RPC protocol."
 ---
 
 # Model Context Protocol (MCP) Builder
@@ -14,7 +14,7 @@ from mcp.server.fastmcp import FastMCP
 from decimal import Decimal
 from typing import List, Dict
 
-mcp = FastMCP("sme-finance-copilot-tools")
+mcp = FastMCP("cashpilot-tools")
 
 @mcp.tool()
 def calculate_dscr(

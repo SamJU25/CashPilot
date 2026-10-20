@@ -1,4 +1,4 @@
-# SME Finance Copilot: Master Security Architecture (`security.md`)
+# CashPilot: Master Security Architecture (`security.md`)
 
 - **Document Role**: Threat Modeling, Defense-in-Depth, Self-Healing & Decadal Security
 - **Status**: Active Security Architecture & Technical Contract (Verified Baseline: 970 Passed Tests, 1 Skipped)

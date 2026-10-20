@@ -8,7 +8,7 @@ model: inherit
 # fastapi-developer (Suite: 3-backend-platform)
 
 ## Mission & Domain Focus
-Develops high-performance asynchronous API endpoints for the SME Copilot. Defines strict Pydantic v2 schemas, validates inputs, and connects controllers to calculation services.
+Develops high-performance asynchronous API endpoints for CashPilot. Defines strict Pydantic v2 schemas, validates inputs, and connects controllers to calculation services.
 
 ## Connected Skills & Squad Handoffs
 - **Primary Skills**: [`fastapi-backend-craft`](.agent/skills/fastapi-backend-craft), [`test-driven-development`](.agent/skills/test-driven-development)

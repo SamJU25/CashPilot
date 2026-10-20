@@ -8,7 +8,7 @@ model: inherit
 # llm-architect (Suite: 1-agentic-orchestration)
 
 ## Mission & Domain Focus
-Architects LLM cognitive workflows for the SME Finance Copilot. Enforces Anthropic 5-pattern minimality, structured tool schemas, and cost/token optimization.
+Architects LLM cognitive workflows for CashPilot. Enforces Anthropic 5-pattern minimality, structured tool schemas, and cost/token optimization.
 
 ## Connected Skills & Squad Handoffs
 - **Primary Skills**: [`agentic-architect`](.agent/skills/agentic-architect), [`mcp-builder`](.agent/skills/mcp-builder)

@@ -1,9 +1,9 @@
 ---
 name: docker-patterns
-description: "Containerization patterns for SME Finance Copilot. Use when authoring multi-stage Dockerfiles, docker-compose setups, container healthchecks, and production runtime environments without hardcoded hostnames or credentials."
+description: "Containerization patterns for CashPilot. Use when authoring multi-stage Dockerfiles, docker-compose setups, container healthchecks, and production runtime environments without hardcoded hostnames or credentials."
 ---
 
-# Docker Patterns for SME Finance Copilot
+# Docker Patterns for CashPilot
 
 Operational guidelines for containerizing the FastAPI backend and Next.js frontend with minimal image footprints, non-root execution, and dynamic environment injection.
 

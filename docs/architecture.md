@@ -1,4 +1,4 @@
-# SME Finance Copilot: Master Architectural Plan (`architecture.md`)
+# CashPilot: Master Architectural Plan (`architecture.md`)
 
 - **Document Role**: Macro Architecture, Multi-Agent Topology, Governance & Verified Technical Baseline
 - **Status**: Active Architecture Blueprint & Technical Contract (Verified Baseline: 970 Passed Tests, 1 Skipped)

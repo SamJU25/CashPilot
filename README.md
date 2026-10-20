@@ -52,7 +52,7 @@ Traditional banks require 4 to 8 weeks to underwrite working capital loans and r
   ==> THE 75-DAY CASH GAP: Cash Conversion Cycle (CCC) = DIO (45) + DSO (60) - DPO (30) = 75 Days
 ```
 
-**SME Finance Copilot** acts as a 24/7 autonomous financial participant. It monitors real-time transactional ledger streams, computes deterministic financial ratios, forecasts cash crunches before payroll bounces, matches businesses with pre-qualified working capital facilities, and registers B2B invoice pledges on consortium blockchains to eliminate invoice double-financing.
+**CashPilot** acts as a 24/7 autonomous financial participant. It monitors real-time transactional ledger streams, computes deterministic financial ratios, forecasts cash crunches before payroll bounces, matches businesses with pre-qualified working capital facilities, and registers B2B invoice pledges on consortium blockchains to eliminate invoice double-financing.
 
 ---
 
@@ -60,7 +60,7 @@ Traditional banks require 4 to 8 weeks to underwrite working capital loans and r
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────────────────┐
-│                                SME FINANCE COPILOT                                      │
+│                                     CASHPILOT                                           │
 ├────────────────────────────┬────────────────────────────┬───────────────────────────────┤
 │    1. CFO Health Core      │  2. Predictive Forecast    │    3. Digital Underwriting    │
 │  • Pure Decimal runway     │  • Pure Decimal simulation │  • Transaction stream metrics │
