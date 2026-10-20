@@ -2112,9 +2112,9 @@
     "semantic_hash": ""
   },
   "src/app/assistant/page.tsx": {
-    "mtime": 1792533684.0927556,
-    "seen": 1792533900.559712,
-    "ast_hash": "05401eb1569540b900e33ba01aaa290d",
+    "mtime": 1792534577.6606283,
+    "seen": 1792534659.4074383,
+    "ast_hash": "42b163b1d1de69a9917324be8edad639",
     "semantic_hash": ""
   },
   "src/app/funding/page.tsx": {
@@ -2166,9 +2166,9 @@
     "semantic_hash": ""
   },
   "src/components/copilot/answer-markdown.tsx": {
-    "mtime": 1792484474.5835822,
-    "seen": 1792485228.1857984,
-    "ast_hash": "14b0221dd7cb64c4f48d4cde6e9166d8",
+    "mtime": 1792534542.0178602,
+    "seen": 1792534659.408391,
+    "ast_hash": "34b5020e9139a679946e423d36e593b6",
     "semantic_hash": ""
   },
   "src/components/copilot/approval.tsx": {
@@ -2184,15 +2184,15 @@
     "semantic_hash": ""
   },
   "src/components/copilot/run-receipt.tsx": {
-    "mtime": 1792440207.5014155,
-    "seen": 1792440349.6686852,
-    "ast_hash": "df1e25b97a80ad87b36cf8673194471e",
+    "mtime": 1792534550.4287333,
+    "seen": 1792534659.4089706,
+    "ast_hash": "8a1c26202e2bcbcfc54be417f022c2c0",
     "semantic_hash": ""
   },
   "src/components/copilot/thinking-block.tsx": {
-    "mtime": 1792418063.1707835,
-    "seen": 1792431959.799991,
-    "ast_hash": "81f2d8e06227fed15f22b826b36d1349",
+    "mtime": 1792534556.2645948,
+    "seen": 1792534659.4089727,
+    "ast_hash": "02e0019e80fe339e1718847ee202eb9e",
     "semantic_hash": ""
   },
   "src/components/overview/key-figures.tsx": {

@@ -77,7 +77,7 @@ export function RunReceipt({ steps, defaultOpen = false, live = 0, holdOpen = fa
   const open = running || holdOpen || userOpen;
 
   return (
-    <div className="text-sm">
+    <div className="text-xs">
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}

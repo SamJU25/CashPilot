@@ -680,7 +680,7 @@ export default function AssistantPage() {
                         </div>
                       ) : m.role === 'user' ? (
                         <div className="flex flex-col items-end">
-                          <div className="max-w-[85%] sm:max-w-[75%] whitespace-pre-wrap rounded-2xl rounded-tr-xs bg-muted/80 border border-border/70 px-4 py-2.5 text-sm leading-relaxed text-foreground shadow-xs">
+                          <div className="max-w-[85%] sm:max-w-[75%] whitespace-pre-wrap rounded-2xl rounded-tr-xs bg-muted/80 border border-border/70 px-3.5 py-2 text-[13px] sm:text-[13.5px] leading-relaxed text-foreground shadow-xs">
                             {m.text}
                           </div>
                           <div className="flex items-center gap-2 pt-1 text-[11px] text-muted-foreground opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-opacity duration-150 select-none">
@@ -786,7 +786,7 @@ export default function AssistantPage() {
                   }
                 }}
                 placeholder={t('as.placeholder')}
-                className="max-h-36 min-h-[44px] flex-1 resize-none bg-transparent px-3 py-2.5 text-base outline-none sm:text-sm placeholder:text-muted-foreground"
+                className="max-h-36 min-h-[40px] flex-1 resize-none bg-transparent px-3 py-2 text-sm outline-none placeholder:text-muted-foreground"
               />
               <Button
                 type="submit"

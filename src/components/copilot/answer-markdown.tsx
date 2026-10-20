@@ -13,7 +13,7 @@ const remarkPlugins: Options['remarkPlugins'] = [remarkGfm, [remarkMath, { singl
 const rehypePlugins: Options['rehypePlugins'] = [[rehypeKatex, { strict: false, output: 'html' }]];
 
 const components: Components = {
-  p: ({ children }) => <p className="leading-relaxed [&:not(:first-child)]:mt-2.5">{children}</p>,
+  p: ({ children }) => <p className="leading-relaxed [&:not(:first-child)]:mt-2">{children}</p>,
   strong: ({ children }) => <strong className="font-medium text-foreground">{children}</strong>,
   ul: ({ children }) => <ul className="mt-2 space-y-1 pl-4 marker:text-muted-foreground [list-style:disc]">{children}</ul>,
   ol: ({ children }) => <ol className="mt-2 space-y-1 pl-4 marker:text-muted-foreground [list-style:decimal]">{children}</ol>,
@@ -35,7 +35,7 @@ const components: Components = {
       {children}
     </td>
   ),
-  blockquote: ({ children }) => <blockquote className="mt-2.5 border-l-2 border-primary/50 pl-3 text-xs sm:text-sm text-ink-2">{children}</blockquote>,
+  blockquote: ({ children }) => <blockquote className="mt-2 border-l-2 border-primary/50 pl-2.5 text-xs text-muted-foreground/90">{children}</blockquote>,
   a: ({ children, href }) => (
     <a href={href} className="font-medium text-primary underline underline-offset-2">
       {children}
@@ -47,7 +47,7 @@ const components: Components = {
 // Memoized: the chat re-renders on every keystroke, and re-parsing each answer's markdown and KaTeX made typing lag.
 export const AnswerMarkdown = memo(function AnswerMarkdown({ text }: { text: string }) {
   return (
-    <div className="answer-md text-sm sm:text-[14.5px] leading-relaxed text-foreground [&_.katex-display]:my-2.5 [&_.katex-display]:overflow-x-auto [&_.katex-display]:rounded-lg [&_.katex-display]:bg-muted/50 [&_.katex-display]:px-3.5 [&_.katex-display]:py-2">
+    <div className="answer-md text-[13px] sm:text-[13.5px] leading-relaxed text-foreground [&_.katex-display]:my-2 [&_.katex-display]:overflow-x-auto [&_.katex-display]:rounded-lg [&_.katex-display]:bg-muted/50 [&_.katex-display]:px-3 [&_.katex-display]:py-1.5">
       <ReactMarkdown remarkPlugins={remarkPlugins} rehypePlugins={rehypePlugins} components={components}>
         {text}
       </ReactMarkdown>

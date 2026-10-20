@@ -9,7 +9,7 @@ import { useT } from '@/lib/i18n';
 export function ThinkingIndicator({ label }: { label?: string }) {
   const { t } = useT();
   return (
-    <p className="shimmer-text text-sm font-medium" role="status" aria-live="polite">
+    <p className="shimmer-text text-xs font-medium" role="status" aria-live="polite">
       {label ?? t('as.thinking')}
     </p>
   );
