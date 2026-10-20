@@ -275,7 +275,7 @@ export default function SettingsPage() {
 
   useEffect(() => {
     setTest({ state: 'idle' });
-    if (provider.local) {
+    if (provider.id === 'local') {
       void refreshModels();
     }
   }, [provider, refreshModels]);
@@ -369,7 +369,7 @@ export default function SettingsPage() {
           {!provider.needsKey && <p className="mt-1 text-sm text-muted-foreground">{t('set.keyHint')}</p>}
         </Row>
 
-        {provider.local && (
+        {provider.id === 'local' && (
           <Row title={t('set.model')} description={t('set.modelDesc')}>
             <Select value={activeModelId} onValueChange={(v) => { ws.update({ localModel: v }); setModelActionMsg(null); }}>
               <SelectTrigger className="max-w-md" aria-label={t('set.model')}>
@@ -442,6 +442,18 @@ export default function SettingsPage() {
               {t('set.endpoint')}
             </Label>
             <Input id="base-url" value={baseUrl} onChange={(e) => setBaseUrl(e.target.value)} placeholder="https://" className="max-w-sm" />
+          </Row>
+        )}
+
+        {provider.id === 'ollama' && (
+          <Row title={t('set.model')} description="Ollama model tag to query (e.g. llama3.2, qwen2.5, mistral). Make sure you have pulled the model using 'ollama run <model>' in your terminal.">
+            <Input
+              id="ollama-model"
+              value={ws.localModel || 'llama3.2'}
+              onChange={(e) => ws.update({ localModel: e.target.value })}
+              placeholder="llama3.2"
+              className="max-w-sm font-mono text-sm"
+            />
           </Row>
         )}
 
