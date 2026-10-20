@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 import Link from 'next/link';
-import { ArrowRight, ArrowUp, ArrowUpRight, Check, Copy, FileText, MessageSquare, PanelRightClose, PanelRightOpen, SquarePen, Upload } from 'lucide-react';
+import { ArrowUp, ArrowUpRight, Check, Copy, FileText, MessageSquare, PanelRightClose, PanelRightOpen, SquarePen } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ErrorState, LoadingBlock } from '@/components/common/states';
 import { RunReceipt } from '@/components/copilot/run-receipt';
@@ -604,20 +604,14 @@ export default function AssistantPage() {
                   className="my-auto flex flex-col items-center justify-center w-full max-w-2xl mx-auto py-8 space-y-6"
                 >
                   {noData && (
-                    <div className="w-full flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3.5 rounded-xl border bg-card/60 backdrop-blur-xs p-3.5 sm:p-4 text-xs shadow-xs">
-                      <div className="flex items-center gap-3 min-w-0 flex-1">
-                        <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
-                          <FileText className="size-4" aria-hidden />
-                        </div>
-                        <p className="leading-relaxed text-muted-foreground min-w-0">
-                          {t('as.noData')}
-                        </p>
+                    <div className="w-full flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 rounded-lg border bg-muted/30 px-3.5 py-2.5 text-xs text-muted-foreground shadow-xs">
+                      <div className="flex items-center gap-2.5 min-w-0 flex-1">
+                        <FileText className="size-4 shrink-0 text-muted-foreground" aria-hidden />
+                        <span className="leading-relaxed">{t('as.noData')}</span>
                       </div>
-                      <Button asChild size="sm" className="group h-8 shrink-0 rounded-lg bg-primary px-3.5 text-xs font-medium text-primary-foreground shadow-xs hover:bg-primary/90 transition-all">
-                        <Link href="/statements" className="flex items-center gap-1.5">
-                          <Upload className="size-3.5 shrink-0" aria-hidden />
-                          <span>{t('as.noDataLink')}</span>
-                          <ArrowRight className="size-3 shrink-0 opacity-70 transition-transform group-hover:translate-x-0.5" aria-hidden />
+                      <Button asChild size="sm" className="shrink-0">
+                        <Link href="/statements">
+                          {t('as.noDataLink')}
                         </Link>
                       </Button>
                     </div>
