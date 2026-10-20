@@ -7,8 +7,8 @@ description: Build and maintain ubiquitous vocabulary, GLOSSARY.md, and Architec
 
 Actively construct and maintain the project's domain model. Every domain concept in code should reflect an agreed ubiquitous term.
 
-## 1. Glossary (`GLOSSARY.md`)
-- Create and maintain `GLOSSARY.md` at project root.
+## 1. Glossary (`docs/GLOSSARY.md`)
+- Create and maintain `docs/GLOSSARY.md`.
 - Document domain entities, core states, and technical definitions.
 - Code variable names, interfaces, and file names must match glossary entries exactly.
 

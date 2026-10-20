@@ -11,7 +11,7 @@
 - 🛡️ [Security Architecture (`docs/security.md`)](security.md) — 5 Invariants, threat modeling & Three-Tier Security Gate
 - ⚡ [Engineering Lifecycle (`.agent/workflows/sprint-workflow.md`)](../.agent/workflows/sprint-workflow.md) — Contract-first TDD and verification protocol
 
-- 📖 [Ubiquitous Domain Glossary (`GLOSSARY.md`)](../GLOSSARY.md) — Standardized fintech and underwriting terminology
+- 📖 [Ubiquitous Domain Glossary (`GLOSSARY.md`)](GLOSSARY.md) — Standardized fintech and underwriting terminology
 
 ---
 

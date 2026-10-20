@@ -14,7 +14,7 @@ Start with [`AGENTS.md`](AGENTS.md) and the user's explicit task. `AGENTS.md` de
 - [`docs/security.md`](docs/security.md): Security design blueprint & defense-in-depth.
 
 - [`.agent/workflows/sprint-workflow.md`](.agent/workflows/sprint-workflow.md): Sprint workflow and engineering lifecycle.
-- [`GLOSSARY.md`](GLOSSARY.md): Ubiquitous domain glossary.
+- [`GLOSSARY.md`](docs/GLOSSARY.md): Ubiquitous domain glossary.
 
 ---
 
@@ -52,7 +52,7 @@ Every contributor (human developer or AI coding agent) working in this workspace
 ### 1.5 Domain Alignment & ADR Protocol (`domain-alignment`)
 - Enforce ubiquitous domain vocabulary in all code, data models, and API routes.
 - Maintain architectural integrity and specifications in `docs/`.
-- Maintain domain definitions in [`GLOSSARY.md`](GLOSSARY.md).
+- Maintain domain definitions in [`GLOSSARY.md`](docs/GLOSSARY.md).
 
 ### 1.6 Frontend Design Engineering (`frontend-craft`)
 - Enforce the 4-pillar design protocol: Taste, Impeccable finish, Emil Kowalski motion physics (<300ms spring transitions), and Vercel A11y standards.

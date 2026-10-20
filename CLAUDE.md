@@ -23,7 +23,7 @@ Scope: All software development, research, financial engineering, and testing in
   - [`.agent/rules/`](.agent/rules): 10 standing architectural rules.
   - [`graphify-out/`](graphify-out): Persistent AST knowledge graph (`graph.json`) and architecture wiki (`wiki/index.md`).
   - [`AGENTS.md`](AGENTS.md): Full registry, baseline, and Scenario Routing Matrix.
-  - [`GLOSSARY.md`](GLOSSARY.md): Ubiquitous domain vocabulary (CCC, DSO, DIO, DPO, DAB, NSF, DSCR, Runway, APR, WeBank Weiyidai, FISCO BCOS).
+  - [`GLOSSARY.md`](docs/GLOSSARY.md): Ubiquitous domain vocabulary (CCC, DSO, DIO, DPO, DAB, NSF, DSCR, Runway, APR, WeBank Weiyidai, FISCO BCOS).
 
 ---
 
@@ -53,7 +53,7 @@ Every response and code modification must satisfy these 10 standing rules:
   5. *Shortest Working Diff*: Minimum code, boring over clever, single root-cause fix.
 
 ### 2.5 Domain Alignment (`domain-alignment`)
-- Enforce domain definitions from [`GLOSSARY.md`](GLOSSARY.md).
+- Enforce domain definitions from [`GLOSSARY.md`](docs/GLOSSARY.md).
 - Never allow floating-point representation for currency fields: always use `Decimal` in Python or `numeric(18, 4)` in PostgreSQL.
 
 ### 2.6 Frontend Craft Protocol (`frontend-craft`)

@@ -26,7 +26,7 @@ Read [`AGENTS.md`](AGENTS.md) for instruction precedence and verified baseline s
 | 🏛️ [Architectural Plan & Roadmap](docs/architecture.md) | 6-layer topology, local SLM inference, dynamic vector routing & multi-agent suites |
 | 🛡️ [Security Architecture](docs/security.md) | 5 Invariants, threat modeling, Three-Tier Gate (owner-sent Tier 3) & decadal defense |
 
-| 📖 [Ubiquitous Domain Glossary](GLOSSARY.md) | Standardized fintech, underwriting, and treasury terminology (CCC, DAB, DSCR, APR) |
+| 📖 [Ubiquitous Domain Glossary](docs/GLOSSARY.md) | Standardized fintech, underwriting, and treasury terminology (CCC, DAB, DSCR, APR) |
 
 | ⚡ [Sprint Workflow](.agent/workflows/sprint-workflow.md) | Contract-first engineering lifecycle and red-green-refactor loop |
 

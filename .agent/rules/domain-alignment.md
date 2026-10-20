@@ -13,5 +13,5 @@ Scope: Antigravity and Claude coding assistants.
 - Never make arbitrary assumptions on architectural trade-offs without grilling first.
 
 ## 2. Ubiquitous Vocabulary
-- Ensure symbol names in TypeScript/Node directly match terms in `GLOSSARY.md`.
+- Ensure symbol names in TypeScript/Node directly match terms in `docs/GLOSSARY.md`.
 - Create ADRs in `docs/adr/` for structural deviations or library additions.
