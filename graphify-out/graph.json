@@ -72053,7 +72053,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/assistant/page.tsx",
-      "source_location": "L709",
+      "source_location": "L703",
       "weight": 1.0
     },
     {
@@ -72065,7 +72065,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/assistant/page.tsx",
-      "source_location": "L710",
+      "source_location": "L704",
       "weight": 1.0
     },
     {
@@ -72077,7 +72077,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/assistant/page.tsx",
-      "source_location": "L713",
+      "source_location": "L707",
       "weight": 1.0
     },
     {
@@ -72089,7 +72089,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/assistant/page.tsx",
-      "source_location": "L716",
+      "source_location": "L710",
       "weight": 1.0
     },
     {
@@ -72101,7 +72101,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/assistant/page.tsx",
-      "source_location": "L819",
+      "source_location": "L813",
       "weight": 1.0
     },
     {
@@ -183053,5 +183053,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "e140661522a4caf22fd6983c7432e6c349975d1e"
+  "built_at_commit": "0b1ba96411debe48d84a12dc8edbeb6c533a02be"
 }

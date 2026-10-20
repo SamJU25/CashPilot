@@ -601,7 +601,7 @@ export default function AssistantPage() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.98 }}
                   transition={fade}
-                  className="my-auto flex flex-col items-center justify-center w-full max-w-xl mx-auto py-8 space-y-6"
+                  className="my-auto flex flex-col items-center justify-center w-full max-w-2xl mx-auto py-8 space-y-6"
                 >
                   {noData && (
                     <div className="w-full flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 rounded-lg border bg-muted/30 px-3.5 py-2.5 text-xs text-muted-foreground shadow-xs">
@@ -629,25 +629,19 @@ export default function AssistantPage() {
                   )}
 
                   <div className="w-full space-y-3">
-                    <p className="text-sm font-medium">{t('as.try')}</p>
-                    <div className="grid gap-2 sm:grid-cols-2">
-                      {suggestions.map((key, index) => {
-                        const isOddLast = suggestions.length % 2 === 1 && index === suggestions.length - 1;
-                        return (
-                          <button
-                            key={key}
-                            type="button"
-                            onClick={() => send(t(key))}
-                            className={cn(
-                              'group flex items-center justify-between rounded-xl border bg-card px-4 py-3 text-left text-sm text-foreground shadow-xs transition-colors hover:bg-muted/60',
-                              isOddLast && 'sm:col-span-2'
-                            )}
-                          >
-                            <span>{t(key)}</span>
-                            <ArrowUpRight className="size-4 text-muted-foreground/60 transition-transform group-hover:text-foreground group-hover:translate-x-0.5 group-hover:-translate-y-0.5 shrink-0 ml-2" aria-hidden />
-                          </button>
-                        );
-                      })}
+                    <p className="text-center text-xs sm:text-sm font-medium text-muted-foreground">{t('as.try')}</p>
+                    <div className="flex flex-col sm:flex-row items-stretch justify-center gap-2.5 w-full">
+                      {suggestions.map((key) => (
+                        <button
+                          key={key}
+                          type="button"
+                          onClick={() => send(t(key))}
+                          className="group flex flex-1 min-w-0 items-start justify-between rounded-xl border bg-card p-3 sm:p-3.5 text-left text-xs sm:text-[13px] leading-snug text-foreground shadow-xs transition-all hover:bg-muted/60 hover:border-border/80 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                        >
+                          <span className="min-w-0 flex-1">{t(key)}</span>
+                          <ArrowUpRight className="size-3.5 text-muted-foreground/60 transition-transform group-hover:text-foreground group-hover:translate-x-0.5 group-hover:-translate-y-0.5 shrink-0 ml-1.5 mt-0.5" aria-hidden />
+                        </button>
+                      ))}
                     </div>
                   </div>
                 </motion.div>
