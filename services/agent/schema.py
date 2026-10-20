@@ -168,6 +168,7 @@ class AgentChatRequest(BaseModel):
     history: List[ChatHistoryItem] = Field(default_factory=list, description="Recent conversation turns for follow-up context")
     tenant_id: str = Field(default="SME-DEFAULT", description="SME tenant identifier")
     csv_content: Optional[str] = Field(default=None, description="Raw CSV bank statement string for contextual analysis")
+    has_statement: Optional[bool] = Field(default=None, description="Explicit flag indicating whether client has a statement loaded")
     alert_threshold_days: int = Field(default=30, gt=0, description="Runway alert threshold in days")
     nsf_count: int = Field(default=0, ge=0, description="Observed non-sufficient funds counter")
     staged_action_type: Optional[str] = Field(default=None, description="Explicit financial action to stage (e.g. DRAW_CREDIT_LINE)")

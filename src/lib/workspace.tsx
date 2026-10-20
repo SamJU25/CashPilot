@@ -157,7 +157,7 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
   }, []);
   const clearData = useCallback(() => {
     // The backend keeps the session's statement until told otherwise; a failed call still drops it from this tab.
-    if (prefs.source === 'live') api.clearSession().catch(() => {}).finally(resetSession);
+    api.clearSession().catch(() => {}).finally(resetSession);
     setLiveState(NO_LIVE);
     setPrefs((p) => ({ ...p, hasData: false, source: 'sample', accountNames: DEFAULT_ACCOUNT_NAMES, intentStatus: {}, intentDecidedAt: {} }));
   }, [prefs.source]);

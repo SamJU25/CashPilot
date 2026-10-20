@@ -308,3 +308,9 @@ def test_follow_ups_change_only_the_figure_they_name():
     sid = run_copilot_supervisor(AgentChatRequest(message="Factor a $50,000 invoice with 80% advance, 2% fee, 30 days")).session_id
     reply = run_copilot_supervisor(AgentChatRequest(message="what if the fee is 3%?"), session_id=sid).reply
     assert "80.00% ($40,000.00)" in reply and "$1,500.00" in reply
+
+
+def test_chat_without_statement_greets_without_claiming_loaded():
+    resp = run_copilot_supervisor(AgentChatRequest(message="hi", has_statement=False))
+    assert "Your bank statement is loaded" not in resp.reply
+    assert "CashPilot" in resp.reply

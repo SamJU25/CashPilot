@@ -265,6 +265,7 @@ export interface ChatRequest {
   alert_threshold_days: number;
   currency?: string;
   language?: string;
+  has_statement?: boolean;
   csv_content?: string;
   llm_config?: { provider: string; api_key?: string; base_url?: string; model_name?: string };
 }

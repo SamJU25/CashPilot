@@ -315,7 +315,7 @@ function topicOf(intent: string): Topic {
 
 export default function AssistantPage() {
   const { active: activeLocal } = useActiveLocalModel();
-  const { ready, provider, localModel, providerModels, providerKeys, providerUrls, intentStatus, update, source, live: liveData, setLive: setLiveData, alertThresholdDays, homeCurrency, language } = useWorkspace();
+  const { ready, hasData, provider, localModel, providerModels, providerKeys, providerUrls, intentStatus, update, source, live: liveData, setLive: setLiveData, alertThresholdDays, homeCurrency, language } = useWorkspace();
   const { t, lang } = useT();
   const intents = useIntents();
   const drawStatus = intentStatus[DRAW_INTENT.id] ?? DRAW_INTENT.status;
@@ -433,7 +433,8 @@ export default function AssistantPage() {
         alert_threshold_days: alertThresholdDays,
         currency: homeCurrency,
         language,
-        csv_content: source === 'sample' ? SAMPLE_CSV : undefined,
+        has_statement: hasData,
+        csv_content: hasData && source === 'sample' ? SAMPLE_CSV : undefined,
         llm_config: llmConfig(provider, providerKeys, providerUrls, defaultUrl, providerModels?.[provider] || (provider === 'local' ? localModel : undefined)),
       });
       const staged = res.staged_action;

@@ -336,6 +336,9 @@ def run_copilot_supervisor(
                 pass
         session_store.update_statement(effective_session, effective_csv, tenant_id=effective_tenant)
         request.csv_content = effective_csv
+    elif request.has_statement is False:
+        effective_csv = None
+        session_store.clear_statement(effective_session)
     elif session_rec and session_rec.csv_content:
         effective_csv = session_rec.csv_content
         request.csv_content = effective_csv
