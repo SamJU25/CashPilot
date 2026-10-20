@@ -12,6 +12,7 @@ import {
   MessageSquare,
   ReceiptText,
   Settings2,
+  SquarePen,
 } from 'lucide-react';
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
@@ -26,7 +27,7 @@ import { ThemeSwitch } from '@/components/shell/theme-switch';
 import { CashPilotMark, Wordmark } from '@/components/shell/brand';
 
 
-const NAV: { group: Key; items: { href: string; label: Key; icon: typeof LineChart }[] }[] = [
+const NAV: { group: Key; items: { href: string; label: Key; icon: typeof LineChart; isAction?: boolean }[] }[] = [
   {
     group: 'nav.money',
     items: [
@@ -40,6 +41,7 @@ const NAV: { group: Key; items: { href: string; label: Key; icon: typeof LineCha
     group: 'nav.copilot',
     items: [
       { href: '/assistant', label: 'nav.assistant', icon: MessageSquare },
+      { href: '/assistant?new=true', label: 'as.newChat', icon: SquarePen, isAction: true },
     ],
   },
 ];
@@ -56,17 +58,26 @@ function NavLinks({ onNavigate, id = 'desktop' }: { onNavigate?: () => void; id?
           <p className="px-3 pb-1.5 text-xs font-medium text-muted-foreground">{t(section.group)}</p>
           <ul className="space-y-0.5">
             {section.items.map((item) => {
-              const active = item.href === '/' ? pathname === '/' : pathname.startsWith(item.href);
+              const active = item.isAction ? false : (item.href === '/' ? pathname === '/' : pathname.startsWith(item.href));
               return (
-                <li key={item.href}>
+                <li key={item.label}>
                   <Link
                     href={item.href}
-                    onClick={onNavigate}
+                    onClick={() => {
+                      if (item.isAction) {
+                        try {
+                          window.sessionStorage.removeItem('cashpilot.chat.v2');
+                        } catch {}
+                        window.dispatchEvent(new CustomEvent('cashpilot:new-chat'));
+                      }
+                      onNavigate?.();
+                    }}
                     prefetch={true}
                     aria-current={active ? 'page' : undefined}
                     className={cn(
                       'relative flex h-9 items-center gap-2.5 rounded-md px-3 text-sm transition-colors',
                       active ? 'font-medium text-foreground' : 'text-ink-2 hover:bg-muted hover:text-foreground',
+                      item.isAction && 'text-muted-foreground hover:text-foreground',
                     )}
                   >
                     {active && (
@@ -74,7 +85,7 @@ function NavLinks({ onNavigate, id = 'desktop' }: { onNavigate?: () => void; id?
                     )}
                     <item.icon className="relative size-4 shrink-0" aria-hidden />
                     <span className="relative">{t(item.label)}</span>
-                    {item.href === '/assistant' && pending > 0 && (
+                    {item.href === '/assistant' && !item.isAction && pending > 0 && (
                       <span className="figures relative ml-auto rounded-full bg-warning/20 px-1.5 text-xs font-medium text-warning-text" aria-label={t('nav.waiting', { n: pending })}>
                         {pending}
                       </span>

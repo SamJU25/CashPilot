@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 import Link from 'next/link';
-import { ArrowUp, ArrowUpRight, Check, Copy, FileText, MessageSquare, PanelRightClose, PanelRightOpen, SquarePen } from 'lucide-react';
+import { ArrowUp, ArrowUpRight, Check, Copy, FileText, MessageSquare, PanelRightClose, PanelRightOpen } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ErrorState, LoadingBlock } from '@/components/common/states';
 import { RunReceipt } from '@/components/copilot/run-receipt';
@@ -342,6 +342,31 @@ export default function AssistantPage() {
     // Restores once, after the workspace has read which data source is active.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ready]);
+
+  useEffect(() => {
+    const handleNewChat = () => {
+      setMessages([]);
+      setDraft('');
+      try {
+        window.sessionStorage.removeItem(CHAT_KEY);
+      } catch {}
+    };
+    window.addEventListener('cashpilot:new-chat', handleNewChat);
+    return () => window.removeEventListener('cashpilot:new-chat', handleNewChat);
+  }, []);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('new')) {
+      setMessages([]);
+      setDraft('');
+      try {
+        window.sessionStorage.removeItem(CHAT_KEY);
+      } catch {}
+      window.history.replaceState({}, '', window.location.pathname);
+    }
+  }, []);
   useEffect(() => {
     if (!restored) return;
     try {
@@ -532,20 +557,6 @@ export default function AssistantPage() {
         </p>
       </div>
       <div className="flex shrink-0 items-center gap-2 self-start sm:self-center">
-        <ModelMenu onSwitch={switchModel} disabled={busy || waiting} />
-        <span className="h-4 w-px bg-border hidden sm:block" aria-hidden />
-        <Button
-          type="button"
-          variant="ghost"
-          size="sm"
-          className="h-8 gap-1.5 px-2.5 text-xs text-ink-2"
-          onClick={newChat}
-          disabled={busy || waiting || messages.length === 0}
-        >
-          <SquarePen className="size-3.5" aria-hidden />
-          <span className="sr-only sm:not-sr-only">{t('as.newChat')}</span>
-        </Button>
-        <span className="h-4 w-px bg-border hidden sm:block" aria-hidden />
         <Button
           type="button"
           variant="ghost"

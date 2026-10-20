@@ -2112,9 +2112,9 @@
     "semantic_hash": ""
   },
   "src/app/assistant/page.tsx": {
-    "mtime": 1792535995.3822265,
-    "seen": 1792536115.3695257,
-    "ast_hash": "5da3df233b7c965142725221848c1b8c",
+    "mtime": 1792536362.3936994,
+    "seen": 1792536447.0923126,
+    "ast_hash": "e97539288df0c55bd6dd500aace929b1",
     "semantic_hash": ""
   },
   "src/app/funding/page.tsx": {
@@ -2226,9 +2226,9 @@
     "semantic_hash": ""
   },
   "src/components/shell/app-shell.tsx": {
-    "mtime": 1792520921.1946344,
-    "seen": 1792521033.671063,
-    "ast_hash": "1fdd8d367a46b8e368c514abf384c43f",
+    "mtime": 1792536362.3930297,
+    "seen": 1792536447.0966082,
+    "ast_hash": "d13357d5f41cc97415c6164b02cba42c",
     "semantic_hash": ""
   },
   "src/components/shell/brand.tsx": {

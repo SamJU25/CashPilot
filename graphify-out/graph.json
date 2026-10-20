@@ -5697,7 +5697,7 @@
       "file_type": "code",
       "norm_label": "appshell()",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L197"
+      "source_location": "L208"
     },
     {
       "id": "src_components_shell_app_shell_brand",
@@ -5709,7 +5709,7 @@
       "file_type": "code",
       "norm_label": "brand()",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L185"
+      "source_location": "L196"
     },
     {
       "id": "src_components_shell_app_shell_navlinks",
@@ -5721,7 +5721,7 @@
       "file_type": "code",
       "norm_label": "navlinks()",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L47"
+      "source_location": "L49"
     },
     {
       "id": "src_components_shell_app_shell_railfooter",
@@ -5733,7 +5733,7 @@
       "file_type": "code",
       "norm_label": "railfooter()",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L93"
+      "source_location": "L104"
     },
     {
       "id": "src_components_shell_brand_blueprintmark",
@@ -14121,7 +14121,7 @@
       "file_type": "code",
       "norm_label": "sessionendedbanner()",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L162"
+      "source_location": "L173"
     },
     {
       "id": "src_components_ui_dialog_dialogfooter",
@@ -28638,7 +28638,7 @@
       "file_type": "code",
       "norm_label": "nav",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L29"
+      "source_location": "L30"
     },
     {
       "id": "src_components_shell_brand",
@@ -71897,7 +71897,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/assistant/page.tsx",
-      "source_location": "L381",
+      "source_location": "L406",
       "weight": 1.0
     },
     {
@@ -71909,7 +71909,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/assistant/page.tsx",
-      "source_location": "L383",
+      "source_location": "L408",
       "weight": 1.0
     },
     {
@@ -71921,7 +71921,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/assistant/page.tsx",
-      "source_location": "L384",
+      "source_location": "L409",
       "weight": 1.0
     },
     {
@@ -71933,7 +71933,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/assistant/page.tsx",
-      "source_location": "L447",
+      "source_location": "L472",
       "weight": 1.0
     },
     {
@@ -71945,7 +71945,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/assistant/page.tsx",
-      "source_location": "L470",
+      "source_location": "L495",
       "weight": 1.0
     },
     {
@@ -71957,7 +71957,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/assistant/page.tsx",
-      "source_location": "L531",
+      "source_location": "L556",
       "weight": 1.0
     },
     {
@@ -71969,19 +71969,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/assistant/page.tsx",
-      "source_location": "L531",
-      "weight": 1.0
-    },
-    {
-      "source": "src_app_assistant_page_assistantpage",
-      "target": "src_components_copilot_model_menu_modelmenu",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "src/app/assistant/page.tsx",
-      "source_location": "L535",
+      "source_location": "L556",
       "weight": 1.0
     },
     {
@@ -71993,7 +71981,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/assistant/page.tsx",
-      "source_location": "L537",
+      "source_location": "L560",
       "weight": 1.0
     },
     {
@@ -72005,7 +71993,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/assistant/page.tsx",
-      "source_location": "L553",
+      "source_location": "L564",
       "weight": 1.0
     },
     {
@@ -72017,7 +72005,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/assistant/page.tsx",
-      "source_location": "L577",
+      "source_location": "L588",
       "weight": 1.0
     },
     {
@@ -72029,7 +72017,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/assistant/page.tsx",
-      "source_location": "L586",
+      "source_location": "L597",
       "weight": 1.0
     },
     {
@@ -72041,7 +72029,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/assistant/page.tsx",
-      "source_location": "L630",
+      "source_location": "L641",
       "weight": 1.0
     },
     {
@@ -72053,7 +72041,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/assistant/page.tsx",
-      "source_location": "L711",
+      "source_location": "L722",
       "weight": 1.0
     },
     {
@@ -72065,7 +72053,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/assistant/page.tsx",
-      "source_location": "L712",
+      "source_location": "L723",
       "weight": 1.0
     },
     {
@@ -72077,7 +72065,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/assistant/page.tsx",
-      "source_location": "L715",
+      "source_location": "L726",
       "weight": 1.0
     },
     {
@@ -72089,7 +72077,19 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/assistant/page.tsx",
-      "source_location": "L718",
+      "source_location": "L729",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_assistant_page_assistantpage",
+      "target": "src_components_copilot_model_menu_modelmenu",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/app/assistant/page.tsx",
+      "source_location": "L808",
       "weight": 1.0
     },
     {
@@ -72101,7 +72101,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/assistant/page.tsx",
-      "source_location": "L833",
+      "source_location": "L844",
       "weight": 1.0
     },
     {
@@ -78029,7 +78029,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L201",
+      "source_location": "L212",
       "weight": 1.0
     },
     {
@@ -78041,7 +78041,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L206",
+      "source_location": "L217",
       "weight": 1.0
     },
     {
@@ -78053,7 +78053,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L208",
+      "source_location": "L219",
       "weight": 1.0
     },
     {
@@ -78065,7 +78065,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L210",
+      "source_location": "L221",
       "weight": 1.0
     },
     {
@@ -78077,7 +78077,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L213",
+      "source_location": "L224",
       "weight": 1.0
     },
     {
@@ -78089,7 +78089,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L218",
+      "source_location": "L229",
       "weight": 1.0
     },
     {
@@ -78101,7 +78101,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L222",
+      "source_location": "L233",
       "weight": 1.0
     },
     {
@@ -78113,7 +78113,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L223",
+      "source_location": "L234",
       "weight": 1.0
     },
     {
@@ -78125,7 +78125,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L241",
+      "source_location": "L252",
       "weight": 1.0
     },
     {
@@ -78137,7 +78137,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L188",
+      "source_location": "L199",
       "weight": 1.0
     },
     {
@@ -78149,7 +78149,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L190",
+      "source_location": "L201",
       "weight": 1.0
     },
     {
@@ -78161,7 +78161,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L49",
+      "source_location": "L51",
       "weight": 1.0
     },
     {
@@ -78173,7 +78173,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L50",
+      "source_location": "L52",
       "weight": 1.0
     },
     {
@@ -78185,43 +78185,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L67",
-      "weight": 1.0
-    },
-    {
-      "source": "src_components_shell_app_shell_railfooter",
-      "target": "src_components_shell_language_menu_languagemenu",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L119",
-      "weight": 1.0
-    },
-    {
-      "source": "src_components_shell_app_shell_railfooter",
-      "target": "src_components_shell_theme_switch_themeswitch",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L120",
-      "weight": 1.0
-    },
-    {
-      "source": "src_components_shell_app_shell_railfooter",
-      "target": "src_lib_utils_cn",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L125",
+      "source_location": "L77",
       "weight": 1.0
     },
     {
@@ -78233,7 +78197,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L94",
+      "source_location": "L105",
       "weight": 1.0
     },
     {
@@ -78245,7 +78209,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L95",
+      "source_location": "L106",
       "weight": 1.0
     },
     {
@@ -78257,7 +78221,43 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L97",
+      "source_location": "L108",
+      "weight": 1.0
+    },
+    {
+      "source": "src_components_shell_app_shell_railfooter",
+      "target": "src_components_shell_language_menu_languagemenu",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/components/shell/app-shell.tsx",
+      "source_location": "L130",
+      "weight": 1.0
+    },
+    {
+      "source": "src_components_shell_app_shell_railfooter",
+      "target": "src_components_shell_theme_switch_themeswitch",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/components/shell/app-shell.tsx",
+      "source_location": "L131",
+      "weight": 1.0
+    },
+    {
+      "source": "src_components_shell_app_shell_railfooter",
+      "target": "src_lib_utils_cn",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/components/shell/app-shell.tsx",
+      "source_location": "L136",
       "weight": 1.0
     },
     {
@@ -78269,7 +78269,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L163",
+      "source_location": "L174",
       "weight": 1.0
     },
     {
@@ -78281,7 +78281,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L164",
+      "source_location": "L175",
       "weight": 1.0
     },
     {
@@ -78293,7 +78293,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L174",
+      "source_location": "L185",
       "weight": 1.0
     },
     {
@@ -109745,7 +109745,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L16",
+      "source_location": "L17",
       "weight": 1.0
     },
     {
@@ -109757,7 +109757,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L16",
+      "source_location": "L17",
       "weight": 1.0
     },
     {
@@ -109769,7 +109769,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L16",
+      "source_location": "L17",
       "weight": 1.0
     },
     {
@@ -109781,7 +109781,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L16",
+      "source_location": "L17",
       "weight": 1.0
     },
     {
@@ -109793,7 +109793,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L17",
+      "source_location": "L18",
       "weight": 1.0
     },
     {
@@ -109805,7 +109805,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L18",
+      "source_location": "L19",
       "weight": 1.0
     },
     {
@@ -109817,7 +109817,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L19",
+      "source_location": "L20",
       "weight": 1.0
     },
     {
@@ -109829,7 +109829,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L19",
+      "source_location": "L20",
       "weight": 1.0
     },
     {
@@ -109841,7 +109841,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L20",
+      "source_location": "L21",
       "weight": 1.0
     },
     {
@@ -109853,7 +109853,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L21",
+      "source_location": "L22",
       "weight": 1.0
     },
     {
@@ -109865,7 +109865,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L22",
+      "source_location": "L23",
       "weight": 1.0
     },
     {
@@ -109877,7 +109877,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L23",
+      "source_location": "L24",
       "weight": 1.0
     },
     {
@@ -109889,7 +109889,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L23",
+      "source_location": "L24",
       "weight": 1.0
     },
     {
@@ -109901,7 +109901,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L23",
+      "source_location": "L24",
       "weight": 1.0
     },
     {
@@ -109913,7 +109913,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L24",
+      "source_location": "L25",
       "weight": 1.0
     },
     {
@@ -109925,7 +109925,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L25",
+      "source_location": "L26",
       "weight": 1.0
     },
     {
@@ -109937,7 +109937,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L26",
+      "source_location": "L27",
       "weight": 1.0
     },
     {
@@ -109949,7 +109949,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L26",
+      "source_location": "L27",
       "weight": 1.0
     },
     {
@@ -124909,7 +124909,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L16",
+      "source_location": "L17",
       "weight": 1.0
     },
     {
@@ -124921,7 +124921,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L17",
+      "source_location": "L18",
       "weight": 1.0
     },
     {
@@ -124933,7 +124933,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L18",
+      "source_location": "L19",
       "weight": 1.0
     },
     {
@@ -124945,7 +124945,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L19",
+      "source_location": "L20",
       "weight": 1.0
     },
     {
@@ -124957,7 +124957,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L20",
+      "source_location": "L21",
       "weight": 1.0
     },
     {
@@ -124969,7 +124969,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L21",
+      "source_location": "L22",
       "weight": 1.0
     },
     {
@@ -124981,7 +124981,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L22",
+      "source_location": "L23",
       "weight": 1.0
     },
     {
@@ -124993,7 +124993,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L23",
+      "source_location": "L24",
       "weight": 1.0
     },
     {
@@ -125005,7 +125005,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L24",
+      "source_location": "L25",
       "weight": 1.0
     },
     {
@@ -125017,7 +125017,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L25",
+      "source_location": "L26",
       "weight": 1.0
     },
     {
@@ -125029,7 +125029,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L26",
+      "source_location": "L27",
       "weight": 1.0
     },
     {
@@ -155970,13 +155970,24 @@
     },
     {
       "source": "src_components_shell_app_shell",
+      "target": "src_components_shell_app_shell_railfooter",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/components/shell/app-shell.tsx",
+      "source_location": "L104",
+      "weight": 1.0
+    },
+    {
+      "source": "src_components_shell_app_shell",
       "target": "src_components_shell_app_shell_sessionendedbanner",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L162",
+      "source_location": "L173",
       "weight": 1.0
     },
     {
@@ -155987,7 +155998,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L185",
+      "source_location": "L196",
       "weight": 1.0
     },
     {
@@ -155998,7 +156009,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L197",
+      "source_location": "L208",
       "weight": 1.0
     },
     {
@@ -156009,7 +156020,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L29",
+      "source_location": "L30",
       "weight": 1.0
     },
     {
@@ -156020,18 +156031,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L47",
-      "weight": 1.0
-    },
-    {
-      "source": "src_components_shell_app_shell",
-      "target": "src_components_shell_app_shell_railfooter",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L93",
+      "source_location": "L49",
       "weight": 1.0
     },
     {
@@ -183053,5 +183053,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "f896eb42325fcfb3f310a4f705f54d686195d3a9"
+  "built_at_commit": "3a1e09c8d72ce63f88bda49302680c3ebea3c44b"
 }
