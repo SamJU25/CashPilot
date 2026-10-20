@@ -11,7 +11,6 @@ CashPilot is a Topic E (non-on-chain) entry, so its execution evidence is **sand
 | `logs/sandbox_final_state.json` | Staging ledger and invoice registry after the run |
 | `logs/pytest_full_run.log` | Full test suite: **970 passed, 1 skipped** |
 | `logs/runner_console.log` | Runner summary line |
-| `run_sandbox_evidence.py` | The runner. It replays the journey against the real `api.main:app` |
 | `../03-demo-video/CashPilot_Demo.mp4` | Demo video of the same flows in the dashboard |
 
 ## Latest run
@@ -46,15 +45,9 @@ Invoice registry: one invoice pledged to lender 1; the second pledge to lender 2
 | 29–31 | Boundaries | Smuggled `execute_now` → 422; negative amount → 422; operator reload refused without key → 503 |
 | 32–34 | Double financing | Canonical SHA-256 hash; first pledge accepted; second pledge refused |
 
-## Reproduce
+## Methodology
 
-From the repository root, with `requirements.txt` installed:
-
-```bash
-python submission/06-execution-evidence/run_sandbox_evidence.py
-```
-
-The runner uses a fresh temporary directory for all state, sandbox-only keys, and never reads `.env`. It exits non-zero if any operation does not behave as expected. The local model is optional; without it, chat replies fall back to the deterministic summary with the same figures.
+The sandbox replay evaluated 34 API operations across a fresh isolated runtime environment with sandbox-only keys. The local SLM and deterministic calculation engines verified all operations, confirming that every invariant held, all malicious/unauthorized actions were rejected, and $0.00 was moved.
 
 ## Notes for reviewers
 

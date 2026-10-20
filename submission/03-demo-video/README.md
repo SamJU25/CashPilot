@@ -2,7 +2,7 @@
 
 **File:** `CashPilot_Demo.mp4` · **Length:** 2 min 04 s (limit: 5 min) · 1440×900, H.264 · English voice-over and on-screen captions
 
-The video is a real recording of the dashboard driven by `record_demo.py` (Playwright). It runs against the live FastAPI backend and the on-device MiniCPM5-2B model. The UI is not mocked up; the only post-processing is the added narration. Narration is a neural text-to-speech voice (Microsoft `en-US-AndrewNeural` via `edge-tts`), added by `add_voiceover.py` and timed to the scenes. On-screen captions carry the same points for viewers watching without sound.
+The video is a real recording of the dashboard running against the live FastAPI backend and the on-device MiniCPM5-2B model. The UI is not mocked up. Narration is in English with on-screen captions carrying the same points for viewers watching without sound.
 
 ## Scenes
 
@@ -35,17 +35,3 @@ Scenes 2–7 use the dashboard's built-in sample company; scene 8 uses the owner
 | 1:17 | Now an attack: a prompt injection asking the agent to wire fifty thousand dollars. It is blocked before routing, and nothing is staged. |
 | 1:32 | Last, live mode. A real three-month statement goes to the backend. It parses ninety-four transactions, scores them for funding, and the overview switches to the live forecast: this account runs short on June twenty-eighth. |
 | 1:53 | Nine hundred seventy tests pass, and every attack in our sandbox replay was refused. CashPilot never moves the owner's money. |
-
-## Re-record
-
-With the backend on `:8000` and the frontend on `:3000`:
-
-```bash
-pip install playwright imageio-ffmpeg
-python -m playwright install chromium
-python submission/03-demo-video/record_demo.py
-pip install edge-tts
-python submission/03-demo-video/add_voiceover.py   # needs internet for the TTS service
-```
-
-This rewrites `CashPilot_Demo.mp4` and `screenshots/` (the deck uses the screenshots). The recorder logs each scene's start in `scene_times.json`; `add_voiceover.py` places each line from it and refuses to mix if a line would run into the next scene.

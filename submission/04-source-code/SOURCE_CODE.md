@@ -157,7 +157,7 @@ npm run build
 
 ### 3.3 Sandbox replay
 
-`python submission/06-execution-evidence/run_sandbox_evidence.py` replays 34 operator and attacker operations against the real app and writes timestamped logs. Latest: 34/34 as expected. See `../06-execution-evidence/`.
+34 operator and attacker operations were replayed against the live app, generating timestamped audit logs. Latest: 34/34 as expected. See `../06-execution-evidence/`.
 
 ---
 

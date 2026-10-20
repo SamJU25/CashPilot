@@ -36,28 +36,15 @@ This folder holds every item on the competition's submission checklist. Product 
 | 0 known Python dependency vulnerabilities | `05-security-self-assessment/evidence/pip_audit_requirements.txt` |
 | 13 frontend advisories, critical one disabled in config | `05-security-self-assessment/evidence/npm_audit_production.txt`, risk R9 |
 
-## Rebuild everything
-
-From the repository root (backend on `:8000` and frontend on `:3000` for the video):
-
-```bash
-python -m pytest -q                                          # test evidence
-python submission/06-execution-evidence/run_sandbox_evidence.py   # sandbox logs
-python submission/03-demo-video/record_demo.py               # video + screenshots
-node submission/02-presentation-deck/build_deck.js           # deck (needs pptxgenjs)
-python submission/build_pdfs.py                              # PDFs of docs 01 and 05
-```
-
 ## Folder layout
 
 ```
 submission/
-├── README.md                       this index
-├── build_pdfs.py                   Markdown → PDF for items 01 and 05
-├── 01-technical-documentation/     architecture, algorithms, security design
-├── 02-presentation-deck/           .pptx, .pdf, generator, speaker script
-├── 03-demo-video/                  .mp4, recorder, scene list, screenshots
-├── 04-source-code/                 repository guide, deployment, test-case map
-├── 05-security-self-assessment/    tier implementation, risk register, audit evidence
-└── 06-execution-evidence/          sandbox operation logs, runner, test log
+├── README.md                       this index & checklist
+├── 01-technical-documentation/     architecture, algorithms, security design (.pdf & .md)
+├── 02-presentation-deck/           presentation slides (.pptx & .pdf) + speaker script
+├── 03-demo-video/                  narrated demo video (.mp4) + scene script
+├── 04-source-code/                 repository guide, deployment, test-case map (.md)
+├── 05-security-self-assessment/    tier implementation, 14-item risk register, audit evidence
+└── 06-execution-evidence/          sandbox operation logs, final state, full test logs
 ```

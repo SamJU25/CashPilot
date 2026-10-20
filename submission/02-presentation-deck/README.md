@@ -4,7 +4,6 @@
 |---|---|
 | `CashPilot_Presentation.pptx` | Editable deck, 12 slides, 16:9, speaker notes on every slide |
 | `CashPilot_Presentation.pdf` | Same deck for upload or for viewers without PowerPoint |
-| `build_deck.js` | Generator (`npm install pptxgenjs@3.12.0`, then `node submission/02-presentation-deck/build_deck.js` from the repo root). Uses screenshots from `../03-demo-video/screenshots/` |
 
 **Length:** the speaker notes total about 6 minutes at a normal pace, leaving room for a live demo or pauses inside the 10-minute limit.
 
