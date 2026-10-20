@@ -1,4 +1,4 @@
-# SME Finance Copilot — dependencies required by the implemented local CSV demo.
+# CashPilot — Python Application Dependencies.
 # Install with: python -m pip install -r requirements.txt
 # Blueprint-only database, agent-reach, and Graphify tooling are not app runtime dependencies.
 
