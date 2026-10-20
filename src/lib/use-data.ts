@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useWorkspace, type LiveData } from '@/lib/workspace';
 import type { Key } from '@/lib/i18n';
 
@@ -20,6 +20,11 @@ export function useData<T>(load: () => T, fromLive?: (live: LiveData) => T | nul
   const [attempt, setAttempt] = useState(0);
   const retry = useCallback(() => setAttempt((n) => n + 1), []);
 
+  const loadRef = useRef(load);
+  loadRef.current = load;
+  const fromLiveRef = useRef(fromLive);
+  fromLiveRef.current = fromLive;
+
   const resolve = useCallback((): DataState<T> => {
     if (!ready) return { status: 'loading' };
     if (typeof window !== 'undefined') {
@@ -30,16 +35,27 @@ export function useData<T>(load: () => T, fromLive?: (live: LiveData) => T | nul
     }
     if (!hasData) return { status: 'empty' };
     if (source === 'live') {
-      const data = fromLive?.(live);
+      const data = fromLiveRef.current?.(live);
       return data == null ? { status: 'empty' } : { status: 'ready', data };
     }
-    return { status: 'ready', data: load() };
-  }, [ready, hasData, source, live, attempt, retry, fromLive, load]);
+    return { status: 'ready', data: loadRef.current() };
+  }, [ready, hasData, source, live, attempt, retry]);
 
   const [state, setState] = useState<DataState<T>>(resolve);
 
   useEffect(() => {
-    setState(resolve());
+    setState((prev) => {
+      const next = resolve();
+      if (prev.status === next.status) {
+        if (prev.status === 'ready' && next.status === 'ready' && prev.data === next.data) {
+          return prev;
+        }
+        if (prev.status !== 'ready') {
+          return prev;
+        }
+      }
+      return next;
+    });
   }, [resolve]);
 
   return state;

@@ -70,7 +70,7 @@ function NavLinks({ onNavigate, id = 'desktop' }: { onNavigate?: () => void; id?
                     )}
                   >
                     {active && (
-                      <motion.span layoutId={`nav-active-${id}`} transition={spring.snappy} className="absolute inset-0 rounded-md bg-card shadow-[0_0_0_1px_rgb(var(--border))]" />
+                      <motion.span layoutId={`nav-active-${id}`} transition={spring.snappy} className="pointer-events-none absolute inset-0 rounded-md bg-card shadow-[0_0_0_1px_rgb(var(--border))]" />
                     )}
                     <item.icon className="relative size-4 shrink-0" aria-hidden />
                     <span className="relative">{t(item.label)}</span>
