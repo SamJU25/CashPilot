@@ -4,7 +4,7 @@
 > *FinTechathon 2026 Topic E: AI as a Financial Participant | Tsinghua University PBCSF & WeBank*
 
 [![CI](https://github.com/SamJU25/F-SME-Finance-Copilot/actions/workflows/ci.yml/badge.svg)](https://github.com/SamJU25/F-SME-Finance-Copilot/actions/workflows/ci.yml)
-[![Tests](https://img.shields.io/badge/pytest-854_passed-brightgreen.svg)](tests/)
+[![Tests](https://img.shields.io/badge/pytest-963_passed-brightgreen.svg)](tests/)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.115+-009688.svg)](https://fastapi.tiangolo.com/)
 [![Next.js 14](https://img.shields.io/badge/Next.js-14_App_Router-black.svg)](https://nextjs.org/)
@@ -12,7 +12,7 @@
 [![Solidity 0.8.20](https://img.shields.io/badge/Solidity-0.8.20-363636.svg)](contracts/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-**Audited Technical Baseline (2026-10-19)**: **854 automated tests passing (1 POSIX-only skip)** across multi-format statement ingestion (CSV and PDF), 25+ deterministic financial engines in pure Python `decimal.Decimal`, dynamic semantic intent routing (FastEmbed ONNX), on-device local SLM inference (fine-tuned Solvavion-2B LoRA, optional dependencies), Universal Cloud LLM Bridge with live dynamic model discovery, Three-Tier Security Gate with owner-sent Tier 3 requests (no execution route), and hardened rootless Docker Compose orchestration.
+**Audited Technical Baseline (2026-10-20)**: **963 automated tests passing (1 POSIX-only skip)** across multi-format statement ingestion (CSV and PDF), 25+ deterministic financial engines in pure Python `decimal.Decimal`, dynamic semantic intent routing (FastEmbed ONNX), on-device local SLM inference (foundation `openbmb/MiniCPM5-2B`, optional dependencies), Universal Cloud LLM Bridge with live dynamic model discovery, Three-Tier Security Gate with owner-sent Tier 3 requests (no execution route), and Next.js 14 executive dashboard with 7 functional workspaces.
 
 ---
 
@@ -68,7 +68,7 @@ Traditional banks require 4 to 8 weeks to underwrite working capital loans and r
 │  • DSCR, FCCR & Burn rate  │  • Shortfall pinpointing   │  • Predatory APR flag (>36%)  │
 ├────────────────────────────┼────────────────────────────┼───────────────────────────────┤
 │   4. Universal AI Bridge   │   5. Three-Tier Gate       │   6. Consortium Blockchain    │
-│  • Local CashPilot-2B LoRA │  • Tier 1: Read-only auto  │  • FISCO BCOS smart contract  │
+│  • Local MiniCPM5-2B SLM │  • Tier 1: Read-only auto  │  • FISCO BCOS smart contract  │
 │  • 7 Cloud LLM Providers   │  • Tier 2: Proposal staging│  • Canonical SHA-256 hashing  │
 │  • Dynamic model discovery │  • Tier 3: owner sends it  │  • Double-pledge prevention   │
 └────────────────────────────┴────────────────────────────┴───────────────────────────────┘
@@ -101,7 +101,7 @@ All monetary calculations execute in pure Python `decimal.Decimal` with `ROUND_H
 
 ### 2.3 Universal Dynamic AI Bridge & Local SLM (`services/agent/`)
 - **Dual Inference Engine**:
-  - **Local SLM Engine**: On-device inference via fine-tuned `CashPilot-2B` (`openbmb/MiniCPM5-2B`) LoRA adapter (`models/sme-finance-lora`) on PyTorch CUDA with automatic fallback.
+  - **Local SLM Engine**: On-device inference via foundation `openbmb/MiniCPM5-2B` (`models/base/minicpm5-2b`) on PyTorch CUDA with automatic fallback to Ollama or deterministic responses.
   - **Universal Cloud LLM Bridge** (`llm_bridge.py`): Native support for Google Gemini 2.0 Flash, Anthropic Claude 3.5 Sonnet, OpenAI GPT-4o, DeepSeek, Groq, Local Ollama, and Custom OpenAI-compatible endpoints.
 - **Dynamic Live Model Discovery**: `POST /api/v1/agent/fetch-models` queries upstream endpoints dynamically to retrieve real-time model catalogs.
 - **Dynamic Connection Verification**: `POST /api/v1/agent/test-connection` verifies provider credentials and endpoint reachability with detailed latency metrics.
@@ -139,6 +139,17 @@ flowchart TD
 - Generates canonical `SHA-256` content hashes from invoice metadata:
   $$\text{InvoiceHash} = \text{SHA-256}(\text{TaxID} \parallel \text{BuyerID} \parallel \text{InvoiceNum} \parallel \text{AmountCents})$$
 - Submits verification payloads to `InvoiceRegistry.sol` on FISCO BCOS to eliminate fraudulent invoice double-pledging across lenders.
+
+### 2.6 Next.js Executive Dashboard (`src/app/`)
+- 7 specialized SME treasury workspaces built on Next.js 14 App Router and React 18:
+  1. **Overview (`/`)**: Real-time cash runway, Daily Average Balance, working capital metrics, and interactive cash forecast charts.
+  2. **Assistant (`/assistant`)**: Streaming AI CFO chat with dynamic model selection, calculation grounding, and pre-flight PII redaction.
+  3. **Approvals (`/approvals`)**: Three-Tier human-in-the-loop staging ledger for reviewing and preparing drafted credit/factoring actions.
+  4. **Funding (`/funding`)**: Digital underwriting marketplace ranking pre-qualified financing facilities by APR, speed, and suitability.
+  5. **Receivables (`/receivables`)**: B2B invoice registry with canonical SHA-256 hashing and double-pledge status verification.
+  6. **Statements (`/statements`)**: Drag-and-drop CSV and PDF bank statement ingestion with balance tie-out and row error provenance.
+  7. **Settings (`/settings`)**: Tenant enrollment, provider credential management, and local SLM status monitoring.
+- Design engineered for finance: monospace tabular numbers (`font-variant-numeric: tabular-nums`), responsive sidebar navigation, Emil Kowalski spring motion transitions (<280ms), and 4-state component handling.
 
 ---
 
@@ -238,7 +249,7 @@ Open <http://127.0.0.1:3000> in your browser. Download the sample bank statement
 Run the full verification suite from the repository root with the virtual environment active:
 
 ```bash
-# Run backend test suite (854 tests, 1 POSIX-only skip)
+# Run backend test suite (963 tests, 1 POSIX-only skip)
 python -m pytest -q
 
 # Run frontend type checking
@@ -250,11 +261,11 @@ npm run build
 
 ### Verified Test Breakdown
 ```
-tests/unit/            712 passed            (Ingestion, Pure Decimal Math, Underwriting, Decision Tables, Session Store)
-tests/integration/      86 passed            (FastAPI Endpoints, LLM Bridge, Model Discovery, Action Ledger, Session Memory)
+tests/unit/            803 passed            (Ingestion, Pure Decimal Math, Underwriting, Decision Tables, Session Store)
+tests/integration/     104 passed            (FastAPI Endpoints, LLM Bridge, Model Discovery, Action Ledger, Session Memory)
 tests/security/         54 passed, 1 skipped (Three-Tier Gate Invariants, PII Sanitization, Tampering, Hardening, Encryption)
 tests/e2e/               2 passed            (Full Statement Ingestion to Prepared-Request Flows)
-========================= 854 passed, 1 skipped in 46.81s =========================
+========================= 963 passed, 1 skipped in 26.98s =========================
 ```
 
 ---
@@ -265,7 +276,7 @@ tests/e2e/               2 passed            (Full Statement Ingestion to Prepar
 |---|---|---|
 | **Task Completion** | **40%** | Full transactional bank statement ingestion (CSV and PDF), 25+ pure Decimal financial calculation routines, 30/60/90-day predictive cash deficit forecasting, and automated credit facility matching. |
 | **Defensive Security & Governance** | **30%** | Three-Tier Security Gate isolating autonomous analysis from money movement (Tier 3 is owner-sent, with no payment credentials anywhere in the system), pre-flight regex PII redaction, and strict Pydantic v2 schemas. |
-| **Technical Innovation** | **30%** | Transaction-stream digital underwriting (WeBank model), on-device local SLM inference (CashPilot-2B LoRA), dynamic live model discovery across 7 LLM providers, FastEmbed semantic vector intent routing, and consortium blockchain invoice double-pledging defense (FISCO BCOS). |
+| **Technical Innovation** | **30%** | Transaction-stream digital underwriting (WeBank model), on-device local SLM inference (MiniCPM5-2B), dynamic live model discovery across 7 LLM providers, FastEmbed semantic vector intent routing, and consortium blockchain invoice double-pledging defense (FISCO BCOS). |
 
 ---
 

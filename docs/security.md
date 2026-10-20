@@ -1,7 +1,7 @@
 # SME Finance Copilot: Master Security Architecture (`security.md`)
 
 - **Document Role**: Threat Modeling, Defense-in-Depth, Self-Healing & Decadal Security
-- **Status**: Active Security Architecture & Technical Contract (Verified Baseline: 863 Passed Tests, 1 Skipped)
+- **Status**: Active Security Architecture & Technical Contract (Verified Baseline: 963 Passed Tests, 1 Skipped)
 - **Date**: 2026-10-17
 - **Competition Target**: FinTechathon 2026 Track E (Tsinghua University PBCSF & WeBank)
 
@@ -155,7 +155,7 @@ When anomalies or process crashes occur, recovery executes across four automated
 ## 6. LLM Connection Security & Data Privacy
 
 1. **Pre-Flight PII Redaction**: Customer names, phone numbers, tax IDs, and bank account numbers are scrubbed before prompt assembly; external AI models receive only synthetic tokens (`<CUSTOMER_1>`, `[REDACTED_IBAN]`).
-2. **Air-Gapped Local Inference Engine**: In local mode, `LocalTransformersEngine` runs Flagship 3B (`models/sme-finance-lora`) directly via PyTorch CUDA, or connects to Ollama on `127.0.0.1:11434`. Zero internet packets leave the machine.
+2. **Air-Gapped Local Inference Engine**: In local mode, `LocalTransformersEngine` runs foundation 2B (`openbmb/MiniCPM5-2B` under `models/base/`) directly via PyTorch CUDA, or connects to Ollama on `127.0.0.1:11434`. Zero internet packets leave the machine.
 3. **Enterprise Zero-Data Retention (TLS 1.3)**: Cloud provider API connections enforce `store=False`, ensuring prompts are not logged or used for model training.
 4. **Encrypted Client Key Storage**: When custom API keys are used in the dashboard, they reside in client `localStorage` and are passed per-session via authenticated headers; they are never committed to disk on shared servers.
 

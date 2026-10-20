@@ -90,6 +90,6 @@ This glossary defines standard financial and technical terms used throughout the
 ## 4. Agentic System Governance & Security
 
 ### 3-Tier Security Matrix
-* **Tier 1 (Observation)**: Read-only data ingestion and analysis. No human confirmation needed.
-* **Tier 2 (Staging)**: Generating actionable proposals or structuring applications. Staged in an immutable ledger queue.
-* **Tier 3 (Execution)**: Irreversible financial movement or binding contractual commitments. Mandatory Human-in-the-Loop (HITL) 2FA verification.
+* **Tier 1 (Observation)**: Read-only data ingestion and analysis. Safe for autonomous execution.
+* **Tier 2 (Staging)**: Generating actionable proposals or structuring applications. Placed into an encrypted staging ledger (`action_intents`). Zero capital movement.
+* **Tier 3 (Owner-Sent)**: Irreversible financial commitments (drawing credit lines, wire transfers, contract signing). CashPilot holds no payment credentials and has no execution route: it drafts the structured request, which the business owner prepares (`POST /api/v1/actions/{id}/prepare`) and dispatches directly to their bank or lender.

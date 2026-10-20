@@ -1,7 +1,7 @@
 # SME Finance Copilot: Master System Design (`system.md`)
 
 - **Document Role**: Concrete Technical Specifications, Schemas, Algorithms & Code Contracts
-- **Status**: Active Technical Blueprint & Contract (Verified Baseline: 863 Passed Tests, 1 Skipped)
+- **Status**: Active Technical Blueprint & Contract (Verified Baseline: 963 Passed Tests, 1 Skipped)
 - **Date**: 2026-10-17
 - **Competition Target**: FinTechathon 2026 Track E (Tsinghua University PBCSF & WeBank)
 
@@ -227,7 +227,7 @@ Intent classification uses FastEmbed ONNX (`BAAI/bge-small-en-v1.5`) vector embe
 
 ### 5.2 Local SLM Inference Engine
 `LocalTransformersEngine` (`services/agent/local_transformers.py`) provides local, air-gapped inference via PyTorch CUDA:
-- **Flagship Model**: `models/sme-finance-lora` (CashPilot-2B: `openbmb/MiniCPM5-2B` base + LoRA adapter) for deep financial analysis and tool calling. Requires the optional stack in `requirements-local.txt` and the base weights on disk under `models/base/`.
+- **Foundation Model**: `openbmb/MiniCPM5-2B` (`minicpm5-2b` under `models/base/`) for on-device, air-gapped financial reasoning and structured tool-calling. Resolves dynamic financial numbers through deterministic calculations rather than static neural weights. Requires the optional stack in `requirements-local.txt` and base weights on disk under `models/base/`.
 
 ### 5.3 Universal LLM Bridge
 `services/agent/llm_bridge.py` routes prompts to cloud or local providers:
