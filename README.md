@@ -25,7 +25,6 @@ Read [`AGENTS.md`](AGENTS.md) for instruction precedence and verified baseline s
 | 📘 [System Design Specification](docs/system.md) | Concrete implementation mechanics, mathematical formulas, JSON schemas & smart contracts |
 | 🏛️ [Architectural Plan & Roadmap](docs/architecture.md) | 6-layer topology, local SLM inference, dynamic vector routing & multi-agent suites |
 | 🛡️ [Security Architecture](docs/security.md) | 5 Invariants, threat modeling, Three-Tier Gate (owner-sent Tier 3) & decadal defense |
-| 📦 [Competition Submission Package](submission/README.md) | Technical documentation, deck, demo video, security self-assessment, sandbox execution evidence |
 
 | 📖 [Ubiquitous Domain Glossary](docs/GLOSSARY.md) | Standardized fintech, underwriting, and treasury terminology (CCC, DAB, DSCR, APR) |
 
