@@ -81,16 +81,18 @@ jobs:
             echo '```' >> "$GITHUB_STEP_SUMMARY"
             exit $code
           }
-      - name: Wait for the backend healthcheck
+      - name: Wait for containers to be healthy
         run: |
-          status="unknown"
-          for attempt in $(seq 1 36); do
-            status=$(docker inspect --format '{{.State.Health.Status}}' sme-finance-copilot-api 2>/dev/null || echo missing)
-            echo "attempt ${attempt}: backend=${status}"
-            if [ "$status" = "healthy" ]; then break; fi
-            sleep 5
+          for svc in sme-finance-copilot-api sme-finance-copilot-ui; do
+            status="unknown"
+            for attempt in $(seq 1 36); do
+              status=$(docker inspect --format '{{.State.Health.Status}}' "$svc" 2>/dev/null || echo missing)
+              echo "attempt ${attempt}: ${svc}=${status}"
+              if [ "$status" = "healthy" ]; then break; fi
+              sleep 5
+            done
+            if [ "$status" != "healthy" ]; then docker compose logs --no-color; exit 1; fi
           done
-          if [ "$status" != "healthy" ]; then docker compose logs --no-color backend; exit 1; fi
       - name: Probe auth, staging and encryption paths
         run: |
           curl -fsS http://localhost:8000/api/v1/health
@@ -117,7 +119,16 @@ jobs:
           test "$head" = "enc:v1:"
 
           # The containerized frontend must serve the dashboard.
-          test "$(curl -fsS -o /dev/null -w '%{http_code}' http://localhost:3000/)" = "200"
+          frontend_ready=0
+          for attempt in $(seq 1 15); do
+            code=$(curl -fsS -o /dev/null -w '%{http_code}' http://localhost:3000/ 2>/dev/null || echo "000")
+            if [ "$code" = "200" ]; then
+              frontend_ready=1
+              break
+            fi
+            sleep 2
+          done
+          test "$frontend_ready" = "1"
       - name: Container logs on failure
         if: failure()
         run: docker compose logs --no-color
