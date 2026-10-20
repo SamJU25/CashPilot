@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 import Link from 'next/link';
-import { ArrowUp, ArrowUpRight, Check, Copy, FileText, MessageSquare, PanelRightOpen, X } from 'lucide-react';
+import { ArrowUp, ArrowUpRight, Check, Copy, FileText, MessageSquare, PanelRightOpen, Square, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ErrorState, LoadingBlock } from '@/components/common/states';
 import { RunReceipt } from '@/components/copilot/run-receipt';
@@ -324,7 +324,39 @@ export default function AssistantPage() {
     (l) => (l.analysis ? true : null),
   );
   const [waiting, setWaiting] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [live, setLive] = useState(0);
+  const [pondered, setPondered] = useState(false);
+  const abortRef = useRef<AbortController | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
+
+  const stopGeneration = () => {
+    if (abortRef.current) {
+      abortRef.current.abort();
+      abortRef.current = null;
+    }
+    setWaiting(false);
+    setBusy(false);
+    setLive(0);
+    setPondered(false);
+  };
+
+  useEffect(() => {
+    return () => {
+      abortRef.current?.abort();
+    };
+  }, []);
+
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && (waiting || busy)) {
+        e.preventDefault();
+        stopGeneration();
+      }
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [waiting, busy]);
 
   // Tab-scoped on purpose: the chat survives page switches but not closing the tab, since it holds financial details.
   // Saving waits for the restore, otherwise the empty initial chat overwrites the saved one.
@@ -385,9 +417,6 @@ export default function AssistantPage() {
     const scrollH = el.scrollHeight;
     el.style.height = `${Math.min(Math.max(scrollH, 40), 220)}px`;
   }, [draft]);
-  const [busy, setBusy] = useState(false);
-  const [live, setLive] = useState(0);
-  const [pondered, setPondered] = useState(false);
   const pendingCount = intents.filter((i) => (intentStatus[i.id] ?? i.status) === 'STAGED_PENDING_HITL').length;
   // Permanently docked on desktop (xl+); on mobile/tablet it opens via overlay drawer.
   const [mobileInspectorOpen, setMobileInspectorOpen] = useState(false);
@@ -456,20 +485,25 @@ export default function AssistantPage() {
     setMessages((m) => appendCapped(m, { role: 'user', text: q }));
     setDraft('');
     setWaiting(true);
+    const controller = new AbortController();
+    abortRef.current = controller;
     const started = performance.now();
     const sentAt = Date.now();
     try {
       const defaultUrl = PROVIDERS.find((p) => p.id === provider)?.baseUrl ?? '';
-      const res = await api.chat({
-        message: q,
-        history,
-        alert_threshold_days: alertThresholdDays,
-        currency: homeCurrency,
-        language,
-        has_statement: hasData,
-        csv_content: hasData && source === 'sample' ? SAMPLE_CSV : undefined,
-        llm_config: llmConfig(provider, providerKeys, providerUrls, defaultUrl, providerModels?.[provider] || (provider === 'local' ? localModel : undefined)),
-      });
+      const res = await api.chat(
+        {
+          message: q,
+          history,
+          alert_threshold_days: alertThresholdDays,
+          currency: homeCurrency,
+          language,
+          has_statement: hasData,
+          csv_content: hasData && source === 'sample' ? SAMPLE_CSV : undefined,
+          llm_config: llmConfig(provider, providerKeys, providerUrls, defaultUrl, providerModels?.[provider] || (provider === 'local' ? localModel : undefined)),
+        },
+        controller.signal,
+      );
       const staged = res.staged_action;
       if (staged) {
         const intent = {
@@ -508,6 +542,9 @@ export default function AssistantPage() {
         }),
       );
     } catch (e) {
+      if ((e as Error)?.name === 'AbortError' || (e as DOMException)?.name === 'AbortError' || controller.signal.aborted) {
+        return;
+      }
       if (source === 'sample') {
         // Fallback to offline preview calculation if server is temporarily unreachable
         const fallback = answer(q, drawStatus, t, lang, noData);
@@ -518,6 +555,7 @@ export default function AssistantPage() {
       }
     } finally {
       setWaiting(false);
+      abortRef.current = null;
     }
   };
 
@@ -528,6 +566,7 @@ export default function AssistantPage() {
   };
 
   const newChat = () => {
+    stopGeneration();
     setMessages([]);
     setDraft('');
   };
@@ -803,15 +842,28 @@ export default function AssistantPage() {
                   <span className="hidden sm:inline-block text-[10.5px] text-muted-foreground/50 select-none">
                     Shift + Enter for new line
                   </span>
-                  <Button
-                    type="submit"
-                    size="icon"
-                    className="size-7 sm:size-7.5 shrink-0 rounded-lg sm:rounded-xl transition-all active:scale-95 disabled:opacity-40"
-                    disabled={!draft.trim() || busy || waiting}
-                    aria-label={t('as.send')}
-                  >
-                    <ArrowUp className="size-3.5 sm:size-4" />
-                  </Button>
+                  {waiting || busy ? (
+                    <Button
+                      type="button"
+                      size="icon"
+                      onClick={stopGeneration}
+                      className="size-7 sm:size-7.5 shrink-0 rounded-lg sm:rounded-xl bg-foreground text-background hover:bg-foreground/90 transition-all active:scale-95 shadow-xs"
+                      aria-label={t('as.stop')}
+                      title={`${t('as.stop')} (Esc)`}
+                    >
+                      <Square className="size-2.5 sm:size-3 fill-current" />
+                    </Button>
+                  ) : (
+                    <Button
+                      type="submit"
+                      size="icon"
+                      className="size-7 sm:size-7.5 shrink-0 rounded-lg sm:rounded-xl transition-all active:scale-95 disabled:opacity-40"
+                      disabled={!draft.trim()}
+                      aria-label={t('as.send')}
+                    >
+                      <ArrowUp className="size-3.5 sm:size-4" />
+                    </Button>
+                  )}
                 </div>
               </div>
             </div>

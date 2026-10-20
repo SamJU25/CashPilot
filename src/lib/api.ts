@@ -57,10 +57,28 @@ async function request<T>(path: string, init: RequestInit = {}, timeoutMs = TIME
   const token = await tenantToken();
   if (token) headers.set('X-Tenant-Token', token);
 
+  const timeoutSignal = AbortSignal.timeout(timeoutMs);
+  let signal: AbortSignal;
+  if (init.signal) {
+    if (typeof AbortSignal.any === 'function') {
+      signal = AbortSignal.any([init.signal, timeoutSignal]);
+    } else {
+      const controller = new AbortController();
+      init.signal.addEventListener('abort', () => controller.abort(init.signal?.reason), { once: true });
+      timeoutSignal.addEventListener('abort', () => controller.abort(timeoutSignal.reason), { once: true });
+      signal = controller.signal;
+    }
+  } else {
+    signal = timeoutSignal;
+  }
+
   let res: Response;
   try {
-    res = await fetch(API_URL + path, { ...init, headers, signal: AbortSignal.timeout(timeoutMs) });
+    res = await fetch(API_URL + path, { ...init, headers, signal });
   } catch (e) {
+    if (init.signal?.aborted || (e instanceof DOMException && e.name === 'AbortError')) {
+      throw e;
+    }
     if (e instanceof DOMException && e.name === 'TimeoutError') throw new ApiError(0, 'TIMEOUT', `The CashPilot server did not answer within ${timeoutMs / 1000} seconds.`);
     throw new ApiError(0, 'UNREACHABLE', 'The CashPilot server did not answer. Check that it is running.');
   }
@@ -145,8 +163,8 @@ export const api = {
     const r = await request<ReceivablesAgeing>('/api/v1/analyze/invoices', { method: 'POST', body: form([['file', file, file.name]]) });
     return { ...r, buckets: Object.fromEntries(Object.entries(r.buckets).map(([k, v]) => [BUCKET_KEYS[k] ?? k, v])) };
   },
-  chat: (body: ChatRequest) =>
-    request<ChatResponse>('/api/v1/agent/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...body, session_id: sessionId() }) }, CHAT_TIMEOUT_MS),
+  chat: (body: ChatRequest, signal?: AbortSignal) =>
+    request<ChatResponse>('/api/v1/agent/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...body, session_id: sessionId() }), signal }, CHAT_TIMEOUT_MS),
   actions: () => request<StagedActionIntent[]>('/api/v1/actions'),
   prepare: (id: string) => request<StagedActionIntent>(`/api/v1/actions/${encodeURIComponent(id)}/prepare`, { method: 'POST' }),
   reject: (id: string) => request<StagedActionIntent>(`/api/v1/actions/${encodeURIComponent(id)}/reject`, { method: 'POST' }),

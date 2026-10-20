@@ -425,6 +425,7 @@ export const en = {
   'as.placeholder': 'Ask about cash, funding or customers',
   'as.ask': 'Ask a question',
   'as.send': 'Send',
+  'as.stop': 'Stop',
   'as.mask': 'Account numbers and names are masked before anything reaches the AI model.',
   'as.a.cash': 'Cash goes below zero on {date}, when payroll of {payroll} leaves.\n\n- Shortfall: {short}\n- Collect the overdue Northwind Foods invoice: moves the date to {later}\n- Draw {draw} from your credit line: covers it fully\n\n{status}',
   'as.a.pending': 'That draw is drafted and waiting in Approvals.',
