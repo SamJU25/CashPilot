@@ -10,8 +10,6 @@ export type DataState<T> =
   | { status: 'error'; message: Key; retry: () => void }
   | { status: 'ready'; data: T };
 
-let warmed = false;
-
 /**
  * Four-state data access for every screen. `load` gives the sample company; `fromLive` picks the
  * backend's results for the owner's own files and returns null when that screen has nothing yet.
@@ -35,12 +33,7 @@ export function useData<T>(load: () => T, fromLive?: (live: LiveData) => T | nul
       const data = fromLive?.(live);
       return setState(data == null ? { status: 'empty' } : { status: 'ready', data });
     }
-    const delay = warmed ? 0 : 450;
-    const timer = window.setTimeout(() => {
-      warmed = true;
-      setState({ status: 'ready', data: load() });
-    }, delay);
-    return () => window.clearTimeout(timer);
+    setState({ status: 'ready', data: load() });
     // load and fromLive are selectors; live is the data they read.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ready, hasData, attempt, retry, source, live]);

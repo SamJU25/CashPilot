@@ -12,6 +12,7 @@ import { formatDate, formatMoney } from '@/lib/format';
 import { ApiError, api } from '@/lib/api';
 import { RECEIVABLES } from '@/lib/mock/demo';
 import { spring } from '@/lib/motion';
+import { cn } from '@/lib/utils';
 import { useData } from '@/lib/use-data';
 import { useWorkspace } from '@/lib/workspace';
 import type { Debtor } from '@/lib/types';
@@ -30,7 +31,13 @@ const BUCKET_COLORS: Record<string, string> = {
 };
 
 /** Sends an invoice export to /analyze/invoices; the ageing report replaces any earlier one. */
-function InvoiceUpload({ variant = 'default' }: { variant?: 'default' | 'outline' }) {
+function InvoiceUpload({
+  variant = 'default',
+  centered = false,
+}: {
+  variant?: 'default' | 'outline';
+  centered?: boolean;
+}) {
   const { t } = useT();
   const { update, setLive, source, hasData } = useWorkspace();
   const input = useRef<HTMLInputElement>(null);
@@ -54,7 +61,7 @@ function InvoiceUpload({ variant = 'default' }: { variant?: 'default' | 'outline
   };
 
   return (
-    <div>
+    <div className={cn('flex flex-col', centered && 'items-center text-center')}>
       <Button variant={variant} onClick={() => input.current?.click()} disabled={busy}>
         <Upload aria-hidden />
         {busy ? t('lv.uploading') : t('lv.invoices')}
@@ -101,10 +108,9 @@ export default function ReceivablesPage() {
     return (
       <>
         {header}
-        <EmptyState title={t('rec.emptyTitle')} body={t('rec.emptyBody')} action={null} />
-        <div className="mt-4 flex justify-center">
-          <InvoiceUpload />
-        </div>
+        <EmptyState title={t('rec.emptyTitle')} body={t('rec.emptyBody')} action={null}>
+          <InvoiceUpload centered />
+        </EmptyState>
       </>
     );
 

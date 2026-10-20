@@ -1,5 +1,6 @@
 'use client';
 
+import { memo } from 'react';
 import ReactMarkdown, { type Components, type Options } from 'react-markdown';
 import rehypeKatex from 'rehype-katex';
 import remarkGfm from 'remark-gfm';
@@ -43,7 +44,8 @@ const components: Components = {
 };
 
 /** Renders a model answer: bold, lists, tables and $$ display formulas. Raw HTML in the answer is never rendered. */
-export function AnswerMarkdown({ text }: { text: string }) {
+// Memoized: the chat re-renders on every keystroke, and re-parsing each answer's markdown and KaTeX made typing lag.
+export const AnswerMarkdown = memo(function AnswerMarkdown({ text }: { text: string }) {
   return (
     <div className="answer-md text-sm sm:text-[14.5px] leading-relaxed text-foreground [&_.katex-display]:my-2.5 [&_.katex-display]:overflow-x-auto [&_.katex-display]:rounded-lg [&_.katex-display]:bg-muted/50 [&_.katex-display]:px-3.5 [&_.katex-display]:py-2">
       <ReactMarkdown remarkPlugins={remarkPlugins} rehypePlugins={rehypePlugins} components={components}>
@@ -51,4 +53,4 @@ export function AnswerMarkdown({ text }: { text: string }) {
       </ReactMarkdown>
     </div>
   );
-}
+});

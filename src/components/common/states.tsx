@@ -12,11 +12,13 @@ export function EmptyState({
   body,
   className,
   action = { href: '/statements', label: 'common.add' },
+  children,
 }: {
   title: string;
   body: string;
   className?: string;
   action?: { href: string; label: Key } | null;
+  children?: React.ReactNode;
 }) {
   const { t } = useT();
   return (
@@ -28,6 +30,7 @@ export function EmptyState({
           <Link href={action.href}>{t(action.label)}</Link>
         </Button>
       )}
+      {children && <div className="mt-5">{children}</div>}
     </div>
   );
 }
