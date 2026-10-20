@@ -21,7 +21,7 @@ Every release must satisfy tests across four integrated stages:
    - Calling `/api/v1/underwrite` with Daily Average Balance (DAB) and NSF counts to verify pre-qualified loan options and True APR disclosure.
 4. **Three-Tier Security Gate Stage**:
    - Staging a Tier 2 proposal via `/api/v1/actions/stage` and verifying it queues without moving funds.
-   - Verifying that execution via `/api/v1/actions/execute` rejects unverified calls with HTTP 403 and succeeds only with biometric validation (`DEMO_FIDO2_PASSKEY_VALIDATED`).
+   - Verifying that no execution route exists and that `/api/v1/actions/{id}/prepare` records the owner's decision once (a second decision returns 409).
 
 ## 2. Testing Invariants
 

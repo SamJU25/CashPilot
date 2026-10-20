@@ -16,7 +16,7 @@ DSCR_QUESTION = "What is DSCR and why do lenders care about it?"
 @pytest.mark.parametrize(
     "text,expected",
     [
-        ("Why does the app need a passkey?", True),
+        ("Why can't the app send money for me?", True),
         ("how does invoice factoring work", True),
         ("Can you explain staging", True),
         ("Is a factor rate the same as APR", True),
@@ -32,7 +32,7 @@ def test_is_question(text, expected):
 @pytest.mark.parametrize(
     "message",
     [
-        "Why does the app need a passkey?",
+        "Why can't the app send money for me?",
         "How does drawing on the credit line work?",
         "Can you explain what staging a transfer means?",
     ],
@@ -60,7 +60,6 @@ def test_staging_is_refused_without_a_verified_identity():
     resp = run_copilot_supervisor(AgentChatRequest(message="Stage credit line application for $10,000"))
     assert resp.intent_detected == "ACTION_STAGING"
     assert resp.staged_action is None
-    assert resp.requires_biometric_hitl is False
     assert staging_ledger.list_intents() == []
 
 
@@ -101,10 +100,10 @@ def test_concept_answer_with_invented_figure_falls_back_to_card():
 
 
 def test_invoice_verification_never_uses_sample_invoice_values():
-    reply = run_copilot_supervisor(AgentChatRequest(message="Why does the app need a passkey?")).reply
+    reply = run_copilot_supervisor(AgentChatRequest(message="Why can't the app send money for me?")).reply
     assert "Canonical Cryptographic Hash" not in reply
     assert "UNREGISTERED" not in reply
-    assert "passkey" in reply.lower()
+    assert "passkey" not in reply.lower()
 
 
 def test_invoice_verification_without_details_asks_for_them():
@@ -134,9 +133,9 @@ def test_misrouted_concept_question_omits_unrelated_calculation_steps():
     assert "Cash Drag" not in reply
 
 
-def test_passkey_question_omits_invoice_verification_steps():
-    reply = run_copilot_supervisor(AgentChatRequest(message="Why does the app need a passkey?")).reply
-    assert "passkey" in reply.lower()
+def test_money_movement_question_omits_invoice_verification_steps():
+    reply = run_copilot_supervisor(AgentChatRequest(message="Why can't the app send money for me?")).reply
+    assert "passkey" not in reply.lower()
     assert "verify an invoice" not in reply
 
 

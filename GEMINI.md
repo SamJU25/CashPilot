@@ -109,7 +109,7 @@ Every autonomous agent action must pass through the permission gatekeeper before
 
 * **Tier 1 (Observation — Autonomous)**: Read-only data ingestion (CSV parsing, bank statement OCR, ledger queries). Safe for unsupervised agent execution.
 * **Tier 2 (Staging — Queue Only)**: Proposal preparation (drafting credit applications, generating invoice factoring offers, cash transfer staging). Placed in an immutable staging ledger; no money moves.
-* **Tier 3 (Execution — Strict HITL 2FA)**: Irreversible financial transactions (drawing credit lines, wire transfers, digital contract signing). **STRICT REQUIREMENT**: System must halt and require explicit Human-in-the-Loop biometric/OTP verification.
+* **Tier 3 (Owner-Sent)**: Irreversible financial transactions (drawing credit lines, wire transfers, digital contract signing). **STRICT REQUIREMENT**: The system never executes them; it drafts the request and the owner sends it themselves.
 
 ---
 

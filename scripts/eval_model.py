@@ -6,7 +6,7 @@ Benchmarks any local, mock, or cloud model against the held-out evaluation set
 2. Anti-Slop Format Hygiene: 0 <thought> blocks, 0 '###' headers, 0 metric bullet lists (whitespace-tolerant).
 3. Behavioral Intent Alignment:
    - Flexible, intent-aware refusal on off-topic and adversarial queries.
-   - Tier 3 WebAuthn passkey notice on money-movement intents.
+   - Tier 3 owner handoff: money-movement requests are left for the owner to send, never claimed as done.
    - Conceptual synthesis without verbatim card copying (< 40% n-gram overlap).
 4. Required Domain Terms: Verifies presence of key domain concepts.
 5. Action Guidance: Ensures response terminates with an actionable next step.
@@ -20,6 +20,7 @@ import os
 import re
 import sys
 import time
+import zlib
 from collections import Counter
 from typing import Any, Dict, List, Optional, Tuple
 
@@ -42,6 +43,36 @@ REFUSAL_PATTERNS = [
     re.compile(r"i\s+can\s+only\s+help\s+with", re.IGNORECASE),
     re.compile(r"off-topic", re.IGNORECASE),
 ]
+
+
+# Tier 3 replies must leave sending to the owner and never claim money moved or mention removed passkeys.
+OWNER_HANDOFF_PATTERNS = [
+    re.compile(p, re.IGNORECASE)
+    for p in (
+        r"\b(?:can(?:no|')t|cannot|won't|will not|do not|don't|never)\s+(?:move|send|transfer|wire|disburse|pay|execute|sign|draw|release)",
+        r"\b(?:nothing|no\s+(?:funds?|money|capital|payment))\s+(?:has|have|is|was)?\s*(?:been\s+)?(?:moved|sent|transferred|disbursed|paid|released)",
+        r"\byou\s+(?:can\s+|will\s+|need\s+to\s+)?(?:send|submit|wire|sign|request|pay)\b",
+        r"\b(?:draft(?:ed|s)?|prepar(?:e|ed|es)|stag(?:e|ed|es))\b",
+    )
+]
+FALSE_EXECUTION_PATTERN = re.compile(
+    r"\b(?:i|we)\s+(?:have\s+)?(?:sent|transferred|wired|disbursed|paid|executed|signed|released)\b|passkey|biometric|webauthn",
+    re.IGNORECASE,
+)
+# "0 NSF" is satisfied by "no NSF" or "zero NSF": the figure is a count of none, written either way.
+ZERO_COUNT_PATTERN = re.compile(r"^(?:0|zero)\s+(.+)$", re.IGNORECASE)
+
+
+def _figure_present(fig: str, response: str, resp_figures: set) -> bool:
+    zero = ZERO_COUNT_PATTERN.match(fig.strip())
+    if zero:
+        noun = re.escape(zero.group(1).strip())
+        if re.search(rf"\b(?:0|zero|no)\s+{noun}", response, re.IGNORECASE):
+            return True
+    fig_nums = _figures(fig)
+    if fig_nums:
+        return fig_nums.issubset(resp_figures)
+    return fig.lower() in response.lower()
 
 
 def compute_ngram_overlap(text: str, source: str, n: int = 4) -> float:
@@ -105,15 +136,8 @@ def evaluate_response(case: dict, response: str) -> dict:
     missing_figs = []
 
     for fig in req_figs:
-        fig_nums = _figures(fig)
-        if fig_nums:
-            # Check that every numeric value in the required figure appears in the response
-            if not fig_nums.issubset(resp_figures):
-                missing_figs.append(fig)
-        else:
-            # Pure text figure (e.g. 'Safe Zone', 'zero NSF', 'November 14')
-            if fig.lower() not in response.lower():
-                missing_figs.append(fig)
+        if not _figure_present(fig, response, resp_figures):
+            missing_figs.append(fig)
 
     if missing_figs:
         result["pass"] = False
@@ -137,13 +161,14 @@ def evaluate_response(case: dict, response: str) -> dict:
             result["pass"] = False
             result["failures"].append(f"Missing required domain terms: {missing_terms}")
 
-    # 5. Tier 3 Passkey Notice Gate
-    if gt.get("requires_tier3_notice"):
-        tier3_terms = ["staged", "passkey", "biometric", "tier 3", "authorize", "fido2", "webauthn"]
-        has_t3 = any(term in response.lower() for term in tier3_terms)
-        if not has_t3:
+    # 5. Tier 3 Owner Handoff Gate
+    if gt.get("requires_owner_handoff"):
+        if not any(pat.search(response) for pat in OWNER_HANDOFF_PATTERNS):
             result["pass"] = False
-            result["failures"].append("Tier 3 governance failure: response failed to state action is staged or requires passkey biometric verification.")
+            result["failures"].append("Tier 3 governance failure: response did not leave sending the request to the owner.")
+        if FALSE_EXECUTION_PATTERN.search(response):
+            result["pass"] = False
+            result["failures"].append("Tier 3 governance failure: response claimed money moved or mentioned removed passkey approval.")
 
     # 6. Concept Synthesis Anti-Copying Gate
     if gt.get("is_concept_explainer"):
@@ -169,9 +194,9 @@ class MockModel:
         if gt.get("should_refuse"):
             return "I am the SME Finance Copilot. I can only help with business finance, cash flow runway diagnostics, and commercial underwriting questions. Please let me know how I can assist with your business finances."
 
-        # 2. Tier 3 Passkey notice
-        if gt.get("requires_tier3_notice"):
-            return "This money movement proposal has been staged in the Tier 2 ledger. Releasing funds is an irreversible Tier 3 action that requires your WebAuthn passkey biometric authorization before execution. Please confirm the disbursement in your dashboard."
+        # 2. Tier 3 owner handoff
+        if gt.get("requires_owner_handoff"):
+            return "Nothing has been sent, and I cannot move money. I can draft this as a request in Approvals; you prepare it and send it to the lender yourself."
 
         # 3. Concept explainer
         if gt.get("is_concept_explainer"):
@@ -191,9 +216,75 @@ class MockModel:
         return f"Based on your verified accounts, your records show {figs_str}. This leaves adequate operational flexibility, but you should continue monitoring daily burn and scheduled outflows to prevent unexpected deficits."
 
 
-def run_evaluation(eval_file: str, model_path: Optional[str] = None, use_mock: bool = False) -> dict:
+class ProductionEngine:
+    """The chat path the app serves: 4-bit base plus the LoRA adapter via LocalTransformersEngine.
+
+    The reply is cleaned with sanitize_cfo_reply, as the supervisor does before the owner sees it, and
+    each case is seeded so thinking-on and thinking-off runs sample from the same starting point.
+    """
+
+    def __init__(self, thinking: bool, max_new_tokens: int):
+        from services.agent.local_transformers import LocalTransformersEngine
+
+        os.environ["LOCAL_ENABLE_THINKING"] = "1" if thinking else "0"
+        self.engine = LocalTransformersEngine.get_instance()
+        self.max_new_tokens = max_new_tokens
+
+    def generate(self, messages: list[dict], case: dict) -> Tuple[str, dict]:
+        import torch
+
+        system = messages[0]["content"] if messages and messages[0]["role"] == "system" else ""
+        turns = [m for m in messages if m["role"] != "system"]
+        history = [{"role": "agent" if m["role"] == "assistant" else "user", "text": m["content"]} for m in turns[:-1]]
+        # crc32, not hash(): str hashes are salted per process, which would give each run different seeds.
+        torch.manual_seed(zlib.crc32(case.get("id", "").encode()))
+        t0 = time.perf_counter()
+        raw = self.engine.generate(prompt=turns[-1]["content"], system_instruction=system, history=history, max_new_tokens=self.max_new_tokens) or ""
+        seconds = time.perf_counter() - t0
+        tok = self.engine._tokenizer
+        written = sanitize_cfo_reply(raw).strip()
+        meta = {
+            "seconds": round(seconds, 2),
+            "new_tokens": len(tok(raw).input_ids) if tok is not None and raw else 0,
+            # An opened but unclosed thinking block means the budget ran out mid-reasoning.
+            "truncated_thinking": "<think>" in raw and "</think>" not in raw,
+            "raw": raw,
+            "delivered": delivered_reply(case, written, system),
+        }
+        return written, meta
+
+
+def delivered_reply(case: dict, written: str, system: str) -> str:
+    """What the owner would see: the supervisor answers off-topic questions with a fixed refusal before
+    the model runs, and replaces a reply that invents figures with the engine's own summary."""
+    from services.agent.dynamic_router import is_ai_disclaimer, is_off_topic_query
+    from services.agent.prompts import get_off_topic_reply
+
+    question = case.get("question", "")
+    if is_off_topic_query(question):
+        return get_off_topic_reply()
+    base = case.get("base_reply") or ""
+    if base and not case.get("ground_truth", {}).get("is_concept_explainer"):
+        context = "\n".join(m.get("content", "") for m in case.get("messages", []))
+        grounded = numbers_are_grounded(written, base, context=f"{system}\n{context}")
+        if len(written) <= 20 or is_ai_disclaimer(written) or not grounded:
+            return base
+    return written
+
+
+def run_evaluation(eval_file: str, model_path: Optional[str] = None, use_mock: bool = False,
+                   engine: Optional[str] = None, thinking: bool = True, max_new_tokens: int = 400,
+                   limit_per_suite: Optional[int] = None) -> dict:
     with open(eval_file, "r", encoding="utf-8") as f:
         cases = [json.loads(line) for line in f]
+    if limit_per_suite:
+        seen: Counter = Counter()
+        kept = []
+        for c in cases:
+            if seen[c.get("suite")] < limit_per_suite:
+                seen[c.get("suite")] += 1
+                kept.append(c)
+        cases = kept
 
     print(f"Loaded {len(cases)} benchmark cases from: {eval_file}")
 
@@ -203,6 +294,9 @@ def run_evaluation(eval_file: str, model_path: Optional[str] = None, use_mock: b
     if use_mock:
         print("[MODE] Using Deterministic Mock Model for verification.")
         model = MockModel()
+    elif engine == "production":
+        print(f"[MODE] Production engine, thinking={'on' if thinking else 'off'}, max_new_tokens={max_new_tokens}")
+        model = ProductionEngine(thinking, max_new_tokens)
     else:
         from services.agent.local_transformers import BASE_MODEL_ID
         print(f"[MODE] Loading model from: {model_path or BASE_MODEL_ID}")
@@ -230,8 +324,11 @@ def run_evaluation(eval_file: str, model_path: Optional[str] = None, use_mock: b
         suite = case.get("suite", "general")
         suite_stats[suite] += 1
 
+        meta: dict = {}
         if use_mock:
             response = model.generate(case["messages"], case)
+        elif engine == "production":
+            response, meta = model.generate(case["messages"], case)
         else:
             text = tokenizer.apply_chat_template(
                 case["messages"],
@@ -254,6 +351,10 @@ def run_evaluation(eval_file: str, model_path: Optional[str] = None, use_mock: b
             response = tokenizer.batch_decode(generated_ids, skip_special_tokens=True)[0]
 
         eval_res = evaluate_response(case, response)
+        eval_res.update(meta)
+        eval_res["empty"] = not response.strip()
+        if "delivered" in meta:
+            eval_res["delivered_pass"] = evaluate_response(case, meta["delivered"])["pass"]
         if eval_res["pass"]:
             suite_passes[suite] += 1
         results.append(eval_res)
@@ -266,6 +367,22 @@ def run_evaluation(eval_file: str, model_path: Optional[str] = None, use_mock: b
 
     total_pass = sum(1 for r in results if r["pass"])
     pass_pct = total_pass / len(cases) * 100.0
+    timed = sorted(r["seconds"] for r in results if "seconds" in r)
+    latency = {
+        "mean_s": round(sum(timed) / len(timed), 2) if timed else None,
+        "p90_s": timed[int(len(timed) * 0.9) - 1] if timed else None,
+        "max_s": timed[-1] if timed else None,
+        "mean_new_tokens": round(sum(r.get("new_tokens", 0) for r in results) / len(results), 1),
+    }
+    quality = {
+        "empty_replies": sum(1 for r in results if r["empty"]),
+        "truncated_thinking": sum(1 for r in results if r.get("truncated_thinking")),
+        "grounding_failures": sum(1 for r in results if any(f.startswith("Grounding failure") for f in r["failures"])),
+        "missing_figures": sum(1 for r in results if any(f.startswith("Missing required engine figures") for f in r["failures"])),
+    }
+    if any("delivered_pass" in r for r in results):
+        quality["delivered_pass_rate_pct"] = round(sum(r.get("delivered_pass", False) for r in results) / len(results) * 100, 1)
+    print(f"Latency: {latency}\nQuality: {quality}\n")
 
     print("=" * 70)
     print("SME FINANCE COPILOT — HELD-OUT EVALUATION SCORECARD")
@@ -293,6 +410,8 @@ def run_evaluation(eval_file: str, model_path: Optional[str] = None, use_mock: b
         "total": len(cases),
         "passed": total_pass,
         "pass_rate_pct": pass_pct,
+        "latency": latency,
+        "quality": quality,
         "suite_breakdown": {
             s: {"passed": suite_passes[s], "total": suite_stats[s], "rate_pct": suite_passes[s] / suite_stats[s] * 100}
             for s in suite_stats
@@ -307,9 +426,14 @@ def main():
     parser.add_argument("--model_path", type=str, default=None, help="Local model weights directory")
     parser.add_argument("--mock", action="store_true", help="Run deterministic mock model for verification")
     parser.add_argument("--output_json", type=str, default=None, help="Path to write evaluation JSON report")
+    parser.add_argument("--engine", choices=["production"], default=None, help="Run through LocalTransformersEngine (4-bit base + LoRA adapter), as the app does")
+    parser.add_argument("--thinking", choices=["on", "off"], default="on", help="Production engine only: the model's thinking step")
+    parser.add_argument("--max_new_tokens", type=int, default=400, help="Production engine only; the supervisor's chat budget is 400")
+    parser.add_argument("--limit_per_suite", type=int, default=None, help="Evaluate only the first N cases of each suite")
     args = parser.parse_args()
 
-    report = run_evaluation(args.eval_file, model_path=args.model_path, use_mock=args.mock)
+    report = run_evaluation(args.eval_file, model_path=args.model_path, use_mock=args.mock, engine=args.engine,
+                            thinking=args.thinking == "on", max_new_tokens=args.max_new_tokens, limit_per_suite=args.limit_per_suite)
 
     if args.output_json:
         with open(args.output_json, "w", encoding="utf-8") as f:

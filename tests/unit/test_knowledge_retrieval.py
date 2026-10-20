@@ -22,7 +22,7 @@ def test_load_cards_strips_metadata():
         ("What is DSCR and why do lenders care about it?", "Debt Service Coverage Ratio (DSCR)"),
         ("How does invoice factoring work?", "Invoice Factoring"),
         ("Explain the cash conversion cycle", "Cash Conversion Cycle (CCC)"),
-        ("Why does the app ask for a passkey before a transfer?", "Tier 3: Passkey-Approved Execution"),
+        ("Who sends a transfer the copilot drafts for me?", "Tier 3: Owner-Sent Actions"),
         ("Is a factor rate the same as an interest rate?", "Factor Rate vs APR"),
         ("What does LTV to CAC tell me about my marketing spend?", "LTV to CAC Ratio"),
     ],
@@ -80,3 +80,34 @@ def test_advisory_prompt_includes_reference_cards():
 
     assert "Reference notes" in captured.get("system", "")
     assert "Cash Runway" in captured["system"]
+
+
+@pytest.mark.parametrize(
+    "acronym,expected_title",
+    [
+        ("DIO", "Days Inventory Outstanding (DIO)"),
+        ("WCR", "Working Capital Requirement (WCR)"),
+        ("FCCR", "Fixed Charge Coverage Ratio (FCCR)"),
+        ("CCC", "Cash Conversion Cycle (CCC)"),
+        ("DSO", "Days Sales Outstanding (DSO)"),
+        ("EVA", "Economic Value Added (EVA)"),
+        ("WACC", "Weighted Average Cost of Capital (WACC)"),
+    ],
+)
+def test_acronym_exact_match_boost(acronym, expected_title):
+    cards = retrieve_cards(acronym)
+    assert len(cards) >= 1
+    assert cards[0].title == expected_title
+
+
+def test_multiturn_contextual_retrieval():
+    turn2_query = "What if our business falls below that threshold?"
+    # Without history, anaphoric query misses the DSCR card
+    cards_no_history = retrieve_cards(turn2_query)
+    assert not any("DSCR" in c.title for c in cards_no_history)
+
+    # With history mentioning DSCR, contextual resolution accurately retrieves DSCR as #1
+    history = [{"role": "user", "text": "What is the DSCR benchmark for commercial loans?"}]
+    cards_with_history = retrieve_cards(turn2_query, history=history)
+    assert len(cards_with_history) >= 1
+    assert "Debt Service Coverage Ratio (DSCR)" in cards_with_history[0].title

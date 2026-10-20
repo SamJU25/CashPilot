@@ -24,7 +24,7 @@ The SME Finance Copilot is an autonomous financial participant designed to solve
 - **Client Runtime**: Next.js 14 App Router with React Server Components (RSC).
 - **Dual-Device Ergonomics**:
   - **Desktop Viewport (Primary Workstation)**: Designed for finance managers and business owners to inspect multi-month bank statements, multi-column accounts receivable tables, 90-day cash trajectories, and financing options.
-  - **Mobile Viewport & PWA (Alerts & 2FA)**: Installable directly to mobile home screens ("Add to Home Screen") with zero store friction. Handles real-time push alerts and 1-touch biometric confirmations (FaceID/TouchID/Windows Hello via WebAuthn).
+  - **Mobile Viewport & PWA (Alerts)**: Installable directly to mobile home screens ("Add to Home Screen") with zero store friction. Handles real-time push alerts and reviewing drafted requests.
 
 ### 1.2 Form Factor Decision & Trade-Off Matrix
 
@@ -32,7 +32,6 @@ The SME Finance Copilot is an autonomous financial participant designed to solve
 |---|---|---|---|
 | **SME Adoption** | **Immediate**: Zero install barrier; runs on existing office PCs & phones. | High friction: Business owners resist installing 150MB `.exe` files. | Medium: Unusable for multi-column spreadsheets and CSV data imports. |
 | **Security Patching** | **Instant (0 sec)**: Fix deployed to server protects 100% of users immediately. | Vulnerable: Users delay downloading updates for months. | Slow: 3–7 day App Store review cycles delay critical security fixes. |
-| **Biometric Support** | **Native**: In-browser WebAuthn FIDO2 triggers Windows Hello, TouchID, and FaceID. | Requires complex native bridges and expensive OS code-signing certificates. | Native BiometricPrompt / FaceID. |
 | **Attack Surface** | **Minimized**: Code & keys stay on server; client receives view state only. | High: Local binaries easily decompiled by reverse engineering tools (REA/Ghidra). | Medium: Local APK/IPA files can be hooked with Frida. |
 
 ---
@@ -158,7 +157,7 @@ All UI components implement 4 strict states:
 ### 4.1 Application Server Architecture
 - **Runtime**: Python 3.12+ with FastAPI (Asynchronous ASGI).
 - **Validation**: Pydantic v2 (Rust-compiled) with `ConfigDict(extra="forbid", strict=True)`.
-- **Tenant Isolation**: Action and passkey routes require a signed HMAC tenant token (`X-Tenant-Token` or `Authorization: Bearer`) resolved by `require_tenant_identity`; the client-asserted `X-Tenant-ID` header is never trusted for these routes. Tier 1 analysis/chat routes still accept the header for scoping read-only requests.
+- **Tenant Isolation**: Action routes require a signed HMAC tenant token (`X-Tenant-Token` or `Authorization: Bearer`) resolved by `require_tenant_identity`; the client-asserted `X-Tenant-ID` header is never trusted for these routes. Tier 1 analysis/chat routes still accept the header for scoping read-only requests.
 
 ### 4.2 Multi-Format Statement Ingestion
 Ingests both bank CSVs and PDF statements (`services/ingestion/statement_parser.py`, `pdf_parser.py`, `csv_parser.py`):
@@ -196,9 +195,8 @@ class ActionIntent(BaseModel):
     action_type: Literal["FACTOR_INVOICE", "DRAW_CREDIT_LINE", "TRANSFER"]
     amount_cents: int = Field(gt=0)
     target_identifier: str
-    status: Literal["STAGED_PENDING_HITL", "EXECUTED", "REJECTED"]
+    status: Literal["STAGED_PENDING_HITL", "PREPARED", "REJECTED"]
     staged_at: datetime
-    biometric_signature: Optional[str] = None
 ```
 
 ### 4.5 Verified REST API Endpoints
@@ -207,7 +205,8 @@ class ActionIntent(BaseModel):
 - `POST /api/v1/underwrite`: Evaluates SME credit profile and produces financing offers.
 - `POST /api/v1/auth/token`: Issues a signed tenant token; requires `X-Enrollment-Key` matching `TENANT_ENROLLMENT_KEYS` (preferred, per tenant) or a `TENANT_ENROLLMENT_KEY` bound with `TENANT_ENROLLMENT_TENANT_ID`. An unbound single key is fail-closed unless `TENANT_ENROLLMENT_ALLOW_ANY_TENANT=1` is set for local development.
 - `POST /api/v1/actions/stage`: Stages a proposed financial action for the authenticated tenant (Tier 2).
-- `POST /api/v1/actions/{id}/execute`: Executes a Tier 3 action via WebAuthn passkey assertion; Tier 2 proposals return 409.
+- `POST /api/v1/actions/{id}/prepare`: Records that the owner took the drafted request to send it themselves; nothing is sent. A decided intent returns 409.
+- `POST /api/v1/actions/{id}/reject`: Dismisses a drafted action. There is no execution route.
 - `POST /api/v1/agent/chat`: Dynamic neural CFO chat grounded in pre-calculated context. Anonymous callers get read-only analysis; staging a proposal requires a signed tenant token, and the staged proposal always belongs to the token's tenant.
 - `POST /api/v1/agent/test-connection`: Tests connectivity and latency for selected LLM provider; requires a signed tenant token.
 - `POST /api/v1/agent/fetch-models`: Discovers active models from local or cloud providers; requires a signed tenant token.
@@ -228,7 +227,7 @@ Intent classification uses FastEmbed ONNX (`BAAI/bge-small-en-v1.5`) vector embe
 
 ### 5.2 Local SLM Inference Engine
 `LocalTransformersEngine` (`services/agent/local_transformers.py`) provides local, air-gapped inference via PyTorch CUDA:
-- **Flagship Model**: `models/sme-finance-lora` (Qwen3-4B-Instruct-2507 base + LoRA adapter) for deep financial analysis and tool calling. Requires the optional stack in `requirements-local.txt` and the base weights on disk under `models/base/`.
+- **Flagship Model**: `models/sme-finance-lora` (CashPilot-2B: `openbmb/MiniCPM5-2B` base + LoRA adapter) for deep financial analysis and tool calling. Requires the optional stack in `requirements-local.txt` and the base weights on disk under `models/base/`.
 
 ### 5.3 Universal LLM Bridge
 `services/agent/llm_bridge.py` routes prompts to cloud or local providers:

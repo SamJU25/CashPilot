@@ -62,6 +62,7 @@ TEAM_CHEAT_SHEET*
 
 # Local Model Weights, Checkpoints & Archives
 models/
+!models/models_config.json
 checkpoint-*/
 *.zip
 *.tar
@@ -83,3 +84,6 @@ dataset/*
 
 
 
+
+# Next.js local env files hold the dev enrollment key
+.env*.local

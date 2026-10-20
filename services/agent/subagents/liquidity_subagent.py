@@ -106,13 +106,11 @@ class LiquiditySubagent:
                 return CopilotResponse(
                     reply=enrich_fn(base_reply, prompt_type="diagnostic"),
                     intent_detected="CASH_DIAGNOSTIC",
-                    requires_biometric_hitl=False,
                 )
 
             return CopilotResponse(
                 reply=enrich_fn(get_missing_param_guidance("WCR"), prompt_type="concept", calculation="WCR"),
                 intent_detected="CASH_DIAGNOSTIC",
-                requires_biometric_hitl=False,
             )
 
         # 2. Operating Cash Flow (OCF) Ratio
@@ -134,13 +132,11 @@ class LiquiditySubagent:
                 return CopilotResponse(
                     reply=enrich_fn(base_reply, prompt_type="diagnostic"),
                     intent_detected="CASH_DIAGNOSTIC",
-                    requires_biometric_hitl=False,
                 )
 
             return CopilotResponse(
                 reply=enrich_fn(get_missing_param_guidance("OCF_RATIO"), prompt_type="concept", calculation="OCF_RATIO"),
                 intent_detected="CASH_DIAGNOSTIC",
-                requires_biometric_hitl=False,
             )
 
         # 3. Defensive Interval Ratio (DIR)
@@ -185,13 +181,11 @@ class LiquiditySubagent:
                     reply=enrich_fn(base_reply, prompt_type="diagnostic"),
                     intent_detected="CASH_DIAGNOSTIC",
                     metrics=metrics,
-                    requires_biometric_hitl=False,
                 )
 
             return CopilotResponse(
                 reply=enrich_fn(get_missing_param_guidance("DEFENSIVE_INTERVAL"), prompt_type="concept", calculation="DEFENSIVE_INTERVAL"),
                 intent_detected="CASH_DIAGNOSTIC",
-                requires_biometric_hitl=False,
             )
 
         # 4. Cash Conversion Cycle (CCC)
@@ -213,7 +207,6 @@ class LiquiditySubagent:
             return CopilotResponse(
                 reply=enrich_fn(base_reply, prompt_type="diagnostic"),
                 intent_detected="CASH_DIAGNOSTIC",
-                requires_biometric_hitl=False,
             )
 
         # 5. Current Ratio
@@ -242,13 +235,11 @@ class LiquiditySubagent:
                 return CopilotResponse(
                     reply=enrich_fn(base_reply, prompt_type="diagnostic"),
                     intent_detected="CASH_DIAGNOSTIC",
-                    requires_biometric_hitl=False,
                 )
 
             return CopilotResponse(
                 reply=enrich_fn(get_missing_param_guidance("CURRENT_RATIO"), prompt_type="concept", calculation="CURRENT_RATIO"),
                 intent_detected="CASH_DIAGNOSTIC",
-                requires_biometric_hitl=False,
             )
 
         # 6. Quick Ratio (Acid Test)
@@ -286,13 +277,11 @@ class LiquiditySubagent:
                 return CopilotResponse(
                     reply=enrich_fn(base_reply, prompt_type="diagnostic"),
                     intent_detected="CASH_DIAGNOSTIC",
-                    requires_biometric_hitl=False,
                 )
 
             return CopilotResponse(
                 reply=enrich_fn(get_missing_param_guidance("QUICK_RATIO"), prompt_type="concept", calculation="QUICK_RATIO"),
                 intent_detected="CASH_DIAGNOSTIC",
-                requires_biometric_hitl=False,
             )
 
         # 7. Trade Credit Early Payment Discount
@@ -339,13 +328,11 @@ class LiquiditySubagent:
                 return CopilotResponse(
                     reply=enrich_fn(base_reply, prompt_type="diagnostic"),
                     intent_detected="CASH_DIAGNOSTIC",
-                    requires_biometric_hitl=False,
                 )
 
             return CopilotResponse(
                 reply=enrich_fn(get_missing_param_guidance("TRADE_CREDIT"), prompt_type="concept", calculation="TRADE_CREDIT"),
                 intent_detected="CASH_DIAGNOSTIC",
-                requires_biometric_hitl=False,
             )
 
         # 8. Treasury Cash Drag & Idle Yield Loss
@@ -389,13 +376,11 @@ class LiquiditySubagent:
                 return CopilotResponse(
                     reply=enrich_fn(base_reply, prompt_type="diagnostic"),
                     intent_detected="CASH_DIAGNOSTIC",
-                    requires_biometric_hitl=False,
                 )
 
             return CopilotResponse(
                 reply=enrich_fn(get_missing_param_guidance("CASH_DRAG"), prompt_type="concept", calculation="CASH_DRAG"),
                 intent_detected="CASH_DIAGNOSTIC",
-                requires_biometric_hitl=False,
             )
 
         # 9. Free Cash Flow (FCFF & FCFE)
@@ -444,13 +429,11 @@ class LiquiditySubagent:
                 return CopilotResponse(
                     reply=enrich_fn(base_reply, prompt_type="diagnostic"),
                     intent_detected="CASH_DIAGNOSTIC",
-                    requires_biometric_hitl=False,
                 )
 
             return CopilotResponse(
                 reply=enrich_fn(get_missing_param_guidance("FCFF"), prompt_type="concept", calculation="FCFF"),
                 intent_detected="CASH_DIAGNOSTIC",
-                requires_biometric_hitl=False,
             )
 
         # 10. Multi-Currency Conversion
@@ -473,7 +456,7 @@ class LiquiditySubagent:
                     )
                 except ValueError as exc:
                     # No live rate and no offline rate for this currency: ask for one instead of guessing.
-                    return CopilotResponse(reply=str(exc), intent_detected="CASH_DIAGNOSTIC", requires_biometric_hitl=False)
+                    return CopilotResponse(reply=str(exc), intent_detected="CASH_DIAGNOSTIC")
                 base_reply = (
                     f"### Multi-Currency Conversion Audit\n\n"
                     f"- **Original Amount**: {res['from_symbol']}{float(res['original_amount']):,.2f} ({res['from_currency_name']})\n"
@@ -487,13 +470,11 @@ class LiquiditySubagent:
                 return CopilotResponse(
                     reply=enrich_fn(base_reply, prompt_type="diagnostic"),
                     intent_detected="CASH_DIAGNOSTIC",
-                    requires_biometric_hitl=False,
                 )
 
             return CopilotResponse(
                 reply=enrich_fn(get_missing_param_guidance("CURRENCY_CONVERSION"), prompt_type="concept", calculation="CURRENCY_CONVERSION"),
                 intent_detected="CASH_DIAGNOSTIC",
-                requires_biometric_hitl=False,
             )
 
         # 11. Foreign Exchange (FX) Exposure & Value-at-Risk
@@ -518,7 +499,7 @@ class LiquiditySubagent:
                     )
                 except ValueError as exc:
                     # No live rate and no offline rate for this currency: ask for one instead of guessing.
-                    return CopilotResponse(reply=str(exc), intent_detected="CASH_DIAGNOSTIC", requires_biometric_hitl=False)
+                    return CopilotResponse(reply=str(exc), intent_detected="CASH_DIAGNOSTIC")
                 hedge_note = "Forward contract hedge recommended." if res.get("recommend_forward_contract_hedge") else "Exposure within unhedged operating buffer."
                 base_reply = (
                     f"### Foreign Exchange (FX) Exposure & VaR Audit\n\n"
@@ -533,13 +514,11 @@ class LiquiditySubagent:
                 return CopilotResponse(
                     reply=enrich_fn(base_reply, prompt_type="diagnostic"),
                     intent_detected="CASH_DIAGNOSTIC",
-                    requires_biometric_hitl=False,
                 )
 
             return CopilotResponse(
                 reply=enrich_fn(get_missing_param_guidance("FX_EXPOSURE"), prompt_type="concept", calculation="FX_EXPOSURE"),
                 intent_detected="CASH_DIAGNOSTIC",
-                requires_biometric_hitl=False,
             )
 
         # Bridge financing plan for the projected shortfall
@@ -548,7 +527,6 @@ class LiquiditySubagent:
                 return CopilotResponse(
                     reply=get_missing_statement_guidance("diagnostic"),
                     intent_detected="CASH_DIAGNOSTIC",
-                    requires_biometric_hitl=False,
                 )
             invoices_csv = None
             if request.session_id:
@@ -571,7 +549,7 @@ class LiquiditySubagent:
             )
             if res["staged"]:
                 ids = ", ".join(s["intent_id"] for s in res["staged"])
-                staged_line = f"- **Staged For Approval**: {len(res['staged'])} proposal(s) awaiting passkey approval ({ids})\n"
+                staged_line = f"- **Staged For Approval**: {len(res['staged'])} proposal(s) waiting for your review in Approvals ({ids})\n"
             elif not allow_staging:
                 staged_line = (
                     "- **Staged For Approval**: None. Staging requires an authenticated tenant token "
@@ -595,13 +573,12 @@ class LiquiditySubagent:
                 top = max(res["staged"], key=lambda s: s["amount_cents"])
                 staged_action = AgentActionProposal(
                     intent_id=top["intent_id"], action_type=top["action_type"], amount_cents=top["amount_cents"],
-                    target_identifier=top["target_identifier"], status=top["status"], biometric_required=True,
+                    target_identifier=top["target_identifier"], status=top["status"],
                 )
             return CopilotResponse(
                 reply=enrich_fn(base_reply, prompt_type="diagnostic"),
                 intent_detected="CASH_DIAGNOSTIC",
                 staged_action=staged_action,
-                requires_biometric_hitl=staged_action is not None,
             )
 
         # 12. What-if cash scenario rerun against the statement
@@ -610,7 +587,6 @@ class LiquiditySubagent:
                 return CopilotResponse(
                     reply=get_missing_statement_guidance("diagnostic"),
                     intent_detected="CASH_DIAGNOSTIC",
-                    requires_biometric_hitl=False,
                 )
             p_dict = extract_cash_scenario_params(request.message, history=request.history)
             try:
@@ -619,7 +595,6 @@ class LiquiditySubagent:
                 return CopilotResponse(
                     reply=enrich_fn(get_missing_param_guidance("CASH_SCENARIO"), prompt_type="concept", calculation="CASH_SCENARIO"),
                     intent_detected="CASH_DIAGNOSTIC",
-                    requires_biometric_hitl=False,
                 )
 
             def runway(days: Optional[int]) -> str:
@@ -653,7 +628,6 @@ class LiquiditySubagent:
             return CopilotResponse(
                 reply=enrich_fn(base_reply, prompt_type="diagnostic"),
                 intent_detected="CASH_DIAGNOSTIC",
-                requires_biometric_hitl=False,
             )
 
         # 13. Operational Outflow Category Breakdown
@@ -662,7 +636,6 @@ class LiquiditySubagent:
                 return CopilotResponse(
                     reply=get_missing_statement_guidance("diagnostic"),
                     intent_detected="CASH_DIAGNOSTIC",
-                    requires_biometric_hitl=False,
                 )
             try:
                 res = tool_analyze_outflow_breakdown(effective_csv)
@@ -670,7 +643,6 @@ class LiquiditySubagent:
                 return CopilotResponse(
                     reply=f"Unable to process statement for outflow breakdown: {str(e)}",
                     intent_detected="CASH_DIAGNOSTIC",
-                    requires_biometric_hitl=False,
                 )
 
             cats_lines = []
@@ -691,7 +663,6 @@ class LiquiditySubagent:
             return CopilotResponse(
                 reply=enrich_fn(base_reply, prompt_type="diagnostic"),
                 intent_detected="CASH_DIAGNOSTIC",
-                requires_biometric_hitl=False,
             )
 
         # 14. Accounts Receivable Ageing & Collections Risk
@@ -711,7 +682,6 @@ class LiquiditySubagent:
                 return CopilotResponse(
                     reply=enrich_fn(guidance, prompt_type="concept", calculation="RECEIVABLES_AGEING"),
                     intent_detected="CASH_DIAGNOSTIC",
-                    requires_biometric_hitl=False,
                 )
 
             try:
@@ -720,7 +690,6 @@ class LiquiditySubagent:
                 return CopilotResponse(
                     reply=f"Unable to process invoice data for receivables ageing: {str(e)}",
                     intent_detected="CASH_DIAGNOSTIC",
-                    requires_biometric_hitl=False,
                 )
 
             buckets = res["buckets"]
@@ -758,8 +727,53 @@ class LiquiditySubagent:
             return CopilotResponse(
                 reply=enrich_fn(base_reply, prompt_type="diagnostic"),
                 intent_detected="CASH_DIAGNOSTIC",
-                requires_biometric_hitl=False,
             )
+
+        # 15. Weekly Revenue Inflow Volatility & Predictability
+        if sub_intent == "REVENUE_VOLATILITY":
+            if not effective_csv:
+                return CopilotResponse(
+                    reply=get_missing_statement_guidance("diagnostic"),
+                    intent_detected="CASH_DIAGNOSTIC",
+                )
+            try:
+                from services.ingestion.csv_parser import parse_bank_csv
+                from services.matcher.liquidity_matcher import calculate_inflow_volatility
+
+                from services.agent.tools import _normalize_statement_bytes
+
+                content_bytes = _normalize_statement_bytes(effective_csv) if isinstance(effective_csv, str) else effective_csv
+                ingest_res = parse_bank_csv(content_bytes)
+                txs = ingest_res.accepted_rows
+                cv, tier = calculate_inflow_volatility(txs)
+                inflows = [t.amount for t in txs if t.amount > 0]
+                total_inflows = sum(inflows, Decimal("0.00"))
+                first_d = min(t.posted_on for t in txs)
+                last_d = max(t.posted_on for t in txs)
+                weeks = max(1, (last_d - first_d).days // 7)
+                mean_weekly = total_inflows / Decimal(weeks)
+                tier_desc = {
+                    "LOW": "Stable, predictable recurring customer receipts (CV <= 0.35). Minimal cash volatility.",
+                    "MODERATE": "Normal commercial fluctuations (0.35 < CV <= 0.75). Recommend standard 60-day buffer.",
+                    "HIGH": "Lumpy, irregular revenue inflows (CV > 0.75). Elevated seasonal or project-based volatility.",
+                }.get(tier, "Evaluated across weekly customer receipts.")
+                base_reply = (
+                    f"### Weekly Revenue Inflow Volatility & Cash Predictability Audit\n\n"
+                    f"- **Weekly Revenue Inflow Volatility (CV)**: **{cv}**\n"
+                    f"- **Inflow Volatility Tier**: `{tier}`\n"
+                    f"- **Average Weekly Inflow**: ${float(mean_weekly):,.2f}\n"
+                    f"- **Total Customer Receipts**: ${float(total_inflows):,.2f}\n"
+                    f"- **Predictability Assessment**: {tier_desc}"
+                )
+                return CopilotResponse(
+                    reply=enrich_fn(base_reply, prompt_type="diagnostic"),
+                    intent_detected="CASH_DIAGNOSTIC",
+                )
+            except Exception as exc:
+                return CopilotResponse(
+                    reply=f"Revenue volatility could not be calculated: {str(exc)}",
+                    intent_detected="CASH_DIAGNOSTIC",
+                )
 
         return None
 
@@ -775,7 +789,6 @@ class LiquiditySubagent:
             return CopilotResponse(
                 reply=get_missing_statement_guidance("diagnostic"),
                 intent_detected="CASH_DIAGNOSTIC",
-                requires_biometric_hitl=False,
             )
 
         try:
@@ -811,11 +824,9 @@ class LiquiditySubagent:
                 reply=enrich_fn(base_reply, prompt_type="diagnostic"),
                 intent_detected="CASH_DIAGNOSTIC",
                 metrics=metrics,
-                requires_biometric_hitl=False,
             )
         except Exception as e:
             return CopilotResponse(
                 reply=f"Unable to process statement for cash diagnosis: {str(e)}",
                 intent_detected="CASH_DIAGNOSTIC",
-                requires_biometric_hitl=False,
             )

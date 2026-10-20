@@ -223,3 +223,23 @@ def test_conversion_handler_asks_for_rate_and_suggested_phrasing_converts(offlin
     assert "Tell me the rate to use" in ask
     suggested = ask.split("for example '")[1].rstrip("'.")
     assert "Net Converted Proceeds" in handle(suggested)
+
+
+def test_supervisor_respects_request_currency():
+    from services.agent.schema import AgentChatRequest, LLMConfig
+    from services.agent.supervisor import run_copilot_supervisor
+
+    raw_csv = (
+        "transaction_id,posted_on,amount,currency,description,closing_balance\n"
+        "tx_001,2026-01-01,1000.00,USD,Initial Client Invoice,10000.00\n"
+        "tx_002,2026-01-05,-1500.00,USD,Supplier Raw Materials,8500.00\n"
+    )
+    req = AgentChatRequest(
+        message="What is our current balance?",
+        csv_content=raw_csv,
+        currency="BDT",
+        llm_config=LLMConfig(provider="offline"),
+    )
+    resp = run_copilot_supervisor(req)
+    assert "৳" in resp.reply
+    assert "BDT" in resp.reply

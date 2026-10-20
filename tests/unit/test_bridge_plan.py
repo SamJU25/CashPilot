@@ -68,7 +68,7 @@ def test_tool_stage_mode_stages_only_financing_legs():
     res = tool_build_bridge_plan(_deficit_statement(), stage=True, tenant_id="TEST-BRIDGE")
     staged_actions = {s["action_type"] for s in res["staged"]}
     assert staged_actions and staged_actions <= {"DRAW_CREDIT_LINE", "FACTOR_INVOICE"}
-    assert all(s["biometric_required"] for s in res["staged"])
+    assert all(s["status"] == "STAGED_PENDING_HITL" for s in res["staged"])
 
 
 def _handle(message, csv, allow_staging=False):
@@ -86,14 +86,13 @@ def test_handler_question_offers_to_stage_and_request_stages():
     asked = _handle("How should we cover the projected shortfall?", csv, allow_staging=True)
     assert asked.staged_action is None and "Bridge Target" in asked.reply
     told = _handle("Prepare a bridge financing plan for the shortfall.", csv, allow_staging=True)
-    assert told.staged_action is not None and told.requires_biometric_hitl is True
+    assert told.staged_action is not None
 
 
 def test_handler_without_staging_permission_never_stages():
     csv = _deficit_statement()
     resp = _handle("Prepare a bridge financing plan for the shortfall.", csv)
     assert resp.staged_action is None
-    assert resp.requires_biometric_hitl is False
     assert "advisory only" in resp.reply
 
 

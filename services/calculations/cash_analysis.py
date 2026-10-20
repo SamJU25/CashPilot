@@ -46,8 +46,13 @@ def calculate_cash_analysis(
     rejected_rows: Sequence[RejectedRow],
     alert_threshold_days: int,
     as_of_date: date | None = None,
+    declared_daily_burn: Decimal | None = None,
 ) -> CashAnalysisResult:
-    """Calculate a historical-average burn/runway indicator; this is not a forecast."""
+    """Calculate a historical-average burn/runway indicator; this is not a forecast.
+
+    declared_daily_burn is the spend an owner typed for a hand-entered balance; it replaces the burn that a
+    one-row manual statement cannot show. Statements with real rows never pass it.
+    """
     if not rows:
         raise ValueError("at least one accepted transaction is required")
     if alert_threshold_days <= 0:
@@ -70,6 +75,8 @@ def calculate_cash_analysis(
     )
     average_daily_burn = max(Decimal("0"), -net_period_change / Decimal(period_days))
     average_daily_burn = average_daily_burn.quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+    if declared_daily_burn is not None:
+        average_daily_burn = max(Decimal("0"), declared_daily_burn).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
 
     runway_days = runway_days_for(current_balance, average_daily_burn)
 

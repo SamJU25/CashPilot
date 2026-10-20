@@ -234,7 +234,6 @@ def test_api_key_detection_and_guidance():
     assert res.intent_detected == "CREDENTIAL_SECURITY_ALERT"
     assert "Security Alert: An API key or secret token was detected" in res.reply
     assert "AI Provider" in res.reply
-    assert res.requires_biometric_hitl is False
 
 
 def test_mask_pii_redacts_api_keys():
@@ -302,7 +301,6 @@ def test_off_topic_query_redirects_to_cfo_domain():
     assert "specialize exclusively in SME business liquidity" in res1.reply
     assert "unable to assist with non-financial topics" in res1.reply
     assert "cash runway, burn rate, overdraft forecast" in res1.reply
-    assert res1.requires_biometric_hitl is False
 
     # 3. Supervisor execution even when CSV is already in session
     csv_sample = (
@@ -385,6 +383,12 @@ def test_sanitize_cfo_reply_strips_closed_thought_block():
 def test_sanitize_cfo_reply_drops_unclosed_thought_block():
     raw = "<thought>\n1. Request Inspection: user asked for runway.\n2. Parameter Extraction"
     assert sanitize_cfo_reply(raw) == ""
+
+
+def test_sanitize_cfo_reply_drops_reasoning_before_orphan_close_tag():
+    # The template opened <think> in the prompt, so only the closing tag reaches the reply.
+    raw = "1. Financial Inquiry: audit transactions.\n2. Runway across 30/60/90 days.\n</think>\n\nYour cash runway stands at 34.2 days."
+    assert sanitize_cfo_reply(raw) == "Your cash runway stands at 34.2 days."
 
 
 def test_numbers_grounded_when_every_figure_is_sourced():

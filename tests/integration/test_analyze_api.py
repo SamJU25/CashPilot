@@ -42,17 +42,49 @@ def test_analyze_api_returns_decimal_strings_and_row_provenance():
         "analysis_mode": "LIVE_OPERATING",
         "projected_depletion_date": "2026-11-09",
         "alert_boundary_date": "2026-10-12",
-        "accounts_breakdown": None,
+        "accounts_breakdown": [
+            {
+                "file_name": "synthetic.csv",
+                "account_id": "Account_1",
+                "start_date": "2026-10-01",
+                "end_date": "2026-10-02",
+                "closing_balance": "95.00",
+                "transaction_count": 2,
+            }
+        ],
         "internal_transfers_excluded": None,
         "internal_transfers": None,
         "calendar_gaps": None,
         "has_overlaps_deduped": None,
-        "operational_inflows": None,
-        "operational_outflows": None,
+        "operational_inflows": "5.00",
+        "operational_outflows": "10.00",
         "document_format": "CSV",
         "page_count": None,
         "normalized_csv": None,
+        "balance_history": [{"date": "2026-10-01", "balance": "90.00"}, {"date": "2026-10-02", "balance": "95.00"}],
+        "account_history": [
+            {"account_id": "Account_1", "points": [{"date": "2026-10-01", "balance": "90.00"}, {"date": "2026-10-02", "balance": "95.00"}]}
+        ],
+        "recurring_obligations": [],
+        # $95 at $2.50 a day lasts 38 days; day 39 is the first negative balance.
+        "forecast": {
+            "anchor_date": "2026-10-02",
+            "has_projected_deficit": True,
+            "severity": "WARNING",
+            "days_until_deficit": 39,
+            "projected_deficit_date": "2026-11-10",
+            "projected_shortfall_amount": "2.50",
+            "recommended_bridge_amount": "500.00",
+            "primary_deficit_trigger": "OPERATING_BURN",
+            "detected_recurring_payroll": None,
+            "detected_recurring_rent": None,
+            "detected_recurring_debt": None,
+        },
+        "projection": body["projection"],
     }
+    assert len(body["projection"]) == 91
+    assert body["projection"][0] == {"date": "2026-10-02", "balance": "95.00"}
+    assert body["projection"][-1] == {"date": "2026-12-31", "balance": "-130.00"}
 
 
 def test_analyze_api_with_cash_conversion_cycle():
@@ -252,6 +284,153 @@ def test_analyze_api_deduplicates_duplicate_uploaded_statement_files():
     assert len(body["accounts_breakdown"]) == 2
 
 
+def test_analyze_adjust_inflow():
+    payload = {
+        "current_balance": "10000.00",
+        "adjustment_type": "INFLOW",
+        "amount": "2500.00",
+        "daily_burn": "250.00",
+        "currency": "USD",
+        "effective_date": "2026-10-15",
+    }
+    response = client.post("/api/v1/analyze/adjust", json=payload)
+    assert response.status_code == 200
+    body = response.json()
+    assert body["current_balance"] == "12500.00"
+    assert body["net_period_change"] == "2500.00"
+    assert body["runway_days"] == 50
+    assert body["projected_depletion_date"] == "2026-12-04"
+    assert body["document_format"] == "MANUAL"
+
+
+def test_analyze_adjust_outflow():
+    payload = {
+        "current_balance": "10000.00",
+        "adjustment_type": "OUTFLOW",
+        "amount": "4000.00",
+        "daily_burn": "200.00",
+        "currency": "USD",
+        "effective_date": "2026-10-15",
+    }
+    response = client.post("/api/v1/analyze/adjust", json=payload)
+    assert response.status_code == 200
+    body = response.json()
+    assert body["current_balance"] == "6000.00"
+    assert body["net_period_change"] == "-4000.00"
+    assert body["runway_days"] == 30
+
+
+def test_analyze_adjust_set_balance():
+    payload = {
+        "current_balance": "10000.00",
+        "adjustment_type": "SET_BALANCE",
+        "amount": "50000.00",
+        "daily_burn": "500.00",
+        "currency": "EUR",
+        "effective_date": "2026-10-15",
+    }
+    response = client.post("/api/v1/analyze/adjust", json=payload)
+    assert response.status_code == 200
+    body = response.json()
+    assert body["current_balance"] == "50000.00"
+    assert body["currency"] == "EUR"
+    assert body["runway_days"] == 100
+
+
+def test_analyze_summary_balance_only():
+    payload = {
+        "current_balance": "45000.00",
+        "monthly_burn": "15000.00",
+        "currency": "USD",
+        "as_of_date": "2026-10-15",
+    }
+    response = client.post("/api/v1/analyze/summary", json=payload)
+    assert response.status_code == 200
+    body = response.json()
+    assert body["current_balance"] == "45000.00"
+    assert body["average_daily_burn"] == "500.00"
+    assert body["runway_days"] == 90
+    assert body["cash_status"] == "WATCH"
+    assert body["document_format"] == "MANUAL"
 
 
 
+
+
+
+
+
+def test_quick_cash_rejects_bad_input_with_422():
+    bad = [
+        ("/api/v1/analyze/adjust", {"current_balance": "100.00", "adjustment_type": "INFLOW", "amount": "-5.00"}),
+        ("/api/v1/analyze/adjust", {"current_balance": "100.00", "adjustment_type": "INFLOW", "amount": "5.00", "alert_threshold_days": 0}),
+        ("/api/v1/analyze/adjust", {"current_balance": "100.00", "adjustment_type": "REFUND", "amount": "5.00"}),
+        ("/api/v1/analyze/summary", {"current_balance": "100.00", "monthly_burn": "-1.00"}),
+        ("/api/v1/analyze/summary", {"current_balance": "100.00", "currency": "dollars"}),
+    ]
+    for path, payload in bad:
+        assert client.post(path, json=payload).status_code == 422, (path, payload)
+
+
+def test_quick_cash_without_burn_leaves_runway_unknown():
+    # No burn given means no runway: the API must not estimate one.
+    body = client.post("/api/v1/analyze/summary", json={"current_balance": "42000.00"}).json()
+    assert body["average_daily_burn"] == "0.00"
+    assert body["runway_days"] is None
+    assert body["projected_depletion_date"] is None
+
+
+def test_multi_account_history_sums_to_the_current_balance():
+    files = [
+        ("files", (name, open(f"data/samples/{name}", "rb").read(), "text/csv"))
+        for name in ("chase_operating_october.csv", "svb_payroll_october.csv")
+    ]
+    body = client.post("/api/v1/analyze", files=files).json()
+    assert len(body["account_history"]) == 2
+    assert body["balance_history"][-1]["balance"] == body["current_balance"]
+    assert body["projection"][0] == {"date": body["end_date"], "balance": body["current_balance"]}
+
+
+def test_scenario_levers_and_validation():
+    base = {"current_balance": "1000.00", "average_daily_burn": "100.00", "anchor_date": "2026-10-01"}
+    plain = client.post("/api/v1/analyze/scenario", json=base).json()
+    collected = client.post(
+        "/api/v1/analyze/scenario",
+        json={**base, "one_off_inflows": [{"date": "2026-10-05", "amount": "500.00"}]},
+    ).json()
+    assert plain["forecast"]["days_until_deficit"] == 11
+    assert collected["forecast"]["days_until_deficit"] == 16
+    assert len(plain["projection"]) == 91
+    for bad in ({**base, "variable_cut_pct": "120"}, {**base, "average_daily_burn": "-1"}, {**base, "days": 0}):
+        assert client.post("/api/v1/analyze/scenario", json=bad).status_code == 422
+
+
+def test_adjustment_lands_on_one_account_and_total_is_their_sum():
+    payload = {
+        "current_balance": "1500.00",
+        "adjustment_type": "OUTFLOW",
+        "amount": "200.50",
+        "account_id": "Chase",
+        "accounts": [{"account_id": "Chase", "balance": "1000.00"}, {"account_id": "SVB", "balance": "500.00"}],
+        "effective_date": "2026-10-20",
+    }
+    body = client.post("/api/v1/analyze/adjust", json=payload).json()
+    assert body["current_balance"] == "1299.50"
+    assert body["net_period_change"] == "-200.50"
+    assert {a["account_id"]: a["closing_balance"] for a in body["accounts_breakdown"]} == {"Chase": "799.50", "SVB": "500.00"}
+
+    # A new account id opens that account with the amount set.
+    opened = client.post(
+        "/api/v1/analyze/adjust",
+        json={**payload, "adjustment_type": "SET_BALANCE", "amount": "250.00", "account_id": "Petty cash"},
+    ).json()
+    assert opened["current_balance"] == "1750.00"
+    assert len(opened["accounts_breakdown"]) == 3
+
+
+def test_adjustment_rejects_duplicate_or_unnamed_accounts():
+    base = {"current_balance": "0", "adjustment_type": "INFLOW", "amount": "1.00"}
+    dup = {**base, "account_id": "A", "accounts": [{"account_id": "A", "balance": "1"}, {"account_id": "A", "balance": "2"}]}
+    unnamed = {**base, "accounts": [{"account_id": "A", "balance": "1"}]}
+    assert client.post("/api/v1/analyze/adjust", json=dup).status_code == 422
+    assert client.post("/api/v1/analyze/adjust", json=unnamed).status_code == 422

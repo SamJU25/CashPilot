@@ -22,9 +22,11 @@ from services.agent.local_transformers import (
 
 def list_models(engine: LocalTransformersEngine) -> None:
     print("\n" + "=" * 56)
-    print("  SME Finance Copilot -- Supported Local Models Catalog")
+    print("  CashPilot by Blueprint -- Supported Local Models")
     print("=" * 56 + "\n")
     for m_id, meta in SUPPORTED_LOCAL_MODELS.items():
+        if meta.get("hidden"):
+            continue
         installed = engine.is_available(m_id)
         status_badge = "[INSTALLED & READY]" if installed else "[NOT DOWNLOADED]"
         print(f"* Model ID:     {m_id}")
@@ -64,14 +66,18 @@ def download_single_model(engine: LocalTransformersEngine, model_id: str) -> boo
 
 
 def main() -> None:
+    from services.agent.local_transformers import get_default_model_id
+    default_id = get_default_model_id()
+    supported_keys = [k for k, v in SUPPORTED_LOCAL_MODELS.items() if not v.get("hidden")]
+
     parser = argparse.ArgumentParser(
-        description="Explicit Model Downloader for SME Finance Copilot (No Auto-Downloads)"
+        description="Explicit Model Downloader for CashPilot (No Auto-Downloads)"
     )
     parser.add_argument(
         "--model",
         type=str,
         default=None,
-        help="Target model to download ('sme-finance-lora', 'base-instruct', or 'all')",
+        help=f"Target model to download ({', '.join(repr(k) for k in supported_keys)}, or 'all')",
     )
     parser.add_argument(
         "--delete",
@@ -103,9 +109,9 @@ def main() -> None:
         list_models(engine)
         if not args.model:
             print("To download or verify a model, run:")
-            print("  python scripts/download_model.py --model sme-finance-lora")
+            print(f"  python scripts/download_model.py --model {default_id}")
             print("\nTo delete downloaded base weights to reclaim disk space:")
-            print("  python scripts/download_model.py --delete sme-finance-lora\n")
+            print(f"  python scripts/download_model.py --delete {default_id}\n")
         return
 
     if args.model:

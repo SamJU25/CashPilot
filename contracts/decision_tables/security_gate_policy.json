@@ -35,14 +35,14 @@
           },
           {
             "id": "out_bio",
-            "field": "requires_biometric_execution",
-            "name": "Requires WebAuthn Biometric HITL"
+            "field": "requires_owner_action",
+            "name": "Owner Sends It Themselves"
           }
         ],
         "rules": [
           {
             "_id": "rule_tier_3",
-            "_description": "Irreversible financial disbursements and receivable sales require strict Tier 3 biometric authorization",
+            "_description": "Disbursements and receivable sales are never executed by CashPilot; they end as a request the owner sends",
             "in_act": "'TRANSFER', 'DRAW_CREDIT_LINE', 'PLEDGE_INVOICE', 'FACTOR_INVOICE'",
             "out_tier": "'TIER_3_EXECUTION'",
             "out_bio": "true"

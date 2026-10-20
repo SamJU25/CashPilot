@@ -24,6 +24,6 @@ async def get_health_status():
         active_invariants=[
             "All financial calculations use Python Decimal arithmetic",
             "Statement uploads are size- and page-validated before analysis",
-            "Action staging requires a signed tenant token; execution requires a WebAuthn passkey",
+            "Action staging requires a signed tenant token; drafted actions are never executed, the owner sends them",
         ]
     )

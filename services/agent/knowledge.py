@@ -95,17 +95,27 @@ def load_cards(cards_dir: Path = CARDS_DIR) -> list[Card]:
     return cards
 
 
+def _cards_mtime(cards_dir: Path = CARDS_DIR) -> float:
+    mtimes = [p.stat().st_mtime for p in cards_dir.glob("*.md")]
+    return max(mtimes) if mtimes else 0.0
+
+
 class _CardIndex:
     _instance: Optional["_CardIndex"] = None
     _lock = threading.Lock()
 
-    def __init__(self) -> None:
+    def __init__(self, mtime: float = 0.0) -> None:
         from services.agent.dynamic_router import FastEmbedSemanticRouter
 
+        self._mtime = mtime
         router = FastEmbedSemanticRouter.get_instance()
         self._model = router._model if router._ready else None
         self.cards = load_cards()
         self._norms = None
+        self._card_acronyms: list[set[str]] = []
+        for c in self.cards:
+            acrs = {a.upper() for a in re.findall(r"\(([A-Za-z0-9/'-]{2,10})\)", c.title)}
+            self._card_acronyms.append(acrs)
         if self._model is not None and self.cards:
             passages = [f"{c.title}. {c.text.replace('**', '')}" for c in self.cards]
             embeds = np.array(list(self._model.passage_embed(passages)))
@@ -114,8 +124,9 @@ class _CardIndex:
     @classmethod
     def get(cls) -> "_CardIndex":
         with cls._lock:
-            if cls._instance is None:
-                cls._instance = _CardIndex()
+            current_mtime = _cards_mtime()
+            if cls._instance is None or cls._instance._mtime < current_mtime:
+                cls._instance = _CardIndex(mtime=current_mtime)
             return cls._instance
 
     def search(self, query: str, k: int, min_similarity: float) -> list[Card]:
@@ -123,13 +134,49 @@ class _CardIndex:
             return []
         q = np.array(list(self._model.query_embed([query.strip()])))[0]
         sims = self._norms @ (q / np.linalg.norm(q))
+
+        # Acronym exact match boost: if user query explicitly mentions a card's exact acronym,
+        # boost by +0.35 so acronym queries never drop below threshold.
+        q_tokens = {w.upper().strip("(),.?!\"'") for w in query.split()}
+        for i, acrs in enumerate(self._card_acronyms):
+            if acrs and acrs.intersection(q_tokens):
+                sims[i] += 0.35
+
         order = np.argsort(sims)[::-1][:k]
         return [self.cards[i] for i in order if sims[i] >= min_similarity]
 
 
-def retrieve_cards(query: str, k: int = TOP_K, min_similarity: float = MIN_SIMILARITY) -> list[Card]:
+def resolve_retrieval_query(query: str, history: Optional[list] = None) -> str:
+    """
+    Expands anaphoric or elliptical follow-up questions with recent user context.
+    For example: 'What if it falls below that?' with history mentioning DSCR
+    expands to include the prior user question so retrieval finds the correct card.
+    """
+    if not history:
+        return query
+    recent_user_messages = []
+    for item in history:
+        role = getattr(item, "role", None) or (item.get("role") if isinstance(item, dict) else None) or "user"
+        text = getattr(item, "text", None) or (item.get("text") if isinstance(item, dict) else None) or ""
+        if str(role).lower() in ("user", "human") and text.strip():
+            recent_user_messages.append(text.strip())
+
+    if recent_user_messages:
+        last_turn = recent_user_messages[-1]
+        if last_turn.lower() not in query.lower():
+            return f"{last_turn} {query}"
+    return query
+
+
+def retrieve_cards(
+    query: str,
+    k: int = TOP_K,
+    min_similarity: float = MIN_SIMILARITY,
+    history: Optional[list] = None,
+) -> list[Card]:
     try:
-        return _CardIndex.get().search(query, k, min_similarity)
+        resolved = resolve_retrieval_query(query, history=history)
+        return _CardIndex.get().search(resolved, k, min_similarity)
     except Exception as exc:
         logger.warning("Concept card retrieval unavailable: %s", exc)
         return []
@@ -147,8 +194,13 @@ def format_reference_cards(sys_directive: str, cards: list[Card]) -> str:
     )
 
 
-def append_reference_cards(sys_directive: str, query: str, k: int = TOP_K) -> str:
-    return format_reference_cards(sys_directive, retrieve_cards(query, k=k))
+def append_reference_cards(
+    sys_directive: str,
+    query: str,
+    k: int = TOP_K,
+    history: Optional[list] = None,
+) -> str:
+    return format_reference_cards(sys_directive, retrieve_cards(query, k=k, history=history))
 
 
 def select_concept_card(cards: list[Card], calculation: Optional[str]) -> tuple[Card, bool]:

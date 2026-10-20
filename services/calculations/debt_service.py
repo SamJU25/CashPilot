@@ -120,10 +120,9 @@ def calculate_loan_amortization(
     n = term_months
     k = min(periods_elapsed, n)
 
-    # Convert to float for exponential power then quantize back to Decimal
-    r_float = float(r)
-    compounded = Decimal(str((1.0 + r_float) ** n))
-    compounded_k = Decimal(str((1.0 + r_float) ** k))
+    # Integer powers stay exact in Decimal; a float round trip loses cents on long terms.
+    compounded = (Decimal("1") + r) ** n
+    compounded_k = (Decimal("1") + r) ** k
 
     pmt = (principal * (r * compounded) / (compounded - Decimal("1"))).quantize(
         Decimal("0.01"), rounding=ROUND_HALF_UP
@@ -222,8 +221,7 @@ def calculate_prudent_debt_capacity(
         capacity_dscr = monthly_service * Decimal(str(n))
     else:
         r = annual_interest_rate / Decimal("12")
-        r_float = float(r)
-        discount_factor = Decimal(str((1.0 - (1.0 + r_float) ** (-n)) / r_float))
+        discount_factor = (Decimal("1") - (Decimal("1") + r) ** (-n)) / r
         capacity_dscr = monthly_service * discount_factor
 
     # 2. Leverage multiple constraint (if EBITDA provided)

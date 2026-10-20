@@ -1,4 +1,4 @@
-"""Fine-tune dataset generator for the SME Finance Copilot Qwen LoRA adapters.
+"""Fine-tune dataset generator for the SME Finance Copilot CashPilot-2B LoRA adapters.
 
 Every example is shaped exactly like a runtime call to the local model
 (LocalTransformersEngine.generate never passes tools):
@@ -981,7 +981,12 @@ QUANT_SPECS: List[Dict[str, Any]] = [
         "sub": "ALTMAN_Z_SCORE", "name": "your Altman Z'-Score", "head": "Altman Z'-Score", "tier": "Credit Distress Tier",
         "support": [("Working Capital", "working capital"), ("Total Liabilities", "total liabilities")],
         "params": lambda r: {"wc": usd(k(r, 10_000, 150_000)), "re": usd(k(r, 10_000, 200_000)), "ebit": usd(k(r, 5_000, 120_000)), "eq": usd(k(r, 40_000, 300_000)), "li": usd(k(r, 50_000, 400_000)), "rev": usd(k(r, 150_000, 1_200_000)), "as": usd(k(r, 120_000, 700_000))},
-        "questions": ["Calculate Altman Z score: working capital {wc}, retained earnings {re}, EBIT {ebit}, equity {eq}, liabilities {li}, revenue {rev}, assets {as}"],
+        "questions": [
+            "Calculate Altman Z score: working capital {wc}, retained earnings {re}, EBIT {ebit}, equity {eq}, liabilities {li}, revenue {rev}, assets {as}",
+            "What is our Altman Z'-Score with working capital {wc}, retained earnings {re}, EBIT {ebit}, equity {eq}, total debt {li}, revenue {rev}, and total assets {as}?",
+            "Evaluate insolvency risk with Altman Z-score: WC {wc}, RE {re}, EBIT {ebit}, equity {eq}, liabilities {li}, sales {rev}, assets {as}",
+            "Run an Altman Z financial distress audit for working capital {wc}, retained earnings {re}, EBIT {ebit}, shareholder equity {eq}, liabilities {li}, revenue {rev}, assets {as}."
+        ],
         "meaning": {"good": "That sits in the safe zone, so insolvency risk is low.", "mid": "That is the grey zone: viable, but exposed to a revenue drop.", "bad": "That is the distress zone, which lenders treat as high insolvency risk."},
         "action": {"good": ["Recheck the score each year-end to catch any drift."], "bad": ["Shore up working capital and retained earnings before seeking new credit."]},
     },
@@ -1065,6 +1070,86 @@ QUANT_SPECS: List[Dict[str, Any]] = [
         "meaning": {"good": "Existing customers grow revenue on their own.", "mid": "Retention is steady, without much expansion.", "bad": "The customer base is shrinking before new sales."},
         "action": {"good": ["Invest in account expansion; it is your cheapest growth."], "bad": ["Find out why accounts churn or downgrade before spending more on acquisition."]},
     },
+    {
+        "sub": "DUPONT_ROE", "name": "your DuPont ROE", "head": "Aggregate Return on Equity (ROE)", "tier": "Performance Policy Tier",
+        "support": [("Annual Net Income", "net income"), ("Annual Gross Revenue", "revenue"), ("Asset Efficiency (Asset Turnover)", "asset turnover")],
+        "params": lambda r: (lambda rev: {"ni": usd(k(r, rev // 20, rev // 4)), "rev": usd(rev), "a": usd(k(r, rev // 2, rev * 2)), "eq": usd(k(r, rev // 4, rev))})(k(r, 200_000, 2_000_000, 10_000)),
+        "questions": [
+            "Calculate DuPont ROE: net income {ni}, revenue {rev}, total assets {a}, equity {eq}",
+            "What is our DuPont 3-stage ROE breakdown with net income {ni}, sales {rev}, total assets {a}, and equity {eq}?",
+            "Run a DuPont ROE decomposition for net income of {ni}, commercial revenue of {rev}, assets {a}, and equity {eq}.",
+            "Evaluate return on equity through DuPont 3-stage analysis with {ni} net profit, {rev} gross revenue, {a} assets, and {eq} equity."
+        ],
+        "meaning": {
+            "good": "Operations generate strong, balanced returns on shareholder equity.",
+            "mid": "Returns on equity are moderate, with room to improve margin or asset turns.",
+            "bad": "Returns fall short of acceptable cost of equity; margins or asset turnover are lagging."
+        },
+        "action": {
+            "good": ["Reinvest operating profit into the product lines driving these margins.", "Maintain this leverage balance while expanding commercial sales."],
+            "bad": ["Lift operating margins or optimize asset turnover to improve equity returns.", "Review low-margin customer accounts to prevent margin compression."]
+        },
+    },
+    {
+        "sub": "DCF_VALUATION", "name": "your implied DCF enterprise value", "head": "Enterprise Value (DCF)",
+        "support": [("Present Value of Explicit Cash Flows", "present value of cash flows"), ("Present Value of Terminal Value", "present value of terminal value")],
+        "params": lambda r: (lambda cf1: {"cf1": usd(cf1), "cf2": usd(int(cf1 * 1.1)), "cf3": usd(int(cf1 * 1.2)), "w": r.choice([8, 9, 10, 11, 12]), "g": r.choice([2, 2.5, 3])})(k(r, 40_000, 300_000, 5_000)),
+        "questions": [
+            "Calculate DCF valuation for cash flows {cf1}, {cf2}, {cf3} at {w}% WACC and {g}% terminal growth",
+            "What is our enterprise value under DCF with projected cash flows {cf1}, {cf2}, {cf3}, {w}% discount rate, and {g}% terminal rate?",
+            "Run a discounted cash flow valuation: cash flows {cf1}, {cf2}, {cf3} with {w}% cost of capital and {g}% perpetual growth."
+        ],
+        "meaning": {"any": "That represents the intrinsic value of future operating cash flows discounted to today."},
+        "action": {
+            "any": ["Use this valuation as an objective anchor when evaluating equity rounds or buyout offers.", "Focus capital on projects that out-earn that WACC hurdle rate to grow equity value."]
+        },
+    },
+    {
+        "sub": "DEFENSIVE_INTERVAL", "name": "your defensive survival horizon", "head": "Defensive Survival Horizon", "tier": "Buffer Assessment Tier",
+        "support": [("Liquid Quick Assets", "quick assets"), ("Daily Operating Burn Rate", "daily operating expenses")],
+        "params": lambda r: {"qa": usd(k(r, 40_000, 400_000, 5_000)), "burn": usd(k(r, 1_000, 10_000, 500))},
+        "questions": [
+            "Calculate defensive interval for quick assets {qa} and daily operating expenses {burn}",
+            "What's our defensive interval ratio with liquid assets {qa} and daily burn {burn}?",
+            "How many days can we survive on cash alone if quick assets are {qa} and daily expenses are {burn}?"
+        ],
+        "meaning": {
+            "good": "Liquid assets provide a substantial defensive runway without relying on new sales.",
+            "mid": "You have a moderate buffer, but an extended revenue freeze would test reserves.",
+            "bad": "Liquid reserves cover only a narrow window; immediate inflows are essential."
+        },
+        "action": {
+            "good": ["Maintain this liquid reserve buffer through your slow season."],
+            "bad": ["Build liquid reserves or negotiate standby credit lines before a slow month hits."]
+        },
+    },
+    {
+        "sub": "ENTERPRISE_VALUE", "name": "your enterprise value", "head": "Enterprise Value (EV)",
+        "support": [("Equity Value (Market Cap)", "equity value"), ("Net Debt", "net debt")],
+        "params": lambda r: {"eq": usd(k(r, 100_000, 2_000_000, 25_000)), "d": usd(k(r, 20_000, 800_000, 10_000)), "c": usd(k(r, 10_000, 300_000, 5_000))},
+        "questions": [
+            "Calculate enterprise value for equity {eq}, total debt {d}, and cash {c}",
+            "What is our enterprise value with equity value {eq}, debt {d}, and cash {c}?"
+        ],
+        "meaning": {"any": "Enterprise value reflects the total operational value of the business regardless of capital structure."},
+        "action": {
+            "any": ["Compare this valuation with recent industry multiples when considering acquisition or capital raises.", "Paying down high-cost debt shifts a larger share of enterprise value directly to equity holders."]
+        },
+    },
+    {
+        "sub": "CURRENCY_CONVERSION", "name": "the converted currency amount", "head": "Converted Amount",
+        "support": [("Source Amount", "source amount"), ("Target Currency", "target currency")],
+        "params": lambda r: {"amt": usd(k(r, 5_000, 200_000, 1_000)), "target": r.choice(["EUR", "GBP", "JPY", "CAD", "AUD"])},
+        "questions": [
+            "Convert {amt} to {target}",
+            "What is {amt} in {target}?",
+            "Calculate currency conversion of {amt} into {target}"
+        ],
+        "meaning": {"any": "The conversion reflects standard interbank spot pricing without bank markups."},
+        "action": {
+            "any": ["Lock in forward contracts if future vendor payments face currency volatility.", "Factor exchange fees into product pricing when purchasing foreign supplies."]
+        },
+    },
 ]
 
 GOOD_TIER = re.compile(r"PRIME|HEALTHY|STRONG|EXCEPTIONAL|APPROVED|CONSERVATIVE|POSITIVE|RAPID|EFFICIENT|SELF_FUNDING|SAFE|LOW_BURDEN|NET_EXPANSION")
@@ -1145,6 +1230,65 @@ def build_quant_rows(rng: random.Random, per_spec: int) -> List[Dict[str, Any]]:
             system = append_reference_cards(system, question)
             rows.append(make_row(system, question, reply, base, f"quant:{sub}"))
             made += 1
+    return rows
+
+
+VOLATILITY_QUESTIONS = [
+    "What is our weekly revenue inflow volatility?",
+    "Calculate our revenue inflow volatility CV from the statement.",
+    "How volatile are our weekly customer receipts?",
+    "What is our coefficient of variation on weekly inflows?",
+    "Evaluate our revenue stability and inflow volatility tier.",
+    "Are our customer inflows stable or irregular week over week?",
+]
+
+
+def build_revenue_volatility_rows(rng: random.Random, count: int) -> List[Dict[str, Any]]:
+    rows = []
+    profiles = list(PROFILES.keys())
+    for _ in range(count):
+        profile = rng.choice(profiles)
+        days = rng.choice([45, 60, 75, 90])
+        csv_data = make_statement(rng, profile, days=days)
+        captured: Dict[str, str] = {}
+
+        def capture(base_reply: str, prompt_type: str = "diagnostic") -> str:
+            captured["base"] = base_reply
+            return base_reply
+
+        try:
+            LiquiditySubagent.handle_sub_intent(
+                "REVENUE_VOLATILITY",
+                AgentChatRequest(message="What is our weekly revenue volatility?"),
+                effective_csv=csv_data,
+                enrich_fn=capture,
+            )
+        except Exception:
+            continue
+        if "base" not in captured:
+            continue
+
+        base = captured["base"]
+        bullets = parse_bullets(base)
+        cv = bullets.get("Weekly Revenue Inflow Volatility (CV)", "0.50")
+        tier = bullets.get("Inflow Volatility Tier", "MODERATE")
+        mean_w = bullets.get("Average Weekly Inflow", "$10,000.00")
+        total_in = bullets.get("Total Customer Receipts", "$80,000.00")
+
+        q = rng.choice(VOLATILITY_QUESTIONS)
+        reply_options = [
+            f"Your weekly revenue volatility comes out at a CV of {cv}, which lands in the {tier} volatility tier. Average weekly customer receipts sit at {mean_w} against total receipts of {total_in}. "
+            + ("Inflows are steady and predictable, so cash forecasting carries low error." if tier == "LOW" else "Receipts fluctuate within normal commercial ranges, meaning a 60-day buffer is advisable." if tier == "MODERATE" else "Customer inflows are irregular and lumpy, creating cash pinch points between big payments.")
+            + " "
+            + ("Maintain your disciplined credit terms with existing clients." if tier == "LOW" else "Smooth out seasonal swings by securing a standby line of credit." if tier == "MODERATE" else "Incentivize clients to pay on milestone schedules or line up receivables financing."),
+            f"The engine measures your weekly revenue volatility at {cv} ({tier} tier). Over the statement period, your business brought in {total_in} at an average pace of {mean_w} per week. "
+            + ("This stable inflow velocity gives lenders high confidence in your cash debt-service capacity." if tier == "LOW" else "Weekly commercial receipts experience moderate swings, which is typical for growing SMEs." if tier == "MODERATE" else "Inflow lumpiness exposes operations to cash drag during receipt lulls.")
+            + " "
+            + ("Keep tracking weekly collection velocity to catch any drift early." if tier == "LOW" else "Align vendor payables with peak weekly inflow cycles to prevent overdrafts."),
+        ]
+        reply = bold_first_figure(rng, rng.choice(reply_options))
+        system = append_reference_cards(get_cash_diagnostic_prompt(base), q)
+        rows.append(make_row(system, q, reply, base, "diagnostic:volatility"))
     return rows
 
 
@@ -1345,8 +1489,8 @@ def bridge_reply(rng: random.Random, f: Dict[str, str]) -> Optional[str]:
         parts.append(f"The total estimated cost is {figure(f.get('Total Estimated Cost', '$0.00'))}.")
     if any("supplier agreement" not in v for _, v in steps):
         parts.append(rng.choice([
-            "Ask me to prepare the plan and I will stage the financing steps for your passkey approval.",
-            "If it looks right, ask me to prepare it and the financing steps will wait for your passkey approval.",
+            "Ask me to prepare the plan and I will draft the financing requests for you to review and send.",
+            "If it looks right, ask me to prepare it and the financing requests will be ready for you to send.",
         ]))
     else:
         parts.append("Agree the deferral with your suppliers before that date; no financing needs staging.")
@@ -1541,7 +1685,7 @@ def build_receivables_ageing_rows(rng: random.Random, count: int) -> List[Dict[s
         reply = receivables_ageing_reply(rng, parse_bullets(base))
         if not reply:
             continue
-        system = append_reference_cards(get_cash_diagnostic_prompt(base), base_q)
+        system = append_reference_cards(get_cash_diagnostic_prompt(base), base_q, k=1)
         rows.append(make_row(system, question, reply, base, "receivables:ageing"))
     return rows
 
@@ -1605,12 +1749,12 @@ CONVERSATION = {
     "privacy": {
         "questions": ["is my data safe?", "do you store my bank data?", "who can see my statement?", "can you move money from my account?"],
         "no_statement": [
-            "Calculations run on deterministic rules, and nothing that moves money happens without your explicit approval and passkey verification. Upload your bank statement CSV when you're comfortable and I will start the analysis.",
-            "I only draft actions; anything that moves money needs your explicit approval and biometric passkey confirmation. When you're ready, upload a bank statement CSV to begin.",
+            "Calculations run on deterministic rules, and I never move money or contact lenders: I draft requests and you send them. Upload your bank statement CSV when you're comfortable and I will start the analysis.",
+            "I only draft actions; anything that moves money is a request you send yourself. When you're ready, upload a bank statement CSV to begin.",
         ],
         "statement_loaded": [
-            "Your statement is used for the analysis in this session, and nothing that moves money happens without your explicit approval and passkey verification. Ask me about runway or financing whenever you're ready.",
-            "I can draft proposals, but execution always needs your approval and a passkey check. With the statement loaded, ask any cash or credit question.",
+            "Your statement is used for the analysis in this session, and I never move money: anything financial is a request you send yourself. Ask me about runway or financing whenever you're ready.",
+            "I can draft proposals, but I never send or execute them; you do. With the statement loaded, ask any cash or credit question.",
         ],
     },
 }
@@ -1733,7 +1877,7 @@ def build_concept_card_rows(rng: random.Random, count: int) -> List[Dict[str, An
 
         # Diverse, natural questions tailored to card domain (no templated "What is a healthy X" glitches)
         title_l = title_clean.lower()
-        is_gov = card.area == "app_safety" or any(w in title_l for w in ("tier", "gate", "passkey", "math", "blockchain", "privacy", "double-financing"))
+        is_gov = card.area == "app_safety" or any(w in title_l for w in ("tier", "gate", "owner", "math", "blockchain", "privacy", "double-financing"))
         is_metric = any(w in title_l for w in ("ratio", "dscr", "fccr", "score", "margin", "roic", "roa", "eva", "wacc", "turnover", "coverage"))
         is_cash = any(w in title_l for w in ("balance", "runway", "burn", "dab", "cycle", "overdraft", "deficit", "drag", "dso", "dpo", "dio", "wcr"))
         is_fac = any(w in title_l for w in ("factoring", "line of credit", "mca", "merchant", "leasing", "trade credit", "financing"))
@@ -1846,9 +1990,25 @@ SUPPLIER_NAMES = ["National Steel", "Pacific Packaging", "Precision Parts", "Glo
 
 def build_multiturn_rows(rng: random.Random, count: int) -> List[Dict[str, Any]]:
     rows = []
+    attempts = 0
+    max_attempts = count * 3
 
-    for _ in range(count):
-        scenario = rng.choice(["runway_whatif", "underwriting_governance", "trade_credit", "burn_rate", "deficit_action", "break_even_pricing"])
+    while len(rows) < count and attempts < max_attempts:
+        attempts += 1
+        scenario = rng.choice([
+            "runway_whatif",
+            "underwriting_governance",
+            "trade_credit",
+            "burn_rate",
+            "deficit_action",
+            "break_even_pricing",
+            "dscr_headroom",
+            "dupont_leverage",
+            "altman_turnaround",
+            "receivables_collection",
+            "outflow_cost_cut",
+            "bridge_staging",
+        ])
 
         # Follow-up answers quote only figures already in the conversation or in engine output placed in the
         # system prompt; numbers_are_grounded drops any row where the reply would need arithmetic of its own.
@@ -1911,20 +2071,20 @@ def build_multiturn_rows(rng: random.Random, count: int) -> List[Dict[str, Any]]
             draw = money(rng.randrange(5000, 50000, 5000))
             t2_q, t2_a = rng.choice([
                 (f"Can you transfer {draw} from the {fac} to our checking account right now?",
-                 f"I can't move money or draw on a facility myself. A {draw} draw is a Tier 3 action, so it only runs after you approve it with your passkey on a registered device. "
-                 "If you want, I can stage the draw as a proposal for you to review first."),
+                 f"I can't move money or draw on a facility; I have no connection to your bank or lender. A {draw} draw is a Tier 3 action, so it happens only when you request it from the lender yourself. "
+                 "If you want, I can draft the draw request for you to review and send."),
                 (f"Please disburse {draw} from our approved facility immediately.",
-                 f"Nothing has been disbursed, and I can't disburse it myself. Drawing {draw} is a Tier 3 action that waits for your passkey approval. "
-                 "Ask me to stage it and you can check the amount and APR before approving."),
-                (f"Why can't you just execute the {draw} draw without my biometric approval?",
-                 f"A draw is irreversible, so the Three-Tier Security Gate holds every Tier 3 action until you approve it with your passkey. "
-                 f"That check proves a real person approved this specific {draw} draw, so a stolen password or a manipulated instruction cannot trigger it."),
+                 f"Nothing has been disbursed, and I can't disburse it. Drawing {draw} is a Tier 3 action that only you can request from the lender. "
+                 "Ask me to draft it and you can check the amount and APR before you send it."),
+                (f"Why can't you just execute the {draw} draw for me?",
+                 f"A draw is irreversible, so the Three-Tier Security Gate keeps every Tier 3 action with you: I draft the {draw} request and you send it. "
+                 "I have no bank or lender connection, so a stolen password or a manipulated instruction cannot trigger a draw through me."),
                 (f"Go ahead and sign the agreement for {fac} on our behalf.",
-                 f"I can't sign agreements for you. Accepting the {fac} terms is a Tier 3 commitment that needs your own passkey approval. "
-                 "If you ask, I can stage the application so you can review the APR and fees before approving."),
+                 f"I can't sign agreements for you. Accepting the {fac} terms is a Tier 3 commitment that only you can make with the lender. "
+                 "If you ask, I can draft the application so you can review the APR and fees before sending it."),
                 (f"Can you automatically draw {draw} whenever our balance drops low?",
-                 f"No, I won't draw automatically, even below a threshold. Each {draw} draw is a Tier 3 action that needs your passkey approval at the time. "
-                 "When your balance runs low, ask me and I can stage a draw proposal for you to approve."),
+                 f"No, I won't draw automatically, even below a threshold. Each {draw} draw is a Tier 3 action that you request from the lender yourself. "
+                 "When your balance runs low, I flag it and can draft the draw request for you to send."),
             ])
             sys_prompt = append_reference_cards(get_credit_underwriting_prompt(t1_base), t1_q, k=1)
             history = [{"role": "user", "content": t1_q}, {"role": "assistant", "content": t1_a}]
@@ -2072,6 +2232,200 @@ def build_multiturn_rows(rng: random.Random, count: int) -> List[Dict[str, Any]]
             history = [{"role": "user", "content": t1_q}, {"role": "assistant", "content": t1_a}]
             rows.append(make_multiturn_row(sys_prompt, history, t2_q, t2_a, "", "multiturn:break_even_pricing"))
 
+        elif scenario == "dscr_headroom":
+            noi = rng.randrange(60000, 600000, 10000)
+            ds = rng.randrange(30000, int(noi * 0.8), 5000)
+            dscr_dec = (Decimal(noi) / Decimal(ds)).quantize(Decimal("0.01"))
+            dscr_val = f"{dscr_dec}x"
+            noi_s, ds_s = money(noi), money(ds)
+            headroom_dec = (dscr_dec - Decimal("1.25")).quantize(Decimal("0.01"))
+            headroom_s = f"{headroom_dec}x"
+            status = "PRIME" if dscr_dec >= Decimal("1.35") else "APPROVED" if dscr_dec >= Decimal("1.25") else "CONDITIONAL"
+            t1_q = f"What is our DSCR if annual NOI is {noi_s} and debt payments are {ds_s}?"
+            t1_a = (
+                f"Your Debt Service Coverage Ratio is {dscr_val} based on {noi_s} of net operating income and {ds_s} of annual debt service. "
+                f"Lenders classify that coverage as {status.lower()} for principal and interest payments. "
+                "Keep operating income steady through any financing application."
+            )
+            base_spec = (
+                f"**DSCR Metric**: {dscr_val}\n**Underwriting Status**: {status}\n"
+                f"**Net Operating Income (NOI)**: {noi_s}\n**Annual Debt Service**: {ds_s}\n"
+                f"**Covenant Headroom**: {headroom_s}"
+            )
+            t2_q, t2_a = rng.choice([
+                (f"How much covenant headroom do we have above a typical 1.25x bank requirement?",
+                 f"Your {dscr_val} DSCR leaves {headroom_s} of headroom above the standard 1.25x covenant. "
+                 f"That cushion absorbs minor operating dips, but keep fixed debt payments steady at {ds_s}."),
+                (f"What happens to our debt coverage if our net operating income of {noi_s} dips during a slow quarter?",
+                 f"A revenue dip below {noi_s} compresses your {dscr_val} coverage closer to the 1.25x covenant line. "
+                 f"Because annual debt service is fixed at {ds_s}, protect operating margins by trimming discretionary expenses early."),
+            ])
+            sys_prompt = append_reference_cards(get_cash_diagnostic_prompt(base_spec), t1_q, k=1)
+            history = [{"role": "user", "content": t1_q}, {"role": "assistant", "content": t1_a}]
+            rows.append(make_multiturn_row(sys_prompt, history, t2_q, t2_a, "", "multiturn:dscr_headroom"))
+
+        elif scenario == "dupont_leverage":
+            rev = rng.randrange(300000, 2000000, 50000)
+            ni = rng.randrange(int(rev * 0.05), int(rev * 0.20), 5000)
+            assets = rng.randrange(int(rev * 0.5), int(rev * 1.5), 25000)
+            equity = rng.randrange(int(assets * 0.3), int(assets * 0.8), 25000)
+            npm = f"{(Decimal(ni) / Decimal(rev) * 100).quantize(Decimal('0.01'))}%"
+            at = f"{(Decimal(rev) / Decimal(assets)).quantize(Decimal('0.01'))}x"
+            em = f"{(Decimal(assets) / Decimal(equity)).quantize(Decimal('0.01'))}x"
+            roe = f"{(Decimal(ni) / Decimal(equity) * 100).quantize(Decimal('0.01'))}%"
+            ni_s, rev_s, a_s, eq_s = money(ni), money(rev), money(assets), money(equity)
+            t1_q = f"Run a DuPont ROE decomposition for net income {ni_s}, revenue {rev_s}, assets {a_s}, and equity {eq_s}."
+            t1_a = (
+                f"Your aggregate Return on Equity is {roe}, produced by a {npm} net profit margin, {at} asset turnover, and {em} equity multiplier. "
+                f"That rests on {ni_s} net income over {rev_s} revenue and {eq_s} equity. "
+                "Maintain this operational balance while expanding commercial sales."
+            )
+            base_spec = (
+                f"**Aggregate Return on Equity (ROE)**: {roe}\n**Net Profit Margin**: {npm}\n"
+                f"**Asset Efficiency (Asset Turnover)**: {at}\n**Equity Multiplier (Financial Leverage)**: {em}\n"
+                f"**Annual Net Income**: {ni_s}\n**Annual Gross Revenue**: {rev_s}\n"
+                f"**Total Balance Sheet Assets**: {a_s}\n**Total Shareholder Equity**: {eq_s}"
+            )
+            t2_q, t2_a = rng.choice([
+                (f"Is our {roe} return on equity driven more by operational efficiency or financial leverage?",
+                 f"Your return is driven by a {npm} net margin and {at} asset turnover against {em} financial leverage. "
+                 f"Operational profitability is doing the heavy lifting, which gives your {roe} ROE durable quality without excessive debt risk."),
+                (f"If we borrow to expand assets beyond {a_s}, how does that affect our leverage multiplier?",
+                 f"Adding debt lifts your {em} equity multiplier because total assets increase while shareholder equity stays at {eq_s}. "
+                 "More leverage magnifies ROE during growth quarters, but also increases downside risk if earnings drop."),
+            ])
+            sys_prompt = append_reference_cards(get_cash_diagnostic_prompt(base_spec), t1_q, k=1)
+            history = [{"role": "user", "content": t1_q}, {"role": "assistant", "content": t1_a}]
+            rows.append(make_multiturn_row(sys_prompt, history, t2_q, t2_a, "", "multiturn:dupont_leverage"))
+
+        elif scenario == "altman_turnaround":
+            assets = rng.randrange(200000, 1500000, 25000)
+            wc = rng.randrange(int(-assets * 0.1), int(assets * 0.3), 10000)
+            re_val = rng.randrange(int(assets * 0.05), int(assets * 0.35), 10000)
+            ebit = rng.randrange(int(assets * 0.05), int(assets * 0.25), 5000)
+            bve = rng.randrange(int(assets * 0.2), int(assets * 0.6), 10000)
+            tl = assets - bve
+            sales = int(assets * 1.2)
+            from services.calculations.credit_distress import calculate_altman_z_score
+            z_res = calculate_altman_z_score(
+                working_capital=Decimal(wc), retained_earnings=Decimal(re_val),
+                ebit=Decimal(ebit), book_value_equity=Decimal(bve), total_liabilities=Decimal(tl),
+                revenue=Decimal(sales), total_assets=Decimal(assets),
+            )
+            z_val = f"{z_res['altman_z_score']}"
+            zone = z_res["distress_zone"]
+            wc_s, a_s, re_s, e_s, eq_s, tl_s, rev_s = money(wc), money(assets), money(re_val), money(ebit), money(bve), money(tl), money(sales)
+            t1_q = f"Calculate Altman Z-score with working capital {wc_s}, retained earnings {re_s}, EBIT {e_s}, equity {eq_s}, liabilities {tl_s}, revenue {rev_s}, assets {a_s}."
+            t1_a = (
+                f"Your Altman Z'-score is {z_val}, placing the business in the {zone.lower()} for credit distress risk. "
+                f"This reflects {wc_s} working capital, {e_s} operating earnings, and {tl_s} total obligations against {a_s} assets. "
+                "Monitor short-term liabilities closely to protect your credit standing."
+            )
+            base_spec = (
+                f"**Altman Z'-Score**: {z_val}\n**Credit Distress Tier**: {zone}\n"
+                f"**Working Capital**: {wc_s}\n**Total Assets**: {a_s}\n"
+                f"**Retained Earnings**: {re_s}\n**Operating Income (EBIT)**: {e_s}\n"
+                f"**Book Value of Equity**: {eq_s}\n**Total Liabilities**: {tl_s}\n"
+                f"**Commercial Sales**: {rev_s}"
+            )
+            t2_q, t2_a = rng.choice([
+                (f"What operational steps would improve our {z_val} score and move us toward a safer zone?",
+                 f"Improving working capital from {wc_s} and expanding retained earnings beyond {re_s} are the most effective levers. "
+                 f"Pay down short-term liabilities from your {tl_s} total debt to lift liquidity and strengthen your score."),
+                (f"How much does our {wc_s} working capital position weigh down the {z_val} Z'-score?",
+                 f"Working capital of {wc_s} directly feeds the liquidity component of the Altman formula against {a_s} in assets. "
+                 f"Converting inventory to cash and collecting receivables faster will directly improve your {z_val} score."),
+            ])
+            sys_prompt = append_reference_cards(get_cash_diagnostic_prompt(base_spec), t1_q, k=1)
+            history = [{"role": "user", "content": t1_q}, {"role": "assistant", "content": t1_a}]
+            rows.append(make_multiturn_row(sys_prompt, history, t2_q, t2_a, "", "multiturn:altman_turnaround"))
+
+        elif scenario == "receivables_collection":
+            total_ar = rng.randrange(40000, 350000, 10000)
+            current_ar = int(total_ar * 0.55)
+            overdue_30 = int(total_ar * 0.25)
+            overdue_60 = total_ar - current_ar - overdue_30
+            dso = rng.choice([38, 44, 52, 65])
+            tot_s, cur_s, o30_s, o60_s = money(total_ar), money(current_ar), money(overdue_30), money(overdue_60)
+            t1_q = f"Analyze our receivables aging with {tot_s} total AR, {cur_s} current, {o30_s} past 30 days, and {o60_s} past 60 days."
+            t1_a = (
+                f"Total accounts receivable stand at {tot_s} with a Days Sales Outstanding of {dso} days. "
+                f"While {cur_s} remains current, {o30_s} is 30 days overdue and {o60_s} is over 60 days past due. "
+                "Initiate direct collection follow-ups on the oldest balances immediately."
+            )
+            base_spec = (
+                f"**Total Accounts Receivable**: {tot_s}\n**Days Sales Outstanding (DSO)**: {dso} days\n"
+                f"**Current Receivables (0-30 Days)**: {cur_s}\n**Overdue Receivables (31-60 Days)**: {o30_s}\n"
+                f"**Severely Overdue (60+ Days)**: {o60_s}"
+            )
+            t2_q, t2_a = rng.choice([
+                (f"If we collect the {o60_s} overdue bucket this week, how does that help our cash position?",
+                 f"Bringing in the {o60_s} severely overdue balance immediately injects liquid cash into your operating account. "
+                 f"That direct recovery reduces total outstanding AR below {tot_s} and removes bad-debt write-off risk."),
+                (f"Should we offer a 2% early settlement discount to recover the {o30_s} past-due balance?",
+                 f"A 2% discount on {o30_s} costs about 2% of invoice value to accelerate collections and shorten your {dso}-day DSO. "
+                 f"Offer it if immediate cash is needed to cover supplier payments, but reserve discounts for repeat commercial buyers."),
+            ])
+            sys_prompt = append_reference_cards(get_cash_diagnostic_prompt(base_spec), t1_q, k=1)
+            history = [{"role": "user", "content": t1_q}, {"role": "assistant", "content": t1_a}]
+            rows.append(make_multiturn_row(sys_prompt, history, t2_q, t2_a, "", "multiturn:receivables_collection"))
+
+        elif scenario == "outflow_cost_cut":
+            total_out = rng.randrange(50000, 400000, 10000)
+            payroll = int(total_out * 0.45)
+            suppliers = int(total_out * 0.35)
+            overhead = total_out - payroll - suppliers
+            burn_rate = money(int(total_out / 30))
+            tot_s, pay_s, sup_s, ovh_s = money(total_out), money(payroll), money(suppliers), money(overhead)
+            t1_q = f"Break down our gross outflows of {tot_s} across payroll {pay_s}, suppliers {sup_s}, and overhead {ovh_s}."
+            t1_a = (
+                f"Gross outflows total {tot_s}, averaging {burn_rate}/day in operating disbursements. "
+                f"Payroll accounts for {pay_s}, supplier payables take {sup_s}, and general overhead uses {ovh_s}. "
+                "Audit recurring supplier contracts to trim unnecessary disbursements."
+            )
+            base_spec = (
+                f"**Gross Monthly Outflows**: {tot_s}\n**Average Daily Burn**: {burn_rate}/day\n"
+                f"**Payroll Outflows**: {pay_s}\n**Vendor and Supplier Outflows**: {sup_s}\n"
+                f"**General Overhead and Rent**: {ovh_s}"
+            )
+            t2_q, t2_a = rng.choice([
+                (f"Which outflow category should we target first to reduce our {burn_rate}/day burn velocity?",
+                 f"Focus on your {sup_s} supplier spend and {ovh_s} general overhead first. "
+                 f"Payroll of {pay_s} is fixed and difficult to adjust quickly, whereas software subscriptions and vendor terms can be trimmed immediately."),
+                (f"If we renegotiate supplier terms on {sup_s}, how does that protect cash flow?",
+                 f"Stretching payment terms on {sup_s} of supplier spend retains cash inside your account longer. "
+                 f"That slows your {burn_rate}/day burn rate and protects operating liquidity during slower revenue weeks."),
+            ])
+            sys_prompt = append_reference_cards(get_cash_diagnostic_prompt(base_spec), t1_q, k=1)
+            history = [{"role": "user", "content": t1_q}, {"role": "assistant", "content": t1_a}]
+            rows.append(make_multiturn_row(sys_prompt, history, t2_q, t2_a, "", "multiturn:outflow_cost_cut"))
+
+        elif scenario == "bridge_staging":
+            csv = make_statement(rng, rng.choices(list(PROFILES), weights=PROFILE_WEIGHTS)[0], days=rng.choice([30, 45]))
+            cash = tool_analyze_cash_flow(csv)
+            t1_base = cash_base_reply(cash, "ADVICE")
+            t1_q = rng.choice(CASH_QUESTIONS["ADVICE"])
+            t1_a = cash_reply(rng, cash, "ADVICE")
+            if not t1_a:
+                continue
+
+            bal = money(cash["current_balance"])
+            amt = money(rng.randrange(15000, 80000, 5000))
+            t2_q, t2_a = rng.choice([
+                (f"Can you stage a {amt} invoice factoring proposal for our outstanding customer receivables?",
+                 f"I can prepare that proposal for you. Staging a {amt} factoring proposal is a Tier 2 action that places the terms in your review queue. "
+                 "Once staged, you can inspect the advance rate, factoring fee, and implied APR before deciding whether to send it."),
+                (f"Please prepare a {amt} working capital line proposal so we can evaluate the terms.",
+                 f"Under the Three-Tier Security Gate, I can stage a {amt} working capital proposal for your evaluation. "
+                 "Staging does not commit you or draw funds; it creates a structured proposal in Tier 2 that you can prepare and send, or dismiss."),
+                (f"Can you automatically execute the {amt} financing facility if our balance dips below {bal}?",
+                 f"No, I never execute financing. Drawing a {amt} facility is a Tier 3 action that only you can request from the lender. "
+                 "I can stage the proposal now so the request is ready whenever you choose to send it."),
+            ])
+            sys_prompt = append_reference_cards(get_cash_diagnostic_prompt(t1_base), t1_q, k=1)
+            history = [{"role": "user", "content": t1_q}, {"role": "assistant", "content": t1_a}]
+            rows.append(make_multiturn_row(sys_prompt, history, t2_q, t2_a, "", "multiturn:bridge_staging"))
+
     return rows
 
 
@@ -2152,8 +2506,8 @@ GOVERNANCE_EXECUTION_PROMPTS = [
 ]
 
 GOVERNANCE_EXPLANATION_PROMPTS = [
-    "Why can't the copilot just send the money without a passkey?",
-    "What is a passkey and why does the copilot require one for execution?",
+    "Why can't the copilot just send the money for me?",
+    "Who actually sends a financing request the copilot drafts?",
     "Why are proposals staged in Tier 2 instead of executing directly?",
     "What happens if someone tries to prompt inject the AI to send funds?",
 ]
@@ -2170,57 +2524,57 @@ GOV_EXEC_PREAMBLES = [
 ]
 
 GOV_EXEC_MECHANISMS = [
-    "Executing financial commitments is a Tier 3 action requiring your explicit Human-in-the-Loop WebAuthn passkey verification.",
-    "Under the Three-Tier Security Gate, all fund movements require your physical biometric or security key confirmation.",
-    "Drawing funds or committing to credit terms is strictly a Tier 3 operation that waits for your device passkey approval.",
-    "The Three-Tier Security Gate isolates AI reasoning from execution rails, requiring a hardware-backed cryptographic signature for any fund release.",
-    "All financial disbursements require Tier 3 biometric authorization on your registered device to guarantee human control.",
-    "Irreversible actions like credit draws or wire transfers require your physical WebAuthn assertion to prevent unauthorized execution.",
-    "Our security policy enforces hardware-backed cryptographic passkey sign-off before any money can move.",
-    "Tier 3 governance mandates that you personally verify and sign each monetary transaction with your registered device passkey.",
+    "Financial commitments are Tier 3 actions, and the copilot has no bank or lender connection to carry them out.",
+    "Under the Three-Tier Security Gate, every fund movement is a request you send yourself, outside the copilot.",
+    "Drawing funds or committing to credit terms is strictly a Tier 3 operation that only you can perform with the lender.",
+    "The Three-Tier Security Gate keeps AI reasoning away from payment rails: the copilot drafts, and you decide what to send.",
+    "All financial disbursements stay with you as Tier 3 actions, which keeps every irreversible step under human control.",
+    "Irreversible actions like credit draws or wire transfers happen only when you request them from your bank or lender.",
+    "Our security design gives the copilot no payment credentials, so no money can move through it.",
+    "Tier 3 governance means you personally review and send each monetary request; the copilot never sends anything.",
 ]
 
 GOV_EXEC_STAGINGS = [
-    "If you want, I can stage this as a Tier 2 proposal so you can inspect the exact terms before approving.",
-    "Tell me if you would like me to stage a proposal for your review, and you can approve it with your passkey when ready.",
-    "If you ask, I can prepare a staged proposal in the ledger so you can verify the provider and APR before confirming.",
-    "I can stage the request for your review, allowing you to audit the payment details before completing device authorization.",
-    "Ask me to stage the transaction and you can check every fee and condition before providing your passkey.",
-    "I can place a staged proposal into the review ledger if you wish, so you can inspect the details before executing.",
-    "If you want to proceed, ask me to stage the transfer or draw so you can review and authorize it on your device.",
-    "You can ask me to stage this proposal for review, and no capital moves until you confirm it with your biometric passkey.",
+    "If you want, I can stage this as a Tier 2 proposal so you can inspect the exact terms before sending it.",
+    "Tell me if you would like me to stage a proposal for your review, and you can prepare the request when ready.",
+    "If you ask, I can prepare a staged proposal in the ledger so you can verify the provider and APR before sending.",
+    "I can stage the request for your review, so you can audit the payment details before you send it yourself.",
+    "Ask me to stage the transaction and you can check every fee and condition before sending the request.",
+    "I can place a staged proposal into the review ledger if you wish, so you can inspect the details before acting.",
+    "If you want to proceed, ask me to stage the transfer or draw so you can review it and send the request.",
+    "You can ask me to stage this proposal for review, and no capital moves unless you send the request yourself.",
 ]
 
 GOV_EXPL_CONCEPTS = [
-    "A WebAuthn passkey uses your device's biometric sensor or hardware key to cryptographically sign a single-use authorization token.",
+    "The copilot works only from the statements you upload and has no connection to any bank or lender.",
     "Proposals are staged in Tier 2 to keep financial intents in an immutable ledger where you can audit terms before any money moves.",
     "The Three-Tier Security Gate protects your business by strictly separating autonomous analysis from irreversible financial execution.",
-    "WebAuthn passkeys provide cryptographic non-repudiation, ensuring that only an authorized human operator can release funds.",
+    "Because the copilot holds no payment credentials, only the business owner can release funds.",
     "Tier 2 staging isolates AI reasoning from bank rails, preventing model errors or prompt injection from triggering transactions.",
-    "The copilot cannot move funds without a passkey because drawing credit and wiring capital are irreversible legal commitments.",
-    "Passkeys bind each approval to a unique cryptographic challenge generated specifically for that transaction.",
+    "The copilot cannot move funds because drawing credit and wiring capital are irreversible commitments that stay with the owner.",
+    "Every drafted request records the exact amount and recipient, so what you send matches what you reviewed.",
     "Holding financial commitments in Tier 2 ensures you retain full human oversight over APR, fees, and disbursement amounts.",
 ]
 
 GOV_EXPL_GUARANTEES = [
-    "Even if an attacker attempts prompt injection, execution remains impossible without physical biometric verification on an authorized device.",
+    "Even if an attacker attempts prompt injection, nothing can execute, because the copilot has no way to move money.",
     "This guarantees that no external instructions, malicious text, or model hallucinations can move enterprise capital.",
     "The copilot never holds signing keys or disbursement credentials, eliminating automated exfiltration risks.",
     "This ensures that a compromised session or manipulated prompt cannot trigger unauthorized fund transfers.",
-    "Hardware-backed authentication ensures that every single dollar moved has been inspected and approved by the business owner.",
-    "By enforcing physical device presence, our architecture ensures zero funds move while you are away from your console.",
-    "Cryptographic intent binding prevents replay attacks and ensures the approved parameters cannot be altered in flight.",
+    "Every dollar that moves is sent by the business owner, after they have read the drafted request.",
+    "Nothing moves while you are away, because sending a request is always your own step.",
+    "A drafted request keeps its amount and recipient fixed, so the terms you reviewed are the terms you send.",
     "This separation guarantees that the copilot serves only as an advisor, while legal signing authority remains exclusively with you.",
 ]
 
 GOV_EXPL_GUIDANCES = [
-    "You can review staged proposals in the dashboard and approve them with a fingerprint, face scan, or security key.",
-    "Whenever you want to take action, ask me to stage a proposal and inspect the parameters before giving passkey approval.",
-    "All staged proposals remain inactive until you explicitly click approve and sign with your registered hardware key.",
-    "You maintain complete control: review the staged terms at your convenience and authorize execution on your registered device.",
-    "To complete an action, you simply review the staged offer in your ledger and confirm it using your device passkey.",
-    "You can inspect all fee disclosures and contract terms in Tier 2 before confirming the transaction on your physical device.",
-    "Once a proposal is staged, you can verify the provider and APR before completing one-touch biometric confirmation.",
+    "You can review staged proposals in Approvals and choose Prepare request or Dismiss.",
+    "Whenever you want to take action, ask me to stage a proposal and inspect the parameters before sending the request.",
+    "All staged proposals stay drafts until you prepare the request and send it to the lender yourself.",
+    "You maintain complete control: review the staged terms at your convenience and send the request when ready.",
+    "To complete an action, review the staged offer in Approvals, prepare the request, and send it from your own email or the lender's form.",
+    "You can inspect all fee disclosures and contract terms in Tier 2 before sending anything to a lender.",
+    "Once a proposal is staged, you can verify the provider and APR before preparing the request to send.",
     "This protocol keeps your treasury secure while giving you a clear, verifiable staging ledger for every business action.",
 ]
 
@@ -2253,7 +2607,7 @@ def build_governance_rows(rng: random.Random, count: int) -> List[Dict[str, Any]
         else:
             q = rng.choice(GOVERNANCE_EXPLANATION_PROMPTS)
             reply = make_governance_reply(rng, is_explanation=True)
-        rows.append(make_row(base_prompt, q, reply, "", "governance:tier3_passkey"))
+        rows.append(make_row(base_prompt, q, reply, "", "governance:tier3_owner_sends"))
     return rows
 
 
@@ -2309,9 +2663,16 @@ def rejection_reason(row: Dict[str, Any]) -> Optional[str]:
     if user.strip().lower() in EVAL_QUESTIONS:
         return "eval_set_leakage"
 
-    if "###" in reply or "<thought" in reply or METRIC_BULLET.search(reply):
+    prose_reply = reply
+    if "<think>" in reply:
+        m_think = re.search(r"<think>(.*?)</think>\s*", reply, re.DOTALL)
+        if not m_think:
+            return "unclosed_think_tag"
+        prose_reply = reply[m_think.end():].strip()
+
+    if "###" in prose_reply or "<thought" in prose_reply or METRIC_BULLET.search(prose_reply):
         return "format"
-    if sanitize_cfo_reply(reply) != reply:
+    if sanitize_cfo_reply(prose_reply) != prose_reply:
         return "sanitizer_changes_reply"
 
     if _TOKENIZER is not None:
@@ -2324,10 +2685,10 @@ def rejection_reason(row: Dict[str, Any]) -> Optional[str]:
             pass
 
     conv_context = "\n".join(f"{m['role']}: {m['content']}" for m in msgs[:-1])
-    if not numbers_are_grounded(reply, base, context=conv_context):
+    if not numbers_are_grounded(prose_reply, base, context=conv_context):
         return "ungrounded"
 
-    sentences = len(SENTENCE_END.findall(reply))
+    sentences = len(SENTENCE_END.findall(prose_reply))
     if base and not 2 <= sentences <= 6:
         return "sentence_count"
     if (kind.startswith("concept:") or kind.startswith("multiturn:")) and not 2 <= sentences <= 6:
@@ -2335,17 +2696,401 @@ def rejection_reason(row: Dict[str, Any]) -> Optional[str]:
     if kind.startswith("refusal:") and not 1 <= sentences <= 4:
         return "sentence_count"
     if kind.endswith(":none") or kind.startswith("missing:") or kind.startswith("refusal:"):
-        if DIGIT.search(reply):
+        if DIGIT.search(prose_reply):
             return "figure_without_statement"
     return None
 
 
+def extract_prose(reply: str) -> str:
+    if "<think>" in reply:
+        m = re.search(r"<think>(.*?)</think>\s*", reply, re.DOTALL)
+        if m:
+            return reply[m.end():].strip()
+    return reply
+
+
 def skeleton(reply: str) -> str:
-    return re.sub(r"\d[\d,]*(?:\.\d+)?", "#", reply)
+    return re.sub(r"\d[\d,]*(?:\.\d+)?", "#", extract_prose(reply))
 
 
 def opening(reply: str, words: int = 3) -> str:
-    return " ".join(re.sub(r"[*$]", "", reply).lower().split()[:words])
+    return " ".join(re.sub(r"[*$]", "", extract_prose(reply)).lower().split()[:words])
+
+
+TOOLS_SCHEMA: List[Dict[str, Any]] = [
+    {
+        "type": "function",
+        "function": {
+            "name": "tool_analyze_cash_flow",
+            "description": "Calculates current balance, daily average balance (DAB), average daily burn, runway days, and projected cash deficit from bank statement CSV transactions.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "csv_content": {"type": "string", "description": "Raw bank statement CSV content."}
+                },
+                "required": ["csv_content"],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "calculate_dscr",
+            "description": "Calculates Debt Service Coverage Ratio (DSCR), underwriting status, and covenant headroom.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "net_operating_income": {"type": "number", "description": "Annual net operating income (NOI) in USD."},
+                    "total_debt_service": {"type": "number", "description": "Annual total principal and interest debt service in USD."}
+                },
+                "required": ["net_operating_income", "total_debt_service"]
+            }
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "calculate_dupont_roe",
+            "description": "Decomposes Return on Equity (ROE) into Net Profit Margin, Asset Turnover, and Financial Leverage Multiplier.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "net_income": {"type": "number", "description": "Annual net profit in USD."},
+                    "revenue": {"type": "number", "description": "Annual gross revenue in USD."},
+                    "total_assets": {"type": "number", "description": "Total balance sheet assets in USD."},
+                    "total_equity": {"type": "number", "description": "Total shareholder equity in USD."}
+                },
+                "required": ["net_income", "revenue", "total_assets", "total_equity"]
+            }
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "calculate_altman_z_score",
+            "description": "Calculates Altman Z'-score for private enterprise credit distress classification (Safe, Grey, Distress).",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "working_capital": {"type": "number", "description": "Net working capital in USD."},
+                    "retained_earnings": {"type": "number", "description": "Retained earnings in USD."},
+                    "ebit": {"type": "number", "description": "Operating earnings before interest and taxes (EBIT) in USD."},
+                    "book_value_equity": {"type": "number", "description": "Book value of shareholder equity in USD."},
+                    "total_liabilities": {"type": "number", "description": "Total liabilities in USD."},
+                    "revenue": {"type": "number", "description": "Annual commercial sales in USD."},
+                    "total_assets": {"type": "number", "description": "Total assets in USD."}
+                },
+                "required": ["working_capital", "retained_earnings", "ebit", "book_value_equity", "total_liabilities", "revenue", "total_assets"]
+            }
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "calculate_break_even",
+            "description": "Calculates required break-even sales revenue given fixed costs and contribution margin ratio.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "fixed_costs": {"type": "number", "description": "Total fixed operating overhead in USD."},
+                    "contribution_margin_ratio": {"type": "number", "description": "Contribution margin ratio percentage (e.g. 35 for 35%)."}
+                },
+                "required": ["fixed_costs", "contribution_margin_ratio"]
+            }
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "calculate_trade_credit_apr",
+            "description": "Calculates annualized implied APR for prompt-payment trade discounts (e.g., 2/10 net 30).",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "discount_pct": {"type": "number", "description": "Early payment discount percentage."},
+                    "discount_days": {"type": "integer", "description": "Discount window in days."},
+                    "net_days": {"type": "integer", "description": "Full payment due date in days."},
+                    "invoice_amount": {"type": "number", "description": "Invoice gross face value in USD."}
+                },
+                "required": ["discount_pct", "discount_days", "net_days", "invoice_amount"]
+            }
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "stage_financing_intent",
+            "description": "Stages a financing option proposal into the Tier 2 staging ledger for the owner to prepare and send, or dismiss.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "facility_name": {"type": "string", "description": "Name of financing facility."},
+                    "amount": {"type": "number", "description": "Proposed draw or financing amount in USD."},
+                    "apr_percent": {"type": "number", "description": "True Annual Percentage Rate."}
+                },
+                "required": ["facility_name", "amount", "apr_percent"]
+            }
+        }
+    }
+]
+
+
+def add_cot_thought(row: Dict[str, Any], rng: random.Random) -> Dict[str, Any]:
+    msgs = list(row["messages"])
+    last_content = msgs[-1]["content"]
+    if "<think>" in last_content or len(msgs) < 2:
+        return row
+    kind = row.get("_kind", "")
+    user_q = msgs[-2]["content"].strip()
+    k_lower = kind.lower()
+
+    if "dscr" in k_lower or "debt" in user_q.lower() and "coverage" in user_q.lower():
+        steps = [
+            "1. Financial Inquiry: User requests Debt Service Coverage Ratio (DSCR) and debt capacity assessment.",
+            "2. Mathematical Computation: Verify Net Operating Income (NOI) against total annual debt service payments.",
+            "3. Covenant & Risk Benchmark: Compare DSCR against 1.25x commercial banking covenant and prime underwriting threshold (>= 1.35x).",
+            "4. Executive Advisory: Report exact coverage ratio, classify coverage tier, and outline debt service headroom.",
+        ]
+    elif "altman" in k_lower or "z-score" in user_q.lower() or "distress" in user_q.lower():
+        steps = [
+            "1. Financial Inquiry: User requests credit distress and bankruptcy risk diagnosis via Altman Z'-score.",
+            "2. Quantitative Verification: Reconcile working capital, retained earnings, EBIT, equity, liabilities, and sales.",
+            "3. Credit Health Tier: Classify score into Safe Zone (> 2.90), Grey Zone (1.23 - 2.90), or Distress Zone (< 1.23).",
+            "4. Executive Advisory: Report verified Z'-score, evaluate balance sheet distress levers, and provide liability guidance.",
+        ]
+    elif "dupont" in k_lower or "roe" in user_q.lower():
+        steps = [
+            "1. Financial Inquiry: User requests 3-stage DuPont decomposition of Return on Equity (ROE).",
+            "2. Quantitative Verification: Verify Net Profit Margin (NPM), Asset Turnover (AT), and Equity Multiplier (EM).",
+            "3. Driver Analysis: Determine whether equity returns are driven by operating margins, asset efficiency, or leverage.",
+            "4. Executive Advisory: Report aggregate ROE, explain primary return drivers, and advise on sustainable margin scaling.",
+        ]
+    elif "break_even" in k_lower or "break-even" in user_q.lower():
+        steps = [
+            "1. Financial Inquiry: User requests break-even sales revenue threshold under specified operating cost structure.",
+            "2. Mathematical Computation: Calculate fixed overhead divided by contribution margin ratio.",
+            "3. Margin of Safety: Assess downside revenue cushion before operations generate accounting losses.",
+            "4. Executive Advisory: State exact break-even target and prioritize high-impact overhead levers for cost reduction.",
+        ]
+    elif "trade_credit" in k_lower or "discount" in user_q.lower() and "net" in user_q.lower():
+        steps = [
+            "1. Financial Inquiry: User evaluates prompt-payment supplier trade discount terms vs credit line financing.",
+            "2. Mathematical Computation: Compute annualized implied APR = (Discount% / (100 - Discount%)) * (365 / Days Financed) * 100.",
+            "3. Benchmark Comparison: Compare implied APR against commercial borrowing rates and predatory 36% usury threshold.",
+            "4. Executive Advisory: Advise whether to capture early payment discount or preserve liquidity until net maturity.",
+        ]
+    elif k_lower.startswith("cash:") or k_lower.startswith("diagnostic:") or "runway" in user_q.lower() or "burn" in user_q.lower():
+        steps = [
+            "1. Financial Inquiry: Ingest and audit company bank transactions to evaluate liquid position and cash velocity.",
+            "2. Quantitative Flow Analysis: Verify current balance, gross inflows, operational outflows, and Daily Average Balance (DAB).",
+            "3. Deficit & Runway Pinpointing: Calculate daily operating burn rate and estimate cash runway horizon across 30/60/90 days.",
+            "4. Executive Advisory: Deliver direct cash status, highlight upcoming deficit dates, and advise on working capital timing.",
+        ]
+    elif k_lower.startswith("underwriting:") or "loan" in user_q.lower() or "borrow" in user_q.lower() or "financing" in user_q.lower():
+        steps = [
+            "1. Financial Inquiry: Assess small business creditworthiness and borrowing capacity from transactional signals.",
+            "2. Transactional Dossier Audit: Reconcile Daily Average Balance (DAB), inflow consistency, and Non-Sufficient Funds (NSF) frequency.",
+            "3. Facility Matching & Truth-in-Lending: Screen pre-qualified working capital facilities, ensuring true APR transparency.",
+            "4. Executive Advisory: Present qualified borrowing limits, facility terms, and turnaround times.",
+        ]
+    elif k_lower.startswith("multiturn:"):
+        steps = [
+            "1. Conversational Context: User asks a follow-up scenario or stress-testing question within ongoing CFO consultation.",
+            "2. Financial Consistency Check: Ground response strictly in previously verified figures and statement outputs.",
+            "3. Risk & Governance Evaluation: Check if user inquiry implies operational trade-offs or requires Tier 2 staging.",
+            "4. Executive Advisory: Address the specific hypothetical scenario directly with factual trade-off analysis.",
+        ]
+    elif k_lower.startswith("governance:") or k_lower.startswith("bridge:") or "stage" in user_q.lower() or "draw" in user_q.lower():
+        steps = [
+            "1. Security Gate Assessment: Classify action under Three-Tier Governance (Tier 1 Observation, Tier 2 Staging, Tier 3 Execution).",
+            "2. Permission Check: Verify that no autonomous money movement or facility draws occur without human authorization.",
+            "3. Enforcement Protocol: Queue action in Tier 2 staging ledger; the owner sends any request themselves.",
+            "4. Executive Advisory: Confirm staging status and transparently explain required human-in-the-loop authorization.",
+        ]
+    elif k_lower.startswith("concept:"):
+        steps = [
+            "1. Inquiry Intent: Explain institutional financial concept without company-specific transaction data.",
+            "2. Core Theory: Define underlying accounting mechanics, formulas, and balance sheet linkages.",
+            "3. Practical SME Application: Provide industry benchmark thresholds and warning signs for business owners.",
+            "4. Executive Advisory: Explain clearly in boardroom prose without hallucinating ungrounded company numbers.",
+        ]
+    elif k_lower.startswith("refusal:"):
+        steps = [
+            "1. Intent Classification: Verify domain scope against Autonomous SME Finance Copilot capabilities.",
+            "2. Scope Boundary Check: Identify whether query falls outside small business finance, treasury, or credit underwriting.",
+            "3. Professional Guidance: Enforce institutional persona and direct user to cash flow, runway, or loan evaluation.",
+        ]
+    else:
+        topic = kind.split(":")[0].replace("_", " ").capitalize()
+        steps = [
+            f"1. Query Intent: User asks: \"{user_q[:80]}\" (Domain: {topic}).",
+            "2. Grounding Check: Reconcile all financial figures directly against verified deterministic calculations.",
+            "3. Institutional Persona: Deliver direct boardroom CFO response with grounded figures and actionable advice.",
+        ]
+
+    thought_block = "<think>\n" + "\n".join(steps) + "\n</think>\n\n"
+    new_msgs = [dict(m) for m in msgs]
+    new_msgs[-1]["content"] = thought_block + last_content
+    new_row = dict(row)
+    new_row["messages"] = new_msgs
+    return new_row
+
+
+def build_and_export_tools_dataset(output_dir: str, rng: random.Random, count: int = 250, with_cot: bool = True) -> int:
+    """Generates dataset/tools_train.jsonl with realistic function-calling trajectories."""
+    tools_rows = []
+    sys_prompt = (
+        "You are the Autonomous SME Finance Copilot. You have access to deterministic financial calculation tools. "
+        "Whenever a calculation or financial analysis is required, invoke the matching function with exact parameters. "
+        "Never approximate figures or guess calculations."
+    )
+
+    for i in range(count):
+        choice = rng.choice(["dscr", "dupont", "altman", "break_even", "trade_credit", "stage", "cash_flow"])
+        call_id = f"call_{i+1:04d}"
+
+        if choice == "dscr":
+            noi = rng.randrange(50000, 500000, 10000)
+            ds = rng.randrange(25000, int(noi * 0.85), 5000)
+            dscr_dec = (Decimal(noi) / Decimal(ds)).quantize(Decimal("0.01"))
+            status = "PRIME" if dscr_dec >= Decimal("1.35") else "APPROVED" if dscr_dec >= Decimal("1.25") else "CONDITIONAL"
+            headroom = (dscr_dec - Decimal("1.25")).quantize(Decimal("0.01"))
+            q = f"Calculate our Debt Service Coverage Ratio (DSCR) for net operating income of ${noi:,} and annual debt service of ${ds:,}."
+            call = {"id": call_id, "type": "function", "function": {"name": "calculate_dscr", "arguments": {"net_operating_income": noi, "total_debt_service": ds}}}
+            tool_resp = json.dumps({"dscr": float(dscr_dec), "status": status, "covenant_headroom": float(headroom), "noi": noi, "debt_service": ds})
+            call_thought = f"<think>\nUser requests DSCR analysis for ${noi:,} NOI and ${ds:,} annual debt service. Invoke calculate_dscr to compute deterministic coverage ratio and covenant headroom.\n</think>"
+            ans_thought = f"<think>\nTool calculate_dscr returned DSCR={dscr_dec}x, status={status}, and covenant headroom={headroom}x. Synthesize institutional advisory on debt service capacity.\n</think>\n\n"
+            ans = (
+                f"Your Debt Service Coverage Ratio is {dscr_dec}x with ${noi:,.2f} of NOI against ${ds:,.2f} of annual debt payments. "
+                f"Lenders classify this coverage as {status.lower()} with {headroom}x of headroom above standard 1.25x bank covenants. "
+                "Keep operating income steady through any financing application."
+            )
+
+        elif choice == "dupont":
+            rev = rng.randrange(300000, 2000000, 50000)
+            ni = rng.randrange(int(rev * 0.05), int(rev * 0.18), 5000)
+            assets = rng.randrange(int(rev * 0.6), int(rev * 1.4), 25000)
+            equity = rng.randrange(int(assets * 0.35), int(assets * 0.75), 25000)
+            npm = (Decimal(ni) / Decimal(rev) * 100).quantize(Decimal("0.01"))
+            at = (Decimal(rev) / Decimal(assets)).quantize(Decimal("0.01"))
+            em = (Decimal(assets) / Decimal(equity)).quantize(Decimal("0.01"))
+            roe = (Decimal(ni) / Decimal(equity) * 100).quantize(Decimal("0.01"))
+            q = f"Run a 3-stage DuPont ROE breakdown: net income ${ni:,}, gross revenue ${rev:,}, assets ${assets:,}, equity ${equity:,}."
+            call = {"id": call_id, "type": "function", "function": {"name": "calculate_dupont_roe", "arguments": {"net_income": ni, "revenue": rev, "total_assets": assets, "total_equity": equity}}}
+            tool_resp = json.dumps({"roe_percent": float(roe), "net_profit_margin_percent": float(npm), "asset_turnover": float(at), "equity_multiplier": float(em)})
+            call_thought = f"<think>\nUser requests 3-stage DuPont ROE breakdown. Invoke calculate_dupont_roe with revenue ${rev:,}, net income ${ni:,}, assets ${assets:,}, and equity ${equity:,}.\n</think>"
+            ans_thought = f"<think>\nTool calculate_dupont_roe returned ROE={roe}%, net margin={npm}%, asset turnover={at}x, equity multiplier={em}x. Formulate quality-of-earnings advisory.\n</think>\n\n"
+            ans = (
+                f"Your aggregate Return on Equity is {roe}%, decomposed into a {npm}% net profit margin, {at}x asset turnover, and a {em}x equity multiplier. "
+                f"Operating margin and asset velocity are the main drivers of this return, indicating high-quality earnings without excessive leverage. "
+                "Maintain this margin profile while scaling customer acquisitions."
+            )
+
+        elif choice == "altman":
+            assets = rng.randrange(200000, 1200000, 25000)
+            wc = rng.randrange(int(assets * 0.05), int(assets * 0.25), 10000)
+            re_val = rng.randrange(int(assets * 0.05), int(assets * 0.30), 10000)
+            ebit = rng.randrange(int(assets * 0.05), int(assets * 0.20), 5000)
+            bve = rng.randrange(int(assets * 0.25), int(assets * 0.55), 10000)
+            tl = assets - bve
+            sales = int(assets * 1.1)
+            from services.calculations.credit_distress import calculate_altman_z_score
+            z_res = calculate_altman_z_score(
+                working_capital=Decimal(wc), retained_earnings=Decimal(re_val),
+                ebit=Decimal(ebit), book_value_equity=Decimal(bve), total_liabilities=Decimal(tl),
+                revenue=Decimal(sales), total_assets=Decimal(assets),
+            )
+            z_val = f"{z_res['altman_z_score']}"
+            zone = z_res["distress_zone"]
+            q = f"Calculate our Altman Z'-Score with working capital ${wc:,}, retained earnings ${re_val:,}, EBIT ${ebit:,}, equity ${bve:,}, liabilities ${tl:,}, revenue ${sales:,}, and assets ${assets:,}."
+            call = {"id": call_id, "type": "function", "function": {"name": "calculate_altman_z_score", "arguments": {"working_capital": wc, "retained_earnings": re_val, "ebit": ebit, "book_value_equity": bve, "total_liabilities": tl, "revenue": sales, "total_assets": assets}}}
+            tool_resp = json.dumps({"z_score": float(z_val), "zone": zone})
+            call_thought = f"<think>\nUser requests Altman Z'-Score distress assessment. Invoke calculate_altman_z_score with working capital, retained earnings, EBIT, equity, liabilities, sales, and total assets.\n</think>"
+            ans_thought = f"<think>\nTool calculate_altman_z_score returned Z'-score={z_val} in {zone} zone. Synthesize insolvency risk commentary and liquidity recommendations.\n</think>\n\n"
+            ans = (
+                f"Your Altman Z'-score is {z_val}, placing the business in the {zone.lower()} for commercial credit distress. "
+                f"This reflects ${wc:,.2f} of working capital and ${ebit:,.2f} in operating earnings against ${tl:,.2f} of liabilities. "
+                "Monitor short-term obligations and shore up liquid working capital before seeking new debt."
+            )
+
+        elif choice == "break_even":
+            fc = rng.randrange(20000, 150000, 5000)
+            margin = rng.choice([25, 30, 35, 40, 50])
+            be = (Decimal(fc) / (Decimal(margin) / Decimal("100"))).quantize(Decimal("0.01"))
+            q = f"What is our break-even revenue requirement if fixed operating costs are ${fc:,} and margin is {margin}%?"
+            call = {"id": call_id, "type": "function", "function": {"name": "calculate_break_even", "arguments": {"fixed_costs": fc, "contribution_margin_ratio": margin}}}
+            tool_resp = json.dumps({"break_even_revenue": float(be), "fixed_costs": fc, "contribution_margin_ratio": margin})
+            call_thought = f"<think>\nUser requests break-even revenue requirement. Invoke calculate_break_even with fixed overhead ${fc:,} and margin {margin}%.\n</think>"
+            ans_thought = f"<think>\nTool calculate_break_even returned break-even sales requirement of ${be:,.2f}. Synthesize target volume and operating margin advice.\n</think>\n\n"
+            ans = (
+                f"Your break-even revenue requirement is ${be:,.2f} based on ${fc:,.2f} in fixed overhead at a {margin}% contribution margin. "
+                "Sales volume above this threshold yields operating profit, while falling short creates deficits. "
+                "Track monthly revenues against that threshold and cut fixed costs if you keep falling short."
+            )
+
+        elif choice == "trade_credit":
+            inv_val = rng.randrange(15000, 100000, 5000)
+            disc, disc_days, net_days = rng.choice([(2, 10, 30), (1, 10, 30), (2, 10, 45)])
+            days_fin = net_days - disc_days
+            implied_apr = ((Decimal(disc) / (Decimal("100") - Decimal(disc))) * (Decimal("365") / Decimal(days_fin)) * Decimal("100")).quantize(Decimal("0.01"))
+            savings = (Decimal(inv_val) * (Decimal(disc) / Decimal("100"))).quantize(Decimal("0.01"))
+            q = f"Evaluate trade terms {disc}/{disc_days} net {net_days} on a ${inv_val:,} supplier invoice."
+            call = {"id": call_id, "type": "function", "function": {"name": "calculate_trade_credit_apr", "arguments": {"discount_pct": disc, "discount_days": disc_days, "net_days": net_days, "invoice_amount": inv_val}}}
+            tool_resp = json.dumps({"implied_apr_percent": float(implied_apr), "discount_dollar_savings": float(savings), "days_financed": days_fin})
+            call_thought = f"<think>\nUser requests trade credit discount evaluation for {disc}/{disc_days} net {net_days}. Invoke calculate_trade_credit_apr on ${inv_val:,} invoice.\n</think>"
+            ans_thought = f"<think>\nTool calculate_trade_credit_apr returned implied APR of {implied_apr}% and ${savings:,.2f} savings. Provide commercial credit comparison advisory.\n</think>\n\n"
+            ans = (
+                f"Skipping the {disc}% discount on your ${inv_val:,.2f} invoice costs an implied annualized APR of {implied_apr}%, sacrificing ${savings:,.2f} in discount savings. "
+                f"That rate is far higher than standard commercial credit lines. "
+                f"Pay the supplier by day {disc_days} and draw on a lower-rate credit line if cash is tight."
+            )
+
+        elif choice == "stage":
+            amt = rng.randrange(20000, 100000, 5000)
+            apr = rng.choice([7.5, 8.5, 9.5, 10.5, 12.0])
+            fac = rng.choice(["Working Capital Line", "Invoice Factoring Facility", "Revolving Credit Line"])
+            q = f"Please stage a ${amt:,} proposal for the {fac} at {apr}% APR."
+            call = {"id": call_id, "type": "function", "function": {"name": "stage_financing_intent", "arguments": {"facility_name": fac, "amount": amt, "apr_percent": apr}}}
+            tool_resp = json.dumps({"status": "STAGED", "tier": 2, "facility_name": fac, "amount": amt, "apr_percent": apr, "sent_by": "owner"})
+            call_thought = f"<think>\nUser requests staging a ${amt:,} financing proposal for {fac} at {apr}% APR. Invoke stage_financing_intent to write proposal into Tier 2 staging ledger.\n</think>"
+            ans_thought = f"<think>\nTool stage_financing_intent successfully staged proposal with Tier 2 isolation. Advise user of terms and remind that nothing is sent until they send the request themselves.\n</think>\n\n"
+            ans = (
+                f"I have staged the ${amt:,.2f} {fac} proposal at {apr}% APR into the Tier 2 staging ledger. "
+                "No funds have moved and no contract is finalized. "
+                "Inspect the terms in Approvals and prepare the request when you are ready to send it."
+            )
+
+        else:  # cash_flow
+            csv_snippet = "Date,Description,Amount,Balance\\n2026-03-01,Client Inflow,15000.00,45000.00\\n2026-03-05,Payroll,-8000.00,37000.00"
+            bal = rng.randrange(25000, 150000, 5000)
+            burn = rng.randrange(800, 3000, 100)
+            runway = int(bal / burn)
+            q = "What is our current cash balance and runway based on the uploaded transactions?"
+            call = {"id": call_id, "type": "function", "function": {"name": "tool_analyze_cash_flow", "arguments": {"csv_content": csv_snippet}}}
+            tool_resp = json.dumps({"current_balance": f"{bal:.2f}", "average_daily_burn": f"{burn:.2f}", "runway_days": runway, "has_projected_deficit": False})
+            call_thought = f"<think>\nUser requests cash balance and runway analysis from uploaded statement. Invoke tool_analyze_cash_flow on transaction CSV data.\n</think>"
+            ans_thought = f"<think>\nTool tool_analyze_cash_flow returned balance ${bal:,}, daily burn ${burn:,}, and {runway}-day runway without deficit. Formulate liquidity monitoring advice.\n</think>\n\n"
+            ans = (
+                f"Your verified current balance is ${bal:,.2f} with an average daily burn of ${burn:,.2f}/day, yielding an estimated {runway}-day runway. "
+                "Inflows currently support ongoing operational disbursements without an immediate deficit. "
+                "Monitor customer receipt timing closely to ensure cash reserves remain above zero."
+            )
+
+        msgs = [
+            {"role": "system", "content": sys_prompt},
+            {"role": "user", "content": q},
+            {"role": "assistant", "content": call_thought if with_cot else "", "tool_calls": [call]},
+            {"role": "tool", "tool_call_id": call_id, "name": call["function"]["name"], "content": tool_resp},
+            {"role": "assistant", "content": (ans_thought if with_cot else "") + ans},
+        ]
+        tools_rows.append({"messages": msgs, "tools": TOOLS_SCHEMA})
+
+    tools_file = os.path.join(output_dir, "tools_train.jsonl")
+    os.makedirs(output_dir, exist_ok=True)
+    with open(tools_file, "w", encoding="utf-8") as f:
+        for r in tools_rows:
+            f.write(json.dumps(r, ensure_ascii=False) + "\n")
+    return len(tools_rows)
 
 
 def main() -> None:
@@ -2353,9 +3098,9 @@ def main() -> None:
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--cash-statements", type=int, default=900, help="statements for cash rows (2 rows each)")
     parser.add_argument("--underwriting-statements", type=int, default=500)
-    parser.add_argument("--quant-per-intent", type=int, default=40)
+    parser.add_argument("--quant-per-intent", type=int, default=60)
     parser.add_argument("--concept-cards", type=int, default=550)
-    parser.add_argument("--multiturn", type=int, default=320)
+    parser.add_argument("--multiturn", type=int, default=1600)
     parser.add_argument("--conversational", type=int, default=250)
     parser.add_argument("--refusals", type=int, default=100)
     parser.add_argument("--governance", type=int, default=80)
@@ -2364,6 +3109,10 @@ def main() -> None:
     parser.add_argument("--outflow-breakdown", type=int, default=120)
     parser.add_argument("--receivables-ageing", type=int, default=120)
     parser.add_argument("--missing-statement", type=int, default=120)
+    parser.add_argument("--volatility", type=int, default=100, help="statements for weekly revenue volatility rows")
+    parser.add_argument("--with-cot", action="store_true", default=True, help="Format structured chain-of-thought verification inside <think> tags")
+    parser.add_argument("--no-cot", dest="with_cot", action="store_false", help="Disable chain-of-thought verification")
+    parser.add_argument("--export-tools", action="store_true", help="Generate dataset/tools_train.jsonl with typed function calling trajectories")
     parser.add_argument("--output-dir", default=OUTPUT_DIR)
     args = parser.parse_args()
 
@@ -2372,6 +3121,7 @@ def main() -> None:
         ("cash diagnostic", lambda: build_cash_rows(rng, args.cash_statements)),
         ("credit underwriting", lambda: build_underwriting_rows(rng, args.underwriting_statements)),
         ("quantitative calculations", lambda: build_quant_rows(rng, args.quant_per_intent)),
+        ("revenue volatility", lambda: build_revenue_volatility_rows(rng, args.volatility)),
         ("what-if scenarios", lambda: build_scenario_rows(rng, args.scenarios)),
         ("bridge plans", lambda: build_bridge_rows(rng, args.bridge_plans)),
         ("outflow breakdown", lambda: build_outflow_breakdown_rows(rng, args.outflow_breakdown)),
@@ -2388,6 +3138,9 @@ def main() -> None:
         made = build()
         print(f"  {label:28s} {len(made):5d} candidate rows", flush=True)
         candidates.extend(made)
+
+    if args.with_cot:
+        candidates = [add_cot_thought(r, rng) for r in candidates]
 
     rejections: Counter = Counter()
     filtered = []
@@ -2435,19 +3188,26 @@ def main() -> None:
     grounded = sum(
         1 for r in engine_rows
         if numbers_are_grounded(
-            r["messages"][-1]["content"],
+            extract_prose(r["messages"][-1]["content"]),
             r["_base_reply"],
             context="\n".join(f"{m['role']}: {m['content']}" for m in r["messages"][:-1]),
         )
     )
 
-    val_size = len(kept) // 10
-    train_data = kept[val_size:]
-    val_data = kept[:val_size]
+    multiturn_kept = [r for r in kept if len(r["messages"]) > 3]
+    singleturn_kept = [r for r in kept if len(r["messages"]) <= 3]
+    mt_val_size = len(multiturn_kept) // 10
+    st_val_size = len(singleturn_kept) // 10
+
+    train_data = multiturn_kept[mt_val_size:] + singleturn_kept[st_val_size:]
+    val_data = multiturn_kept[:mt_val_size] + singleturn_kept[:st_val_size]
     for _attempt in range(100):
-        rng.shuffle(kept)
-        cand_val = kept[:val_size]
-        cand_train = kept[val_size:]
+        rng.shuffle(multiturn_kept)
+        rng.shuffle(singleturn_kept)
+        cand_val = multiturn_kept[:mt_val_size] + singleturn_kept[:st_val_size]
+        cand_train = multiturn_kept[mt_val_size:] + singleturn_kept[st_val_size:]
+        rng.shuffle(cand_val)
+        rng.shuffle(cand_train)
         val_top = Counter(skeleton(r["messages"][-1]["content"]) for r in cand_val).most_common(1)[0][1] / len(cand_val)
         train_top = Counter(skeleton(r["messages"][-1]["content"]) for r in cand_train).most_common(1)[0][1] / len(cand_train)
         if val_top <= 0.02 and train_top <= 0.02:
@@ -2477,6 +3237,10 @@ def main() -> None:
     print(f"Largest reply skeleton: {skeletons.most_common(1)[0][1] / len(replies):.2%} of replies")
     for name, data in splits.items():
         print(f"Wrote {len(data)} rows to {os.path.join(args.output_dir, name)}")
+
+    if args.export_tools:
+        tools_count = build_and_export_tools_dataset(args.output_dir, rng, with_cot=args.with_cot)
+        print(f"Wrote {tools_count} tool-calling rows to {os.path.join(args.output_dir, 'tools_train.jsonl')}")
 
 
 if __name__ == "__main__":

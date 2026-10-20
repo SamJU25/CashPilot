@@ -1,6 +1,6 @@
 ---
 name: three-tier-security-gate
-description: "Enforces the Three-Tier Permission Matrix for autonomous financial AI participants. Use when implementing permission gates, staging financial intents, verifying Human-in-the-Loop (HITL) 2FA authorization, and masking PII before LLM reasoning."
+description: "Enforces the Three-Tier Permission Matrix for autonomous financial AI participants. Use when implementing permission gates, staging financial intents, keeping Tier 3 actions owner-sent (never executed), and masking PII before LLM reasoning."
 ---
 
 # Three-Tier Security Gate Protocol
@@ -13,7 +13,7 @@ Core security invariant governing all autonomous actions in the SME Finance Copi
 |---|---|---|---|
 | **Tier 1** | Observation & Telemetry | CSV ingestion, invoice OCR, ratio calculation, 30-day runway projection, cash flow simulations | Autonomous Background Execution |
 | **Tier 2** | Staging Intent Proposals | Drafting loan applications, structuring invoice factoring dossiers, composing vendor payment reminders | Staged in Immutable Intent Queue (Zero Money Movement) |
-| **Tier 3** | Irreversible Execution | Drawing on credit lines, executing wires, factoring invoices, signing lending contracts | **HALT**: Requires Explicit Human-in-the-Loop 2FA Biometric/OTP |
+| **Tier 3** | Owner-Sent Actions | Drawing on credit lines, executing wires, factoring invoices, signing lending contracts | **Never executed**: drafted as a request the owner prepares and sends themselves |
 
 ## 2. Implementation Gatekeeper
 
@@ -29,13 +29,11 @@ async def execute_copilot_action(action: CopilotAction, user: User, db: AsyncSes
         return {"status": "STAGED", "intent_id": staged_intent.id, "message": "Proposal staged for review"}
         
     elif action.tier == PermissionTier.TIER_3:
-        # Verify 2FA token
-        if not await verify_user_2fa_otp(user.id, action.two_factor_code):
-            raise SecurityGateError("Tier 3 action rejected: Invalid or missing 2FA authorization.")
-            
-        result = await action.execute_financial_mutation(db)
-        await log_audit_event(user.id, tier=3, action="EXECUTED_MUTATION", payload=action.dict())
-        return {"status": "EXECUTED", "result": result}
+        # No execution path exists: the system holds no payment credentials. The owner gets a
+        # drafted request to prepare and send themselves (POST /api/v1/actions/{id}/prepare).
+        staged_intent = await queue_staged_intent(action, user, db)
+        await log_audit_event(user.id, tier=3, action="DRAFTED_FOR_OWNER", payload=action.dict())
+        return {"status": "STAGED", "intent_id": staged_intent.id, "message": "Request drafted; the owner sends it"}
 ```
 
 ## 3. PII Sanitization

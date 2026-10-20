@@ -4,7 +4,7 @@ Executes all 5 deterministic evaluation pillars:
 1. Semantic Routing & Follow-Up Intent Classification (FastEmbed ONNX)
 2. Pure Decimal FinTech Mathematics (DAB, CCC, DSCR, APR, Z'-score, DuPont)
 3. Policy Decision Tables (ZenEngine Covenants, Usury Limits, Risk Policies)
-4. Security Invariants, Session Isolation & Hardware WebAuthn Governance
+4. Security Invariants, Session Isolation & Owner-Sent Tier 3 Governance
 5. Held-Out 100-Sample Gold-Standard Benchmark (Grounding, Anti-Slop, Refusal)
 
 Outputs a consolidated, audited evaluation scorecard.
@@ -106,7 +106,7 @@ def execute_deterministic_eval(output_json: str | None = None) -> Dict[str, Any]
             ],
         ),
         (
-            "Pillar 4: Security, Isolation & WebAuthn Governance",
+            "Pillar 4: Security, Isolation & Owner-Sent Governance",
             [
                 "tests/security/test_invariants.py",
                 "tests/unit/test_security_gate.py",

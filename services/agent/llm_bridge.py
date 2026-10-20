@@ -61,17 +61,33 @@ def _extract_history_turn(h: Any) -> tuple[str, str]:
 
 
 
+def _get_local_default_model_id() -> str:
+    try:
+        from services.agent.local_transformers import get_default_model_id
+        return get_default_model_id()
+    except Exception:
+        return "default"
+
+
+def _get_local_default_model_name() -> str:
+    try:
+        from services.agent.local_transformers import get_default_model_name
+        return f"{get_default_model_name()} (Local Flagship)"
+    except Exception:
+        return "Local Flagship Model"
+
+
 PROVIDER_DEFAULTS = {
     "offline": {
-        "model": "sme-finance-lora",
+        "model": _get_local_default_model_id(),
         "url": "local",
     },
     "local": {
-        "model": "sme-finance-lora",
+        "model": _get_local_default_model_id(),
         "url": "local",
     },
     "local_native": {
-        "model": "sme-finance-lora",
+        "model": _get_local_default_model_id(),
         "url": "local",
     },
     "gemini": {
@@ -129,10 +145,11 @@ def _resolve_endpoint(provider: str, base_url: Optional[str], model: Optional[st
         return base_url or defaults.get("url", ""), model_name
 
     if p_lower in ["offline", "local", "local_native"]:
-        from services.agent.local_transformers import resolve_canonical_model_name
-        return "local", resolve_canonical_model_name(model or "sme-finance-lora")
+        from services.agent.local_transformers import resolve_canonical_model_name, get_default_model_id
+        return "local", resolve_canonical_model_name(model or get_default_model_id())
 
-    return "local", "sme-finance-lora"
+    from services.agent.local_transformers import get_default_model_id
+    return "local", get_default_model_id()
 
 
 def test_llm_connection(req: TestConnectionRequest) -> TestConnectionResponse:
@@ -140,9 +157,13 @@ def test_llm_connection(req: TestConnectionRequest) -> TestConnectionResponse:
     provider = (req.provider or "offline").lower()
 
     if provider in ["local", "local_native", "offline"]:
-        from services.agent.local_transformers import LocalTransformersEngine, resolve_canonical_model_name
+        from services.agent.local_transformers import (
+            LocalTransformersEngine,
+            get_default_model_id,
+            resolve_canonical_model_name,
+        )
         engine = LocalTransformersEngine.get_instance()
-        target_model = resolve_canonical_model_name(req.model_name or "sme-finance-lora")
+        target_model = resolve_canonical_model_name(req.model_name or get_default_model_id())
 
         if engine.is_available(target_model):
             return TestConnectionResponse(
@@ -425,13 +446,13 @@ def query_external_llm(
 
 FALLBACK_CATALOG: dict[str, list[ModelItem]] = {
     "offline": [
-        ModelItem(id="sme-finance-lora", name="SME Finance Copilot 3B (Flagship LoRA 4-Bit)"),
+        ModelItem(id=_get_local_default_model_id(), name=_get_local_default_model_name()),
     ],
     "local": [
-        ModelItem(id="sme-finance-lora", name="SME Finance Copilot 3B (Flagship LoRA 4-Bit)"),
+        ModelItem(id=_get_local_default_model_id(), name=_get_local_default_model_name()),
     ],
     "local_native": [
-        ModelItem(id="sme-finance-lora", name="SME Finance Copilot 3B (Flagship LoRA 4-Bit)"),
+        ModelItem(id=_get_local_default_model_id(), name=_get_local_default_model_name()),
     ],
     "gemini": [
         ModelItem(id="gemini-2.0-flash", name="Gemini 2.0 Flash (Recommended)"),
@@ -463,18 +484,30 @@ FALLBACK_CATALOG: dict[str, list[ModelItem]] = {
 }
 
 
+def get_fallback_catalog(provider: str) -> list[ModelItem]:
+    """Returns fallback model catalog with dynamically resolved local model metadata."""
+    p = (provider or "").lower()
+    if p in ("offline", "local", "local_native"):
+        return [
+            ModelItem(
+                id=_get_local_default_model_id(),
+                name=_get_local_default_model_name(),
+            )
+        ]
+    return FALLBACK_CATALOG.get(p, [ModelItem(id="custom-model", name="Custom Model")])
+
+
 def fetch_remote_models(req: FetchModelsRequest) -> FetchModelsResponse:
     """Dynamically queries the target provider's live models endpoint to discover models."""
     provider = (req.provider or "offline").lower()
-    fallbacks = FALLBACK_CATALOG.get(provider, [ModelItem(id="custom-model", name="Custom Model")])
+    fallbacks = get_fallback_catalog(provider)
 
     if provider in ["local", "local_native", "offline"]:
         from services.agent.local_transformers import LocalTransformersEngine, SUPPORTED_LOCAL_MODELS
         engine = LocalTransformersEngine.get_instance()
         models = []
         for m_id, m_meta in SUPPORTED_LOCAL_MODELS.items():
-            # Only show fine-tuned models on list to avoid confusing business users with base models
-            if not m_meta.get("is_lora", False):
+            if m_meta.get("hidden"):
                 continue
             installed = engine.is_available(m_id)
             tag = "Ready" if installed else "Not Downloaded"

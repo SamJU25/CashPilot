@@ -23,7 +23,7 @@ Every service uses multi-stage builds to separate build toolchains from runtime 
 1. **Zero Hardcoded References**:
    - Never hardcode hostnames, IP addresses, credentials, or ports in images or compose files.
    - Bind backend hosts to `0.0.0.0` inside containers and use `${PORT:-8000}`.
-   - Frontend consumes `${NEXT_PUBLIC_API_BASE_URL:-http://localhost:8000}` dynamically at build/runtime.
+   - Frontend consumes `${NEXT_PUBLIC_API_URL:-http://localhost:8000}` dynamically at build/runtime.
 2. **Non-Root Execution**:
    - Always create and switch to a dedicated system user (`appuser` with UID 10001) before launching services.
 3. **Container Healthchecks**:

@@ -1,0 +1,77 @@
+{
+  "default_model": "solvavion-2b",
+  "base_model_id": "openbmb/MiniCPM5-2B",
+  "models": {
+    "solvavion-2b": {
+      "id": "solvavion-2b",
+      "name": "Solvavion-2B",
+      "repo_id": "openbmb/MiniCPM5-2B",
+      "local_dir": "solvavion-2b",
+      "description": "Fine-tuned flagship adapter for SME treasury diagnostics and tool calling. Requires GPU (4-bit).",
+      "is_lora": true,
+      "device_preferred": "cuda",
+      "aliases": [
+        "solvavion",
+        "solvavion2b",
+        "solvavion_2b",
+        "cashpilot-2b",
+        "cashpilot",
+        "cashpilot2b",
+        "cashpilot_2b",
+        "cashpilot-core",
+        "sme-finance-lora",
+        "sme-finance-copilot-merged",
+        "lora",
+        "2b"
+      ]
+    },
+    "cashpilot-2b": {
+      "id": "solvavion-2b",
+      "name": "Solvavion-2B",
+      "repo_id": "openbmb/MiniCPM5-2B",
+      "local_dir": "solvavion-2b",
+      "description": "Fine-tuned flagship adapter for SME treasury diagnostics and tool calling. Requires GPU (4-bit).",
+      "is_lora": true,
+      "device_preferred": "cuda",
+      "hidden": true,
+      "aliases": []
+    },
+    "sme-finance-lora": {
+      "id": "solvavion-2b",
+      "name": "Solvavion-2B",
+      "repo_id": "openbmb/MiniCPM5-2B",
+      "description": "Fine-tuned flagship adapter for SME treasury diagnostics and tool calling. Requires GPU (4-bit).",
+      "is_lora": true,
+      "device_preferred": "cuda",
+      "hidden": true,
+      "aliases": []
+    },
+    "minicpm5-2b": {
+      "id": "minicpm5-2b",
+      "name": "MiniCPM5-2B (Base Foundation)",
+      "repo_id": "openbmb/MiniCPM5-2B",
+      "description": "MiniCPM5 2.5B base foundation with 131k context, advanced reasoning, and function calling.",
+      "is_lora": false,
+      "device_preferred": "cuda",
+      "aliases": [
+        "minicpm5",
+        "minicpm-2b",
+        "minicpm",
+        "openbmb/minicpm5-2b"
+      ]
+    },
+    "base-instruct": {
+      "id": "base-instruct",
+      "name": "Base Foundation Model",
+      "repo_id": "openbmb/MiniCPM5-2B",
+      "description": "Un-finetuned base model for baseline comparison with the adapter.",
+      "is_lora": false,
+      "device_preferred": "cuda",
+      "aliases": [
+        "base",
+        "minicpm5-base",
+        "base-2b"
+      ]
+    }
+  }
+}

@@ -114,13 +114,11 @@ class RiskManagerSubagent:
                 return CopilotResponse(
                     reply=enrich_fn(base_reply, prompt_type="diagnostic"),
                     intent_detected="CASH_DIAGNOSTIC",
-                    requires_biometric_hitl=False,
                 )
 
             return CopilotResponse(
                 reply=enrich_fn(get_missing_param_guidance("BREAK_EVEN"), prompt_type="concept", calculation="BREAK_EVEN"),
                 intent_detected="CASH_DIAGNOSTIC",
-                requires_biometric_hitl=False,
             )
 
         # 2. Break-Even Volume in Physical Units
@@ -144,13 +142,11 @@ class RiskManagerSubagent:
                 return CopilotResponse(
                     reply=enrich_fn(base_reply, prompt_type="diagnostic"),
                     intent_detected="CASH_DIAGNOSTIC",
-                    requires_biometric_hitl=False,
                 )
 
             return CopilotResponse(
                 reply=enrich_fn(get_missing_param_guidance("BREAK_EVEN_UNITS"), prompt_type="concept", calculation="BREAK_EVEN_UNITS"),
                 intent_detected="CASH_DIAGNOSTIC",
-                requires_biometric_hitl=False,
             )
 
         # 3. Client Revenue Concentration & Herfindahl-Hirschman Index (HHI)
@@ -159,7 +155,6 @@ class RiskManagerSubagent:
                 return CopilotResponse(
                     reply=enrich_fn(get_missing_param_guidance("CONCENTRATION"), prompt_type="concept", calculation="CONCENTRATION"),
                     intent_detected="CASH_DIAGNOSTIC",
-                    requires_biometric_hitl=False,
                 )
 
             try:
@@ -185,13 +180,11 @@ class RiskManagerSubagent:
                     reply=enrich_fn(base_reply, prompt_type="diagnostic"),
                     intent_detected="CASH_DIAGNOSTIC",
                     metrics=metrics,
-                    requires_biometric_hitl=False,
                 )
             except Exception as e:
                 return CopilotResponse(
                     reply=f"Unable to compute customer concentration: {str(e)}",
                     intent_detected="CASH_DIAGNOSTIC",
-                    requires_biometric_hitl=False,
                 )
 
         # 4. Customer Churn & Revenue Attrition Impact
@@ -232,13 +225,11 @@ class RiskManagerSubagent:
                     reply=enrich_fn(base_reply, prompt_type="diagnostic"),
                     intent_detected="CASH_DIAGNOSTIC",
                     metrics=metrics,
-                    requires_biometric_hitl=False,
                 )
 
             return CopilotResponse(
                 reply=enrich_fn(get_missing_param_guidance("ATTRITION"), prompt_type="concept", calculation="ATTRITION"),
                 intent_detected="CASH_DIAGNOSTIC",
-                requires_biometric_hitl=False,
             )
 
         # 5. 3-Stage DuPont ROE Decomposition
@@ -274,13 +265,11 @@ class RiskManagerSubagent:
                 return CopilotResponse(
                     reply=enrich_fn(base_reply, prompt_type="diagnostic"),
                     intent_detected="CASH_DIAGNOSTIC",
-                    requires_biometric_hitl=False,
                 )
 
             return CopilotResponse(
                 reply=enrich_fn(get_missing_param_guidance("DUPONT_ROE"), prompt_type="concept", calculation="DUPONT_ROE"),
                 intent_detected="CASH_DIAGNOSTIC",
-                requires_biometric_hitl=False,
             )
 
         # 6. Return on Invested Capital (ROIC)
@@ -320,13 +309,11 @@ class RiskManagerSubagent:
                 return CopilotResponse(
                     reply=enrich_fn(base_reply, prompt_type="diagnostic"),
                     intent_detected="CASH_DIAGNOSTIC",
-                    requires_biometric_hitl=False,
                 )
 
             return CopilotResponse(
                 reply=enrich_fn(get_missing_param_guidance("ROIC"), prompt_type="concept", calculation="ROIC"),
                 intent_detected="CASH_DIAGNOSTIC",
-                requires_biometric_hitl=False,
             )
 
         # 7. Return on Assets (ROA)
@@ -354,13 +341,11 @@ class RiskManagerSubagent:
                 return CopilotResponse(
                     reply=enrich_fn(base_reply, prompt_type="diagnostic"),
                     intent_detected="CASH_DIAGNOSTIC",
-                    requires_biometric_hitl=False,
                 )
 
             return CopilotResponse(
                 reply=enrich_fn(get_missing_param_guidance("ROA"), prompt_type="concept", calculation="ROA"),
                 intent_detected="CASH_DIAGNOSTIC",
-                requires_biometric_hitl=False,
             )
 
         # 8. Economic Value Added (EVA)
@@ -396,13 +381,11 @@ class RiskManagerSubagent:
                 return CopilotResponse(
                     reply=enrich_fn(base_reply, prompt_type="diagnostic"),
                     intent_detected="CASH_DIAGNOSTIC",
-                    requires_biometric_hitl=False,
                 )
 
             return CopilotResponse(
                 reply=enrich_fn(get_missing_param_guidance("EVA"), prompt_type="concept", calculation="EVA"),
                 intent_detected="CASH_DIAGNOSTIC",
-                requires_biometric_hitl=False,
             )
 
         # 9. Customer Lifetime Value & LTV to CAC Ratio
@@ -428,7 +411,6 @@ class RiskManagerSubagent:
                 return CopilotResponse(
                     reply=enrich_fn(base_reply, prompt_type="diagnostic"),
                     intent_detected="CASH_DIAGNOSTIC",
-                    requires_biometric_hitl=False,
                 )
 
             if arpu is not None and margin is not None and churn is not None and cac is not None:
@@ -460,13 +442,11 @@ class RiskManagerSubagent:
                 return CopilotResponse(
                     reply=enrich_fn(base_reply, prompt_type="diagnostic"),
                     intent_detected="CASH_DIAGNOSTIC",
-                    requires_biometric_hitl=False,
                 )
 
             return CopilotResponse(
                 reply=enrich_fn(get_missing_param_guidance("LTV_CAC"), prompt_type="concept", calculation="LTV_CAC"),
                 intent_detected="CASH_DIAGNOSTIC",
-                requires_biometric_hitl=False,
             )
 
         # 10. CAC Payback Period
@@ -500,13 +480,11 @@ class RiskManagerSubagent:
                 return CopilotResponse(
                     reply=enrich_fn(base_reply, prompt_type="diagnostic"),
                     intent_detected="CASH_DIAGNOSTIC",
-                    requires_biometric_hitl=False,
                 )
 
             return CopilotResponse(
                 reply=enrich_fn(get_missing_param_guidance("CAC_PAYBACK"), prompt_type="concept", calculation="CAC_PAYBACK"),
                 intent_detected="CASH_DIAGNOSTIC",
-                requires_biometric_hitl=False,
             )
 
         # 11. Net Revenue Retention (NRR) & Cohort Expansion
@@ -551,19 +529,16 @@ class RiskManagerSubagent:
                 return CopilotResponse(
                     reply=enrich_fn(base_reply, prompt_type="diagnostic"),
                     intent_detected="CASH_DIAGNOSTIC",
-                    requires_biometric_hitl=False,
                 )
 
             return CopilotResponse(
                 reply=enrich_fn(get_missing_param_guidance("NRR"), prompt_type="concept", calculation="NRR"),
                 intent_detected="CASH_DIAGNOSTIC",
-                requires_biometric_hitl=False,
             )
 
             return CopilotResponse(
                 reply=enrich_fn(get_missing_param_guidance("NRR"), prompt_type="concept", calculation="NRR"),
                 intent_detected="CASH_DIAGNOSTIC",
-                requires_biometric_hitl=False,
             )
 
         return None
@@ -581,7 +556,6 @@ class RiskManagerSubagent:
             return CopilotResponse(
                 reply=get_missing_statement_guidance("diagnostic"),
                 intent_detected="CASH_DIAGNOSTIC",
-                requires_biometric_hitl=False,
             )
 
         try:
@@ -621,11 +595,9 @@ class RiskManagerSubagent:
                 reply=enrich_fn(base_reply, prompt_type="diagnostic"),
                 intent_detected="CASH_DIAGNOSTIC",
                 metrics=metrics,
-                requires_biometric_hitl=False,
             )
         except Exception as e:
             return CopilotResponse(
                 reply=f"Unable to run predictive cash warning: {str(e)}",
                 intent_detected="CASH_DIAGNOSTIC",
-                requires_biometric_hitl=False,
             )

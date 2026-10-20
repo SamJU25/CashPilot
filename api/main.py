@@ -4,8 +4,31 @@ Configures CORS, Security Headers, and Router Mounts.
 Aligns with docs/system.md Section 4 and docs/security.md Section 4.
 """
 
+import os
+import sys
 import threading
 from contextlib import asynccontextmanager
+from pathlib import Path
+
+
+def _load_env_files() -> None:
+    """Reads .env.local then .env so a plain `uvicorn` start shares the Next.js server's tenant keys.
+    Real environment variables win. Skipped under pytest, whose tests set their own environment."""
+    if "pytest" in sys.modules:
+        return
+    root = Path(__file__).resolve().parent.parent
+    for name in (".env.local", ".env"):
+        path = root / name
+        if not path.is_file():
+            continue
+        for line in path.read_text(encoding="utf-8").splitlines():
+            key, sep, value = line.strip().partition("=")
+            if sep and key and not key.startswith("#"):
+                os.environ.setdefault(key.strip(), value.strip().strip('"').strip("'"))
+
+
+# Before the routers import: some read their settings at import time.
+_load_env_files()
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -38,6 +61,16 @@ async def lifespan(_: FastAPI):
             FastEmbedSemanticRouter.get_instance()
         except Exception:
             pass
+        # Loading Solvavion-2B takes ~10 s; doing it now spares the owner's first question that wait.
+        if os.getenv("LOCAL_PRELOAD_MODEL", "1") == "1" and "pytest" not in sys.modules:
+            try:
+                from services.agent.local_transformers import LocalTransformersEngine
+
+                engine = LocalTransformersEngine.get_instance()
+                if engine.is_available():
+                    engine._ensure_loaded()
+            except Exception:
+                pass
 
     threading.Thread(target=_warmup_background, daemon=True).start()
     yield
@@ -52,15 +85,11 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-import os
-
-# CORS configuration configurable via environment variable with local defaults
+# Deployments list their origins in ALLOWED_ORIGINS. Without it, any local port is allowed: `next dev`
+# moves to 3001+ when 3000 is taken, and a blocked origin shows the whole app as offline.
 allowed_origins_env = os.getenv("ALLOWED_ORIGINS")
-origins = (
-    [origin.strip() for origin in allowed_origins_env.split(",") if origin.strip()]
-    if allowed_origins_env
-    else ["http://localhost:3000", "http://127.0.0.1:3000"]
-)
+origins = [origin.strip() for origin in allowed_origins_env.split(",") if origin.strip()] if allowed_origins_env else []
+origin_regex = None if allowed_origins_env else r"^http://(localhost|127\.0\.0\.1)(:\d+)?$"
 
 from api.rate_limit import TokenBucketRateLimiter
 
@@ -71,6 +100,7 @@ app.add_middleware(TokenBucketRateLimiter)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
+    allow_origin_regex=origin_regex,
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allow_headers=["*"],

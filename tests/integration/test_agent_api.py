@@ -4,7 +4,7 @@ Verifies:
 1. General conversational assistance and domain grounding.
 2. Contextual cash flow diagnostics with tool invocation.
 3. Transactional credit underwriting and APR transparency disclosures.
-4. Tier 2 proposal staging with Tier 3 biometric gating.
+4. Tier 2 proposal staging; Tier 3 requests are left for the owner to send.
 5. Ingestion error handling and parameter boundaries.
 """
 
@@ -39,7 +39,6 @@ def test_agent_general_assistance():
     assert "Autonomous SME Finance Copilot" in data["reply"]
     assert data["metrics"] is None
     assert data["staged_action"] is None
-    assert data["requires_biometric_hitl"] is False
 
 
 def test_agent_greeting_zero_hallucination():
@@ -79,7 +78,6 @@ def test_agent_cash_diagnostic_flow():
     assert data["metrics"]["runway_days"] == 75
     assert data["metrics"]["cash_status"] == "WATCH"
     assert "75 days" in data["reply"]
-    assert data["requires_biometric_hitl"] is False
 
 
 def test_agent_credit_underwriting_flow():
@@ -108,7 +106,7 @@ def test_agent_credit_underwriting_flow():
 
 
 def test_agent_action_staging_flow():
-    """Verify agent stages financial intents into Tier 2 and enforces biometric passkey requirement."""
+    """Verify agent stages financial intents into Tier 2 and says nothing has been sent."""
     staging_ledger.clear()
     headers = tenant_headers(client, "SME-BAKERY-001")
 
@@ -126,15 +124,13 @@ def test_agent_action_staging_flow():
     assert response.status_code == 200
     data = response.json()
     assert data["intent_detected"] == "ACTION_STAGING"
-    assert data["requires_biometric_hitl"] is True
     assert data["staged_action"] is not None
 
     staged = data["staged_action"]
     assert staged["action_type"] == "DRAW_CREDIT_LINE"
     assert staged["amount_cents"] == 2500000
     assert staged["status"] == "STAGED_PENDING_HITL"
-    assert staged["biometric_required"] is True
-    assert "biometric passkey" in data["reply"].lower()
+    assert "nothing has been sent" in data["reply"].lower()
 
 
 def test_agent_anonymous_chat_staging_refused():
@@ -212,7 +208,6 @@ def test_agent_prompt_injection_defense():
     assert data["intent_detected"] == "SECURITY_DEFENSE_TRIGGERED"
     assert "Adversarial prompt injection pattern detected" in data["reply"]
     assert data["staged_action"] is None
-    assert data["requires_biometric_hitl"] is False
 
 
 def test_agent_test_connection_offline():
@@ -298,7 +293,8 @@ def test_agent_fetch_models_offline():
     assert data["success"] is True
     assert data["provider"] == "offline"
     assert len(data["models"]) >= 1
-    assert data["models"][0]["id"] == "sme-finance-lora"
+    from services.agent.local_transformers import get_default_model_id
+    assert data["models"][0]["id"] == get_default_model_id()
 
 
 def test_agent_fetch_models_missing_key():
@@ -561,7 +557,8 @@ def test_agent_offline_lora_connection_and_discovery():
         data_models = res_models.json()
         assert data_models["success"] is True
         model_ids = [m["id"] for m in data_models["models"]]
-        assert "sme-finance-lora" in model_ids
+        from services.agent.local_transformers import get_default_model_id
+        assert get_default_model_id() in model_ids
         assert "deterministic-v1" not in model_ids
 
 
@@ -891,3 +888,47 @@ def test_malformed_llm_config_header_is_rejected_without_echo():
     )
     assert res.status_code == 400
     assert "sk-leak-me" not in res.text
+
+
+def test_spending_sentence_proposes_an_entry_and_changes_nothing():
+    response = client.post("/api/v1/agent/chat", json={"message": "I spent 500 on rent today"})
+    assert response.status_code == 200
+    data = response.json()
+    assert data["intent_detected"] == "RECORD_TRANSACTION"
+    assert data["proposed_entry"]["adjustment_type"] == "OUTFLOW"
+    assert data["proposed_entry"]["amount"] == "500.00"
+    assert data["proposed_entry"]["description"] == "rent"
+    assert "nothing is recorded until you do" in data["reply"].lower()
+    assert data["staged_action"] is None
+
+
+def test_spending_question_is_not_an_entry():
+    data = client.post("/api/v1/agent/chat", json={"message": "How much did I spend on rent?"}).json()
+    assert data["proposed_entry"] is None
+
+
+def test_agent_chat_with_language_and_currency_directive():
+    """Verify that language and currency are accepted and forwarded to system directives."""
+    from unittest.mock import patch
+
+    with patch("services.agent.supervisor.query_external_llm") as mock_llm:
+        mock_llm.return_value = "Bonjour! Votre runway de trésorerie est calculé selon vos flux."
+        res = client.post(
+            "/api/v1/agent/chat",
+            json={
+                "message": "Can you explain how cash flow runway is calculated?",
+                "language": "fr",
+                "currency": "EUR",
+                "llm_config": {"provider": "gemini", "api_key": "test-key"},
+            },
+        )
+        assert res.status_code == 200
+        assert mock_llm.called
+        call_kwargs = mock_llm.call_args[1]
+        sys_directive = call_kwargs["system_instruction"]
+        assert "LANGUAGE REQUIREMENT" in sys_directive
+        assert "French (Français)" in sys_directive
+        assert "CURRENCY REQUIREMENT" in sys_directive
+        assert "EUR" in sys_directive
+        assert "€" in sys_directive
+

@@ -1,7 +1,7 @@
 """Filesystem helpers for sensitive local state.
 
-Session files contain raw bank statements and the ledger/passkey stores contain financial
-proposals and credential material. Default POSIX permissions (0644/0755) expose those to every
+Session files contain raw bank statements and the ledger and invoice registry contain financial
+proposals. Default POSIX permissions (0644/0755) expose those to every
 local user on a shared machine, so writes go through these helpers. On Windows chmod only
 toggles the read-only bit; the calls are best-effort there and never fail a write.
 """

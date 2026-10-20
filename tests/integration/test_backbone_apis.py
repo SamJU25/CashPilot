@@ -1,6 +1,6 @@
 """
 Integration tests for new Backbone APIs:
-- Tier 2/3 Action Staging and Execution (/api/v1/actions)
+- Tier 2/3 Action Staging and the owner's decision (/api/v1/actions)
 - Digital Transactional Underwriting and Financing Matching (/api/v1/underwrite)
 """
 
@@ -8,7 +8,6 @@ from fastapi.testclient import TestClient
 from api.main import app
 from services.security.staging_ledger import staging_ledger
 from tests.auth_helpers import tenant_headers
-from tests.passkey_authenticator import execute_with_passkey
 
 client = TestClient(app)
 
@@ -47,25 +46,13 @@ def test_actions_staging_and_tier_3_execution_flow():
     assert len(intents) == 1
     assert intents[0]["id"] == intent_id
 
-    # 3. Attempt Tier 3 execution without biometric token -> HTTP 403 Forbidden
-    unauth_resp = client.post(f"/api/v1/actions/{intent_id}/execute", json={}, headers=headers)
-    assert unauth_resp.status_code == 403
-    assert "biometric" in unauth_resp.json()["detail"].lower()
+    # 3. There is no execution route, signed or not
+    assert client.post(f"/api/v1/actions/{intent_id}/execute", json={}, headers=headers).status_code in (404, 405)
 
-    # 4. Prefix tokens from the old mock gate are rejected
-    forged = client.post(
-        f"/api/v1/actions/{intent_id}/execute",
-        json={"webauthn_assertion": {"id": "webauthn_passkey_signed_9921"}},
-        headers=headers,
-    )
-    assert forged.status_code == 403
-
-    # 5. Execute with a signed passkey assertion -> HTTP 200 OK
-    auth_resp = execute_with_passkey(client, intent_id, "SME-CORP-101")
-    assert auth_resp.status_code == 200
-    executed = auth_resp.json()
-    assert executed["status"] == "EXECUTED"
-    assert executed["biometric_signature"]
+    # 4. The owner prepares the request to send it themselves
+    prepared = client.post(f"/api/v1/actions/{intent_id}/prepare", headers=headers)
+    assert prepared.status_code == 200
+    assert prepared.json()["status"] == "PREPARED"
 
 
 def test_actions_reject_flow():
@@ -160,13 +147,9 @@ def test_actions_tenant_token_isolation():
     get_beta = client.get(f"/api/v1/actions/{intent_id}", headers=beta)
     assert get_beta.status_code == 404
 
-    # Beta cannot request passkey options for Alpha's intent -> HTTP 404
-    opts_beta = client.post(f"/api/v1/actions/{intent_id}/passkey-options", headers=beta)
-    assert opts_beta.status_code == 404
-
-    # Beta cannot execute Alpha's intent -> HTTP 404
-    exec_beta = client.post(f"/api/v1/actions/{intent_id}/execute", headers=beta, json={})
-    assert exec_beta.status_code == 404
+    # Beta cannot prepare Alpha's intent -> HTTP 404
+    prep_beta = client.post(f"/api/v1/actions/{intent_id}/prepare", headers=beta)
+    assert prep_beta.status_code == 404
 
 
 def test_underwrite_api_caches_statement_in_session():

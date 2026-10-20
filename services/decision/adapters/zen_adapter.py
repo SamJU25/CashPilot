@@ -218,7 +218,7 @@ class ZenRulesAdapter(AbstractDecisionEngine):
                     "is_prompt_injection": is_inj,
                     "is_credential_leak": is_key,
                     "violation_type": viol,
-                    "requires_biometric_execution": False,
+                    "requires_owner_action": False,
                 }
                 selected_choice = choice
                 rationale = rat

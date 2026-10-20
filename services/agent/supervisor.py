@@ -3,7 +3,7 @@
 Enforces:
 1. Pure Decimal financial diagnostics (zero LLM math hallucinations).
 2. Intent-to-Tool dispatching with offline deterministic fallbacks.
-3. Three-Tier security gating (proposals staged in Tier 2; biometric verification required for Tier 3).
+3. Three-Tier security gating (proposals staged in Tier 2; Tier 3 actions are never executed, the owner sends the prepared request).
 4. Truth-in-lending APR disclosure on financing options.
 """
 
@@ -65,7 +65,9 @@ from services.agent.schema import (
     AgentMetricsSummary,
     CopilotResponse,
     LLMConfig,
+    ProposedEntry,
 )
+from services.agent.entry_parser import parse_cash_entry
 from services.agent.session_store import SessionRecord, session_store
 from services.agent.tools import (
     tool_analyze_cash_flow,
@@ -146,6 +148,45 @@ def _append_session_context(directive: str, session_rec: Optional[SessionRecord]
         updated += f"\nKnown verified business facts: {facts_str}"
     if session_rec.rolling_summary:
         updated += f"\nContext from earlier in this conversation: {session_rec.rolling_summary}"
+    return updated
+
+
+LANGUAGE_NAMES: dict[str, str] = {
+    "en": "English",
+    "zh": "Simplified Chinese (简体中文)",
+    "zh-TW": "Traditional Chinese (繁體中文)",
+    "es": "Spanish (Español)",
+    "fr": "French (Français)",
+    "de": "German (Deutsch)",
+    "ja": "Japanese (日本語)",
+    "ar": "Arabic (العربية)",
+    "pt": "Portuguese (Português)",
+    "it": "Italian (Italiano)",
+    "hi": "Hindi (हिन्दी)",
+    "bn": "Bengali (বাংলা)",
+    "id": "Indonesian (Bahasa Indonesia)",
+}
+
+
+def _append_language_and_currency_directive(directive: str, language: Optional[str], currency: Optional[str]) -> str:
+    """Appends user language and currency formatting requirements to prompt directives."""
+    updated = directive
+    if language:
+        lang_key = language.strip()
+        lang_name = LANGUAGE_NAMES.get(lang_key) or LANGUAGE_NAMES.get(lang_key.split("-")[0]) or lang_key
+        updated += (
+            f"\nLANGUAGE REQUIREMENT: The user's interface language is set to {lang_name} (code: '{language}'). "
+            f"You MUST formulate your entire response in {lang_name}. "
+            "Write naturally and fluently in this language for all explanations, advice, and financial reasoning. "
+            "Financial formula names and technical codes may remain in standard notation, but all prose must be in this language."
+        )
+    if currency:
+        from services.calculations.currency_registry import CurrencyRegistry
+        meta = CurrencyRegistry.get_metadata(currency)
+        updated += (
+            f"\nCURRENCY REQUIREMENT: The user's active display currency is {meta.code} (symbol: '{meta.symbol}'). "
+            f"When quoting monetary amounts, format them with the {meta.symbol} symbol or {meta.code} code."
+        )
     return updated
 
 
@@ -319,12 +360,8 @@ def run_copilot_supervisor(
         return resp
 
     LOCAL_PROVIDERS = ("offline", "local", "local_native")
-    LOCAL_MODELS = (
-        "sme-finance-lora",
-        "sme-finance-copilot-merged",
-        "local",
-        "offline",
-    )
+    from services.agent.local_transformers import SUPPORTED_LOCAL_MODELS, get_default_model_id
+    LOCAL_MODELS = tuple(SUPPORTED_LOCAL_MODELS.keys()) + ("local", "offline", "default")
 
     trans_engine = LocalTransformersEngine.get_instance()
     slm_engine = LocalSLMEngine.get_instance()
@@ -335,8 +372,9 @@ def run_copilot_supervisor(
     except Exception:
         pass
 
-    # Auto-select the 3B adapter only with CUDA: on CPU it needs ~12 GB RAM in float32 and
-    # swaps on 16 GB machines, so without a GPU replies stay deterministic unless a model is chosen.
+    # Auto-select the flagship adapter only with CUDA: on CPU it needs float32 and
+    # swaps on smaller machines, so without a GPU replies stay deterministic unless a model is chosen.
+    default_model = get_default_model_id()
     if (
         (
             effective_config is None
@@ -344,9 +382,9 @@ def run_copilot_supervisor(
         )
         and "PYTEST_CURRENT_TEST" not in os.environ
         and has_cuda
-        and trans_engine.is_available("sme-finance-lora")
+        and trans_engine.is_available(default_model)
     ):
-        effective_config = LLMConfig(provider="offline", model_name="sme-finance-lora")
+        effective_config = LLMConfig(provider="offline", model_name=default_model)
 
 
     intent = detect_intent(request.message, request, config=effective_config)
@@ -384,7 +422,7 @@ def run_copilot_supervisor(
         )
 
         if prompt_type == "concept":
-            cards = retrieve_cards(request.message)
+            cards = retrieve_cards(request.message, history=request.history)
             if not cards:
                 return base_reply
             summary_card, include_steps = select_concept_card(cards, calculation)
@@ -395,6 +433,7 @@ def run_copilot_supervisor(
             sys_directive = format_reference_cards(
                 _append_session_context(get_concept_prompt(), session_rec), cards
             )
+            sys_directive = _append_language_and_currency_directive(sys_directive, request.language, request.currency)
             # Concept answers restate no engine result, so only invented figures are checked.
             grounding_source = ""
         else:
@@ -407,7 +446,8 @@ def run_copilot_supervisor(
                 else get_cash_diagnostic_prompt(base_reply)
             )
             sys_directive = _append_session_context(sys_directive, session_rec)
-            sys_directive = append_reference_cards(sys_directive, request.message)
+            sys_directive = append_reference_cards(sys_directive, request.message, history=request.history)
+            sys_directive = _append_language_and_currency_directive(sys_directive, request.language, request.currency)
             grounding_source = base_reply
 
         if is_explicit_local:
@@ -454,7 +494,6 @@ def run_copilot_supervisor(
                 "No unauthorized state changes or covenant modifications are permitted."
             ),
             intent_detected="SECURITY_DEFENSE_TRIGGERED",
-            requires_biometric_hitl=False,
         ))
 
     # 0b. Credential Security Guard & Onboarding Guidance
@@ -472,7 +511,27 @@ def run_copilot_supervisor(
                 "5. Click **Save Settings** to store it securely in your browser's private local storage."
             ),
             intent_detected="CREDENTIAL_SECURITY_ALERT",
-            requires_biometric_hitl=False,
+        ))
+
+    # 0c. "I spent / received ..." becomes a proposed entry. Nothing is recorded here: the owner confirms
+    # the entry on a card, and only that click changes the figures (typed "yes" never does).
+    entry = parse_cash_entry(request.message)
+    if entry is not None:
+        direction = "out" if entry.adjustment_type == "OUTFLOW" else "in"
+        what = f" for {entry.description}" if entry.description else ""
+        return _finalize(CopilotResponse(
+            reply=(
+                f"I read this as {entry.amount:,.2f} {direction}{what} on {entry.entry_date.strftime('%b %d, %Y')}. "
+                "Check the amount, date and account on the card below, then confirm it. Nothing is recorded until you do."
+            ),
+            intent_detected="RECORD_TRANSACTION",
+            proposed_entry=ProposedEntry(
+                adjustment_type=entry.adjustment_type,
+                amount=f"{entry.amount:.2f}",
+                date=entry.entry_date.isoformat(),
+                description=entry.description,
+                account_hint=entry.account_hint,
+            ),
         ))
 
     # 1. Action Staging Flow (Tier 2 Proposal Creation)
@@ -489,7 +548,6 @@ def run_copilot_supervisor(
                     "No proposal was staged."
                 ),
                 intent_detected=intent,
-                requires_biometric_hitl=False,
             ))
 
         from services.decision import DecisionDomain, DecisionEngineRegistry, DecisionRequest
@@ -528,11 +586,13 @@ def run_copilot_supervisor(
             target_identifier=target,
         )
 
-        amount_display = f"${(amount_cents / 100):,.2f}"
+        from services.calculations.currency_registry import CurrencyRegistry
+        stage_sym = CurrencyRegistry.get_metadata(request.currency or "USD").symbol
+        amount_display = f"{stage_sym}{(amount_cents / 100):,.2f}"
         reply = (
             f"Staged {action_type} proposal for {amount_display} (Target: {target}). "
             f"Intent ID is {staged['intent_id']}. "
-            "Biometric passkey verification or user confirmation is required to execute."
+            "Nothing has been sent: review it in Approvals, then prepare the request and send it to the lender yourself."
         )
 
         return _finalize(CopilotResponse(
@@ -544,9 +604,7 @@ def run_copilot_supervisor(
                 amount_cents=staged["amount_cents"],
                 target_identifier=staged["target_identifier"],
                 status=staged["status"],
-                biometric_required=True,
             ),
-            requires_biometric_hitl=True,
         ))
 
     # 1b. Deterministic Quantitative Financial Calculations
@@ -569,7 +627,6 @@ def run_copilot_supervisor(
                 "Check the numbers in your message and try again."
             ),
             intent_detected=intent,
-            requires_biometric_hitl=False,
         ))
     if quant_resp is not None:
         return _finalize(quant_resp)
@@ -579,6 +636,7 @@ def run_copilot_supervisor(
         if not effective_csv:
             sys_directive = get_missing_statement_prompt("underwriting")
             sys_directive = _append_session_context(sys_directive, session_rec)
+            sys_directive = _append_language_and_currency_directive(sys_directive, request.language, request.currency)
             if is_local:
                 local_reply = generate_local_reply(
                     prompt=request.message,
@@ -591,7 +649,6 @@ def run_copilot_supervisor(
                     return _finalize(CopilotResponse(
                         reply=sanitize_cfo_reply(local_reply),
                         intent_detected=intent,
-                        requires_biometric_hitl=False,
                     ))
 
             if effective_config and (effective_config.provider or "").lower() != "offline":
@@ -605,7 +662,6 @@ def run_copilot_supervisor(
                     return _finalize(CopilotResponse(
                         reply=sanitize_cfo_reply(ai_reply),
                         intent_detected=intent,
-                        requires_biometric_hitl=False,
                     ))
 
             return _finalize(CopilotResponse(
@@ -626,6 +682,7 @@ def run_copilot_supervisor(
         if not effective_csv:
             sys_directive = get_missing_statement_prompt("diagnostic")
             sys_directive = _append_session_context(sys_directive, session_rec)
+            sys_directive = _append_language_and_currency_directive(sys_directive, request.language, request.currency)
             if is_local:
                 local_reply = generate_local_reply(
                     prompt=request.message,
@@ -638,7 +695,6 @@ def run_copilot_supervisor(
                     return _finalize(CopilotResponse(
                         reply=sanitize_cfo_reply(local_reply),
                         intent_detected=intent,
-                        requires_biometric_hitl=False,
                     ))
 
             if effective_config and (effective_config.provider or "").lower() != "offline":
@@ -652,7 +708,6 @@ def run_copilot_supervisor(
                     return _finalize(CopilotResponse(
                         reply=sanitize_cfo_reply(ai_reply),
                         intent_detected=intent,
-                        requires_biometric_hitl=False,
                     ))
 
             return _finalize(CopilotResponse(
@@ -740,6 +795,10 @@ def run_copilot_supervisor(
             working_capital_rationale=cash_result.get("working_capital_rationale"),
         )
 
+        ccy = request.currency or cash_result.get("currency", "USD")
+        from services.calculations.currency_registry import CurrencyRegistry
+        sym = CurrencyRegistry.get_metadata(ccy).symbol
+
         runway_desc = f"{cash_result['runway_days']} days" if cash_result["runway_days"] is not None else "Infinite (Cash positive)"
         pred_snippet = f" {cash_result['predictive_explanation']}" if cash_result.get("predictive_explanation") else ""
         target_snippet = ""
@@ -748,7 +807,7 @@ def run_copilot_supervisor(
             advisory_text = f" {cash_result['advisory_note']}" if cash_result.get("advisory_note") else ""
             target_snippet = (
                 f" Specifically for Day {cash_result['target_horizon_days']} ({cash_result['target_horizon_date']}){tier_label}, "
-                f"projected balance is ${float(cash_result['forecast_target_balance']):,.2f}.{advisory_text}"
+                f"projected balance is {sym}{float(cash_result['forecast_target_balance']):,.2f}.{advisory_text}"
             )
 
         wc_snippet = ""
@@ -758,19 +817,19 @@ def run_copilot_supervisor(
         sub_intent = classify_sub_intent_dynamic(request.message, has_csv=True)
 
         if sub_intent == "RUNWAY":
-            headline = f"You have {runway_desc} of cash runway remaining at an average daily burn of ${float(cash_result['average_daily_burn']):,.2f}/day (current balance: ${float(cash_result['current_balance']):,.2f}, Status: {cash_result['cash_status']})."
+            headline = f"You have {runway_desc} of cash runway remaining at an average daily burn of {sym}{float(cash_result['average_daily_burn']):,.2f}/day (current balance: {sym}{float(cash_result['current_balance']):,.2f}, Status: {cash_result['cash_status']})."
             reply = f"{headline}{pred_snippet}{target_snippet}{wc_snippet}"
         elif sub_intent == "BALANCE":
-            headline = f"Your current cash balance is ${float(cash_result['current_balance']):,.2f} {cash_result['currency']} (net change across reviewed period: ${float(cash_result['net_period_change']):,.2f})."
+            headline = f"Your current cash balance is {sym}{float(cash_result['current_balance']):,.2f} {ccy} (net change across reviewed period: {sym}{float(cash_result['net_period_change']):,.2f})."
             reply = f"{headline}{pred_snippet}{target_snippet}{wc_snippet}"
         elif sub_intent == "BURN":
-            headline = f"Your average daily burn rate is ${float(cash_result['average_daily_burn']):,.2f}/day (gross outflows: ${float(cash_result['gross_outflows']):,.2f} vs inflows: ${float(cash_result['gross_inflows']):,.2f}), providing {runway_desc} of cash runway remaining (Status: {cash_result['cash_status']})."
+            headline = f"Your average daily burn rate is {sym}{float(cash_result['average_daily_burn']):,.2f}/day (gross outflows: {sym}{float(cash_result['gross_outflows']):,.2f} vs inflows: {sym}{float(cash_result['gross_inflows']):,.2f}), providing {runway_desc} of cash runway remaining (Status: {cash_result['cash_status']})."
             reply = f"{headline}{pred_snippet}{target_snippet}{wc_snippet}"
         elif sub_intent == "ADVICE":
             if cash_result.get("has_projected_deficit"):
                 shortfall_val = cash_result.get("projected_shortfall_amount")
                 bridge_val = cash_result.get("recommended_bridge_amount") or shortfall_val
-                bridge_text = f"${float(bridge_val):,.2f}" if bridge_val else "liquidity support"
+                bridge_text = f"{sym}{float(bridge_val):,.2f}" if bridge_val else "liquidity support"
                 tmpl = evaluate_persona_policy(prompt_type="ADVICE_DEFICIT").get("guidance_text", "")
                 headline = tmpl.format(
                     cash_status=cash_result["cash_status"],
@@ -821,8 +880,8 @@ def run_copilot_supervisor(
             wc_line = f"\n- **Working Capital**: {wc_snippet.strip()}" if wc_snippet else ""
             reply = (
                 f"### Financial Diagnostic Summary\n\n"
-                f"- **Current Balance**: ${float(cash_result['current_balance']):,.2f} {cash_result['currency']}\n"
-                f"- **Average Daily Burn**: ${float(cash_result['average_daily_burn']):,.2f}/day\n"
+                f"- **Current Balance**: {sym}{float(cash_result['current_balance']):,.2f} {cash_result['currency']}\n"
+                f"- **Average Daily Burn**: {sym}{float(cash_result['average_daily_burn']):,.2f}/day\n"
                 f"- **Estimated Historical Runway**: {runway_desc} (Status: `{cash_result['cash_status']}`, Threshold: {cash_result['alert_threshold_days']} days)"
                 f"{pred_line}{target_line}{wc_line}"
             )
@@ -831,7 +890,6 @@ def run_copilot_supervisor(
             reply=_enrich_reply(reply),
             intent_detected=intent,
             metrics=metrics,
-            requires_biometric_hitl=False,
         ))
 
 
@@ -840,7 +898,6 @@ def run_copilot_supervisor(
         return _finalize(CopilotResponse(
             reply=get_off_topic_reply(),
             intent_detected="GENERAL_ASSISTANCE",
-            requires_biometric_hitl=False,
         ))
 
 
@@ -865,7 +922,8 @@ def run_copilot_supervisor(
                 "and ask the business owner to upload their bank statement CSV."
             )
         sys_directive = _append_session_context(sys_directive, session_rec)
-        sys_directive = append_reference_cards(sys_directive, request.message)
+        sys_directive = append_reference_cards(sys_directive, request.message, history=request.history)
+        sys_directive = _append_language_and_currency_directive(sys_directive, request.language, request.currency)
         local_reply = generate_local_reply(
             prompt=request.message,
             system_instruction=sys_directive,
@@ -879,7 +937,6 @@ def run_copilot_supervisor(
                 return _finalize(CopilotResponse(
                     reply=cleaned_local,
                     intent_detected="GENERAL_ASSISTANCE",
-                    requires_biometric_hitl=False,
                 ))
 
     if effective_config and (effective_config.provider or "").lower() != "offline":
@@ -895,7 +952,8 @@ def run_copilot_supervisor(
                 "and ask the business owner to upload their bank statement CSV."
             )
         sys_directive = _append_session_context(sys_directive, session_rec)
-        sys_directive = append_reference_cards(sys_directive, request.message)
+        sys_directive = append_reference_cards(sys_directive, request.message, history=request.history)
+        sys_directive = _append_language_and_currency_directive(sys_directive, request.language, request.currency)
         ai_reply = query_external_llm(
             prompt=request.message,
             system_instruction=sys_directive,
@@ -908,13 +966,12 @@ def run_copilot_supervisor(
                 return _finalize(CopilotResponse(
                     reply=cleaned_ai,
                     intent_detected="GENERAL_ASSISTANCE",
-                    requires_biometric_hitl=False,
                 ))
 
     # No model answered: a definition question ("What is WACC?") still gets its card instead of a greeting.
     # Card similarity alone also matches "how can you assist us", so the phrasing gates it.
     concept = (
-        retrieve_cards(request.message, k=1, min_similarity=IN_DOMAIN_CARD_SIMILARITY)
+        retrieve_cards(request.message, k=1, min_similarity=IN_DOMAIN_CARD_SIMILARITY, history=request.history)
         if DEFINITION_QUESTION.match(request.message)
         else []
     )
@@ -922,7 +979,6 @@ def run_copilot_supervisor(
         return _finalize(CopilotResponse(
             reply=card_summary(concept[0]),
             intent_detected="GENERAL_ASSISTANCE",
-            requires_biometric_hitl=False,
         ))
 
     if effective_csv:
@@ -958,5 +1014,4 @@ def run_copilot_supervisor(
     return _finalize(CopilotResponse(
         reply=general_reply,
         intent_detected="GENERAL_ASSISTANCE",
-        requires_biometric_hitl=False,
     ))

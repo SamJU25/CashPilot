@@ -68,7 +68,7 @@ def test_evaluate_security_gate_decision_api():
     data = response.json()
     assert data["selected_choice"] == "TIER_3_EXECUTION"
     assert data["matched_rule_id"] == "rule_tier_3"
-    assert data["output_payload"]["requires_biometric_execution"] is True
+    assert data["output_payload"]["requires_owner_action"] is True
 
 
 def test_evaluate_working_capital_decision_api():

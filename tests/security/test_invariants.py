@@ -8,7 +8,7 @@ from decimal import Decimal
 import pytest
 from pydantic import ValidationError
 from services.ingestion.csv_parser import NormalizedTransaction, redact_pii_string
-from services.security.three_tier_gate import StagedActionIntent, requires_biometric_execution
+from services.security.three_tier_gate import StagedActionIntent, requires_owner_action
 from fastapi.testclient import TestClient
 from api.main import app
 
@@ -42,12 +42,12 @@ def test_pii_redaction_masks_ibans_and_phones():
     assert "[REDACTED_PHONE]" in scrubbed
 
 
-def test_tier_3_requires_biometric_execution():
-    """Verify money transfers and loan commitments mandate Tier 3 biometric signatures."""
-    assert requires_biometric_execution("TRANSFER") is True
-    assert requires_biometric_execution("DRAW_CREDIT_LINE") is True
-    assert requires_biometric_execution("PLEDGE_INVOICE") is True
-    assert requires_biometric_execution("VIEW_DASHBOARD") is False
+def test_tier_3_actions_are_left_to_the_owner():
+    """Money transfers and loan commitments are Tier 3: CashPilot prepares them, the owner sends them."""
+    assert requires_owner_action("TRANSFER") is True
+    assert requires_owner_action("DRAW_CREDIT_LINE") is True
+    assert requires_owner_action("PLEDGE_INVOICE") is True
+    assert requires_owner_action("VIEW_DASHBOARD") is False
 
 
 def test_fastapi_health_endpoint():
@@ -59,7 +59,7 @@ def test_fastapi_health_endpoint():
     assert data["form_factor"] == "Local-first FastAPI service with Next.js client"
     assert "All financial calculations use Python Decimal arithmetic" in data["active_invariants"]
     assert (
-        "Action staging requires a signed tenant token; execution requires a WebAuthn passkey"
+        "Action staging requires a signed tenant token; drafted actions are never executed, the owner sends them"
         in data["active_invariants"]
     )
     assert len(data["active_invariants"]) == 3

@@ -35,7 +35,7 @@ COPY --chown=appuser:appgroup knowledge /app/knowledge
 COPY --chown=appuser:appgroup data /app/data
 
 # Persistence directory must exist and be writable by the runtime user, otherwise the staging
-# ledger and passkey registry fall back to memory-only and silently lose state on restart.
+# ledger and invoice registry fall back to memory-only and silently lose state on restart.
 # Sessions hold raw statements, so they belong in the same persisted volume rather than
 # defaulting to /app/.sessions, which is discarded with the container.
 # Named volumes inherit the ownership of the directory they mount over, so the mount points for

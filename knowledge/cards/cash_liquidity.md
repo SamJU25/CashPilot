@@ -54,7 +54,7 @@
 **Why it matters:** Borrowing too little leaves the gap open; borrowing too much adds unnecessary interest cost.
 **Healthy vs warning:** No shortfall means no bridge is needed. A shortfall larger than the monthly inflow usually signals a structural problem rather than a timing gap.
 **What to do:** Close timing gaps with receivables collection or short facilities; fix structural gaps with cost or pricing changes.
-**In the app:** Listed with the deficit warning; staging a bridge facility needs passkey approval.
+**In the app:** Listed with the deficit warning; a bridge facility can be drafted as a request you send yourself.
 
 ## What-If Cash Scenarios
 <!-- tools: tool_run_cash_scenario -->
@@ -119,6 +119,14 @@
 **Healthy vs warning:** Healthy: foreign receivables and payables roughly offset, or the open position is hedged. Warning: a large one-sided position where a 5% shock would wipe out a month of profit.
 **What to do:** Match foreign inflows with foreign costs where you can, and consider a forward contract for large one-sided positions. Treat any rate marked as an offline fallback as indicative only, and confirm the live rate with your bank before you transact.
 **In the app:** Live rates come from an open market feed; when it is unreachable, an offline rate is used only for major currencies and flagged as not live. For other currencies the app asks you for the rate to use.
+
+## Foreign Exchange (FX) Rate Volatility & Hedging
+<!-- tools: tool_calculate_fx_exposure, tool_convert_currency -->
+**What it is:** Foreign exchange rate volatility measures price swings between currency pairs over time. FX hedging protects gross profit margins from currency shifts between invoice issuance and final settlement.
+**Why it matters:** SMEs importing materials or exporting products face margin compression when exchange rates shift. A 5% to 10% currency swing can eliminate operating profits on thin-margin international commercial contracts.
+**Healthy vs warning:** Healthy: currency swings under 3% quarterly or unhedged exposure under 10% of operating cash reserves. Warning: unhedged net foreign receivables exceeding 25% of cash where a 5% rate drop creates an immediate cash deficit.
+**What to do:** Implement natural hedging by holding multi-currency bank accounts and matching customer billing currencies with vendor costs. Use fixed forward contracts to lock in exchange rates for large future receipts, and negotiate currency adjustment clauses on long-term contracts.
+**In the app:** Evaluated by the FX exposure tool under simulated rate shock scenarios.
 
 ## Liquidity Score
 <!-- tools: tool_underwrite_credit -->

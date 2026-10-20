@@ -1,9 +1,14 @@
 # Optional dependencies for on-device SLM inference (services/agent/local_transformers.py).
-# Install on top of requirements.txt only when you want local Qwen inference:
+# Install on top of requirements.txt only when you want local Solvavion-2B (MiniCPM5-2B) inference:
 #   python -m pip install -r requirements-local.txt
+# Check the GPU is used: python -c "import torch; print(torch.cuda.is_available())" should print True.
 # You also need the base model on disk (models/base/<repo name>) plus the LoRA adapter in
 # models/sme-finance-lora. `scripts/download_model.py` fetches the base weights.
 
+# PyPI's Windows torch wheel is CPU-only, so the CUDA index is listed too. pip ranks 2.14.1+cu132 above
+# the plain 2.14.1, which picks the GPU build wherever one exists (Windows, Linux); macOS falls back to PyPI.
+# cu132 needs an NVIDIA driver with CUDA 13.2 or newer (nvidia-smi, "CUDA Version"); swap in cu130 for older ones.
+--extra-index-url https://download.pytorch.org/whl/cu132
 torch>=2.4.0
 transformers>=4.44.0
 peft>=0.12.0

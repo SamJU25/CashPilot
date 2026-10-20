@@ -19,7 +19,7 @@ Scope: All software development, research, financial engineering, and testing in
   - [`.agent/workflows/sprint-workflow.md`](.agent/workflows/sprint-workflow.md): Sprint workflow and TDD loop.
 - **Project Structure**:
   - [`.agent/agents/`](.agent/agents): 57 specialized subagents across 8 squads (Suites 0 through 7).
-  - [`.agent/skills/`](.agent/skills): 56 deterministic execution skills (governance, fintech math, web, security).
+  - [`.agent/skills/`](.agent/skills): 57 deterministic execution skills (governance, fintech math, web, security).
   - [`.agent/rules/`](.agent/rules): 10 standing architectural rules.
   - [`graphify-out/`](graphify-out): Persistent AST knowledge graph (`graph.json`) and architecture wiki (`wiki/index.md`).
   - [`AGENTS.md`](AGENTS.md): Full registry, baseline, and Scenario Routing Matrix.
@@ -70,7 +70,7 @@ Every response and code modification must satisfy these 10 standing rules:
 ### 2.8 Three-Tier Security Gate (`three-tier-security-gate`)
 - **Tier 1 (Read-Only)**: Queries, balance lookups, financial ratios — autonomous execution.
 - **Tier 2 (Action Drafting)**: Invoices, payment drafts, loan applications — draft mode only.
-- **Tier 3 (High-Stakes Execution)**: Payout disbursement, live payments, credit submission — strictly requires Human-in-the-Loop (HITL) 2FA verification.
+- **Tier 3 (Owner-Sent)**: Payout disbursement, live payments, credit submission — never executed by CashPilot. It drafts the request; the owner prepares and sends it themselves. No execution route or payment credential may be added.
 
 ### 2.9 Karpathy Engineering Guidelines (`karpathy-guidelines`)
 - Avoid overcomplication. Make surgical, minimal diffs.
@@ -82,9 +82,9 @@ Every response and code modification must satisfy these 10 standing rules:
 ---
 
 ## 3. Skill & Agent Utilization for Claude
-The workspace contains **56 deterministic skills** in `.agent/skills/`. Before executing work in a domain, Claude must read the corresponding `.agent/skills/<skill-name>/SKILL.md` file.
+The workspace contains **57 deterministic skills** in `.agent/skills/`. Before executing work in a domain, Claude must read the corresponding `.agent/skills/<skill-name>/SKILL.md` file.
 
-### Complete 56-Skill Directory by Domain:
+### Complete 57-Skill Directory by Domain:
 
 #### 1. FinTech Engineering & Financial Valuation (12 skills)
 - `3-statement-model`: Complete, link, and populate 3-statement financial models (IS, BS, CF).
@@ -106,7 +106,7 @@ The workspace contains **56 deterministic skills** in `.agent/skills/`. Before e
 - `penetration-tester`: Red-team attack simulation, exploit analysis, SAST/DAST audits.
 - `prompt-injection-defense`: Guardrails against indirect prompt injection and data leaks.
 - `security-guardian`: Zero-trust security, JWT/RBAC guards, secret sanitization.
-- `three-tier-security-gate`: 3-Tier matrix enforcement (Read -> Staging -> HITL 2FA).
+- `three-tier-security-gate`: 3-Tier matrix enforcement (Read -> Staging -> owner-sent Tier 3).
 
 #### 3. Backend Platform, Systems & Database (8 skills)
 - `codebase-design`: Domain-centric folder architecture and decoupled interfaces.
@@ -118,10 +118,11 @@ The workspace contains **56 deterministic skills** in `.agent/skills/`. Before e
 - `systems-architect`: Clean endpoints, typed data models, zero-downtime migrations.
 - `cross-platform-engineer`: Packaging desktop (Tauri/Electron) and mobile apps.
 
-#### 4. Frontend Craft, UX & Motion (5 skills)
+#### 4. Frontend Craft, UX & Motion (6 skills)
 - `antislop`: Eliminate arbitrary visual clutter, AI hype, and boilerplate comments.
 - `frontend-craft-engineer`: Responsive layouts, accessibility, pre-ship finish gates.
 - `impeccable`: Design engineering for craft, layout polish, typography, and motion.
+- `motion-craft`: Spring presets, what may animate, banned motion, reduced-motion rules (`motion/react`).
 - `nextjs-react-dashboard`: Next.js 14 App Router, Recharts, tabular numbers, 4-state cards.
 - `taste-skill`: Anti-slop UI styling avoiding generic templates.
 
@@ -157,7 +158,7 @@ The workspace contains **56 deterministic skills** in `.agent/skills/`. Before e
 - `writing-plans`: Step-by-step implementation plans for multi-step tasks.
 
 When handling a task:
-1. Scan the 56-skill catalog above and select the exact matching skills.
+1. Scan the 57-skill catalog above and select the exact matching skills.
 2. Read `.agent/skills/<skill-name>/SKILL.md` before writing code.
 3. Verify changes with `pytest -q`.
 

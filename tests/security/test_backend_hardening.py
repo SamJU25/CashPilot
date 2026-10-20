@@ -14,7 +14,6 @@ from fastapi.testclient import TestClient
 
 from api.main import app
 from services.agent.local_transformers import LocalTransformersEngine
-from services.security.passkeys import PasskeyRegistry
 from services.security.staging_ledger import StagingLedger, StagingRequest, staging_ledger
 from tests.auth_helpers import tenant_headers
 
@@ -46,7 +45,6 @@ def test_anonymous_chat_cannot_stage_a_proposal():
     assert response.status_code == 200
     body = response.json()
     assert body["staged_action"] is None
-    assert body["requires_biometric_hitl"] is False
     assert "authenticated tenant" in body["reply"].lower()
     assert staging_ledger.list_intents() == []
 
@@ -78,7 +76,6 @@ def test_anonymous_bridge_plan_stages_nothing():
     assert response.status_code == 200
     body = response.json()
     assert body["staged_action"] is None
-    assert body["requires_biometric_hitl"] is False
     assert staging_ledger.list_intents() == []
 
 
@@ -181,29 +178,16 @@ def test_session_store_evicts_beyond_the_cap(tmp_path, monkeypatch):
     assert len(persisted) <= 3
 
 
-def test_passkey_registry_purges_expired_challenges():
-    registry = PasskeyRegistry(rp_id="localhost", rp_name="Test", origins=["http://localhost:3000"])
-    registry._challenges[("authenticate", "stale-intent")] = (b"challenge", time.monotonic() - 5)
+def test_delete_model_adapter_guard_still_holds(monkeypatch):
+    # rmtree is stubbed: delete_model works on the real models/ folder, and an unstubbed run of this
+    # test once deleted the developer's downloaded base weights.
+    import shutil
 
-    registry.registration_options("TENANT-CHALLENGE")
-
-    assert ("authenticate", "stale-intent") not in registry._challenges
-
-
-def test_passkey_registry_bounds_active_challenges(monkeypatch):
-    import services.security.passkeys as passkeys_module
-    monkeypatch.setattr(passkeys_module, "MAX_ACTIVE_CHALLENGES", 5)
-
-    registry = PasskeyRegistry(rp_id="localhost", rp_name="Test", origins=["http://localhost:3000"])
-    for i in range(10):
-        registry._issue(("test", f"intent_{i}"), b"challenge")
-
-    assert len(registry._challenges) <= 5
-
-
-def test_delete_model_adapter_guard_still_holds():
+    removed = []
+    monkeypatch.setattr(shutil, "rmtree", lambda path, *a, **k: removed.append(os.path.abspath(path)))
     engine = LocalTransformersEngine.get_instance()
     result = engine.delete_model("sme-finance-lora")
-    if result["success"]:
-        # If it ever succeeds, it must not have targeted the fine-tuned adapter directory.
-        assert "sme-finance-lora" not in str(result.get("deleted_path") or "")
+    # Whatever it targets, it must never be a fine-tuned adapter directory.
+    for path in removed + [str(result.get("deleted_path") or "")]:
+        assert "sme-finance-lora" not in path
+        assert not os.path.exists(os.path.join(path, "adapter_config.json"))

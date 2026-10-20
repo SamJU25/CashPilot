@@ -29,7 +29,7 @@ Our architecture relies on **Provable Invariants**: mathematical, kernel-enforce
 │ 2. Storage Boundary    │ Signed tenant tokens + per-tenant JSON store  │
 │ 3. Air-Gap Boundary    │ Zero banking credentials for AI agents        │
 │ 4. Atomicity Boundary  │ Row locks + FISCO BCOS PBFT double-pledge stop│
-│ 5. Hardware Boundary   │ WebAuthn FIDO2 passkey biometric confirmation │
+│ 5. Owner Boundary      │ Tier 3 is owner-sent; no execution route      │
 └────────────────────────┴───────────────────────────────────────────────┘
 ```
 
@@ -61,14 +61,14 @@ Every financial event flows through an immutable, permission-gated lifecycle bef
 │ • Computes canonical SHA-256 invoice hash              │
 │ • Status: STAGED_PENDING_HITL ($0.00 transferred)      │
 └──────────────────────────┬─────────────────────────────┘
-                           │ POST /api/v1/actions/{id}/execute
+                           │ POST /api/v1/actions/{id}/prepare
                            ▼
 ┌────────────────────────────────────────────────────────┐
-│ TIER 3: EXECUTION (Hardware HITL 2FA Confirmation)     │
-│ • WebAuthn FIDO2 biometric prompt (FaceID / TouchID)   │
-│ • Physical enclave signature verification              │
-│ • FISCO BCOS smart contract pledge verification        │
-│ • Fund disbursement or contract binding executed       │
+│ TIER 3: OWNER-SENT (never executed by CashPilot)       │
+│ • Pre-filled request the owner copies or downloads     │
+│ • Owner sends it from their own email or lender form   │
+│ • No payment credentials exist anywhere in the system  │
+│ • Status: PREPARED or REJECTED ($0.00 ever moved)      │
 └────────────────────────────────────────────────────────┘
 ```
 
@@ -82,8 +82,8 @@ Security is designed to withstand both automated AI attacks and specialized pene
 |---|---|---|
 | **Prompt Injection (PyRIT, Garak)** | Malicious instructions hidden in CSV/PDF statement counterparty descriptions | FastEmbed ONNX vector triage routes intent before prompt assembly. Pre-flight PII redaction strips adversarial payloads. The LLM has zero bank API credentials and zero write access to financial database columns. It can only emit a proposal into `action_intents` with status `STAGED_PENDING_HITL`. |
 | **SQL Injection (SQLmap)** | Malformed query parameters to extract ledgers | Payloads are strictly parsed by Pydantic v2 (compiled in Rust). Database drivers use binary parameterized prepared statements (`asyncpg`); SQL command syntax and parameter values travel across separate binary channels. |
-| **BOLA / IDOR / Tenant Hop** | Tampering with `tenant_id` to steal records | Action and passkey routes require an HMAC-signed tenant token (`require_tenant_identity` in `services/security/tenant_token.py`) and ignore the client-asserted `X-Tenant-ID`; every intent lookup checks ownership and returns 404 on mismatch. Chat-driven staging and model management require the same verified token. Token issuance is gated by an enrollment key; with `TENANT_ENROLLMENT_KEYS` configured, the single key is not a wildcard, a lone key must be bound with `TENANT_ENROLLMENT_TENANT_ID` (unbound issuance is fail-closed), and `TENANT_ENROLLMENT_ALLOW_ANY_TENANT=1` is an explicit local-development escape hatch. Provider probes (`test-connection`, `fetch-models`) also require a verified token. PostgreSQL RLS is the target storage-layer defence, not yet built. |
-| **Stolen Disk / Backup** | Reading `.sessions/` or `.data/` copied off the host | Stores are owner-only (`0700`/`0600`); setting `COPILOT_DATA_KEY` seals session statements, staging intents, passkeys, and the invoice registry with Fernet (`enc:v1:` prefix), and `COPILOT_ENV=production|staging` makes that key mandatory at startup. Legacy plaintext files stay readable and are re-encrypted on the next write. |
+| **BOLA / IDOR / Tenant Hop** | Tampering with `tenant_id` to steal records | Action routes require an HMAC-signed tenant token (`require_tenant_identity` in `services/security/tenant_token.py`) and ignore the client-asserted `X-Tenant-ID`; every intent lookup checks ownership and returns 404 on mismatch. Chat-driven staging and model management require the same verified token. Token issuance is gated by an enrollment key; with `TENANT_ENROLLMENT_KEYS` configured, the single key is not a wildcard, a lone key must be bound with `TENANT_ENROLLMENT_TENANT_ID` (unbound issuance is fail-closed), and `TENANT_ENROLLMENT_ALLOW_ANY_TENANT=1` is an explicit local-development escape hatch. Provider probes (`test-connection`, `fetch-models`) also require a verified token. PostgreSQL RLS is the target storage-layer defence, not yet built. |
+| **Stolen Disk / Backup** | Reading `.sessions/` or `.data/` copied off the host | Stores are owner-only (`0700`/`0600`); setting `COPILOT_DATA_KEY` seals session statements, staging intents and the invoice registry with Fernet (`enc:v1:` prefix), and `COPILOT_ENV=production|staging` makes that key mandatory at startup. Legacy plaintext files stay readable and are re-encrypted on the next write. |
 | **Queue Flooding / DoS** | Anonymous chat minting proposals or exhausting a shared rate-limit bucket | Staging refuses anonymous callers; pending proposals expire after `STAGED_INTENT_TTL_HOURS` and identical instructions dedupe inside `STAGED_INTENT_DEDUPE_SECONDS`. Token-bucket limiting keys on the client IP and honours `TRUSTED_PROXY_HOPS` when deployed behind a trusted proxy chain. |
 | **SSRF via LLM endpoint** | Supplying a `base_url` aimed at loopback, RFC 1918 or cloud metadata hosts | `services/agent/url_guard.py` rejects non-http(s) schemes, embedded credentials, link-local/metadata addresses, and (by default) loopback and private ranges. Upstream error bodies are no longer reflected. |
 | **Race Conditions (Turbo Intruder)** | Single-packet bursts attempting duplicate loan draws | Transactions execute `SELECT ... FOR UPDATE` (pessimistic row locks). Pledging invoices across lenders is anchored on FISCO BCOS via `InvoiceRegistry.sol`; PBFT consensus guarantees only the first pledge succeeds. |

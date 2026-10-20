@@ -2,8 +2,8 @@
 Regression tests for the Three-Tier Security Gate's authentication boundary.
 
 Before these tests, every action route was anonymous: callers could stage intents for any
-tenant, list another tenant's intents, wipe the whole ledger, enroll a passkey for a victim
-tenant, and execute Tier 2 proposals. These tests pin the closed behaviour.
+tenant, list another tenant's intents, wipe the whole ledger, and change another tenant's
+proposals. These tests pin the closed behaviour.
 """
 
 import base64
@@ -67,7 +67,7 @@ def test_list_and_get_require_token():
 
     assert client.get("/api/v1/actions").status_code == 401
     assert client.get(f"/api/v1/actions/{intent_id}").status_code == 401
-    assert client.post(f"/api/v1/actions/{intent_id}/execute", json={}).status_code == 401
+    assert client.post(f"/api/v1/actions/{intent_id}/prepare").status_code == 401
     assert client.post(f"/api/v1/actions/{intent_id}/reject").status_code == 401
 
 
@@ -120,11 +120,7 @@ def test_cross_tenant_reads_are_isolated():
 
     assert client.get(f"/api/v1/actions/{intent_id}", headers=beta_headers).status_code == 404
     assert (
-        client.post(f"/api/v1/actions/{intent_id}/passkey-options", headers=beta_headers).status_code
-        == 404
-    )
-    assert (
-        client.post(f"/api/v1/actions/{intent_id}/execute", json={}, headers=beta_headers).status_code
+        client.post(f"/api/v1/actions/{intent_id}/prepare", headers=beta_headers).status_code
         == 404
     )
     assert (
@@ -132,50 +128,31 @@ def test_cross_tenant_reads_are_isolated():
     )
 
 
-def test_passkey_endpoints_require_token_and_reject_spoofing():
-    assert client.post("/api/v1/actions/passkeys/register/options", json={"tenant_id": BETA}).status_code == 401
-    assert (
-        client.post(
-            "/api/v1/actions/passkeys/register",
-            json={"tenant_id": BETA, "credential": {}},
-        ).status_code
-        == 401
-    )
-
-    alpha_headers = tenant_headers(client, ALPHA)
-    spoof = client.post(
+def test_execution_and_passkey_routes_do_not_exist():
+    # CashPilot never executes a drafted action, so there is nothing to sign and no execute route.
+    staged = _stage(ALPHA, action_type="DRAW_CREDIT_LINE")
+    intent_id = staged["intent"]["id"]
+    for path in (
+        f"/api/v1/actions/{intent_id}/execute",
+        f"/api/v1/actions/{intent_id}/passkey-options",
         "/api/v1/actions/passkeys/register/options",
-        json={"tenant_id": BETA},
-        headers=alpha_headers,
-    )
-    assert spoof.status_code == 403
+        "/api/v1/actions/passkeys/register",
+    ):
+        assert client.post(path, json={}, headers=staged["headers"]).status_code in (404, 405)
 
 
-def test_tier_2_proposals_cannot_be_executed():
-    staged = _stage(ALPHA, action_type="PREPARE_APPLICATION")
+def test_prepare_records_the_decision_once():
+    staged = _stage(ALPHA, action_type="FACTOR_INVOICE")
     intent_id = staged["intent"]["id"]
 
-    response = client.post(
-        f"/api/v1/actions/{intent_id}/execute",
-        json={},
-        headers=staged["headers"],
-    )
-    assert response.status_code == 409
-    assert "tier 2" in response.json()["detail"].lower()
+    first = client.post(f"/api/v1/actions/{intent_id}/prepare", headers=staged["headers"])
+    assert first.status_code == 200
+    assert first.json()["status"] == "PREPARED"
 
-    still_staged = client.get(f"/api/v1/actions/{intent_id}", headers=staged["headers"])
-    assert still_staged.json()["status"] == "STAGED_PENDING_HITL"
-
-
-def test_factoring_is_tier_3_and_still_requires_passkey():
-    staged = _stage(ALPHA, action_type="FACTOR_INVOICE")
-    response = client.post(
-        f"/api/v1/actions/{staged['intent']['id']}/execute",
-        json={},
-        headers=staged["headers"],
-    )
-    assert response.status_code == 403
-    assert "biometric" in response.json()["detail"].lower()
+    again = client.post(f"/api/v1/actions/{intent_id}/prepare", headers=staged["headers"])
+    assert again.status_code == 409
+    dismissed = client.post(f"/api/v1/actions/{intent_id}/reject", headers=staged["headers"])
+    assert dismissed.status_code == 409
 
 
 def test_token_issuance_requires_enrollment_key(monkeypatch):

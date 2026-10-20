@@ -136,7 +136,7 @@ CONCEPT_GUIDELINES = (
     "3. Do not calculate anything or invent figures about this business; only quote thresholds that appear in the notes.\n"
     "4. Do not repeat the calculation instructions; they are shown to the owner separately.\n\n"
     "STRICT PROHIBITIONS:\n"
-    "- DO NOT output '###' headings, bullet lists, or <thought> blocks.\n"
+    "- DO NOT output '###' headings or metric bullet lists.\n"
     "- DO NOT use corporate fluff or slop buzzwords."
 )
 
@@ -257,6 +257,9 @@ AI_SLOP_PHRASES = [
 # The fine-tune dataset opens many replies with <thought> reasoning; an unclosed block
 # means generation stopped mid-reasoning, so everything after the tag is discarded.
 THOUGHT_BLOCK_PATTERN = re.compile(r"<(thought|think)>.*?(?:</\1>|\Z)", re.IGNORECASE | re.DOTALL)
+# Chat templates with thinking on (MiniCPM5, Qwen3) put the opening <think> in the prompt, so the
+# generated text holds only the reasoning and a closing tag; everything up to that tag is reasoning.
+ORPHAN_THOUGHT_CLOSE_PATTERN = re.compile(r"^.*</(?:thought|think)>", re.IGNORECASE | re.DOTALL)
 
 CONCLUSION_SLOP_PATTERN = re.compile(
     r"((?:^|(?<=[.!?\n]))\s*)(?:in\s+conclusion|ultimately|all\s+in\s+all|in\s+summary)[,:]*\s*",
@@ -280,6 +283,7 @@ def sanitize_cfo_reply(text: str) -> str:
         return ""
 
     cleaned = THOUGHT_BLOCK_PATTERN.sub("", text)
+    cleaned = ORPHAN_THOUGHT_CLOSE_PATTERN.sub("", cleaned)
 
     # Strip surrounding quotation marks or backticks first
     cleaned = cleaned.strip().strip("'\"“”`").strip()

@@ -58,6 +58,7 @@
     "NRR": "Calculate net revenue retention NRR, gross revenue retention GRR, ARR MRR cohort retention, customer expansion and churn rate.",
     "CURRENCY_CONVERSION": "Convert currency, convert USD to EUR, exchange rate, convert money between currencies, currency conversion, FX spot rate, convert dollars to euros pounds yen taka, what is 50000 in eur.",
     "FX_EXPOSURE": "Foreign exchange exposure, FX exposure, currency risk, net open position, foreign receivables and payables, FX volatility shock, currency fluctuation risk.",
+    "REVENUE_VOLATILITY": "Calculate weekly revenue volatility, revenue inflow volatility CV, coefficient of variation on weekly customer receipts, revenue stability tier, check inflow volatility from bank statement.",
     "GENERAL": "General overview of financial health, business concepts, definitions, corporate finance formulas, accounting formulas, metrics explanations, and general financial education."
   }
 }

@@ -11,7 +11,7 @@ Handles:
 from __future__ import annotations
 
 import re
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import date, timedelta
 from decimal import Decimal
 from typing import Sequence
@@ -56,6 +56,8 @@ class ConsolidatedTreasuryResult:
     internal_transfer_volume: Decimal
     calendar_gaps: list[str]
     has_overlaps_deduped: bool
+    # Each account's own rows with the bank's balances; accepted_rows carries consolidated running balances.
+    account_rows: dict[str, list[DemoTransaction]] = field(default_factory=dict)
 
 
 _TRANSFER_KEYWORDS = {
@@ -187,6 +189,7 @@ def consolidate_multi_statement_treasury(
     all_rejected: list[RejectedRow] = []
     seen_tx_keys: set[tuple[str, date, Decimal, str]] = set()
     tx_to_account: dict[str, str] = {}
+    account_rows: dict[str, list[DemoTransaction]] = {}
 
     for f_idx, (filename, res) in enumerate(file_results):
         acc_name = file_to_account[f_idx]
@@ -200,6 +203,7 @@ def consolidate_multi_statement_treasury(
             seen_tx_keys.add(dedup_key)
             all_accepted.append(tx)
             tx_to_account[tx.transaction_id] = acc_name
+            account_rows.setdefault(acc_name, []).append(tx)
 
     # 5. Detect and Eliminate Contra-Transfers (Internal Sweeps)
     # Match pairs of transactions across DIFFERENT accounts where:
@@ -322,4 +326,5 @@ def consolidate_multi_statement_treasury(
         internal_transfer_volume=internal_volume,
         calendar_gaps=calendar_gaps,
         has_overlaps_deduped=has_overlaps_deduped,
+        account_rows=account_rows,
     )

@@ -30,7 +30,7 @@
 **Why it matters:** It is well suited to timing gaps such as waiting for customer payments or funding seasonal stock.
 **Healthy vs warning:** Healthy use: drawing for short gaps and repaying as cash comes in. Warning: a balance that never comes down, which means the line is funding losses.
 **What to do:** Arrange the line while the business is strong, before it is urgently needed.
-**In the app:** Offered to Prime and Near-Prime profiles in the facility catalogue; drawing on it needs passkey approval.
+**In the app:** Offered to Prime and Near-Prime profiles in the facility catalogue; the copilot drafts the draw request and you send it to the lender.
 
 ## Term Loan
 <!-- tools: tool_calculate_loan_amortization -->
@@ -78,7 +78,7 @@
 **Why it matters:** It prevents missed payroll or supplier payments without paying factoring rates when a cheaper line would do.
 **Healthy vs warning:** Healthy: the target is covered under 36% APR with a dated repayment source. Warning: a gap left after every non-predatory source signals a structural problem.
 **What to do:** Agree deferrals before relying on them and match each draw's term to the expected inflow date.
-**In the app:** Ask how to cover the shortfall to see the plan; ask the copilot to prepare it to stage the line and factoring steps for passkey approval.
+**In the app:** Ask how to cover the shortfall to see the plan; ask the copilot to prepare it to draft the line and factoring requests for you to send.
 
 ## Equipment Leasing vs Buying
 <!-- tools: tool_calculate_lease_vs_buy | policy: debt_covenant_policy -->

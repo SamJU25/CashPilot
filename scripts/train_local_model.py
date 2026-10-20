@@ -1,6 +1,6 @@
 """Production QLoRA Fine-Tuning Pipeline for SME Finance Copilot.
 
-Fine-tunes open-weight foundation models (default: Qwen/Qwen3-4B-Instruct-2507)
+Fine-tunes open-weight foundation models (default: openbmb/MiniCPM5-2B / CashPilot-2B)
 on the verified financial reasoning and executive communication dataset (`dataset/finetune_train.jsonl`).
 
 Optimizations:
@@ -48,9 +48,8 @@ def parse_args():
     parser.add_argument(
         "--model_id",
         type=str,
-        # Kept literal: this script runs standalone on Kaggle. The trained adapter records it for the runtime loader.
-        default="Qwen/Qwen3-4B-Instruct-2507",
-        help="Base Hugging Face model ID; must match services.agent.local_transformers.BASE_MODEL_ID for new adapters",
+        default=os.environ.get("BASE_MODEL_ID", "openbmb/MiniCPM5-2B"),
+        help="Base Hugging Face model ID (defaults to openbmb/MiniCPM5-2B or BASE_MODEL_ID env var)",
     )
     parser.add_argument(
         "--train_file",

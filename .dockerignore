@@ -14,7 +14,7 @@ build
 .env
 .env.local
 .env.*.local
-# Sealed statements, staged proposals and passkeys must never be baked into an image layer.
+# Sealed statements and staged proposals must never be baked into an image layer.
 .data
 .sessions
 .freebuff

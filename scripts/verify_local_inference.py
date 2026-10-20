@@ -77,11 +77,17 @@ TEST_CASES = [
 
 
 def parse_args():
+    try:
+        from services.agent.local_transformers import get_primary_adapter_dir, get_primary_merged_dir
+        default_merged = get_primary_merged_dir()
+    except Exception:
+        default_merged = "models/merged"
+
     parser = argparse.ArgumentParser(description="Test local model native inference.")
     parser.add_argument(
         "--model_path",
         type=str,
-        default="models/sme-finance-copilot-merged",
+        default=default_merged,
         help="Path to merged standalone model or base model",
     )
     parser.add_argument(
@@ -119,10 +125,10 @@ def main():
     target_path = args.model_path
     using_adapter = args.adapter_path
     if not os.path.exists(target_path):
-        lora_dir = "models/sme-finance-lora"
+        from services.agent.local_transformers import get_primary_adapter_dir, adapter_base_model_id, base_on_disk
+        lora_dir = get_primary_adapter_dir()
         if os.path.exists(lora_dir):
             print(f"[NOTE] Merged model '{target_path}' not found, but LoRA adapter detected at '{lora_dir}'.")
-            from services.agent.local_transformers import adapter_base_model_id, base_on_disk
             target_path = base_on_disk(adapter_base_model_id(lora_dir)) or adapter_base_model_id(lora_dir)
             using_adapter = lora_dir
 

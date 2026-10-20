@@ -61,6 +61,18 @@ class DetectedObligation:
     primary_day_of_month: int
 
 
+@dataclass(frozen=True)
+class CashScenario:
+    """What-if levers on top of the detected pattern; all zero is the plain forecast."""
+    variable_cut_pct: Decimal = Decimal("0")  # cut to day-to-day (non-recurring) spending, 0 to 100
+    extra_monthly_payroll: Decimal = Decimal("0")  # added to every payroll run, e.g. a new hire
+    one_off_inflows: tuple[tuple[date, Decimal], ...] = ()  # e.g. an overdue invoice collected on a date
+
+    @property
+    def is_base(self) -> bool:
+        return not self.variable_cut_pct and not self.extra_monthly_payroll and not self.one_off_inflows
+
+
 def _classify_outflow(description: str, cache: dict) -> Optional[str]:
     """One obligation category per memo: keyword patterns first, then EXPENSE_TRIAGE; cached per memo."""
     if description in cache:
@@ -103,6 +115,67 @@ def _detect_obligation(
     )
 
 
+def detect_obligations(rows: Sequence[DemoTransaction], cache: Optional[dict] = None) -> list[DetectedObligation]:
+    """Recurring payroll, rent and debt service found in the statement, in that order."""
+    cache = {} if cache is None else cache
+    found = (_detect_obligation(rows, category, cache) for category in ("PAYROLL", "RENT", "DEBT_SERVICE"))
+    return [ob for ob in found if ob is not None]
+
+
+def simulate_balances(
+    current_balance: Decimal,
+    average_daily_burn: Decimal,
+    obligations: Sequence[DetectedObligation],
+    anchor_date: date,
+    days: int,
+    scenario: Optional[CashScenario] = None,
+) -> list[tuple[date, Decimal, str]]:
+    """Day-by-day balance after the anchor: (date, balance, what moved it that day).
+
+    When the statement shows recurring obligations that fit inside the burn, they leave on their
+    usual day of the month and only the remainder is spread daily; otherwise the whole burn is daily.
+    The deficit forecast and the chart both read this one simulation, so they cannot disagree.
+    """
+    scenario = scenario or CashScenario()
+    total_recurring = sum((ob.average_amount for ob in obligations), Decimal("0.00"))
+    lumpy = bool(obligations) and (average_daily_burn * Decimal(30)) > total_recurring
+    if lumpy:
+        variable = max(Decimal("0.00"), (average_daily_burn * Decimal(30) - total_recurring) / Decimal(30)).quantize(
+            Decimal("0.01"), rounding=ROUND_HALF_UP
+        )
+    else:
+        variable = max(Decimal("0.00"), average_daily_burn)
+    if scenario.variable_cut_pct:
+        variable = (variable * (Decimal(100) - scenario.variable_cut_pct) / Decimal(100)).quantize(
+            Decimal("0.01"), rounding=ROUND_HALF_UP
+        )
+    # Extra payroll leaves on the statement's payday whenever one is known, even when net burn is spread daily.
+    payday = next((ob.primary_day_of_month for ob in obligations if ob.category == "PAYROLL"), None)
+    if scenario.extra_monthly_payroll and payday is None:
+        # No payroll day in the statement: spread the extra cost evenly instead of inventing a date.
+        variable += (scenario.extra_monthly_payroll / Decimal(30)).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+
+    balance = current_balance
+    out: list[tuple[date, Decimal, str]] = []
+    for day_i in range(1, days + 1):
+        sim_dt = anchor_date + timedelta(days=day_i)
+        balance -= variable
+        trigger = "OPERATING_BURN"
+        if lumpy:
+            for ob in obligations:
+                if sim_dt.day == ob.primary_day_of_month:
+                    balance -= ob.average_amount
+                    trigger = ob.category
+        if payday is not None and scenario.extra_monthly_payroll and sim_dt.day == payday:
+            balance -= scenario.extra_monthly_payroll
+            trigger = "PAYROLL"
+        for when, amount in scenario.one_off_inflows:
+            if when == sim_dt:
+                balance += amount
+        out.append((sim_dt, balance, trigger))
+    return out
+
+
 def detect_recurring_payroll(rows: Sequence[DemoTransaction]) -> Optional[Decimal]:
     """Identifies recurring payroll or lump-sum wage obligations from historical descriptions."""
     ob = _detect_obligation(rows, "PAYROLL")
@@ -128,6 +201,8 @@ def calculate_predictive_cash(
     anchor_date: Optional[date] = None,
     projection_days: int = 90,
     target_horizon_days: Optional[int] = None,
+    obligations: Optional[Sequence[DetectedObligation]] = None,
+    scenario: Optional[CashScenario] = None,
 ) -> PredictiveDeficitResult:
     """Calculates forward cash trajectory and flags predictive shortfall events."""
     if projection_days <= 0:
@@ -137,14 +212,13 @@ def calculate_predictive_cash(
 
     # Use the latest transaction date as anchor, or today
     latest_date = anchor_date or (max(r.posted_on for r in rows) if rows else date.today())
-    triage_cache: dict = {}
-    payroll_ob = _detect_obligation(rows, "PAYROLL", triage_cache)
-    rent_ob = _detect_obligation(rows, "RENT", triage_cache)
-    debt_ob = _detect_obligation(rows, "DEBT_SERVICE", triage_cache)
-
-    payroll_estimate = payroll_ob.average_amount if payroll_ob else None
-    rent_estimate = rent_ob.average_amount if rent_ob else None
-    debt_estimate = debt_ob.average_amount if debt_ob else None
+    # Obligations come from the statement, or are passed in when only the summary is known (what-if).
+    obligations = list(detect_obligations(rows) if obligations is None else obligations)
+    by_category = {ob.category: ob.average_amount for ob in obligations}
+    payroll_estimate = by_category.get("PAYROLL")
+    rent_estimate = by_category.get("RENT")
+    debt_estimate = by_category.get("DEBT_SERVICE")
+    scenario = scenario or CashScenario()
 
     # Treasury boundary and confidence evaluation
     horizon_capped = False
@@ -195,47 +269,22 @@ def calculate_predictive_cash(
     shortfall = Decimal("0.00")
     primary_deficit_trigger: Optional[str] = None
 
-    simulated_balance = current_balance
-
     # If already nonpositive
     if current_balance <= 0:
         days_until_deficit = 0
         projected_date = latest_date.isoformat()
         shortfall = abs(current_balance)
         primary_deficit_trigger = "EXISTING_OVERDRAFT"
-    elif average_daily_burn > 0:
-
-        # Check recurring monthly total
-        recurring_obs = [ob for ob in (payroll_ob, rent_ob, debt_ob) if ob is not None]
-        total_recurring_monthly = sum((ob.average_amount for ob in recurring_obs), Decimal("0.00"))
-
-        if recurring_obs and (average_daily_burn * Decimal(30)) > total_recurring_monthly:
-            variable_daily_burn = max(
-                Decimal("0.00"),
-                (average_daily_burn * Decimal(30) - total_recurring_monthly) / Decimal(30)
-            ).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
-            use_lumpy_simulation = True
-        else:
-            variable_daily_burn = average_daily_burn
-            use_lumpy_simulation = False
-
-        for day_i in range(1, effective_sim_days + 1):
-            sim_dt = latest_date + timedelta(days=day_i)
-            simulated_balance -= variable_daily_burn
-            current_trigger = "OPERATING_BURN"
-
-            if use_lumpy_simulation:
-                for ob in recurring_obs:
-                    if sim_dt.day == ob.primary_day_of_month:
-                        simulated_balance -= ob.average_amount
-                        current_trigger = ob.category
-
-            if simulated_balance < 0 and days_until_deficit is None:
+    elif average_daily_burn > 0 or not scenario.is_base:
+        for day_i, (sim_dt, sim_balance, trigger) in enumerate(
+            simulate_balances(current_balance, average_daily_burn, obligations, latest_date, effective_sim_days, scenario),
+            start=1,
+        ):
+            if sim_balance < 0:
                 days_until_deficit = day_i
-                deficit_dt = sim_dt
-                projected_date = deficit_dt.isoformat()
-                shortfall = abs(simulated_balance).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
-                primary_deficit_trigger = current_trigger
+                projected_date = sim_dt.isoformat()
+                shortfall = abs(sim_balance).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+                primary_deficit_trigger = trigger
                 break
 
     # Calculate recommended buffer bridge (shortfall + 20% safety margin, rounded to hundreds)

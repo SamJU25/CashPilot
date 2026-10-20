@@ -1,6 +1,7 @@
 """
-In-memory staging ledger for Tier 2 proposal staging and Tier 3 Human-in-the-Loop execution.
-Enforces the Three-Tier Security Gate to prevent unauthorized automated money movements.
+Staging ledger for drafted actions. CashPilot works from uploaded statements and has no bank or lender
+connection, so a drafted action never executes: the owner either prepares it (gets the request to send
+themselves) or dismisses it. There is no code path that moves money.
 """
 
 from __future__ import annotations
@@ -12,14 +13,13 @@ import threading
 import uuid
 from datetime import datetime, timedelta, timezone
 from enum import Enum
-from typing import Any, Optional
+from typing import Optional
 
 from pydantic import BaseModel, ConfigDict, Field
 
 from services.security.crypto import open_text, seal_text
 from services.security.file_utils import ensure_private_dir, restrict_file
-from services.security.passkeys import PasskeyError, PasskeyRegistry, passkey_registry
-from services.security.three_tier_gate import StagedActionIntent, requires_biometric_execution
+from services.security.three_tier_gate import StagedActionIntent
 
 logger = logging.getLogger(__name__)
 
@@ -35,7 +35,8 @@ STAGED_INTENT_DEDUPE_SECONDS = max(0, int(os.environ.get("STAGED_INTENT_DEDUPE_S
 
 class ActionStatus(str, Enum):
     STAGED_PENDING_HITL = "STAGED_PENDING_HITL"
-    EXECUTED = "EXECUTED"
+    # The owner took the prepared request to send it; CashPilot itself sent nothing.
+    PREPARED = "PREPARED"
     REJECTED = "REJECTED"
 
 
@@ -51,10 +52,6 @@ class IntentStateError(StagingLedgerError):
     """Raised when an action is performed on an intent in an invalid state."""
 
 
-class BiometricVerificationError(StagingLedgerError):
-    """Raised when a Tier 3 action lacks a verified WebAuthn passkey assertion."""
-
-
 class StagingRequest(BaseModel):
     model_config = ConfigDict(extra="forbid", strict=True)
 
@@ -66,24 +63,10 @@ class StagingRequest(BaseModel):
     target_identifier: str = Field(min_length=1, description="Account, invoice ID, or facility ID")
 
 
-class ExecutionRequest(BaseModel):
-    model_config = ConfigDict(extra="forbid", strict=True)
-
-    webauthn_assertion: Optional[dict[str, Any]] = Field(
-        default=None,
-        description="PublicKeyCredential JSON from navigator.credentials.get() over this intent's challenge",
-    )
-
-
 class StagingLedger:
     """Thread-safe persistent staging ledger for autonomous agent financial actions."""
 
-    def __init__(
-        self,
-        passkeys: Optional[PasskeyRegistry] = None,
-        storage_dir: Optional[str] = None,
-    ) -> None:
-        self._passkeys = passkeys or passkey_registry
+    def __init__(self, storage_dir: Optional[str] = None) -> None:
         self._storage_dir = storage_dir
         self._file_path = os.path.join(self._storage_dir, "staged_intents.json") if self._storage_dir else None
         self._intents: dict[str, StagedActionIntent] = {}
@@ -100,6 +83,8 @@ class StagingLedger:
             with open(self._file_path, "r", encoding="utf-8") as f:
                 data = json.loads(open_text(f.read()))
                 for item in data.values():
+                    # Ledgers written before passkeys were removed carry this field.
+                    item.pop("biometric_signature", None)
                     intent = StagedActionIntent.model_validate_json(json.dumps(item))
                     self._intents[intent.id] = intent
         except Exception as exc:
@@ -180,7 +165,6 @@ class StagingLedger:
                 target_identifier=request.target_identifier,
                 status=ActionStatus.STAGED_PENDING_HITL.value,
                 staged_at=now,
-                biometric_signature=None,
             )
             self._intents[intent.id] = intent
             self._persist()
@@ -202,66 +186,26 @@ class StagingLedger:
             return [i for i in all_intents if i.tenant_id == tenant_id]
         return all_intents
 
-    def execute_intent(
-        self, intent_id: str, webauthn_assertion: Optional[dict[str, Any]] = None
-    ) -> StagedActionIntent:
-        """
-        Executes a staged intent.
-        Tier 3 actions require a passkey assertion signed over this intent's challenge.
-        """
+    def _decide(self, intent_id: str, status: ActionStatus) -> StagedActionIntent:
+        """Moves a pending intent to the owner's decision; a decided intent stays as it is."""
         with self._lock:
             intent = self._intents.get(intent_id)
             if intent is None:
                 raise IntentNotFoundError(f"Action intent {intent_id} not found")
-
             if intent.status != ActionStatus.STAGED_PENDING_HITL.value:
-                raise IntentStateError(f"Cannot execute intent in status {intent.status}")
-
-            # Tier 2 proposals are queue-only by construction: nothing may move capital without
-            # a Tier 3 biometric authorization. This blocks execution of any action type that the
-            # security-gate policy does not require a passkey for.
-            if not requires_biometric_execution(intent.action_type):
-                raise IntentStateError(
-                    f"Action '{intent.action_type}' is a Tier 2 proposal and cannot be executed"
-                )
-
-            if not webauthn_assertion:
-                raise BiometricVerificationError(
-                    f"Tier 3 action '{intent.action_type}' requires biometric passkey verification."
-                )
-            try:
-                proof = self._passkeys.verify_assertion(intent.tenant_id, intent_id, webauthn_assertion)
-            except PasskeyError as exc:
-                raise BiometricVerificationError(
-                    f"Tier 3 action '{intent.action_type}' biometric passkey verification failed: {exc}"
-                ) from exc
-
-            executed_intent = intent.model_copy(
-                update={
-                    "status": ActionStatus.EXECUTED.value,
-                    "biometric_signature": proof,
-                }
-            )
-            self._intents[intent_id] = executed_intent
+                raise IntentStateError(f"Cannot change intent in status {intent.status}")
+            decided = intent.model_copy(update={"status": status.value})
+            self._intents[intent_id] = decided
             self._persist()
-            return executed_intent
+            return decided
 
-    def reject_intent(self, intent_id: str, reason: str = "Rejected by user") -> StagedActionIntent:
-        """Rejects a staged intent."""
-        with self._lock:
-            intent = self._intents.get(intent_id)
-            if intent is None:
-                raise IntentNotFoundError(f"Action intent {intent_id} not found")
+    def prepare_intent(self, intent_id: str) -> StagedActionIntent:
+        """Records that the owner took the request to send it themselves. Nothing is sent from here."""
+        return self._decide(intent_id, ActionStatus.PREPARED)
 
-            if intent.status != ActionStatus.STAGED_PENDING_HITL.value:
-                raise IntentStateError(f"Cannot reject intent in status {intent.status}")
-
-            rejected_intent = intent.model_copy(
-                update={"status": ActionStatus.REJECTED.value}
-            )
-            self._intents[intent_id] = rejected_intent
-            self._persist()
-            return rejected_intent
+    def reject_intent(self, intent_id: str) -> StagedActionIntent:
+        """Records that the owner dismissed the drafted action."""
+        return self._decide(intent_id, ActionStatus.REJECTED)
 
     def clear(self) -> None:
         """Clears all intents (used for testing)."""

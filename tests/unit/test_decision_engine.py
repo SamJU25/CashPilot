@@ -97,7 +97,7 @@ def test_fallback_security_gate_tier_3():
     )
     res = adapter.evaluate(req)
     assert res.selected_choice == "TIER_3_EXECUTION"
-    assert res.output_payload["requires_biometric_execution"] is True
+    assert res.output_payload["requires_owner_action"] is True
 
 
 def test_fallback_security_gate_tier_2():
@@ -108,7 +108,7 @@ def test_fallback_security_gate_tier_2():
     )
     res = adapter.evaluate(req)
     assert res.selected_choice == "TIER_2_STAGING"
-    assert res.output_payload["requires_biometric_execution"] is False
+    assert res.output_payload["requires_owner_action"] is False
 
 
 def test_fallback_deficit_severity_horizons():
@@ -204,7 +204,7 @@ def test_zen_adapter_security_gate_parity():
         input_state={"action_type": "TRANSFER"},
     ))
     assert res_t3.selected_choice == "TIER_3_EXECUTION"
-    assert res_t3.output_payload["requires_biometric_execution"] is True
+    assert res_t3.output_payload["requires_owner_action"] is True
 
     # Selling receivables is a binding financial commitment, so it is Tier 3.
     res_t3_factor = adapter.evaluate(DecisionRequest(
@@ -212,21 +212,21 @@ def test_zen_adapter_security_gate_parity():
         input_state={"action_type": "FACTOR_INVOICE"},
     ))
     assert res_t3_factor.selected_choice == "TIER_3_EXECUTION"
-    assert res_t3_factor.output_payload["requires_biometric_execution"] is True
+    assert res_t3_factor.output_payload["requires_owner_action"] is True
 
     res_t2 = adapter.evaluate(DecisionRequest(
         domain=DecisionDomain.SECURITY_GATE,
         input_state={"action_type": "PREPARE_APPLICATION"},
     ))
     assert res_t2.selected_choice == "TIER_2_STAGING"
-    assert res_t2.output_payload["requires_biometric_execution"] is False
+    assert res_t2.output_payload["requires_owner_action"] is False
 
     res_t1 = adapter.evaluate(DecisionRequest(
         domain=DecisionDomain.SECURITY_GATE,
         input_state={"action_type": "QUERY_LEDGER"},
     ))
     assert res_t1.selected_choice == "TIER_1_OBSERVATION"
-    assert res_t1.output_payload["requires_biometric_execution"] is False
+    assert res_t1.output_payload["requires_owner_action"] is False
 
 
 def test_zen_adapter_deficit_severity_parity():
@@ -445,7 +445,7 @@ def test_zen_adapter_captures_matched_rule_id_and_adverse_factors():
         input_state={"action_type": "TRANSFER"},
     ))
     assert res_sec.matched_rule_id == "rule_tier_3"
-    assert "biometric" in (res_sec.matched_rule_description or "").lower()
+    assert "owner sends" in (res_sec.matched_rule_description or "").lower()
 
 
 def test_zen_adapter_and_registry_hot_reloading():

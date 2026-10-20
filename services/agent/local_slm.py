@@ -17,12 +17,37 @@ from typing import Any, List, Optional
 
 logger = logging.getLogger(__name__)
 
-MODEL_DIR = os.path.abspath(
-    os.path.join(
-        os.path.dirname(__file__),
-        "../../models/sme-finance-lora",
-    )
-)
+MODELS_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../models"))
+
+
+def _resolve_slm_model_dir() -> str:
+    """Dynamically locates local ONNX SLM model directory with robust exception handling."""
+    env_dir = os.getenv("LOCAL_SLM_MODEL_DIR")
+    if env_dir:
+        try:
+            if os.path.exists(env_dir):
+                return os.path.abspath(env_dir)
+        except (OSError, PermissionError):
+            pass
+
+    try:
+        if os.path.exists(MODELS_ROOT):
+            for entry in sorted(os.listdir(MODELS_ROOT)):
+                if entry.startswith("."):
+                    continue
+                cand = os.path.join(MODELS_ROOT, entry)
+                try:
+                    if os.path.isdir(cand) and os.path.exists(os.path.join(cand, "model.onnx.data")):
+                        return os.path.abspath(cand)
+                except (OSError, PermissionError):
+                    continue
+    except (OSError, PermissionError):
+        pass
+
+    return os.path.abspath(os.path.join(MODELS_ROOT, "onnx-slm"))
+
+
+MODEL_DIR = _resolve_slm_model_dir()
 
 
 class LocalSLMEngine:
@@ -46,10 +71,18 @@ class LocalSLMEngine:
 
     def is_available(self) -> bool:
         """Checks if model files are present on disk."""
-        if not os.path.exists(MODEL_DIR):
+        try:
+            target_dir = _resolve_slm_model_dir()
+            if not os.path.exists(target_dir):
+                return False
+            model_data = os.path.join(target_dir, "model.onnx.data")
+            return os.path.exists(model_data) and os.path.getsize(model_data) > 100 * 1024 * 1024
+        except (OSError, PermissionError) as exc:
+            logger.debug("Error checking LocalSLMEngine disk availability: %s", exc)
             return False
-        model_data = os.path.join(MODEL_DIR, "model.onnx.data")
-        return os.path.exists(model_data) and os.path.getsize(model_data) > 100 * 1024 * 1024
+        except Exception as exc:
+            logger.warning("Unexpected error checking LocalSLMEngine availability: %s", exc)
+            return False
 
     def _ensure_loaded(self) -> bool:
         if self._is_ready:
@@ -62,21 +95,22 @@ class LocalSLMEngine:
                 return True
             self._load_attempted = True
 
+            target_dir = _resolve_slm_model_dir()
             if not self.is_available():
-                logger.info("Local SLM weights not found at %s. Using deterministic fallback.", MODEL_DIR)
+                logger.info("Local SLM weights not found at %s. Using deterministic fallback.", target_dir)
                 return False
 
             try:
                 import onnxruntime_genai as og
 
-                logger.info("Loading local ONNX model from %s...", MODEL_DIR)
-                self._model = og.Model(MODEL_DIR)
+                logger.info("Loading local ONNX model from %s...", target_dir)
+                self._model = og.Model(target_dir)
                 self._tokenizer = og.Tokenizer(self._model)
                 self._is_ready = True
                 logger.info("Local ONNX model loaded successfully into memory.")
                 return True
             except Exception as exc:
-                logger.error("Failed to load local ONNX model: %s", exc)
+                logger.error("Failed to load local ONNX model from %s: %s", target_dir, exc)
                 self._is_ready = False
                 return False
 

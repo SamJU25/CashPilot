@@ -1,6 +1,6 @@
 # SME Finance Copilot — Kaggle Training Guide
 
-Train **`Qwen/Qwen3-4B-Instruct-2507`** on free Kaggle GPU hardware (NVIDIA Tesla T4, 16 GB VRAM) with zero load on your local laptop.
+Train **CashPilot-2B** (default foundation: **`openbmb/MiniCPM5-2B`**) on free Kaggle GPU hardware (NVIDIA Tesla T4, 16 GB VRAM) with zero load on your local machine.
 
 ---
 
@@ -12,9 +12,9 @@ Train **`Qwen/Qwen3-4B-Instruct-2507`** on free Kaggle GPU hardware (NVIDIA Tesl
 
 ### Step 2: Upload the Notebook & Dataset
 1. In the Kaggle notebook menu, click **File** $\to$ **Upload Notebook**.
-2. Select [`kaggle/kaggle_qwen3_4b_training.ipynb`](kaggle_qwen3_4b_training.ipynb) from this repository.
+2. Select [`kaggle/kaggle_cashpilot_2b_training.ipynb`](kaggle_cashpilot_2b_training.ipynb) (or run [`kaggle/kaggle_train_cashpilot.py`](kaggle_train_cashpilot.py)).
 3. On the right-hand panel under **Input**, click **Upload** $\to$ **New Dataset**.
-4. Upload [`dataset_qwen3_ready.zip`](../dataset_qwen3_ready.zip) (2.41 MB). Set dataset title to `sme-finance-dataset`.
+4. Zip your `dataset/` directory (`finetune_train.jsonl`, `finetune_val.jsonl`, `tools_train.jsonl`) and upload it as `sme-finance-dataset`.
 
 ---
 
@@ -26,17 +26,18 @@ In the right-hand sidebar under **Notebook settings**:
 ---
 
 ### Step 4: Run Training
-Click **Run All** (or `Shift + Enter` through the 5 cells):
+Click **Run All** (or `Shift + Enter` through the cells):
 - Cell 1: Installs PyTorch, Hugging Face `transformers`, `peft`, `trl`, `bitsandbytes`.
 - Cell 2: Verifies NVIDIA Tesla T4 (15.9 GB VRAM).
-- Cell 3: Automatically unpacks the verified training and validation datasets.
-- Cell 4: Loads `Qwen3-4B-Instruct-2507` in 4-bit NF4 and executes 3 epochs of QLoRA training (~25–35 minutes).
-- Cell 5: Tests native inference and zips the fine-tuned adapter into `sme_finance_lora_qwen3_4b.zip`.
+- Cell 3: Automatically detects and unpacks the training and validation datasets.
+- Cell 4: Loads `openbmb/MiniCPM5-2B` (or `BASE_MODEL_ID` env variable) in 4-bit NF4 and executes QLoRA training (~25–35 minutes).
+- Cell 5: Tests native inference and zips the fine-tuned adapter into `sme_finance_lora.zip`.
 
 ---
 
-### Step 5: Download Weights Back to Your Laptop
-1. When cell 5 completes, open the **Output** section in the right sidebar.
-2. Click the three dots next to `sme_finance_lora_qwen3_4b.zip` $\to$ **Download**.
+### Step 5: Download Weights Back to Your Project
+1. When training completes, open the **Output** section in the right sidebar.
+2. Click the three dots next to `sme_finance_lora.zip` $\to$ **Download**.
 3. Extract the downloaded zip file into your local project directory at:
    `models/sme-finance-lora/`
+4. The copilot automatically detects the adapter at startup with zero code changes.

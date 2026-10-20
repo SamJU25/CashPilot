@@ -109,10 +109,15 @@ def _format_money(val: Decimal) -> str:
     return f"{val:.2f}"
 
 
+from services.ingestion.session_statement import declared_burn_applies, split_meta, strip_meta
+
+
 def _normalize_statement_bytes(content_str: str) -> bytes:
     """Decodes string or base64 into raw bytes, converting PDF to canonical CSV bytes if needed."""
     if not content_str:
         return b""
+    # The session statement may start with a settings line; parsers only ever see the CSV.
+    content_str = strip_meta(content_str)
     trimmed = content_str.strip()
     raw_bytes = content_str.encode("utf-8")
     if trimmed.startswith("JVBERi0"):
@@ -153,10 +158,12 @@ def tool_analyze_cash_flow(
     """
     raw_bytes = _normalize_statement_bytes(csv_content)
     ingestion = parse_bank_csv(raw_bytes)
+    meta, _ = split_meta(csv_content or "")
     result = calculate_cash_analysis(
         ingestion.accepted_rows,
         ingestion.rejected_rows,
         alert_threshold_days=alert_threshold_days,
+        declared_daily_burn=declared_burn_applies(meta, ingestion.accepted_rows),
     )
     prediction = calculate_predictive_cash(
         current_balance=result.current_balance,
@@ -420,7 +427,7 @@ def tool_stage_financial_action(
 ) -> Dict[str, Any]:
     """Stage a financial action into the immutable staging queue (Tier 2).
 
-    No money moves. The returned proposal mandates Tier 3 biometric WebAuthn verification.
+    No money moves, and CashPilot never executes it: the owner prepares the request and sends it themselves.
     """
     request = StagingRequest(
         tenant_id=tenant_id,
@@ -436,7 +443,6 @@ def tool_stage_financial_action(
         "amount_cents": intent.amount_cents,
         "target_identifier": intent.target_identifier,
         "status": intent.status,
-        "biometric_required": True,
     }
 
 

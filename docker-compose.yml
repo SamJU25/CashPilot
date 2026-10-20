@@ -19,8 +19,6 @@ services:
       - COPILOT_SESSION_DIR=/app/.data/sessions
       - MAX_ANALYSIS_UPLOAD_BYTES=${MAX_ANALYSIS_UPLOAD_BYTES:-1048576}
       - ALLOWED_ORIGINS=${ALLOWED_ORIGINS:-http://localhost:3000,http://127.0.0.1:3000}
-      - WEBAUTHN_ORIGINS=${WEBAUTHN_ORIGINS:-http://localhost:3000}
-      - WEBAUTHN_RP_ID=${WEBAUTHN_RP_ID:-localhost}
       - GEMINI_API_KEY=${GEMINI_API_KEY:-}
       - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY:-}
       - OPENAI_API_KEY=${OPENAI_API_KEY:-}
@@ -58,7 +56,7 @@ services:
       context: .
       dockerfile: docker/Dockerfile.frontend
       args:
-        - NEXT_PUBLIC_API_BASE_URL=${NEXT_PUBLIC_API_BASE_URL:-http://localhost:8000}
+        - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-http://localhost:8000}
     container_name: sme-finance-copilot-ui
     restart: unless-stopped
     ports:
@@ -69,7 +67,12 @@ services:
       - ALL
     environment:
       - PORT=3000
-      - NEXT_PUBLIC_API_BASE_URL=${NEXT_PUBLIC_API_BASE_URL:-http://localhost:8000}
+      # The browser calls NEXT_PUBLIC_API_URL; the server-side token route reaches the backend over the compose network.
+      - CASHPILOT_API_URL=http://backend:8000
+      - TENANT_ENROLLMENT_KEY=${TENANT_ENROLLMENT_KEY:-}
+      - TENANT_ENROLLMENT_TENANT_ID=${TENANT_ENROLLMENT_TENANT_ID:-}
+      # Off by default: set to 1 only for a single-business deployment behind its own access control.
+      - CASHPILOT_OPEN_SESSION=${CASHPILOT_OPEN_SESSION:-}
     depends_on:
       backend:
         condition: service_healthy

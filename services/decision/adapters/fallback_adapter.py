@@ -186,7 +186,7 @@ class FallbackRuleAdapter(AbstractDecisionEngine):
                     "is_prompt_injection": is_inj,
                     "is_credential_leak": is_key,
                     "violation_type": viol,
-                    "requires_biometric_execution": False,
+                    "requires_owner_action": False,
                 },
             )
 
@@ -196,15 +196,15 @@ class FallbackRuleAdapter(AbstractDecisionEngine):
 
         if action_type in tier_3_actions:
             tier = "TIER_3_EXECUTION"
-            requires_biometric = True
-            rationale = f"Action {action_type} is an irreversible financial transfer requiring Tier 3 biometric HITL."
+            requires_owner = True
+            rationale = f"Action {action_type} moves money, so CashPilot prepares the request and the owner sends it (Tier 3)."
         elif action_type in tier_2_actions:
             tier = "TIER_2_STAGING"
-            requires_biometric = False
+            requires_owner = False
             rationale = f"Action {action_type} is staged into ledger queue; no funds disbursed."
         else:
             tier = "TIER_1_OBSERVATION"
-            requires_biometric = False
+            requires_owner = False
             rationale = f"Action {action_type} is read-only observation."
 
         return DecisionResult(
@@ -215,7 +215,7 @@ class FallbackRuleAdapter(AbstractDecisionEngine):
             rationale=rationale,
             output_payload={
                 "security_tier": tier,
-                "requires_biometric_execution": requires_biometric,
+                "requires_owner_action": requires_owner,
             },
         )
 

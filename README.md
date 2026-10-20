@@ -4,7 +4,7 @@
 > *FinTechathon 2026 Topic E: AI as a Financial Participant | Tsinghua University PBCSF & WeBank*
 
 [![CI](https://github.com/SamJU25/F-SME-Finance-Copilot/actions/workflows/ci.yml/badge.svg)](https://github.com/SamJU25/F-SME-Finance-Copilot/actions/workflows/ci.yml)
-[![Tests](https://img.shields.io/badge/pytest-863_passed-brightgreen.svg)](tests/)
+[![Tests](https://img.shields.io/badge/pytest-854_passed-brightgreen.svg)](tests/)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.115+-009688.svg)](https://fastapi.tiangolo.com/)
 [![Next.js 14](https://img.shields.io/badge/Next.js-14_App_Router-black.svg)](https://nextjs.org/)
@@ -12,7 +12,7 @@
 [![Solidity 0.8.20](https://img.shields.io/badge/Solidity-0.8.20-363636.svg)](contracts/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-**Audited Technical Baseline (2026-10-19)**: **863 automated tests passing (1 POSIX-only skip)** across multi-format statement ingestion (CSV and PDF), 25+ deterministic financial engines in pure Python `decimal.Decimal`, dynamic semantic intent routing (FastEmbed ONNX), on-device local SLM inference (fine-tuned Qwen3-4B LoRA, optional dependencies), Universal Cloud LLM Bridge with live dynamic model discovery, Three-Tier Security Gate with browser-verified WebAuthn passkeys, and hardened rootless Docker Compose orchestration.
+**Audited Technical Baseline (2026-10-19)**: **854 automated tests passing (1 POSIX-only skip)** across multi-format statement ingestion (CSV and PDF), 25+ deterministic financial engines in pure Python `decimal.Decimal`, dynamic semantic intent routing (FastEmbed ONNX), on-device local SLM inference (fine-tuned Solvavion-2B LoRA, optional dependencies), Universal Cloud LLM Bridge with live dynamic model discovery, Three-Tier Security Gate with owner-sent Tier 3 requests (no execution route), and hardened rootless Docker Compose orchestration.
 
 ---
 
@@ -24,7 +24,7 @@ Read [`AGENTS.md`](AGENTS.md) for instruction precedence and verified baseline s
 |---|---|
 | 📘 [System Design Specification](docs/system.md) | Concrete implementation mechanics, mathematical formulas, JSON schemas & smart contracts |
 | 🏛️ [Architectural Plan & Roadmap](docs/architecture.md) | 6-layer topology, local SLM inference, dynamic vector routing & multi-agent suites |
-| 🛡️ [Security Architecture](docs/security.md) | 5 Invariants, threat modeling, Three-Tier Gate, WebAuthn passkeys & decadal defense |
+| 🛡️ [Security Architecture](docs/security.md) | 5 Invariants, threat modeling, Three-Tier Gate (owner-sent Tier 3) & decadal defense |
 | 📜 [Architecture Decision Records (ADRs)](docs/adr/) | 7 formal Architecture Decision Records (ADR-001 through ADR-007) |
 | 📖 [Ubiquitous Domain Glossary](GLOSSARY.md) | Standardized fintech, underwriting, and treasury terminology (CCC, DAB, DSCR, APR) |
 | 📄 [Technical Deep Dive Report](docs/SME_Finance_Copilot_Deep_Dive_Report.pdf) | Comprehensive architectural evaluation and benchmark report (PDF) |
@@ -68,9 +68,9 @@ Traditional banks require 4 to 8 weeks to underwrite working capital loans and r
 │  • DSCR, FCCR & Burn rate  │  • Shortfall pinpointing   │  • Predatory APR flag (>36%)  │
 ├────────────────────────────┼────────────────────────────┼───────────────────────────────┤
 │   4. Universal AI Bridge   │   5. Three-Tier Gate       │   6. Consortium Blockchain    │
-│  • Local Qwen3-4B LoRA      │  • Tier 1: Read-only auto  │  • FISCO BCOS smart contract  │
+│  • Local CashPilot-2B LoRA │  • Tier 1: Read-only auto  │  • FISCO BCOS smart contract  │
 │  • 7 Cloud LLM Providers   │  • Tier 2: Proposal staging│  • Canonical SHA-256 hashing  │
-│  • Dynamic model discovery │  • Tier 3: WebAuthn 2FA    │  • Double-pledge prevention   │
+│  • Dynamic model discovery │  • Tier 3: owner sends it  │  • Double-pledge prevention   │
 └────────────────────────────┴────────────────────────────┴───────────────────────────────┘
 ```
 
@@ -101,7 +101,7 @@ All monetary calculations execute in pure Python `decimal.Decimal` with `ROUND_H
 
 ### 2.3 Universal Dynamic AI Bridge & Local SLM (`services/agent/`)
 - **Dual Inference Engine**:
-  - **Local SLM Engine**: On-device inference via fine-tuned `Qwen/Qwen3-4B-Instruct-2507` LoRA adapter (`models/sme-finance-lora`) on PyTorch CUDA with automatic fallback.
+  - **Local SLM Engine**: On-device inference via fine-tuned `CashPilot-2B` (`openbmb/MiniCPM5-2B`) LoRA adapter (`models/sme-finance-lora`) on PyTorch CUDA with automatic fallback.
   - **Universal Cloud LLM Bridge** (`llm_bridge.py`): Native support for Google Gemini 2.0 Flash, Anthropic Claude 3.5 Sonnet, OpenAI GPT-4o, DeepSeek, Groq, Local Ollama, and Custom OpenAI-compatible endpoints.
 - **Dynamic Live Model Discovery**: `POST /api/v1/agent/fetch-models` queries upstream endpoints dynamically to retrieve real-time model catalogs.
 - **Dynamic Connection Verification**: `POST /api/v1/agent/test-connection` verifies provider credentials and endpoint reachability with detailed latency metrics.
@@ -109,9 +109,9 @@ All monetary calculations execute in pure Python `decimal.Decimal` with `ROUND_H
 - **Anti-Slop Post-Processing**: Dynamic neural CFO responses grounded in deterministic calculation context without template repetitions.
 - **Pre-Flight Privacy Shield**: PII scrubbing redacting IBANs, bank routing numbers, and contact details before data enters LLM context.
 
-### 2.4 Three-Tier Security Gate & WebAuthn Passkeys (`services/security/`)
+### 2.4 Three-Tier Security Gate (`services/security/`)
 
-Every action endpoint is scoped to a **verified tenant identity**: callers mint a signed tenant token at `POST /api/v1/auth/token` with their enrollment key, and the ledger never trusts a client-supplied `tenant_id` or `X-Tenant-ID` header. Tier 2 proposals are queue-only (execution is refused), and every capital-moving action type — including invoice factoring — requires a Tier 3 passkey assertion.
+Every action endpoint is scoped to a **verified tenant identity**: callers mint a signed tenant token at `POST /api/v1/auth/token` with their enrollment key, and the ledger never trusts a client-supplied `tenant_id` or `X-Tenant-ID` header. Tier 2 proposals are queue-only, and no endpoint executes anything: Tier 3 actions (drawing credit, transfers, selling or pledging invoices) are never executed: CashPilot works from uploaded statements with no bank or lender connection, so it drafts the request and the owner prepares and sends it themselves.
 Every autonomous action is gated by the Three-Tier Security Matrix:
 
 ```mermaid
@@ -125,15 +125,15 @@ flowchart TD
     T2 --> S2[Stage Intent in action_intents Ledger]
     S2 --> Dashboard[Business Owner Review on Dashboard]
     
-    Gate -->|Capital Outflows / Contracts| T3[Tier 3: Execution Locked]
-    T3 --> Biometric{WebAuthn Hardware 2FA}
-    Biometric -->|Biometric Denied| Halt[Halt & Audit Log]
-    Biometric -->|FIDO2 Assertion Verified| Execute[Disburse Funds / Pledge Contract]
+    Gate -->|Capital Outflows / Contracts| T3[Tier 3: Never Executed]
+    T3 --> Draft[Drafted Request in Approvals]
+    Draft -->|Prepare request| Owner[Owner Sends It to the Lender]
+    Draft -->|Dismiss| Halt[Dismissed & Logged]
 ```
 
 - **Tier 1 (Observation — Autonomous)**: Read-only data ingestion and calculations.
 - **Tier 2 (Staging — Queue Only)**: Loan applications and credit proposals placed into an immutable staging ledger (`action_intents`). No capital movement.
-- **Tier 3 (Execution — Strict HITL 2FA)**: Irreversible financial transactions (drawing credit lines, wire disbursements, contract signing) require a Human-in-the-Loop WebAuthn assertion — Touch ID, Face ID, Windows Hello or a roaming security key, whichever authenticator the browser offers — verified cryptographically via `py_webauthn`.
+- **Tier 3 (Owner-Sent)**: Irreversible financial transactions (drawing credit lines, wire disbursements, contract signing) are never carried out by CashPilot. The owner gets a pre-filled request (`POST /api/v1/actions/{id}/prepare`) and sends it from their own email or the lender's form; with no payment credentials in the system, no prompt or exploit can move money.
 
 ### 2.5 Consortium Blockchain Double-Pledge Defense (`contracts/`)
 - Generates canonical `SHA-256` content hashes from invoice metadata:
@@ -153,7 +153,8 @@ All monetary values across JSON API boundaries are serialized as decimal strings
 | `POST` | `/api/v1/underwrite` | Evaluates transactional metrics against underwriting rules | Tier 1 (Read-Only) | JSON financial metrics |
 | `POST` | `/api/v1/auth/token` | Issues a signed tenant token; requires `X-Enrollment-Key` | Enrollment | JSON tenant request |
 | `POST` | `/api/v1/actions/stage` | Stages financing proposal into the tenant's queue | Tier 2 (Staging, signed token) | JSON action intent |
-| `POST` | `/api/v1/actions/{id}/execute` | Executes staged action with WebAuthn passkey assertion | Tier 3 (HITL 2FA, signed token) | JSON WebAuthn assertion |
+| `POST` | `/api/v1/actions/{id}/prepare` | Records that the owner took the request to send it; nothing is sent | Owner decision (signed token) | None |
+| `POST` | `/api/v1/actions/{id}/reject` | Dismisses a drafted action | Owner decision (signed token) | None |
 | `POST` | `/api/v1/agent/chat` | AI CFO dialogue with semantic routing & dynamic bridge | Tier 1 (Read-Only) | JSON message + provider |
 | `POST` | `/api/v1/agent/test-connection` | Verifies LLM provider credentials and endpoint connectivity | Tenant token required | JSON credentials |
 | `POST` | `/api/v1/agent/fetch-models` | Dynamically discovers available models from target provider | Tenant token required | JSON credentials |
@@ -179,7 +180,7 @@ docker compose up --build -d
 - **FastAPI Backend**: Open <http://localhost:8000/api/v1/health>
 - **Interactive OpenAPI Docs**: Open <http://localhost:8000/docs>
 
-State lives in three named volumes: `copilot-data` (staging ledger, passkeys, invoice registry and sessions under `/app/.data`), `copilot-models` (downloaded base weights) and `copilot-hf-cache` (Hugging Face cache).
+State lives in three named volumes: `copilot-data` (staging ledger, invoice registry and sessions under `/app/.data`), `copilot-models` (downloaded base weights) and `copilot-hf-cache` (Hugging Face cache).
 
 Token issuance is fail-closed, so copy `.env.example` to `.env` and set `TENANT_ENROLLMENT_KEY` together with `TENANT_ENROLLMENT_TENANT_ID` (or the per-tenant `TENANT_ENROLLMENT_KEYS` map) before signing in; without them `/api/v1/auth/token` returns 503. Setting `COPILOT_DATA_KEY` encrypts the persisted stores at rest and is **required** when `COPILOT_ENV` is `production` or `staging` — the API refuses to start without it.
 
@@ -192,23 +193,6 @@ docker compose logs -f
 # Stop containers
 docker compose down
 ```
-
----
-
-### Hosting on a real domain (WebAuthn)
-
-The passkey ceremony is performed by the browser and the operating system, and the server only verifies the resulting assertion — Touch ID, Face ID, Windows Hello, a phone passkey or a roaming security key are interchangeable and need no server-side change. What must match the deployment is the relying-party identity:
-
-| Setting | Value for `https://app.example.com` |
-|---|---|
-| `WEBAUTHN_RP_ID` | `app.example.com` — the page host, no scheme or port; a parent such as `example.com` is also accepted |
-| `WEBAUTHN_ORIGINS` | `https://app.example.com` — exact scheme, host and port; comma-separate several origins |
-
-- Serve over HTTPS: browsers only expose `navigator.credentials` in a secure context (`http://localhost` is the development exemption).
-- If the dashboard is served from a different origin than the API, list the dashboard origin in `WEBAUTHN_ORIGINS` (the browser's origin is what gets verified) and in `ALLOWED_ORIGINS` (CORS), or the browser cannot call the API at all.
-- These values are read once at process start, so restart the backend after changing them.
-
-Verified against the registry: an exact host over HTTPS and a parent RP ID used from a subdomain both register and assert; `localhost` for a hosted origin, an `http://` origin, a wrong port and an unlisted origin are all rejected. The Next.js dashboard does not call `navigator.credentials.*` yet, so the browser prompt has to come from a client that implements the ceremony; the server endpoints are complete and exercised end-to-end by the test suite.
 
 ---
 
@@ -254,7 +238,7 @@ Open <http://127.0.0.1:3000> in your browser. Download the sample bank statement
 Run the full verification suite from the repository root with the virtual environment active:
 
 ```bash
-# Run backend test suite (863 tests, 1 POSIX-only skip)
+# Run backend test suite (854 tests, 1 POSIX-only skip)
 python -m pytest -q
 
 # Run frontend type checking
@@ -266,11 +250,11 @@ npm run build
 
 ### Verified Test Breakdown
 ```
-tests/unit/            717 passed            (Ingestion, Pure Decimal Math, Underwriting, Decision Tables, Session Store)
-tests/integration/      86 passed            (FastAPI Endpoints, LLM Bridge, Model Discovery, WebAuthn, Session Memory)
-tests/security/         58 passed, 1 skipped (Three-Tier Gate Invariants, PII Sanitization, Tampering, Hardening, Encryption)
-tests/e2e/               2 passed            (Full Statement Ingestion to WebAuthn Execution Flows)
-========================= 863 passed, 1 skipped in 45.97s =========================
+tests/unit/            712 passed            (Ingestion, Pure Decimal Math, Underwriting, Decision Tables, Session Store)
+tests/integration/      86 passed            (FastAPI Endpoints, LLM Bridge, Model Discovery, Action Ledger, Session Memory)
+tests/security/         54 passed, 1 skipped (Three-Tier Gate Invariants, PII Sanitization, Tampering, Hardening, Encryption)
+tests/e2e/               2 passed            (Full Statement Ingestion to Prepared-Request Flows)
+========================= 854 passed, 1 skipped in 46.81s =========================
 ```
 
 ---
@@ -280,8 +264,8 @@ tests/e2e/               2 passed            (Full Statement Ingestion to WebAut
 | Evaluation Criteria | Weight | Implementation Evidence |
 |---|---|---|
 | **Task Completion** | **40%** | Full transactional bank statement ingestion (CSV and PDF), 25+ pure Decimal financial calculation routines, 30/60/90-day predictive cash deficit forecasting, and automated credit facility matching. |
-| **Defensive Security & Governance** | **30%** | Three-Tier Security Gate isolating autonomous analysis from capital execution, cryptographically verified WebAuthn hardware biometric passkeys (`py_webauthn`), pre-flight regex PII redaction, and strict Pydantic v2 schemas. |
-| **Technical Innovation** | **30%** | Transaction-stream digital underwriting (WeBank model), on-device local SLM inference (Qwen3-4B LoRA), dynamic live model discovery across 7 LLM providers, FastEmbed semantic vector intent routing, and consortium blockchain invoice double-pledging defense (FISCO BCOS). |
+| **Defensive Security & Governance** | **30%** | Three-Tier Security Gate isolating autonomous analysis from money movement (Tier 3 is owner-sent, with no payment credentials anywhere in the system), pre-flight regex PII redaction, and strict Pydantic v2 schemas. |
+| **Technical Innovation** | **30%** | Transaction-stream digital underwriting (WeBank model), on-device local SLM inference (CashPilot-2B LoRA), dynamic live model discovery across 7 LLM providers, FastEmbed semantic vector intent routing, and consortium blockchain invoice double-pledging defense (FISCO BCOS). |
 
 ---
 

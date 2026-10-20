@@ -5,7 +5,7 @@ End-to-End user flow test validating the complete SME Copilot journey:
 3. Deterministic cash metrics (balance, net period change, daily burn, runway).
 4. Digital Underwriting Dossier generation via /api/v1/underwrite with True APR matching.
 5. Tier 2 intent staging into immutable ledger via /api/v1/actions/stage.
-6. Tier 3 biometric WebAuthn security gate execution via /api/v1/actions/{intent_id}/execute.
+6. The owner's decision via /api/v1/actions/{intent_id}/prepare; nothing is ever executed.
 """
 
 from io import BytesIO
@@ -13,7 +13,6 @@ from fastapi.testclient import TestClient
 from api.main import app
 from services.security.staging_ledger import staging_ledger
 from tests.auth_helpers import tenant_headers
-from tests.passkey_authenticator import execute_with_passkey
 
 client = TestClient(app)
 
@@ -91,18 +90,11 @@ def test_complete_sme_copilot_user_journey():
     assert stage_data["status"] == "STAGED_PENDING_HITL"
     assert stage_data["amount_cents"] == 2500000
 
-    # Step 6: Tier 3 Execution Security Barrier (Requires Passkey/Biometric)
-    # Attempt execution without valid biometric signature -> Returns HTTP 403 Forbidden
-    unauthorized_exec = client.post(f"/api/v1/actions/{intent_id}/execute", json={}, headers=headers)
-    assert unauthorized_exec.status_code == 403
-    assert "biometric" in unauthorized_exec.json()["detail"].lower()
-
-    # Attempt execution with validated biometric passkey -> Succeeds HTTP 200 OK
-    authorized_exec = execute_with_passkey(client, intent_id, tenant)
-    assert authorized_exec.status_code == 200
-    exec_data = authorized_exec.json()
-    assert exec_data["status"] == "EXECUTED"
-    assert exec_data["biometric_signature"]
+    # Step 6: No execution path exists; the owner prepares the request and sends it themselves.
+    assert client.post(f"/api/v1/actions/{intent_id}/execute", json={}, headers=headers).status_code in (404, 405)
+    prepared = client.post(f"/api/v1/actions/{intent_id}/prepare", headers=headers)
+    assert prepared.status_code == 200
+    assert prepared.json()["status"] == "PREPARED"
 
 
 def test_complete_conversational_agent_user_journey():
@@ -111,8 +103,8 @@ def test_complete_conversational_agent_user_journey():
     1. Conversational onboarding & capability inquiry via /api/v1/agent/chat.
     2. Contextual cash flow diagnosis with exact runway metrics.
     3. WeBank digital underwriting & pre-qualified financing option matching.
-    4. Autonomous Tier 2 proposal staging with biometric gate requirement.
-    5. Tier 3 security gatekeeper verification (HTTP 403 without passkey, HTTP 200 with passkey).
+    4. Autonomous Tier 2 proposal staging; the reply says nothing has been sent.
+    5. The owner's decision: prepare the request (no execution route exists).
     """
     staging_ledger.clear()
     tenant = "SME-COFFEE-001"
@@ -128,7 +120,6 @@ def test_complete_conversational_agent_user_journey():
     init_data = chat_init.json()
     assert init_data["intent_detected"] == "GENERAL_ASSISTANCE"
     assert "Autonomous SME Finance Copilot" in init_data["reply"]
-    assert init_data["requires_biometric_hitl"] is False
 
     # Step 2: Ingest bank transactions and query cash diagnostic metrics
     chat_diag = client.post(
@@ -181,27 +172,17 @@ def test_complete_conversational_agent_user_journey():
     assert chat_stage.status_code == 200
     stage_data = chat_stage.json()
     assert stage_data["intent_detected"] == "ACTION_STAGING"
-    assert stage_data["requires_biometric_hitl"] is True
     assert stage_data["staged_action"] is not None
 
     staged_intent_id = stage_data["staged_action"]["intent_id"]
     assert stage_data["staged_action"]["status"] == "STAGED_PENDING_HITL"
     assert stage_data["staged_action"]["amount_cents"] == 2500000
-    assert "biometric passkey" in stage_data["reply"].lower()
+    assert "nothing has been sent" in stage_data["reply"].lower()
 
-    # Step 5: Enforce Tier 3 security gatekeeper on the agent-staged proposal
-    # 5a. Unauthorized execution without passkey -> 403 Forbidden
-    unauthorized = client.post(
-        f"/api/v1/actions/{staged_intent_id}/execute", json={}, headers=headers
-    )
-    assert unauthorized.status_code == 403
-    assert "biometric" in unauthorized.json()["detail"].lower()
-
-    # 5b. Authorized execution with WebAuthn biometric passkey -> 200 OK
-    authorized = execute_with_passkey(client, staged_intent_id, tenant)
-    assert authorized.status_code == 200
-    auth_data = authorized.json()
-    assert auth_data["status"] == "EXECUTED"
-    assert auth_data["id"] == staged_intent_id
-    assert auth_data["biometric_signature"]
+    # Step 5: The agent-staged proposal ends in the owner's decision, never an execution.
+    assert client.post(f"/api/v1/actions/{staged_intent_id}/execute", json={}, headers=headers).status_code in (404, 405)
+    prepared = client.post(f"/api/v1/actions/{staged_intent_id}/prepare", headers=headers)
+    assert prepared.status_code == 200
+    assert prepared.json()["id"] == staged_intent_id
+    assert prepared.json()["status"] == "PREPARED"
 

@@ -21,17 +21,25 @@ except ImportError:
 
 
 def parse_args():
+    try:
+        from services.agent.local_transformers import get_primary_adapter_dir, get_primary_merged_dir
+        default_adapter = get_primary_adapter_dir()
+        default_merged = get_primary_merged_dir()
+    except Exception:
+        default_adapter = "models/adapter"
+        default_merged = "models/merged"
+
     parser = argparse.ArgumentParser(description="Merge LoRA adapter into standalone base model.")
     parser.add_argument(
         "--adapter_dir",
         type=str,
-        default="models/sme-finance-lora",
+        default=default_adapter,
         help="Path to trained LoRA adapter directory",
     )
     parser.add_argument(
         "--output_dir",
         type=str,
-        default="models/sme-finance-copilot-merged",
+        default=default_merged,
         help="Path to save merged standalone model",
     )
     parser.add_argument(

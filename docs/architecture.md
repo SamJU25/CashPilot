@@ -18,19 +18,19 @@
 ## 1. Macro Architecture & 6-Layer Topology
 
 **Project Form Factor**: **Responsive Web Application + Progressive Web App (PWA)**  
-- Dual-Device Architecture: Next.js 14 App Router optimized for desktop financial analysis workstations, coupled with mobile PWA home-screen installation for real-time alerts and native WebAuthn biometric (TouchID / FaceID / Windows Hello) approvals.
+- Dual-Device Architecture: Next.js 14 App Router optimized for desktop financial analysis workstations, coupled with mobile PWA home-screen installation for real-time alerts and reviewing drafted requests.
 
 The architecture decouples **Untrusted Conversational Reasoning** from **Deterministic Financial Execution**:
 
 ```
 [ User Desktop Browser / Mobile PWA ]
-            │ (TLS 1.3 + WebAuthn Hardware Biometrics)
+            │ (TLS 1.3 + signed tenant tokens)
             ▼
 ┌────────────────────────────────────────────────────────────────────────┐
 │ LAYER 1: CLIENT PRESENTATION (Next.js 14 App Router + PWA)             │
 │ • Desktop: Multi-column ledger tables, predictive cash crunch cards    │
 │ • Current build: health probe + API reference canvas (root app/)       │
-│ • Target: provider settings modal, deficit cards, passkey ceremony UI  │
+│ • Target: provider settings modal, deficit cards, approvals UI         │
 │ • Monospace tabular numbers (font-variant-numeric: tabular-nums)       │
 │ • Emil Kowalski spring motion (<280ms transitions)                     │
 │ • Zero API keys, zero client-side financial calculation authority      │
@@ -40,7 +40,7 @@ The architecture decouples **Untrusted Conversational Reasoning** from **Determi
 ┌────────────────────────────────────────────────────────────────────────┐
 │ LAYER 2: API GATEWAY & SECURITY INGRESS (FastAPI + Nginx)              │
 │ • Token-bucket rate limiting (60 req/min per IP, api/rate_limit.py)    │
-│ • Signed tenant tokens on action/passkey routes (X-Tenant-Token/Bearer) │
+│ • Signed tenant tokens on action routes (X-Tenant-Token/Bearer)        │
 │ • Rust-compiled Pydantic v2 strict type validation (extra="forbid")    │
 │ • Automated 422 drop for malformed payloads before execution          │
 └───────────────────────────────────┬────────────────────────────────────┘
@@ -78,10 +78,10 @@ The architecture decouples **Untrusted Conversational Reasoning** from **Determi
                                     ▼
 ┌────────────────────────────────────────────────────────────────────────┐
 │ LAYER 5: STORAGE & DATA SECURITY (current: JSON store under .data/)    │
-│ • Staging ledger + passkey registry persisted with atomic file replace │
+│ • Staging ledger persisted with atomic file replace                    │
 │ • Tenant scoping enforced in the API layer (signed tokens), not SQL RLS │
 │ • PostgreSQL 16 + RLS remains the production target (not yet built)    │
-│ • Staging Ledger: action_intents awaiting WebAuthn physical signature  │
+│ • Staging Ledger: action_intents awaiting the owner's prepare/dismiss  │
 └───────────────────────────────────┬────────────────────────────────────┘
                                     │
                                     ▼
@@ -125,7 +125,7 @@ For runtime request handling, specialized specialists collaborate across 4 funct
 ```
                               [ Human SME Business Owner ]
                                            │
-                                           ▼ (WebAuthn / Chat / Generative UI)
+                                           ▼ (Approvals / Chat / Generative UI)
                            ┌───────────────────────────────┐
                            │   LEAD FINANCIAL ORCHESTRATOR │
                            │ • FastEmbed Semantic Routing  │
@@ -151,7 +151,7 @@ For runtime request handling, specialized specialists collaborate across 4 funct
                            │    THREE-TIER GATEKEEPER      │
                            │ • Tier 1: Read-Only Ledger    │
                            │ • Tier 2: Staged Queue        │
-                           │ • Tier 3: WebAuthn 2FA + BCOS │
+                           │ • Tier 3: owner-sent + BCOS   │
                            └───────────────────────────────┘
 ```
 
@@ -161,14 +161,14 @@ For runtime request handling, specialized specialists collaborate across 4 funct
 3. **Squad 2 (Diagnostic CFO Engine)**: 0% LLM math. Pure Python `decimal.Decimal` computation of DAB, Net Daily Flow, Cash Conversion Cycle (DSO/DIO/DPO), DSCR, FCCR, Altman Z'-score, DuPont ROE 3-stage, and ROIC/EVA.
 4. **Squad 3 (Predictive & Risk Engine)**: Evaluates daily cash trajectories, pinpoints exact overdraft dates and deficit shortfalls, and computes weekly revenue inflow volatility index and risk tier.
 5. **Squad 4 (Underwriting & Matching)**: Computes continuous liquidity scoring (0–100), evaluates loan covenants and persona risk policies using ZenEngine JSON decision tables, and flags loans $>36\%$ APR as predatory.
-6. **The Three-Tier Security Gatekeeper**: Stages ActionIntents (`STAGED_PENDING_HITL`), computes canonical `SHA-256` invoice hashes for FISCO BCOS, and halts execution until physical WebAuthn biometric confirmation is verified at `POST /api/v1/actions/{id}/execute`.
+6. **The Three-Tier Security Gatekeeper**: Stages ActionIntents (`STAGED_PENDING_HITL`), computes canonical `SHA-256` invoice hashes for FISCO BCOS, and never executes: the owner prepares the drafted request at `POST /api/v1/actions/{id}/prepare` and sends it themselves, or dismisses it.
 
 ---
 
 ## 3. Database & Agent Memory Architectural Decision
 
 ### 3.1 Database Selection: PostgreSQL 16 (+ SQLite for Local Dev)
-- **Current implementation**: no relational database is wired yet. The staging ledger, passkey registry and invoice registry persist to JSON files under `COPILOT_LEDGER_DIR` (default `.data/`), and session statements under `COPILOT_SESSION_DIR` (default `.sessions/`, set to `/app/.data/sessions` in containers so it shares the persisted volume), using process-local locks and atomic file replacement. This is adequate for the single-process demo and is not safe for multi-worker scaling. The Docker build context excludes `.data/`, `.sessions/`, `.freebuff/` and `.claude/` so sealed statements, staged proposals and passkeys are never baked into an image layer.
+- **Current implementation**: no relational database is wired yet. The staging ledger and invoice registry persist to JSON files under `COPILOT_LEDGER_DIR` (default `.data/`), and session statements under `COPILOT_SESSION_DIR` (default `.sessions/`, set to `/app/.data/sessions` in containers so it shares the persisted volume), using process-local locks and atomic file replacement. This is adequate for the single-process demo and is not safe for multi-worker scaling. The Docker build context excludes `.data/`, `.sessions/`, `.freebuff/` and `.claude/` so sealed statements, staged proposals and passkeys are never baked into an image layer.
 - **Why PostgreSQL (target)**: ACID transactional consistency, kernel-level Row-Level Security (RLS), native JSONB staging, and banking industry standard.
 - **Why Alternatives Were Rejected**: NoSQL (MongoDB) lacks double-entry atomicity; pure vector databases cannot manage financial ledgers.
 - **Local Dev & Testing**: Automated test suite (`pytest -q`) runs 863 deterministic tests (plus one POSIX-only skip) against isolated test storage.
@@ -202,9 +202,9 @@ Sprint 3: Risk Forecaster & Underwriting Matcher (services/risk/ & services/matc
     ZenEngine JSON decision tables, and Truth-in-Lending APR enforcement.
   • Status: Predatory loans >36% APR flagged; gray-zone financing triage verified.
 
-Sprint 4: Three-Tier Security Gate & WebAuthn (services/security/) — VERIFIED
-  • Scope: Staging queue (action_intents), tenant isolation, and WebAuthn FIDO2 passkey verification.
-  • Status: Zero funds execute without valid WebAuthn biometric confirmation.
+Sprint 4: Three-Tier Security Gate (services/security/) — VERIFIED
+  • Scope: Staging queue (action_intents), tenant isolation, and owner-sent Tier 3 requests.
+  • Status: No execution route exists; zero funds can move through the system.
 
 Sprint 5: Consortium Blockchain Anchor (contracts/ & services/blockchain/) — VERIFIED
   • Scope: InvoiceRegistry.sol on FISCO BCOS + canonical SHA-256 invoice hashing.
@@ -214,6 +214,6 @@ Sprint 6: Next.js Dashboard shell & Universal LLM Bridge (app/ & services/agent/
   • Scope: Next.js 14 App Router shell, dynamic model discovery, FastEmbed ONNX semantic router,
     local SLM loader, and live connection testing.
   • Status: API bridge and semantic routing verified by tests. Dashboard UI (settings modal, deficit
-    cards, chat, passkey ceremony) and WebSocket alerts are not implemented; local SLM needs an
+    cards, chat) and WebSocket alerts are not implemented; local SLM needs an
     installed base model plus optional torch/transformers dependencies (requirements-local.txt).
 ```

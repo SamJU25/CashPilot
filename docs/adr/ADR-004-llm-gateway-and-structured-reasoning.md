@@ -40,7 +40,7 @@ Key Constraints:
                ┌───────────────────┴───────────────────┐
                ▼                                       ▼
   [ Conversational Text ]               [ ActionIntentDraft (Staged) ]
-  (Monospace Tabular UI)                (Awaiting WebAuthn TouchID)
+  (Monospace Tabular UI)                (Awaiting owner's prepare)
 ```
 
 ---

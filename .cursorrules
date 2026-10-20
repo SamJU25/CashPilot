@@ -11,7 +11,7 @@ Start with `AGENTS.md` and the current user request. `AGENTS.md` defines the sou
 2. **Three-Tier Security Gate**:
    - Tier 1 (Observation): Read-only data ingestion and ledger queries (autonomous).
    - Tier 2 (Staging): Proposing actions; saved to `action_intents` staging queue (no money moves).
-   - Tier 3 (Execution): Live transfers or loan commitments STRICTLY require human biometric 2FA (WebAuthn).
+   - Tier 3 (Owner-Sent): Live transfers or loan commitments are never executed; the owner sends the drafted request themselves.
 3. **Strict Type Parsing**: All API schemas use Pydantic v2 (compiled in Rust) with `extra="forbid"` and strict validation.
 4. **Tenant Isolation (when multi-tenant auth/storage is in scope)**: Enforce the approved tenant boundary in the backend and database; never trust a client-supplied tenant ID. The first demo is synthetic and has no authenticated tenant isolation—do not claim RLS/JWT controls are active.
 5. **No AI Slop**: Never use banned words (*delve, foster, leverage, utilize, facilitate, empower, streamline, robust, cutting-edge, paradigm shift, supercharge, harness*). Write direct, factual prose.

@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import List, Optional
+from typing import Literal, List, Optional
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 
@@ -58,10 +58,21 @@ class FetchModelsResponse(BaseModel):
     message: Optional[str] = None
 
 
+def _get_active_default_model() -> str:
+    try:
+        from services.agent.local_transformers import get_default_model_id
+        return get_default_model_id()
+    except Exception:
+        return "default"
+
+
 class DownloadModelRequest(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
-    model_name: str = Field(default="sme-finance-lora", description="Target model identifier: sme-finance-lora or base-instruct")
+    model_name: str = Field(
+        default_factory=_get_active_default_model,
+        description="Target model identifier from models configuration",
+    )
 
 
 class DownloadModelResponse(BaseModel):
@@ -77,7 +88,10 @@ class DownloadModelResponse(BaseModel):
 class DeleteModelRequest(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
-    model_name: str = Field(default="sme-finance-lora", description="Target model identifier to remove from local storage")
+    model_name: str = Field(
+        default_factory=_get_active_default_model,
+        description="Target model identifier to remove from local storage",
+    )
 
 
 class DeleteModelResponse(BaseModel):
@@ -126,6 +140,8 @@ class AgentChatRequest(BaseModel):
     dpo_days: Optional[int] = Field(default=None, ge=0, description="Optional Days Payable Outstanding")
     dio_days: Optional[int] = Field(default=None, ge=0, description="Optional Days Inventory Outstanding")
     session_id: Optional[str] = Field(default=None, description="Client session identifier")
+    currency: Optional[str] = Field(default=None, description="Preferred display currency ISO code (e.g. USD, EUR, BDT)")
+    language: Optional[str] = Field(default=None, description="Preferred response language code (e.g. en, zh, es, fr, de, ja, ar, pt, it, hi, bn, id)")
 
 
 
@@ -187,7 +203,18 @@ class AgentActionProposal(BaseModel):
     amount_cents: int
     target_identifier: str
     status: str
-    biometric_required: bool = True
+
+
+class ProposedEntry(BaseModel):
+    """A cash entry read from the owner's message. Nothing is recorded until they confirm it on the card."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    adjustment_type: Literal["INFLOW", "OUTFLOW"]
+    amount: str
+    date: str
+    description: str
+    account_hint: Optional[str] = None
 
 
 class CopilotResponse(BaseModel):
@@ -198,5 +225,5 @@ class CopilotResponse(BaseModel):
     metrics: Optional[AgentMetricsSummary] = None
     matched_options: List[AgentMatchedOption] = Field(default_factory=list)
     staged_action: Optional[AgentActionProposal] = None
-    requires_biometric_hitl: bool = False
+    proposed_entry: Optional[ProposedEntry] = None
     session_id: Optional[str] = None

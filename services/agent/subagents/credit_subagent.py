@@ -121,13 +121,11 @@ class CreditSubagent:
                 return CopilotResponse(
                     reply=enrich_fn(base_reply, prompt_type="underwriting"),
                     intent_detected="CREDIT_UNDERWRITING",
-                    requires_biometric_hitl=False,
                 )
 
             return CopilotResponse(
                 reply=enrich_fn(get_missing_param_guidance("FCCR"), prompt_type="concept", calculation="FCCR"),
                 intent_detected="CREDIT_UNDERWRITING",
-                requires_biometric_hitl=False,
             )
 
         # 2. Maximum Prudent Debt Capacity
@@ -166,13 +164,11 @@ class CreditSubagent:
                     reply=enrich_fn(base_reply, prompt_type="underwriting"),
                     intent_detected="CREDIT_UNDERWRITING",
                     metrics=metrics,
-                    requires_biometric_hitl=False,
                 )
 
             return CopilotResponse(
                 reply=enrich_fn(get_missing_param_guidance("DEBT_CAPACITY"), prompt_type="concept", calculation="DEBT_CAPACITY"),
                 intent_detected="CREDIT_UNDERWRITING",
-                requires_biometric_hitl=False,
             )
 
         # 3. Debt Service Coverage Ratio (DSCR)
@@ -205,13 +201,11 @@ class CreditSubagent:
                 return CopilotResponse(
                     reply=enrich_fn(base_reply, prompt_type="underwriting"),
                     intent_detected="CREDIT_UNDERWRITING",
-                    requires_biometric_hitl=False,
                 )
 
             return CopilotResponse(
                 reply=enrich_fn(get_missing_param_guidance("DSCR"), prompt_type="concept", calculation="DSCR"),
                 intent_detected="CREDIT_UNDERWRITING",
-                requires_biometric_hitl=False,
             )
 
         # 4. Commercial Loan Amortization
@@ -238,12 +232,10 @@ class CreditSubagent:
                 return CopilotResponse(
                     reply=enrich_fn(base_reply, prompt_type="underwriting"),
                     intent_detected="CREDIT_UNDERWRITING",
-                    requires_biometric_hitl=False,
                 )
             return CopilotResponse(
                 reply=enrich_fn(get_missing_param_guidance("AMORTIZATION"), prompt_type="concept", calculation="AMORTIZATION"),
                 intent_detected="CREDIT_UNDERWRITING",
-                requires_biometric_hitl=False,
             )
 
         # 5. Invoice Factoring Net Proceeds & True APR
@@ -281,12 +273,10 @@ class CreditSubagent:
                 return CopilotResponse(
                     reply=enrich_fn(base_reply, prompt_type="underwriting"),
                     intent_detected="CREDIT_UNDERWRITING",
-                    requires_biometric_hitl=False,
                 )
             return CopilotResponse(
                 reply=enrich_fn(get_missing_param_guidance("FACTORING"), prompt_type="concept", calculation="FACTORING"),
                 intent_detected="CREDIT_UNDERWRITING",
-                requires_biometric_hitl=False,
             )
 
         # 6. Blockchain Invoice Hash Verification
@@ -296,7 +286,6 @@ class CreditSubagent:
                 return CopilotResponse(
                     reply=enrich_fn(get_missing_param_guidance("INVOICE_HASH"), prompt_type="concept", calculation="INVOICE_HASH"),
                     intent_detected="CREDIT_UNDERWRITING",
-                    requires_biometric_hitl=False,
                 )
             res = tool_verify_invoice_hash(
                 tax_id=p_dict["tax_id"],
@@ -323,7 +312,6 @@ class CreditSubagent:
             return CopilotResponse(
                 reply=enrich_fn(base_reply, prompt_type="underwriting"),
                 intent_detected="CREDIT_UNDERWRITING",
-                requires_biometric_hitl=False,
             )
 
         # 7. Debt-to-Equity (D/E) Ratio
@@ -345,13 +333,11 @@ class CreditSubagent:
                 return CopilotResponse(
                     reply=enrich_fn(base_reply, prompt_type="underwriting"),
                     intent_detected="CREDIT_UNDERWRITING",
-                    requires_biometric_hitl=False,
                 )
 
             return CopilotResponse(
                 reply=enrich_fn(get_missing_param_guidance("DEBT_TO_EQUITY"), prompt_type="concept", calculation="DEBT_TO_EQUITY"),
                 intent_detected="CREDIT_UNDERWRITING",
-                requires_biometric_hitl=False,
             )
 
         # 8. Interest Coverage Ratio (Times Interest Earned - TIE)
@@ -382,13 +368,11 @@ class CreditSubagent:
                 return CopilotResponse(
                     reply=enrich_fn(base_reply, prompt_type="underwriting"),
                     intent_detected="CREDIT_UNDERWRITING",
-                    requires_biometric_hitl=False,
                 )
 
             return CopilotResponse(
                 reply=enrich_fn(get_missing_param_guidance("INTEREST_COVERAGE"), prompt_type="concept", calculation="INTEREST_COVERAGE"),
                 intent_detected="CREDIT_UNDERWRITING",
-                requires_biometric_hitl=False,
             )
 
         # 9. Commercial Equipment Lease vs Buy NPV Analysis
@@ -426,13 +410,11 @@ class CreditSubagent:
                 return CopilotResponse(
                     reply=enrich_fn(base_reply, prompt_type="underwriting"),
                     intent_detected="CREDIT_UNDERWRITING",
-                    requires_biometric_hitl=False,
                 )
 
             return CopilotResponse(
                 reply=enrich_fn(get_missing_param_guidance("LEASE_VS_BUY"), prompt_type="concept", calculation="LEASE_VS_BUY"),
                 intent_detected="CREDIT_UNDERWRITING",
-                requires_biometric_hitl=False,
             )
 
         # 11. Altman Z'-Score for Private SME Insolvency Distress
@@ -477,13 +459,11 @@ class CreditSubagent:
                 return CopilotResponse(
                     reply=enrich_fn(base_reply, prompt_type="underwriting"),
                     intent_detected="CREDIT_UNDERWRITING",
-                    requires_biometric_hitl=False,
                 )
 
             return CopilotResponse(
                 reply=enrich_fn(get_missing_param_guidance("ALTMAN_Z_SCORE"), prompt_type="concept", calculation="ALTMAN_Z_SCORE"),
                 intent_detected="CREDIT_UNDERWRITING",
-                requires_biometric_hitl=False,
             )
 
         # 12. Net Debt to EBITDA Leverage Ratio
@@ -517,13 +497,11 @@ class CreditSubagent:
                 return CopilotResponse(
                     reply=enrich_fn(base_reply, prompt_type="underwriting"),
                     intent_detected="CREDIT_UNDERWRITING",
-                    requires_biometric_hitl=False,
                 )
 
             return CopilotResponse(
                 reply=enrich_fn(get_missing_param_guidance("NET_DEBT_TO_EBITDA"), prompt_type="concept", calculation="NET_DEBT_TO_EBITDA"),
                 intent_detected="CREDIT_UNDERWRITING",
-                requires_biometric_hitl=False,
             )
 
         # 13. Debt Service Burden Ratio
@@ -563,13 +541,11 @@ class CreditSubagent:
                 return CopilotResponse(
                     reply=enrich_fn(base_reply, prompt_type="underwriting"),
                     intent_detected="CREDIT_UNDERWRITING",
-                    requires_biometric_hitl=False,
                 )
 
             return CopilotResponse(
                 reply=enrich_fn(get_missing_param_guidance("DEBT_SERVICE_BURDEN"), prompt_type="concept", calculation="DEBT_SERVICE_BURDEN"),
                 intent_detected="CREDIT_UNDERWRITING",
-                requires_biometric_hitl=False,
             )
 
         # 14. Weighted Average Cost of Capital (WACC)
@@ -605,13 +581,11 @@ class CreditSubagent:
                 return CopilotResponse(
                     reply=enrich_fn(base_reply, prompt_type="underwriting"),
                     intent_detected="CREDIT_UNDERWRITING",
-                    requires_biometric_hitl=False,
                 )
 
             return CopilotResponse(
                 reply=enrich_fn(get_missing_param_guidance("WACC"), prompt_type="concept", calculation="WACC"),
                 intent_detected="CREDIT_UNDERWRITING",
-                requires_biometric_hitl=False,
             )
 
         # 15. Enterprise Value & Valuation Multiples
@@ -651,13 +625,11 @@ class CreditSubagent:
                 return CopilotResponse(
                     reply=enrich_fn(base_reply, prompt_type="underwriting"),
                     intent_detected="CREDIT_UNDERWRITING",
-                    requires_biometric_hitl=False,
                 )
 
             return CopilotResponse(
                 reply=enrich_fn(get_missing_param_guidance("ENTERPRISE_VALUE"), prompt_type="concept", calculation="ENTERPRISE_VALUE"),
                 intent_detected="CREDIT_UNDERWRITING",
-                requires_biometric_hitl=False,
             )
 
         # 16. Discounted Cash Flow (DCF) Valuation
@@ -697,13 +669,11 @@ class CreditSubagent:
                 return CopilotResponse(
                     reply=enrich_fn(base_reply, prompt_type="underwriting"),
                     intent_detected="CREDIT_UNDERWRITING",
-                    requires_biometric_hitl=False,
                 )
 
             return CopilotResponse(
                 reply=enrich_fn(get_missing_param_guidance("DCF_VALUATION"), prompt_type="concept", calculation="DCF_VALUATION"),
                 intent_detected="CREDIT_UNDERWRITING",
-                requires_biometric_hitl=False,
             )
 
         return None
@@ -722,7 +692,6 @@ class CreditSubagent:
             return CopilotResponse(
                 reply=get_missing_statement_guidance("underwriting"),
                 intent_detected="CREDIT_UNDERWRITING",
-                requires_biometric_hitl=False,
             )
 
         try:
@@ -766,7 +735,6 @@ class CreditSubagent:
             return CopilotResponse(
                 reply=f"Statement ingestion failed: {exc.code} - {exc}",
                 intent_detected="CREDIT_UNDERWRITING",
-                requires_biometric_hitl=False,
             )
         except Exception:
             # Internal failure: log the trace, never echo exception text to the owner.
@@ -774,7 +742,6 @@ class CreditSubagent:
             return CopilotResponse(
                 reply="Underwriting could not be completed for this statement. Please check the file and try again.",
                 intent_detected="CREDIT_UNDERWRITING",
-                requires_biometric_hitl=False,
             )
 
         return CopilotResponse(
@@ -782,5 +749,4 @@ class CreditSubagent:
             intent_detected="CREDIT_UNDERWRITING",
             metrics=metrics,
             matched_options=matched_opts,
-            requires_biometric_hitl=False,
         )

@@ -1,7 +1,7 @@
 """Optional encryption at rest for sensitive local JSON stores.
 
-Session files hold raw bank statements, the ledger holds financing proposals, and the passkey
-store holds credential material. Owner-only permissions are the minimum; on a shared machine or
+Session files hold raw bank statements, the ledger holds financing proposals, and the invoice
+registry holds pledged receivables. Owner-only permissions are the minimum; on a shared machine or
 a copied volume they are not enough.
 
 Set ``COPILOT_DATA_KEY`` (or ``DATA_ENCRYPTION_KEY``) to a urlsafe-base64 32-byte Fernet key:
@@ -76,7 +76,7 @@ def validate_configuration() -> None:
     if env_name in DEPLOYED_ENVIRONMENTS:
         raise DataEncryptionError(
             f"COPILOT_DATA_KEY is required when COPILOT_ENV={env_name}: statements, staged intents, "
-            "passkeys and the invoice registry would otherwise be stored as plaintext."
+            "and the invoice registry would otherwise be stored as plaintext."
         )
 
     global _LOCAL_PLAINTEXT_WARNED

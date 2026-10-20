@@ -14,7 +14,6 @@ from services.security.crypto import (
     seal_text,
     validate_configuration,
 )
-from services.security.passkeys import PasskeyRegistry, _StoredCredential
 from services.security.staging_ledger import StagingLedger, StagingRequest
 
 
@@ -116,34 +115,6 @@ def test_session_store_encrypts_and_reloads(tmp_path, monkeypatch, data_key):
 
     reopened = store_module.SessionStore()
     assert reopened.get("sess_crypto").csv_content.startswith("transaction_id")
-
-
-def test_passkey_store_encrypts_and_reloads(tmp_path, data_key):
-    storage = str(tmp_path / "passkeys")
-    registry = PasskeyRegistry(
-        rp_id="localhost",
-        rp_name="Test",
-        origins=["http://localhost:3000"],
-        storage_dir=storage,
-    )
-    registry._credentials["TENANT-CRYPTO"] = _StoredCredential(
-        credential_id=b"credential-id",
-        public_key=b"public-key",
-        sign_count=0,
-    )
-    registry._persist()
-
-    raw = (tmp_path / "passkeys" / "passkeys.json").read_text(encoding="utf-8")
-    assert raw.startswith(MAGIC)
-    assert "credential-id" not in raw
-
-    reopened = PasskeyRegistry(
-        rp_id="localhost",
-        rp_name="Test",
-        origins=["http://localhost:3000"],
-        storage_dir=storage,
-    )
-    assert reopened.has_passkey("TENANT-CRYPTO")
 
 
 def test_invoice_registry_encrypts_and_reloads(tmp_path, data_key):

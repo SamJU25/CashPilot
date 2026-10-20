@@ -46,7 +46,7 @@ We reject detection-only security. We enforce structural impossibility via five 
   └──────────────────────────┬──────────────────────────────┘
                              ▼
   ┌─────────────────────────────────────────────────────────┐
-  │ INVARIANT 5: Hardware Physical Boundary (WebAuthn/FIDO2)│ -> TouchID/YubiKey required for execution
+  │ INVARIANT 5: Owner Boundary (no execution route)        │ -> Tier 3 requests are sent by the owner
   └─────────────────────────────────────────────────────────┘
 ```
 
@@ -81,7 +81,7 @@ We reject detection-only security. We enforce structural impossibility via five 
   - Invoice financing relies on FISCO BCOS smart contract state transitions (`UNREGISTERED` -> `PLEDGED` -> `SETTLED`).
   - Once an invoice hash is marked `PLEDGED`, any subsequent attempt by any bank node is rejected by PBFT consensus.
 
-### Invariant 5: Hardware-Bound Physical Authorization (WebAuthn / FIDO2)
+### Invariant 5: Owner-Sent Tier 3 (superseded passkey design, 2026-10-19)
 - **Attacking Tools Neutralized**: Session hijacking, stolen JWT tokens, remote botnet execution.
 - **Mechanism**:
   - Moving funds (Tier 3 execution) requires a cryptographic signature generated inside the user's hardware Secure Enclave (Apple TouchID, Windows Hello, YubiKey).

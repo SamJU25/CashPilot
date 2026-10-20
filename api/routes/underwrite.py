@@ -115,7 +115,9 @@ async def underwrite_statement(
     except CSVIngestionError as exc:
         return JSONResponse(status_code=422, content={"error": {"code": exc.code, "message": str(exc)}})
 
-    if x_session_id:
+    # /analyze already stored the full statement for this session; scoring one file must not replace it.
+    existing = session_store.get(x_session_id) if x_session_id else None
+    if x_session_id and not (existing and existing.tenant_id == effective_tenant and existing.csv_content):
         try:
             csv_str = content.decode("utf-8", errors="replace")
             session_store.update_statement(
