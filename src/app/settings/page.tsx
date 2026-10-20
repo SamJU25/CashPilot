@@ -24,7 +24,7 @@ import { PageHeader } from '@/components/common/bits';
 import { BlueprintMark, CashPilotMark, Wordmark } from '@/components/shell/brand';
 import { LANGUAGES, useT, type Lang } from '@/lib/i18n';
 import { fade } from '@/lib/motion';
-import { PROVIDERS, providerName } from '@/lib/providers';
+import { DEFAULT_PROVIDER_MODELS, PROVIDER_CATALOGS, PROVIDERS, providerName } from '@/lib/providers';
 import { ApiError, api, llmConfig } from '@/lib/api';
 import { cn } from '@/lib/utils';
 import { useWorkspace, type Theme } from '@/lib/workspace';
@@ -261,6 +261,33 @@ export default function SettingsPage() {
   const [modelActionState, setModelActionState] = useState<'idle' | 'downloading' | 'deleting'>('idle');
   const [modelActionMsg, setModelActionMsg] = useState<{ ok: boolean; text: string } | null>(null);
 
+  const [customDiscoverStatus, setCustomDiscoverStatus] = useState<string>('');
+  const [customModels, setCustomModels] = useState<string[]>([]);
+
+  const discoverCustomModels = useCallback(async () => {
+    try {
+      const rawUrl = ws.providerUrls['custom'] || '';
+      if (!rawUrl) {
+        setCustomDiscoverStatus('Please enter a Base URL first (e.g. http://localhost:1234/v1).');
+        return;
+      }
+      setCustomDiscoverStatus('Probing /models endpoint...');
+      const key = ws.providerKeys['custom'] || undefined;
+      const res = await api.fetchModels('custom', key, rawUrl);
+      if (res.success && res.models && res.models.length > 0) {
+        const ids = res.models.map((m) => m.id);
+        setCustomModels(ids);
+        setCustomDiscoverStatus(`Discovered ${ids.length} models from custom endpoint.`);
+      } else {
+        setCustomModels([]);
+        setCustomDiscoverStatus(res.message || 'Custom server reachable, but /models returned 0 models. Enter model tag manually.');
+      }
+    } catch {
+      setCustomModels([]);
+      setCustomDiscoverStatus('Unable to reach custom endpoint /models. Enter model tag manually.');
+    }
+  }, [ws.providerUrls, ws.providerKeys]);
+
   const [ollamaModels, setOllamaModels] = useState<string[]>([]);
   const [ollamaStatus, setOllamaStatus] = useState<string>('');
 
@@ -361,8 +388,9 @@ export default function SettingsPage() {
   const runTest = async () => {
     setTest({ state: 'checking' });
     try {
-      const r = await api.testConnection(llmConfig(provider.id, ws.providerKeys, ws.providerUrls, provider.baseUrl, ws.localModel)!);
-      const model = provider.local ? (activeMeta?.name.split(' [')[0] ?? ws.localModel ?? 'Local GGUF') : (r.model_name ?? providerName(provider.id, t, true) ?? '');
+      const activeModel = ws.providerModels?.[provider.id] || (provider.id === 'local' ? ws.localModel : DEFAULT_PROVIDER_MODELS[provider.id]);
+      const r = await api.testConnection(llmConfig(provider.id, ws.providerKeys, ws.providerUrls, provider.baseUrl, activeModel)!);
+      const model = provider.local ? (activeMeta?.name.split(' [')[0] ?? ws.localModel ?? 'Local GGUF') : (r.model_name ?? activeModel ?? providerName(provider.id, t, true) ?? '');
       const message = !r.success ? r.message : r.latency_ms ? t('set.testOk', { ms: r.latency_ms, model }) : t('set.testReady', { model });
       setTest({ state: 'result', ok: r.success, message });
     } catch (e) {
@@ -460,11 +488,11 @@ export default function SettingsPage() {
         )}
 
         {(provider.id === 'custom' || provider.id === 'ollama') && (
-          <Row title={t('set.endpoint')} description={t('set.endpointDesc')}>
+          <Row title={t('set.endpoint')} description={provider.id === 'ollama' ? 'Default Ollama daemon address (http://localhost:11434).' : 'OpenAI-compatible Base URL ending in /v1 (e.g. http://localhost:1234/v1 or https://openrouter.ai/api/v1).'}>
             <Label htmlFor="base-url" className="sr-only">
               {t('set.endpoint')}
             </Label>
-            <Input id="base-url" value={baseUrl} onChange={(e) => setBaseUrl(e.target.value)} placeholder="https://" className="max-w-sm" />
+            <Input id="base-url" value={baseUrl} onChange={(e) => setBaseUrl(e.target.value)} placeholder={provider.id === 'ollama' ? 'http://localhost:11434' : 'https://api.openai.com/v1'} className="max-w-sm font-mono text-sm" />
           </Row>
         )}
 
@@ -473,7 +501,7 @@ export default function SettingsPage() {
             {ollamaModels.length > 0 ? (
               <div className="space-y-2">
                 <div className="flex items-center gap-2">
-                  <Select value={ws.localModel || ollamaModels[0]} onValueChange={(v) => ws.update({ localModel: v })}>
+                  <Select value={ws.providerModels?.['ollama'] || ws.localModel || ollamaModels[0]} onValueChange={(v) => ws.update({ providerModels: { ...ws.providerModels, ollama: v }, localModel: v })}>
                     <SelectTrigger className="max-w-sm font-mono text-sm" aria-label={t('set.model')}>
                       <SelectValue />
                     </SelectTrigger>
@@ -496,8 +524,11 @@ export default function SettingsPage() {
                 <div className="flex items-center gap-2">
                   <Input
                     id="ollama-model"
-                    value={ws.localModel || 'llama3.2'}
-                    onChange={(e) => ws.update({ localModel: e.target.value })}
+                    value={ws.providerModels?.['ollama'] || ws.localModel || 'llama3.2'}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      ws.update({ providerModels: { ...ws.providerModels, ollama: val }, localModel: val });
+                    }}
                     placeholder="llama3.2"
                     className="max-w-sm font-mono text-sm"
                   />
@@ -511,13 +542,73 @@ export default function SettingsPage() {
           </Row>
         )}
 
-        {provider.needsKey && (
-          <Row title={t('set.key')} description={t('set.keyDesc')}>
+        {provider.id === 'custom' && (
+          <Row title={t('set.model')} description="Target model identifier for your custom endpoint.">
+            <div className="space-y-2">
+              <div className="flex items-center gap-2">
+                {customModels.length > 0 ? (
+                  <Select
+                    value={ws.providerModels?.['custom'] || customModels[0]}
+                    onValueChange={(v) => ws.update({ providerModels: { ...ws.providerModels, custom: v } })}
+                  >
+                    <SelectTrigger className="max-w-sm font-mono text-sm" aria-label={t('set.model')}>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {customModels.map((m) => (
+                        <SelectItem key={m} value={m} className="font-mono text-xs">
+                          {m}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                ) : (
+                  <Input
+                    id="custom-model"
+                    value={ws.providerModels?.['custom'] || 'custom-model'}
+                    onChange={(e) => ws.update({ providerModels: { ...ws.providerModels, custom: e.target.value } })}
+                    placeholder="custom-model (e.g. mistral-7b)"
+                    className="max-w-sm font-mono text-sm"
+                  />
+                )}
+                <Button variant="outline" size="sm" onClick={() => void discoverCustomModels()} className="h-9 text-xs">
+                  Discover Models
+                </Button>
+              </div>
+              {customDiscoverStatus && <p className="text-xs text-muted-foreground">{customDiscoverStatus}</p>}
+            </div>
+          </Row>
+        )}
+
+        {PROVIDER_CATALOGS[provider.id] && (
+          <Row title={t('set.model')} description="Select AI model tier or reasoning capability.">
+            <div className="space-y-2">
+              <Select
+                value={ws.providerModels?.[provider.id] || DEFAULT_PROVIDER_MODELS[provider.id]}
+                onValueChange={(v) => ws.update({ providerModels: { ...ws.providerModels, [provider.id]: v } })}
+              >
+                <SelectTrigger className="max-w-md font-mono text-xs" aria-label={t('set.model')}>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {PROVIDER_CATALOGS[provider.id].map((m) => (
+                    <SelectItem key={m.id} value={m.id} className="font-mono text-xs">
+                      {m.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </Row>
+        )}
+
+        {(provider.needsKey || provider.id === 'custom') && (
+          <Row title={t('set.key')} description={provider.id === 'custom' ? 'API Key (Optional for local servers like LM Studio; required for authenticated cloud gateways).' : t('set.keyDesc')}>
             <Label htmlFor="api-key" className="sr-only">
               {t('set.key')}
             </Label>
-            <Input id="api-key" type="password" autoComplete="off" value={apiKey} onChange={(e) => setApiKey(e.target.value)} placeholder={t('set.keyPh')} className="max-w-sm" />
-            {!ws.isLocal && (
+            <Input id="api-key" type="password" autoComplete="off" value={apiKey} onChange={(e) => setApiKey(e.target.value)} placeholder={provider.id === 'custom' ? 'sk-... (optional)' : t('set.keyPh')} className="max-w-sm" />
+            {!ws.isLocal && provider.needsKey && (
               <p className="mt-2 flex max-w-md items-start gap-1.5 text-sm text-warning-text">
                 <AlertTriangle className="mt-0.5 size-4 shrink-0" aria-hidden />
                 {t('set.keyHosted')}

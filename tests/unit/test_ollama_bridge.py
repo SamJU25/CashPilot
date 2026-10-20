@@ -22,7 +22,7 @@ def test_ollama_resolve_endpoint_default():
 
 def test_ollama_resolve_endpoint_custom_base():
     url, model = _resolve_endpoint("ollama", "http://localhost:11434", "qwen2.5")
-    assert url == "http://localhost:11434/chat/completions"
+    assert url == "http://localhost:11434/v1/chat/completions"
     assert model == "qwen2.5"
 
 

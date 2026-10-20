@@ -137,29 +137,46 @@ def _resolve_endpoint(provider: str, base_url: Optional[str], model: Optional[st
     if p_lower == "custom":
         raw_url = (base_url or "").rstrip("/")
         if not raw_url.endswith("/chat/completions"):
-            raw_url = f"{raw_url}/chat/completions"
+            if not raw_url.endswith("/v1"):
+                raw_url = f"{raw_url}/v1/chat/completions"
+            else:
+                raw_url = f"{raw_url}/chat/completions"
         return raw_url, model_name
 
     if p_lower == "ollama":
         raw_url = (base_url or defaults.get("url", "http://localhost:11434/v1/chat/completions")).rstrip("/")
         if not raw_url.endswith("/chat/completions"):
-            raw_url = f"{raw_url}/chat/completions"
+            if not raw_url.endswith("/v1"):
+                raw_url = f"{raw_url}/v1/chat/completions"
+            else:
+                raw_url = f"{raw_url}/chat/completions"
         return raw_url, model_name
 
     if p_lower == "gemini":
-        base = (base_url or defaults.get("url", "")).rstrip("/")
+        base = (base_url or defaults.get("url", "https://generativelanguage.googleapis.com/v1beta")).rstrip("/")
+        if not (base.endswith("/v1beta") or base.endswith("/v1")):
+            base = f"{base}/v1beta"
         return f"{base}/models/{model_name}:generateContent", model_name
 
     if p_lower in ["openai", "deepseek", "groq"]:
         if base_url:
             raw_url = base_url.rstrip("/")
             if not raw_url.endswith("/chat/completions"):
-                raw_url = f"{raw_url}/chat/completions"
+                if not raw_url.endswith("/v1"):
+                    raw_url = f"{raw_url}/v1/chat/completions"
+                else:
+                    raw_url = f"{raw_url}/chat/completions"
             return raw_url, model_name
         return defaults.get("url", ""), model_name
 
     if p_lower == "anthropic":
-        return base_url or defaults.get("url", ""), model_name
+        base = (base_url or defaults.get("url", "https://api.anthropic.com/v1/messages")).rstrip("/")
+        if not base.endswith("/messages"):
+            if not base.endswith("/v1"):
+                base = f"{base}/v1/messages"
+            else:
+                base = f"{base}/messages"
+        return base, model_name
 
     if p_lower in ["offline", "local", "local_native"]:
         from services.agent.local_transformers import resolve_canonical_model_name, get_default_model_id
@@ -427,7 +444,11 @@ def _query_cloud_provider(
                 res = client.post(url, json=payload)
                 if res.status_code == 200:
                     data = res.json()
-                    return data["candidates"][0]["content"]["parts"][0]["text"].strip()
+                    candidates = data.get("candidates", [])
+                    if candidates:
+                        parts = candidates[0].get("content", {}).get("parts", [])
+                        if parts and isinstance(parts[0], dict) and "text" in parts[0]:
+                            return parts[0]["text"].strip()
 
             elif provider == "anthropic":
                 if not api_key:
@@ -456,9 +477,14 @@ def _query_cloud_provider(
                 res = client.post(endpoint, headers=headers, json=payload)
                 if res.status_code == 200:
                     data = res.json()
-                    return data["content"][0]["text"].strip()
+                    content_blocks = data.get("content", [])
+                    texts = [b.get("text", "") for b in content_blocks if isinstance(b, dict) and b.get("type") == "text"]
+                    if texts:
+                        return "".join(texts).strip()
+                    if content_blocks and isinstance(content_blocks[0], dict) and "text" in content_blocks[0]:
+                        return content_blocks[0]["text"].strip()
 
-            else:  # OpenAI, DeepSeek, Groq, Custom
+            else:  # OpenAI, DeepSeek, Groq, Custom, Ollama
                 headers = {"content-type": "application/json"}
                 if api_key:
                     headers["Authorization"] = f"Bearer {api_key}"
@@ -480,7 +506,12 @@ def _query_cloud_provider(
                 res = client.post(endpoint, headers=headers, json=payload)
                 if res.status_code == 200:
                     data = res.json()
-                    return data["choices"][0]["message"]["content"].strip()
+                    choices = data.get("choices", [])
+                    if choices:
+                        msg = choices[0].get("message", {})
+                        content = msg.get("content") or msg.get("reasoning_content") or ""
+                        if content:
+                            return str(content).strip()
 
     except Exception:
         # Fallback cleanly to deterministic template response

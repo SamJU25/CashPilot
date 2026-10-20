@@ -1,3 +1,4 @@
+import { DEFAULT_PROVIDER_MODELS } from '@/lib/providers';
 // Client for the FastAPI backend (api/routes/*). Every call carries this tab's session id, so uploads,
 // chat and drafted actions stay in one backend session. Money stays a decimal string end to end.
 
@@ -208,10 +209,11 @@ export interface ProposedEntry {
 export function llmConfig(provider: string, keys: Record<string, string>, urls: Record<string, string>, defaultUrl: string, selectedModel?: string): ChatRequest['llm_config'] {
   const key = keys[provider]?.trim() || undefined;
   const url = urls[provider]?.trim() || defaultUrl || undefined;
-  if (provider === 'local') return { provider: 'local', model_name: selectedModel || 'qwen2.5-3b-instruct' };
+  const model = selectedModel?.trim() || DEFAULT_PROVIDER_MODELS[provider] || undefined;
+  if (provider === 'local') return { provider: 'local', model_name: model || 'qwen2.5-3b-instruct' };
   // Ollama runs locally on :11434 with an OpenAI-compatible /v1 interface.
-  if (provider === 'ollama') return { provider: 'ollama', base_url: `${(url ?? 'http://localhost:11434').replace(/\/$/, '')}/v1`, model_name: selectedModel || 'llama3.2' };
-  if (provider === 'claude') return { provider: 'anthropic', api_key: key, model_name: selectedModel };
-  if (provider === 'custom') return { provider: 'custom', api_key: key, base_url: url, model_name: selectedModel };
-  return { provider, api_key: key, model_name: selectedModel };
+  if (provider === 'ollama') return { provider: 'ollama', base_url: `${(url ?? 'http://localhost:11434').replace(/\/$/, '')}/v1`, model_name: model || 'llama3.2' };
+  if (provider === 'claude') return { provider: 'anthropic', api_key: key, model_name: model };
+  if (provider === 'custom') return { provider: 'custom', api_key: key, base_url: url, model_name: model };
+  return { provider, api_key: key, base_url: url, model_name: model };
 }

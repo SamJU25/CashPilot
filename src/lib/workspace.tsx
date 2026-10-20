@@ -38,6 +38,7 @@ interface Prefs {
   // shortcut: keys sit in this browser's storage (as Settings tells the user); move to a backend vault for hosted use.
   providerKeys: Record<string, string>;
   providerUrls: Record<string, string>;
+  providerModels: Record<string, string>;
   techDetails: boolean;
   seenRunId: string | null;
   intentDecidedAt: Record<string, string>;
@@ -56,6 +57,7 @@ const DEFAULTS: Prefs = {
   language: 'en',
   providerKeys: {},
   providerUrls: {},
+  providerModels: {},
   techDetails: false,
   seenRunId: null,
   intentDecidedAt: {},

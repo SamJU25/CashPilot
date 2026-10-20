@@ -313,7 +313,7 @@ function topicOf(intent: string): Topic {
 }
 
 export default function AssistantPage() {
-  const { ready, provider, localModel, providerKeys, providerUrls, intentStatus, update, source, live: liveData, setLive: setLiveData, alertThresholdDays, homeCurrency, language } = useWorkspace();
+  const { ready, provider, localModel, providerModels, providerKeys, providerUrls, intentStatus, update, source, live: liveData, setLive: setLiveData, alertThresholdDays, homeCurrency, language } = useWorkspace();
   const { t, lang } = useT();
   const intents = useIntents();
   const drawStatus = intentStatus[DRAW_INTENT.id] ?? DRAW_INTENT.status;
@@ -432,7 +432,7 @@ export default function AssistantPage() {
         currency: homeCurrency,
         language,
         csv_content: source === 'sample' ? SAMPLE_CSV : undefined,
-        llm_config: llmConfig(provider, providerKeys, providerUrls, defaultUrl, localModel),
+        llm_config: llmConfig(provider, providerKeys, providerUrls, defaultUrl, providerModels?.[provider] || (provider === 'local' ? localModel : undefined)),
       });
       const staged = res.staged_action;
       if (staged) {
