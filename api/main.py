@@ -61,7 +61,7 @@ async def lifespan(_: FastAPI):
             FastEmbedSemanticRouter.get_instance()
         except Exception:
             pass
-        # Loading MiniCPM5-2B takes ~10 s; doing it now spares the owner's first question that wait.
+        # Preload default local GGUF model if downloaded; spares the user's first query that wait.
         if os.getenv("LOCAL_PRELOAD_MODEL", "1") == "1" and "pytest" not in sys.modules:
             try:
                 from services.agent.local_transformers import LocalTransformersEngine
@@ -77,7 +77,7 @@ async def lifespan(_: FastAPI):
 
 
 app = FastAPI(
-    title="SME Finance Copilot API",
+    title="CashPilot API",
     description="Autonomous AI CFO & Financial Participant for Small & Medium Enterprises",
     version="1.0.0",
     docs_url="/docs",

@@ -17,17 +17,17 @@
       "source_location": "L45"
     },
     {
-      "id": "services_security_staging_ledger_intentnotfounderror",
-      "label": "IntentNotFoundError",
+      "id": "services_security_staging_ledger_actionstatus",
+      "label": "ActionStatus",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
       "community": 106,
-      "community_name": "three_tier_gate.py",
+      "community_name": "staging_ledger.py",
       "file_type": "code",
-      "norm_label": "intentnotfounderror",
+      "norm_label": "actionstatus",
       "source_file": "services/security/staging_ledger.py",
-      "source_location": "L47"
+      "source_location": "L36"
     },
     {
       "id": "services_security_staging_ledger_intentstateerror",
@@ -36,7 +36,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 106,
-      "community_name": "three_tier_gate.py",
+      "community_name": "staging_ledger.py",
       "file_type": "code",
       "norm_label": "intentstateerror",
       "source_file": "services/security/staging_ledger.py",
@@ -49,7 +49,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 106,
-      "community_name": "three_tier_gate.py",
+      "community_name": "staging_ledger.py",
       "file_type": "code",
       "norm_label": "stagingledgererror",
       "source_file": "services/security/staging_ledger.py",
@@ -62,24 +62,11 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 106,
-      "community_name": "three_tier_gate.py",
+      "community_name": "staging_ledger.py",
       "file_type": "code",
       "norm_label": "securitytier",
       "source_file": "services/security/three_tier_gate.py",
       "source_location": "L11"
-    },
-    {
-      "id": "services_security_three_tier_gate_stagedactionintent",
-      "label": "StagedActionIntent",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 106,
-      "community_name": "three_tier_gate.py",
-      "file_type": "code",
-      "norm_label": "stagedactionintent",
-      "source_file": "services/security/three_tier_gate.py",
-      "source_location": "L17"
     },
     {
       "id": "services_agent_schema_agentactionproposal",
@@ -251,39 +238,13 @@
       "source_location": "L27"
     },
     {
-      "id": "services_security_staging_ledger_actionstatus",
-      "label": "ActionStatus",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 14,
-      "community_name": "staging_ledger.py",
-      "file_type": "code",
-      "norm_label": "actionstatus",
-      "source_file": "services/security/staging_ledger.py",
-      "source_location": "L36"
-    },
-    {
-      "id": "services_security_staging_ledger_stagingrequest",
-      "label": "StagingRequest",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 14,
-      "community_name": "staging_ledger.py",
-      "file_type": "code",
-      "norm_label": "stagingrequest",
-      "source_file": "services/security/staging_ledger.py",
-      "source_location": "L55"
-    },
-    {
       "id": "services_security_crypto_datadecryptionerror",
       "label": "DataDecryptionError",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
       "community": 149,
-      "community_name": "test_encryption_at_rest.py",
+      "community_name": "session_store.py",
       "file_type": "code",
       "norm_label": "datadecryptionerror",
       "source_file": "services/security/crypto.py",
@@ -296,7 +257,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 149,
-      "community_name": "test_encryption_at_rest.py",
+      "community_name": "session_store.py",
       "file_type": "code",
       "norm_label": "dataencryptionerror",
       "source_file": "services/security/crypto.py",
@@ -907,7 +868,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 187,
-      "community_name": "supervisor.py",
+      "community_name": "LLMConfig",
       "file_type": "code",
       "norm_label": "fastembedsemanticrouter",
       "source_file": "services/agent/dynamic_router.py",
@@ -920,7 +881,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 187,
-      "community_name": "supervisor.py",
+      "community_name": "LLMConfig",
       "file_type": "code",
       "norm_label": "llmconfig",
       "source_file": "services/agent/schema.py",
@@ -1726,7 +1687,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 218,
-      "community_name": "knowledge.py",
+      "community_name": "supervisor.py",
       "file_type": "code",
       "norm_label": "card",
       "source_file": "services/agent/knowledge.py",
@@ -1739,7 +1700,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 218,
-      "community_name": "knowledge.py",
+      "community_name": "supervisor.py",
       "file_type": "code",
       "norm_label": "_cardindex",
       "source_file": "services/agent/knowledge.py",
@@ -2792,11 +2753,24 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 245,
-      "community_name": "resolve_subagent_routing",
+      "community_name": "test_treasury_dupont_lease.py",
       "file_type": "code",
       "norm_label": "testsubagentroutingandsupervisor",
       "source_file": "tests/unit/test_treasury_dupont_lease.py",
       "source_location": "L345"
+    },
+    {
+      "id": "services_security_staging_ledger_intentnotfounderror",
+      "label": "IntentNotFoundError",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 246,
+      "community_name": "StagingLedger",
+      "file_type": "code",
+      "norm_label": "intentnotfounderror",
+      "source_file": "services/security/staging_ledger.py",
+      "source_location": "L47"
     },
     {
       "id": "services_security_staging_ledger_stagingledger",
@@ -2812,13 +2786,26 @@
       "source_location": "L66"
     },
     {
+      "id": "services_security_three_tier_gate_stagedactionintent",
+      "label": "StagedActionIntent",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 246,
+      "community_name": "StagingLedger",
+      "file_type": "code",
+      "norm_label": "stagedactionintent",
+      "source_file": "services/security/three_tier_gate.py",
+      "source_location": "L17"
+    },
+    {
       "id": "tests_unit_test_treasury_dupont_lease_testtreasurycashdragcalculations",
       "label": "TestTreasuryCashDragCalculations",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
       "community": 250,
-      "community_name": "test_currency_calculations.py",
+      "community_name": "calculate_cash_drag",
       "file_type": "code",
       "norm_label": "testtreasurycashdragcalculations",
       "source_file": "tests/unit/test_treasury_dupont_lease.py",
@@ -3228,6 +3215,19 @@
       "source_location": "L241"
     },
     {
+      "id": "services_security_staging_ledger_stagingrequest",
+      "label": "StagingRequest",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 314,
+      "community_name": "test_security_gate.py",
+      "file_type": "code",
+      "norm_label": "stagingrequest",
+      "source_file": "services/security/staging_ledger.py",
+      "source_location": "L55"
+    },
+    {
       "id": "services_agent_entry_parser_cashentry",
       "label": "CashEntry",
       "_callable": true,
@@ -3504,28 +3504,28 @@
       "source_location": "L49"
     },
     {
-      "id": "services_security_staging_ledger_stagingledger_get_intent",
-      "label": ".get_intent()",
+      "id": "services_security_file_utils_ensure_private_dir",
+      "label": "ensure_private_dir()",
       "_callable": true,
       "_origin": "ast",
       "community": 106,
-      "community_name": "three_tier_gate.py",
+      "community_name": "staging_ledger.py",
       "file_type": "code",
-      "norm_label": ".get_intent()",
-      "source_file": "services/security/staging_ledger.py",
-      "source_location": "L173"
+      "norm_label": "ensure_private_dir()",
+      "source_file": "services/security/file_utils.py",
+      "source_location": "L17"
     },
     {
-      "id": "services_security_staging_ledger_stagingledger_list_intents",
-      "label": ".list_intents()",
+      "id": "services_security_file_utils_restrict_file",
+      "label": "restrict_file()",
       "_callable": true,
       "_origin": "ast",
       "community": 106,
-      "community_name": "three_tier_gate.py",
+      "community_name": "staging_ledger.py",
       "file_type": "code",
-      "norm_label": ".list_intents()",
-      "source_file": "services/security/staging_ledger.py",
-      "source_location": "L181"
+      "norm_label": "restrict_file()",
+      "source_file": "services/security/file_utils.py",
+      "source_location": "L26"
     },
     {
       "id": "services_security_three_tier_gate_requires_owner_action",
@@ -3533,7 +3533,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 106,
-      "community_name": "three_tier_gate.py",
+      "community_name": "staging_ledger.py",
       "file_type": "code",
       "norm_label": "requires_owner_action()",
       "source_file": "services/security/three_tier_gate.py",
@@ -3545,7 +3545,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 106,
-      "community_name": "three_tier_gate.py",
+      "community_name": "staging_ledger.py",
       "file_type": "code",
       "norm_label": "test_tier_3_actions_are_left_to_the_owner()",
       "source_file": "tests/security/test_invariants.py",
@@ -3948,40 +3948,40 @@
       "source_location": "L174"
     },
     {
-      "id": "services_security_file_utils_ensure_private_dir",
-      "label": "ensure_private_dir()",
+      "id": "api_rate_limit_configured_limit",
+      "label": "_configured_limit()",
       "_callable": true,
       "_origin": "ast",
       "community": 14,
-      "community_name": "staging_ledger.py",
+      "community_name": "os",
       "file_type": "code",
-      "norm_label": "ensure_private_dir()",
-      "source_file": "services/security/file_utils.py",
-      "source_location": "L17"
+      "norm_label": "_configured_limit()",
+      "source_file": "api/rate_limit.py",
+      "source_location": "L21"
     },
     {
-      "id": "services_security_file_utils_restrict_file",
-      "label": "restrict_file()",
+      "id": "api_rate_limit_tokenbucketratelimiter_init",
+      "label": ".__init__()",
       "_callable": true,
       "_origin": "ast",
       "community": 14,
-      "community_name": "staging_ledger.py",
+      "community_name": "os",
       "file_type": "code",
-      "norm_label": "restrict_file()",
-      "source_file": "services/security/file_utils.py",
-      "source_location": "L26"
+      "norm_label": ".__init__()",
+      "source_file": "api/rate_limit.py",
+      "source_location": "L64"
     },
     {
-      "id": "tests_unit_test_persistence_test_staging_ledger_disk_persistence",
-      "label": "test_staging_ledger_disk_persistence()",
+      "id": "api_rate_limit_trusted_proxy_hops",
+      "label": "_trusted_proxy_hops()",
       "_callable": true,
       "_origin": "ast",
       "community": 14,
-      "community_name": "staging_ledger.py",
+      "community_name": "os",
       "file_type": "code",
-      "norm_label": "test_staging_ledger_disk_persistence()",
-      "source_file": "tests/unit/test_persistence.py",
-      "source_location": "L17"
+      "norm_label": "_trusted_proxy_hops()",
+      "source_file": "api/rate_limit.py",
+      "source_location": "L29"
     },
     {
       "id": "services_security_crypto_configured_key",
@@ -3989,7 +3989,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 149,
-      "community_name": "test_encryption_at_rest.py",
+      "community_name": "session_store.py",
       "file_type": "code",
       "norm_label": "_configured_key()",
       "source_file": "services/security/crypto.py",
@@ -4001,7 +4001,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 149,
-      "community_name": "test_encryption_at_rest.py",
+      "community_name": "session_store.py",
       "file_type": "code",
       "norm_label": "deployment_environment()",
       "source_file": "services/security/crypto.py",
@@ -4013,7 +4013,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 149,
-      "community_name": "test_encryption_at_rest.py",
+      "community_name": "session_store.py",
       "file_type": "code",
       "norm_label": "encryption_enabled()",
       "source_file": "services/security/crypto.py",
@@ -4025,7 +4025,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 149,
-      "community_name": "test_encryption_at_rest.py",
+      "community_name": "session_store.py",
       "file_type": "code",
       "norm_label": "_fernet()",
       "source_file": "services/security/crypto.py",
@@ -4037,7 +4037,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 149,
-      "community_name": "test_encryption_at_rest.py",
+      "community_name": "session_store.py",
       "file_type": "code",
       "norm_label": "open_text()",
       "source_file": "services/security/crypto.py",
@@ -4049,7 +4049,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 149,
-      "community_name": "test_encryption_at_rest.py",
+      "community_name": "session_store.py",
       "file_type": "code",
       "norm_label": "seal_text()",
       "source_file": "services/security/crypto.py",
@@ -4061,7 +4061,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 149,
-      "community_name": "test_encryption_at_rest.py",
+      "community_name": "session_store.py",
       "file_type": "code",
       "norm_label": "validate_configuration()",
       "source_file": "services/security/crypto.py",
@@ -4073,7 +4073,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 149,
-      "community_name": "test_encryption_at_rest.py",
+      "community_name": "session_store.py",
       "file_type": "code",
       "norm_label": "data_key()",
       "source_file": "tests/security/test_encryption_at_rest.py",
@@ -4085,7 +4085,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 149,
-      "community_name": "test_encryption_at_rest.py",
+      "community_name": "session_store.py",
       "file_type": "code",
       "norm_label": "test_deployed_environment_requires_a_data_key()",
       "source_file": "tests/security/test_encryption_at_rest.py",
@@ -4097,7 +4097,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 149,
-      "community_name": "test_encryption_at_rest.py",
+      "community_name": "session_store.py",
       "file_type": "code",
       "norm_label": "test_invalid_key_fails_at_startup()",
       "source_file": "tests/security/test_encryption_at_rest.py",
@@ -4109,7 +4109,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 149,
-      "community_name": "test_encryption_at_rest.py",
+      "community_name": "session_store.py",
       "file_type": "code",
       "norm_label": "test_local_environment_may_run_without_a_data_key()",
       "source_file": "tests/security/test_encryption_at_rest.py",
@@ -4121,7 +4121,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 149,
-      "community_name": "test_encryption_at_rest.py",
+      "community_name": "session_store.py",
       "file_type": "code",
       "norm_label": "test_missing_key_rejects_a_sealed_payload()",
       "source_file": "tests/security/test_encryption_at_rest.py",
@@ -4133,7 +4133,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 149,
-      "community_name": "test_encryption_at_rest.py",
+      "community_name": "session_store.py",
       "file_type": "code",
       "norm_label": "test_seal_round_trip_and_legacy_plaintext()",
       "source_file": "tests/security/test_encryption_at_rest.py",
@@ -4145,7 +4145,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 149,
-      "community_name": "test_encryption_at_rest.py",
+      "community_name": "session_store.py",
       "file_type": "code",
       "norm_label": "test_session_store_encrypts_and_reloads()",
       "source_file": "tests/security/test_encryption_at_rest.py",
@@ -4157,7 +4157,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 149,
-      "community_name": "test_encryption_at_rest.py",
+      "community_name": "session_store.py",
       "file_type": "code",
       "norm_label": "test_wrong_key_fails_clearly()",
       "source_file": "tests/security/test_encryption_at_rest.py",
@@ -6636,12 +6636,24 @@
       "source_location": "L60"
     },
     {
+      "id": "api_main_lifespan_warmup_background",
+      "label": "_warmup_background()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 187,
+      "community_name": "LLMConfig",
+      "file_type": "code",
+      "norm_label": "_warmup_background()",
+      "source_file": "api/main.py",
+      "source_location": "L55"
+    },
+    {
       "id": "services_agent_dynamic_router_classify_intent_dynamic",
       "label": "classify_intent_dynamic()",
       "_callable": true,
       "_origin": "ast",
       "community": 187,
-      "community_name": "supervisor.py",
+      "community_name": "LLMConfig",
       "file_type": "code",
       "norm_label": "classify_intent_dynamic()",
       "source_file": "services/agent/dynamic_router.py",
@@ -6653,7 +6665,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 187,
-      "community_name": "supervisor.py",
+      "community_name": "LLMConfig",
       "file_type": "code",
       "norm_label": "classify_sub_intent_dynamic()",
       "source_file": "services/agent/dynamic_router.py",
@@ -6665,7 +6677,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 187,
-      "community_name": "supervisor.py",
+      "community_name": "LLMConfig",
       "file_type": "code",
       "norm_label": ".classify()",
       "source_file": "services/agent/dynamic_router.py",
@@ -6677,7 +6689,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 187,
-      "community_name": "supervisor.py",
+      "community_name": "LLMConfig",
       "file_type": "code",
       "norm_label": ".classify_sub_intent()",
       "source_file": "services/agent/dynamic_router.py",
@@ -6689,7 +6701,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 187,
-      "community_name": "supervisor.py",
+      "community_name": "LLMConfig",
       "file_type": "code",
       "norm_label": ".get_instance()",
       "source_file": "services/agent/dynamic_router.py",
@@ -6701,7 +6713,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 187,
-      "community_name": "supervisor.py",
+      "community_name": "LLMConfig",
       "file_type": "code",
       "norm_label": ".__init__()",
       "source_file": "services/agent/dynamic_router.py",
@@ -6713,7 +6725,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 187,
-      "community_name": "supervisor.py",
+      "community_name": "LLMConfig",
       "file_type": "code",
       "norm_label": ".is_disclaimer()",
       "source_file": "services/agent/dynamic_router.py",
@@ -6725,23 +6737,11 @@
       "_callable": true,
       "_origin": "ast",
       "community": 187,
-      "community_name": "supervisor.py",
+      "community_name": "LLMConfig",
       "file_type": "code",
       "norm_label": ".is_off_topic()",
       "source_file": "services/agent/dynamic_router.py",
       "source_location": "L240"
-    },
-    {
-      "id": "services_agent_dynamic_router_is_ai_disclaimer",
-      "label": "is_ai_disclaimer()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 187,
-      "community_name": "supervisor.py",
-      "file_type": "code",
-      "norm_label": "is_ai_disclaimer()",
-      "source_file": "services/agent/dynamic_router.py",
-      "source_location": "L260"
     },
     {
       "id": "services_agent_dynamic_router_is_elliptical_follow_up",
@@ -6749,7 +6749,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 187,
-      "community_name": "supervisor.py",
+      "community_name": "LLMConfig",
       "file_type": "code",
       "norm_label": "is_elliptical_follow_up()",
       "source_file": "services/agent/dynamic_router.py",
@@ -6761,7 +6761,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 187,
-      "community_name": "supervisor.py",
+      "community_name": "LLMConfig",
       "file_type": "code",
       "norm_label": "is_in_domain_finance_query()",
       "source_file": "services/agent/dynamic_router.py",
@@ -6773,7 +6773,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 187,
-      "community_name": "supervisor.py",
+      "community_name": "LLMConfig",
       "file_type": "code",
       "norm_label": "is_off_topic_query()",
       "source_file": "services/agent/dynamic_router.py",
@@ -6785,7 +6785,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 187,
-      "community_name": "supervisor.py",
+      "community_name": "LLMConfig",
       "file_type": "code",
       "norm_label": "_parse_intent_label()",
       "source_file": "services/agent/dynamic_router.py",
@@ -6797,7 +6797,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 187,
-      "community_name": "supervisor.py",
+      "community_name": "LLMConfig",
       "file_type": "code",
       "norm_label": "_query_llm_for_intent()",
       "source_file": "services/agent/dynamic_router.py",
@@ -6809,7 +6809,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 187,
-      "community_name": "supervisor.py",
+      "community_name": "LLMConfig",
       "file_type": "code",
       "norm_label": "_extract_history_turn()",
       "source_file": "services/agent/llm_bridge.py",
@@ -6821,7 +6821,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 187,
-      "community_name": "supervisor.py",
+      "community_name": "LLMConfig",
       "file_type": "code",
       "norm_label": "_query_cloud_provider()",
       "source_file": "services/agent/llm_bridge.py",
@@ -6833,95 +6833,35 @@
       "_callable": true,
       "_origin": "ast",
       "community": 187,
-      "community_name": "supervisor.py",
+      "community_name": "LLMConfig",
       "file_type": "code",
       "norm_label": "query_external_llm()",
       "source_file": "services/agent/llm_bridge.py",
       "source_location": "L331"
     },
     {
-      "id": "services_agent_prompts_is_question",
-      "label": "is_question()",
+      "id": "tests_unit_test_knowledge_retrieval_test_advisory_prompt_includes_reference_cards",
+      "label": "test_advisory_prompt_includes_reference_cards()",
       "_callable": true,
       "_origin": "ast",
       "community": 187,
-      "community_name": "supervisor.py",
+      "community_name": "LLMConfig",
       "file_type": "code",
-      "norm_label": "is_question()",
-      "source_file": "services/agent/prompts.py",
-      "source_location": "L158"
+      "norm_label": "test_advisory_prompt_includes_reference_cards()",
+      "source_file": "tests/unit/test_knowledge_retrieval.py",
+      "source_location": "L56"
     },
     {
-      "id": "services_agent_prompts_staging_action_from_text",
-      "label": "staging_action_from_text()",
+      "id": "tests_unit_test_knowledge_retrieval_test_advisory_prompt_includes_reference_cards_fake_llm",
+      "label": "fake_llm()",
       "_callable": true,
       "_origin": "ast",
       "community": 187,
-      "community_name": "supervisor.py",
+      "community_name": "LLMConfig",
       "file_type": "code",
-      "norm_label": "staging_action_from_text()",
-      "source_file": "services/agent/prompts.py",
-      "source_location": "L172"
-    },
-    {
-      "id": "services_agent_supervisor_detect_intent",
-      "label": "detect_intent()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 187,
-      "community_name": "supervisor.py",
-      "file_type": "code",
-      "norm_label": "detect_intent()",
-      "source_file": "services/agent/supervisor.py",
-      "source_location": "L195"
-    },
-    {
-      "id": "services_agent_supervisor_inspect_for_api_key",
-      "label": "inspect_for_api_key()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 187,
-      "community_name": "supervisor.py",
-      "file_type": "code",
-      "norm_label": "inspect_for_api_key()",
-      "source_file": "services/agent/supervisor.py",
-      "source_location": "L117"
-    },
-    {
-      "id": "services_agent_supervisor_inspect_for_prompt_injection",
-      "label": "inspect_for_prompt_injection()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 187,
-      "community_name": "supervisor.py",
-      "file_type": "code",
-      "norm_label": "inspect_for_prompt_injection()",
-      "source_file": "services/agent/supervisor.py",
-      "source_location": "L102"
-    },
-    {
-      "id": "services_agent_supervisor_statement_currency",
-      "label": "_statement_currency()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 187,
-      "community_name": "supervisor.py",
-      "file_type": "code",
-      "norm_label": "_statement_currency()",
-      "source_file": "services/agent/supervisor.py",
-      "source_location": "L240"
-    },
-    {
-      "id": "services_agent_tools_tool_stage_financial_action",
-      "label": "tool_stage_financial_action()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 187,
-      "community_name": "supervisor.py",
-      "file_type": "code",
-      "norm_label": "tool_stage_financial_action()",
-      "source_file": "services/agent/tools.py",
-      "source_location": "L428"
+      "norm_label": "fake_llm()",
+      "source_file": "tests/unit/test_knowledge_retrieval.py",
+      "source_location": "L71"
     },
     {
       "id": "tests_unit_test_name_masking_test_cloud_payload_carries_no_names_and_reply_is_restored",
@@ -6929,23 +6869,23 @@
       "_callable": true,
       "_origin": "ast",
       "community": 187,
-      "community_name": "supervisor.py",
+      "community_name": "LLMConfig",
       "file_type": "code",
       "norm_label": "test_cloud_payload_carries_no_names_and_reply_is_restored()",
       "source_file": "tests/unit/test_name_masking.py",
       "source_location": "L66"
     },
     {
-      "id": "tests_unit_test_prompts_test_is_ai_disclaimer_vector_detection",
-      "label": "test_is_ai_disclaimer_vector_detection()",
+      "id": "tests_unit_test_prompts_test_off_topic_query_redirects_to_cfo_domain",
+      "label": "test_off_topic_query_redirects_to_cfo_domain()",
       "_callable": true,
       "_origin": "ast",
       "community": 187,
-      "community_name": "supervisor.py",
+      "community_name": "LLMConfig",
       "file_type": "code",
-      "norm_label": "test_is_ai_disclaimer_vector_detection()",
+      "norm_label": "test_off_topic_query_redirects_to_cfo_domain()",
       "source_file": "tests/unit/test_prompts.py",
-      "source_location": "L321"
+      "source_location": "L270"
     },
     {
       "id": "tests_unit_test_prompts_test_vector_greeting_routing_zero_keywords",
@@ -6953,7 +6893,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 187,
-      "community_name": "supervisor.py",
+      "community_name": "LLMConfig",
       "file_type": "code",
       "norm_label": "test_vector_greeting_routing_zero_keywords()",
       "source_file": "tests/unit/test_prompts.py",
@@ -7306,18 +7246,6 @@
       "norm_label": ".normalize_fields()",
       "source_file": "services/agent/schema.py",
       "source_location": "L116"
-    },
-    {
-      "id": "services_agent_supervisor_append_session_context",
-      "label": "_append_session_context()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 190,
-      "community_name": "test_context_summarizer.py",
-      "file_type": "code",
-      "norm_label": "_append_session_context()",
-      "source_file": "services/agent/supervisor.py",
-      "source_location": "L143"
     },
     {
       "id": "tests_unit_test_context_summarizer_test_append_session_context_injects_facts_and_summary",
@@ -9408,16 +9336,16 @@
       "source_location": "L193"
     },
     {
-      "id": "api_main_lifespan_warmup_background",
-      "label": "_warmup_background()",
+      "id": "services_agent_dynamic_router_is_ai_disclaimer",
+      "label": "is_ai_disclaimer()",
       "_callable": true,
       "_origin": "ast",
       "community": 218,
-      "community_name": "knowledge.py",
+      "community_name": "supervisor.py",
       "file_type": "code",
-      "norm_label": "_warmup_background()",
-      "source_file": "api/main.py",
-      "source_location": "L55"
+      "norm_label": "is_ai_disclaimer()",
+      "source_file": "services/agent/dynamic_router.py",
+      "source_location": "L260"
     },
     {
       "id": "services_agent_knowledge_append_reference_cards",
@@ -9425,7 +9353,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 218,
-      "community_name": "knowledge.py",
+      "community_name": "supervisor.py",
       "file_type": "code",
       "norm_label": "append_reference_cards()",
       "source_file": "services/agent/knowledge.py",
@@ -9437,7 +9365,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 218,
-      "community_name": "knowledge.py",
+      "community_name": "supervisor.py",
       "file_type": "code",
       "norm_label": "card_summary()",
       "source_file": "services/agent/knowledge.py",
@@ -9449,7 +9377,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 218,
-      "community_name": "knowledge.py",
+      "community_name": "supervisor.py",
       "file_type": "code",
       "norm_label": ".get()",
       "source_file": "services/agent/knowledge.py",
@@ -9461,23 +9389,11 @@
       "_callable": true,
       "_origin": "ast",
       "community": 218,
-      "community_name": "knowledge.py",
+      "community_name": "supervisor.py",
       "file_type": "code",
       "norm_label": ".__init__()",
       "source_file": "services/agent/knowledge.py",
       "source_location": "L107"
-    },
-    {
-      "id": "services_agent_knowledge_cardindex_search",
-      "label": ".search()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 218,
-      "community_name": "knowledge.py",
-      "file_type": "code",
-      "norm_label": ".search()",
-      "source_file": "services/agent/knowledge.py",
-      "source_location": "L132"
     },
     {
       "id": "services_agent_knowledge_cards_mtime",
@@ -9485,7 +9401,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 218,
-      "community_name": "knowledge.py",
+      "community_name": "supervisor.py",
       "file_type": "code",
       "norm_label": "_cards_mtime()",
       "source_file": "services/agent/knowledge.py",
@@ -9497,7 +9413,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 218,
-      "community_name": "knowledge.py",
+      "community_name": "supervisor.py",
       "file_type": "code",
       "norm_label": "format_reference_cards()",
       "source_file": "services/agent/knowledge.py",
@@ -9509,7 +9425,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 218,
-      "community_name": "knowledge.py",
+      "community_name": "supervisor.py",
       "file_type": "code",
       "norm_label": "load_cards()",
       "source_file": "services/agent/knowledge.py",
@@ -9521,7 +9437,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 218,
-      "community_name": "knowledge.py",
+      "community_name": "supervisor.py",
       "file_type": "code",
       "norm_label": "resolve_retrieval_query()",
       "source_file": "services/agent/knowledge.py",
@@ -9533,7 +9449,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 218,
-      "community_name": "knowledge.py",
+      "community_name": "supervisor.py",
       "file_type": "code",
       "norm_label": "retrieve_cards()",
       "source_file": "services/agent/knowledge.py",
@@ -9545,11 +9461,23 @@
       "_callable": true,
       "_origin": "ast",
       "community": 218,
-      "community_name": "knowledge.py",
+      "community_name": "supervisor.py",
       "file_type": "code",
       "norm_label": "select_concept_card()",
       "source_file": "services/agent/knowledge.py",
       "source_location": "L206"
+    },
+    {
+      "id": "services_agent_prompts_get_concept_prompt",
+      "label": "get_concept_prompt()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 218,
+      "community_name": "supervisor.py",
+      "file_type": "code",
+      "norm_label": "get_concept_prompt()",
+      "source_file": "services/agent/prompts.py",
+      "source_location": "L144"
     },
     {
       "id": "services_agent_supervisor_append_language_and_currency_directive",
@@ -9557,11 +9485,23 @@
       "_callable": true,
       "_origin": "ast",
       "community": 218,
-      "community_name": "knowledge.py",
+      "community_name": "supervisor.py",
       "file_type": "code",
       "norm_label": "_append_language_and_currency_directive()",
       "source_file": "services/agent/supervisor.py",
       "source_location": "L173"
+    },
+    {
+      "id": "services_agent_supervisor_append_session_context",
+      "label": "_append_session_context()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 218,
+      "community_name": "supervisor.py",
+      "file_type": "code",
+      "norm_label": "_append_session_context()",
+      "source_file": "services/agent/supervisor.py",
+      "source_location": "L143"
     },
     {
       "id": "services_agent_supervisor_run_copilot_supervisor_enrich_reply",
@@ -9569,11 +9509,35 @@
       "_callable": true,
       "_origin": "ast",
       "community": 218,
-      "community_name": "knowledge.py",
+      "community_name": "supervisor.py",
       "file_type": "code",
       "norm_label": "_enrich_reply()",
       "source_file": "services/agent/supervisor.py",
       "source_location": "L418"
+    },
+    {
+      "id": "services_agent_supervisor_statement_currency",
+      "label": "_statement_currency()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 218,
+      "community_name": "supervisor.py",
+      "file_type": "code",
+      "norm_label": "_statement_currency()",
+      "source_file": "services/agent/supervisor.py",
+      "source_location": "L240"
+    },
+    {
+      "id": "services_agent_tools_tool_stage_financial_action",
+      "label": "tool_stage_financial_action()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 218,
+      "community_name": "supervisor.py",
+      "file_type": "code",
+      "norm_label": "tool_stage_financial_action()",
+      "source_file": "services/agent/tools.py",
+      "source_location": "L428"
     },
     {
       "id": "tests_unit_test_concept_routing_test_calculation_without_cards_keeps_steps",
@@ -9581,7 +9545,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 218,
-      "community_name": "knowledge.py",
+      "community_name": "supervisor.py",
       "file_type": "code",
       "norm_label": "test_calculation_without_cards_keeps_steps()",
       "source_file": "tests/unit/test_concept_routing.py",
@@ -9593,35 +9557,11 @@
       "_callable": true,
       "_origin": "ast",
       "community": 218,
-      "community_name": "knowledge.py",
+      "community_name": "supervisor.py",
       "file_type": "code",
       "norm_label": "test_acronym_exact_match_boost()",
       "source_file": "tests/unit/test_knowledge_retrieval.py",
       "source_location": "L97"
-    },
-    {
-      "id": "tests_unit_test_knowledge_retrieval_test_advisory_prompt_includes_reference_cards",
-      "label": "test_advisory_prompt_includes_reference_cards()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 218,
-      "community_name": "knowledge.py",
-      "file_type": "code",
-      "norm_label": "test_advisory_prompt_includes_reference_cards()",
-      "source_file": "tests/unit/test_knowledge_retrieval.py",
-      "source_location": "L56"
-    },
-    {
-      "id": "tests_unit_test_knowledge_retrieval_test_advisory_prompt_includes_reference_cards_fake_llm",
-      "label": "fake_llm()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 218,
-      "community_name": "knowledge.py",
-      "file_type": "code",
-      "norm_label": "fake_llm()",
-      "source_file": "tests/unit/test_knowledge_retrieval.py",
-      "source_location": "L71"
     },
     {
       "id": "tests_unit_test_knowledge_retrieval_test_append_reference_cards_adds_notes_and_keeps_directive",
@@ -9629,7 +9569,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 218,
-      "community_name": "knowledge.py",
+      "community_name": "supervisor.py",
       "file_type": "code",
       "norm_label": "test_append_reference_cards_adds_notes_and_keeps_directive()",
       "source_file": "tests/unit/test_knowledge_retrieval.py",
@@ -9641,7 +9581,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 218,
-      "community_name": "knowledge.py",
+      "community_name": "supervisor.py",
       "file_type": "code",
       "norm_label": "test_append_reference_cards_unchanged_when_nothing_matches()",
       "source_file": "tests/unit/test_knowledge_retrieval.py",
@@ -9653,7 +9593,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 218,
-      "community_name": "knowledge.py",
+      "community_name": "supervisor.py",
       "file_type": "code",
       "norm_label": "test_load_cards_strips_metadata()",
       "source_file": "tests/unit/test_knowledge_retrieval.py",
@@ -9665,7 +9605,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 218,
-      "community_name": "knowledge.py",
+      "community_name": "supervisor.py",
       "file_type": "code",
       "norm_label": "test_multiturn_contextual_retrieval()",
       "source_file": "tests/unit/test_knowledge_retrieval.py",
@@ -9677,7 +9617,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 218,
-      "community_name": "knowledge.py",
+      "community_name": "supervisor.py",
       "file_type": "code",
       "norm_label": "test_off_topic_questions_get_no_cards()",
       "source_file": "tests/unit/test_knowledge_retrieval.py",
@@ -9689,7 +9629,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 218,
-      "community_name": "knowledge.py",
+      "community_name": "supervisor.py",
       "file_type": "code",
       "norm_label": "test_retrieves_relevant_card()",
       "source_file": "tests/unit/test_knowledge_retrieval.py",
@@ -9701,7 +9641,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 218,
-      "community_name": "knowledge.py",
+      "community_name": "supervisor.py",
       "file_type": "code",
       "norm_label": "test_returns_at_most_three_cards()",
       "source_file": "tests/unit/test_knowledge_retrieval.py",
@@ -10162,6 +10102,18 @@
       "norm_label": "test_consortium_invoice_registry_disk_persistence()",
       "source_file": "tests/unit/test_persistence.py",
       "source_location": "L39"
+    },
+    {
+      "id": "tests_unit_test_persistence_test_staging_ledger_disk_persistence",
+      "label": "test_staging_ledger_disk_persistence()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 222,
+      "community_name": "invoice_hasher.py",
+      "file_type": "code",
+      "norm_label": "test_staging_ledger_disk_persistence()",
+      "source_file": "tests/unit/test_persistence.py",
+      "source_location": "L17"
     },
     {
       "id": "services_calculations_currency_calculate_currency_conversion",
@@ -12173,7 +12125,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 245,
-      "community_name": "resolve_subagent_routing",
+      "community_name": "test_treasury_dupont_lease.py",
       "file_type": "code",
       "norm_label": "resolve_subagent_routing()",
       "source_file": "services/agent/prompts.py",
@@ -12185,7 +12137,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 245,
-      "community_name": "resolve_subagent_routing",
+      "community_name": "test_treasury_dupont_lease.py",
       "file_type": "code",
       "norm_label": ".can_handle()",
       "source_file": "services/agent/subagents/credit_subagent.py",
@@ -12197,7 +12149,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 245,
-      "community_name": "resolve_subagent_routing",
+      "community_name": "test_treasury_dupont_lease.py",
       "file_type": "code",
       "norm_label": ".can_handle()",
       "source_file": "services/agent/subagents/liquidity_subagent.py",
@@ -12209,7 +12161,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 245,
-      "community_name": "resolve_subagent_routing",
+      "community_name": "test_treasury_dupont_lease.py",
       "file_type": "code",
       "norm_label": ".can_handle()",
       "source_file": "services/agent/subagents/risk_subagent.py",
@@ -12221,7 +12173,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 245,
-      "community_name": "resolve_subagent_routing",
+      "community_name": "test_treasury_dupont_lease.py",
       "file_type": "code",
       "norm_label": "_handle_quantitative_calculation()",
       "source_file": "services/agent/supervisor.py",
@@ -12233,7 +12185,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 245,
-      "community_name": "resolve_subagent_routing",
+      "community_name": "test_treasury_dupont_lease.py",
       "file_type": "code",
       "norm_label": ".test_routing_matrix_resolution()",
       "source_file": "tests/unit/test_enterprise_finance_tools.py",
@@ -12245,7 +12197,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 245,
-      "community_name": "resolve_subagent_routing",
+      "community_name": "test_treasury_dupont_lease.py",
       "file_type": "code",
       "norm_label": ".test_missing_param_prompts_configured()",
       "source_file": "tests/unit/test_treasury_dupont_lease.py",
@@ -12257,7 +12209,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 245,
-      "community_name": "resolve_subagent_routing",
+      "community_name": "test_treasury_dupont_lease.py",
       "file_type": "code",
       "norm_label": ".test_routing_matrix_resolution()",
       "source_file": "tests/unit/test_treasury_dupont_lease.py",
@@ -12312,6 +12264,18 @@
       "source_location": "L125"
     },
     {
+      "id": "services_security_staging_ledger_stagingledger_get_intent",
+      "label": ".get_intent()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 246,
+      "community_name": "StagingLedger",
+      "file_type": "code",
+      "norm_label": ".get_intent()",
+      "source_file": "services/security/staging_ledger.py",
+      "source_location": "L173"
+    },
+    {
       "id": "services_security_staging_ledger_stagingledger_init",
       "label": ".__init__()",
       "_callable": true,
@@ -12322,6 +12286,18 @@
       "norm_label": ".__init__()",
       "source_file": "services/security/staging_ledger.py",
       "source_location": "L69"
+    },
+    {
+      "id": "services_security_staging_ledger_stagingledger_list_intents",
+      "label": ".list_intents()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 246,
+      "community_name": "StagingLedger",
+      "file_type": "code",
+      "norm_label": ".list_intents()",
+      "source_file": "services/security/staging_ledger.py",
+      "source_location": "L181"
     },
     {
       "id": "services_security_staging_ledger_stagingledger_load_persisted",
@@ -12394,54 +12370,6 @@
       "norm_label": ".stage_intent()",
       "source_file": "services/security/staging_ledger.py",
       "source_location": "L142"
-    },
-    {
-      "id": "tests_security_test_backend_hardening_test_ledger_files_are_owner_only",
-      "label": "test_ledger_files_are_owner_only()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 246,
-      "community_name": "StagingLedger",
-      "file_type": "code",
-      "norm_label": "test_ledger_files_are_owner_only()",
-      "source_file": "tests/security/test_backend_hardening.py",
-      "source_location": "L134"
-    },
-    {
-      "id": "tests_security_test_encryption_at_rest_test_staging_ledger_encrypts_and_reloads",
-      "label": "test_staging_ledger_encrypts_and_reloads()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 246,
-      "community_name": "StagingLedger",
-      "file_type": "code",
-      "norm_label": "test_staging_ledger_encrypts_and_reloads()",
-      "source_file": "tests/security/test_encryption_at_rest.py",
-      "source_location": "L80"
-    },
-    {
-      "id": "tests_unit_test_security_gate_ledger",
-      "label": "ledger()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 246,
-      "community_name": "StagingLedger",
-      "file_type": "code",
-      "norm_label": "ledger()",
-      "source_file": "tests/unit/test_security_gate.py",
-      "source_location": "L24"
-    },
-    {
-      "id": "tests_unit_test_security_gate_test_ledger_written_before_passkey_removal_still_loads",
-      "label": "test_ledger_written_before_passkey_removal_still_loads()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 246,
-      "community_name": "StagingLedger",
-      "file_type": "code",
-      "norm_label": "test_ledger_written_before_passkey_removal_still_loads()",
-      "source_file": "tests/unit/test_security_gate.py",
-      "source_location": "L112"
     },
     {
       "id": "tests_integration_test_analyze_api_test_adjustment_lands_on_one_account_and_total_is_their_sum",
@@ -12708,52 +12636,16 @@
       "source_location": "L394"
     },
     {
-      "id": "services_agent_tools_tool_evaluate_financial_math",
-      "label": "tool_evaluate_financial_math()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 250,
-      "community_name": "test_currency_calculations.py",
-      "file_type": "code",
-      "norm_label": "tool_evaluate_financial_math()",
-      "source_file": "services/agent/tools.py",
-      "source_location": "L1302"
-    },
-    {
-      "id": "services_agent_tools_tool_evaluate_financial_math_eval",
-      "label": "_eval()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 250,
-      "community_name": "test_currency_calculations.py",
-      "file_type": "code",
-      "norm_label": "_eval()",
-      "source_file": "services/agent/tools.py",
-      "source_location": "L1322"
-    },
-    {
       "id": "services_calculations_treasury_calculate_cash_drag",
       "label": "calculate_cash_drag()",
       "_callable": true,
       "_origin": "ast",
       "community": 250,
-      "community_name": "test_currency_calculations.py",
+      "community_name": "calculate_cash_drag",
       "file_type": "code",
       "norm_label": "calculate_cash_drag()",
       "source_file": "services/calculations/treasury.py",
       "source_location": "L16"
-    },
-    {
-      "id": "tests_unit_test_currency_calculations_offline_fx",
-      "label": "offline_fx()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 250,
-      "community_name": "test_currency_calculations.py",
-      "file_type": "code",
-      "norm_label": "offline_fx()",
-      "source_file": "tests/unit/test_currency_calculations.py",
-      "source_location": "L190"
     },
     {
       "id": "tests_unit_test_currency_calculations_test_calculator_rationales_take_currency",
@@ -12761,59 +12653,11 @@
       "_callable": true,
       "_origin": "ast",
       "community": 250,
-      "community_name": "test_currency_calculations.py",
+      "community_name": "calculate_cash_drag",
       "file_type": "code",
       "norm_label": "test_calculator_rationales_take_currency()",
       "source_file": "tests/unit/test_currency_calculations.py",
       "source_location": "L290"
-    },
-    {
-      "id": "tests_unit_test_currency_calculations_test_conversion_handler_asks_for_rate_and_suggested_phrasing_converts",
-      "label": "test_conversion_handler_asks_for_rate_and_suggested_phrasing_converts()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 250,
-      "community_name": "test_currency_calculations.py",
-      "file_type": "code",
-      "norm_label": "test_conversion_handler_asks_for_rate_and_suggested_phrasing_converts()",
-      "source_file": "tests/unit/test_currency_calculations.py",
-      "source_location": "L213"
-    },
-    {
-      "id": "tests_unit_test_currency_calculations_test_conversion_handler_asks_for_rate_and_suggested_phrasing_converts_handle",
-      "label": "handle()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 250,
-      "community_name": "test_currency_calculations.py",
-      "file_type": "code",
-      "norm_label": "handle()",
-      "source_file": "tests/unit/test_currency_calculations.py",
-      "source_location": "L217"
-    },
-    {
-      "id": "tests_unit_test_currency_calculations_test_format_money_uses_decimal_and_currency_symbol",
-      "label": "test_format_money_uses_decimal_and_currency_symbol()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 250,
-      "community_name": "test_currency_calculations.py",
-      "file_type": "code",
-      "norm_label": "test_format_money_uses_decimal_and_currency_symbol()",
-      "source_file": "tests/unit/test_currency_calculations.py",
-      "source_location": "L300"
-    },
-    {
-      "id": "tests_unit_test_currency_calculations_test_tool_evaluate_financial_math",
-      "label": "test_tool_evaluate_financial_math()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 250,
-      "community_name": "test_currency_calculations.py",
-      "file_type": "code",
-      "norm_label": "test_tool_evaluate_financial_math()",
-      "source_file": "tests/unit/test_currency_calculations.py",
-      "source_location": "L157"
     },
     {
       "id": "tests_unit_test_treasury_dupont_lease_testtreasurycashdragcalculations_test_excessive_cash_drag",
@@ -12821,7 +12665,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 250,
-      "community_name": "test_currency_calculations.py",
+      "community_name": "calculate_cash_drag",
       "file_type": "code",
       "norm_label": ".test_excessive_cash_drag()",
       "source_file": "tests/unit/test_treasury_dupont_lease.py",
@@ -12833,7 +12677,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 250,
-      "community_name": "test_currency_calculations.py",
+      "community_name": "calculate_cash_drag",
       "file_type": "code",
       "norm_label": ".test_explicit_reserve_target()",
       "source_file": "tests/unit/test_treasury_dupont_lease.py",
@@ -12845,7 +12689,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 250,
-      "community_name": "test_currency_calculations.py",
+      "community_name": "calculate_cash_drag",
       "file_type": "code",
       "norm_label": ".test_moderate_cash_drag()",
       "source_file": "tests/unit/test_treasury_dupont_lease.py",
@@ -12857,7 +12701,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 250,
-      "community_name": "test_currency_calculations.py",
+      "community_name": "calculate_cash_drag",
       "file_type": "code",
       "norm_label": ".test_negative_balance_raises_error()",
       "source_file": "tests/unit/test_treasury_dupont_lease.py",
@@ -12869,7 +12713,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 250,
-      "community_name": "test_currency_calculations.py",
+      "community_name": "calculate_cash_drag",
       "file_type": "code",
       "norm_label": ".test_optimal_treasury_allocation()",
       "source_file": "tests/unit/test_treasury_dupont_lease.py",
@@ -15240,18 +15084,6 @@
       "source_location": "L93"
     },
     {
-      "id": "services_agent_prompts_get_concept_prompt",
-      "label": "get_concept_prompt()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 267,
-      "community_name": "test_prompts.py",
-      "file_type": "code",
-      "norm_label": "get_concept_prompt()",
-      "source_file": "services/agent/prompts.py",
-      "source_location": "L144"
-    },
-    {
       "id": "services_agent_prompts_get_conversational_system_prompt",
       "label": "get_conversational_system_prompt()",
       "_callable": true,
@@ -15370,6 +15202,18 @@
       "norm_label": "test_advisory_prompts_ask_for_full_grounded_reply()",
       "source_file": "tests/unit/test_prompts.py",
       "source_location": "L418"
+    },
+    {
+      "id": "tests_unit_test_prompts_test_is_ai_disclaimer_vector_detection",
+      "label": "test_is_ai_disclaimer_vector_detection()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 267,
+      "community_name": "test_prompts.py",
+      "file_type": "code",
+      "norm_label": "test_is_ai_disclaimer_vector_detection()",
+      "source_file": "tests/unit/test_prompts.py",
+      "source_location": "L321"
     },
     {
       "id": "tests_unit_test_prompts_test_numbers_from_user_message_are_allowed",
@@ -15564,18 +15408,6 @@
       "source_location": "L150"
     },
     {
-      "id": "api_rate_limit_configured_limit",
-      "label": "_configured_limit()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 273,
-      "community_name": "TokenBucketRateLimiter",
-      "file_type": "code",
-      "norm_label": "_configured_limit()",
-      "source_file": "api/rate_limit.py",
-      "source_location": "L21"
-    },
-    {
       "id": "api_rate_limit_forwarded_client",
       "label": "_forwarded_client()",
       "_callable": true,
@@ -15610,30 +15442,6 @@
       "norm_label": "._consume()",
       "source_file": "api/rate_limit.py",
       "source_location": "L78"
-    },
-    {
-      "id": "api_rate_limit_tokenbucketratelimiter_init",
-      "label": ".__init__()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 273,
-      "community_name": "TokenBucketRateLimiter",
-      "file_type": "code",
-      "norm_label": ".__init__()",
-      "source_file": "api/rate_limit.py",
-      "source_location": "L64"
-    },
-    {
-      "id": "api_rate_limit_trusted_proxy_hops",
-      "label": "_trusted_proxy_hops()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 273,
-      "community_name": "TokenBucketRateLimiter",
-      "file_type": "code",
-      "norm_label": "_trusted_proxy_hops()",
-      "source_file": "api/rate_limit.py",
-      "source_location": "L29"
     },
     {
       "id": "tests_security_test_rate_limit_echo_app",
@@ -16884,6 +16692,42 @@
       "source_location": "L305"
     },
     {
+      "id": "tests_security_test_backend_hardening_test_ledger_files_are_owner_only",
+      "label": "test_ledger_files_are_owner_only()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 314,
+      "community_name": "test_security_gate.py",
+      "file_type": "code",
+      "norm_label": "test_ledger_files_are_owner_only()",
+      "source_file": "tests/security/test_backend_hardening.py",
+      "source_location": "L134"
+    },
+    {
+      "id": "tests_security_test_encryption_at_rest_test_staging_ledger_encrypts_and_reloads",
+      "label": "test_staging_ledger_encrypts_and_reloads()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 314,
+      "community_name": "test_security_gate.py",
+      "file_type": "code",
+      "norm_label": "test_staging_ledger_encrypts_and_reloads()",
+      "source_file": "tests/security/test_encryption_at_rest.py",
+      "source_location": "L80"
+    },
+    {
+      "id": "tests_unit_test_security_gate_ledger",
+      "label": "ledger()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 314,
+      "community_name": "test_security_gate.py",
+      "file_type": "code",
+      "norm_label": "ledger()",
+      "source_file": "tests/unit/test_security_gate.py",
+      "source_location": "L24"
+    },
+    {
       "id": "tests_unit_test_security_gate_stage",
       "label": "_stage()",
       "_callable": true,
@@ -16942,6 +16786,18 @@
       "norm_label": "test_intent_not_found()",
       "source_file": "tests/unit/test_security_gate.py",
       "source_location": "L131"
+    },
+    {
+      "id": "tests_unit_test_security_gate_test_ledger_written_before_passkey_removal_still_loads",
+      "label": "test_ledger_written_before_passkey_removal_still_loads()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 314,
+      "community_name": "test_security_gate.py",
+      "file_type": "code",
+      "norm_label": "test_ledger_written_before_passkey_removal_still_loads()",
+      "source_file": "tests/unit/test_security_gate.py",
+      "source_location": "L112"
     },
     {
       "id": "tests_unit_test_security_gate_test_prepare_records_the_owners_decision",
@@ -17532,6 +17388,18 @@
       "source_location": "L250"
     },
     {
+      "id": "tests_unit_test_currency_calculations_offline_fx",
+      "label": "offline_fx()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 318,
+      "community_name": "run_copilot_supervisor",
+      "file_type": "code",
+      "norm_label": "offline_fx()",
+      "source_file": "tests/unit/test_currency_calculations.py",
+      "source_location": "L190"
+    },
+    {
       "id": "tests_unit_test_currency_calculations_test_agent_currency_conversion_chat",
       "label": "test_agent_currency_conversion_chat()",
       "_callable": true,
@@ -17554,6 +17422,30 @@
       "norm_label": "test_agent_fx_exposure_chat()",
       "source_file": "tests/unit/test_currency_calculations.py",
       "source_location": "L144"
+    },
+    {
+      "id": "tests_unit_test_currency_calculations_test_conversion_handler_asks_for_rate_and_suggested_phrasing_converts",
+      "label": "test_conversion_handler_asks_for_rate_and_suggested_phrasing_converts()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 318,
+      "community_name": "run_copilot_supervisor",
+      "file_type": "code",
+      "norm_label": "test_conversion_handler_asks_for_rate_and_suggested_phrasing_converts()",
+      "source_file": "tests/unit/test_currency_calculations.py",
+      "source_location": "L213"
+    },
+    {
+      "id": "tests_unit_test_currency_calculations_test_conversion_handler_asks_for_rate_and_suggested_phrasing_converts_handle",
+      "label": "handle()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 318,
+      "community_name": "run_copilot_supervisor",
+      "file_type": "code",
+      "norm_label": "handle()",
+      "source_file": "tests/unit/test_currency_calculations.py",
+      "source_location": "L217"
     },
     {
       "id": "tests_unit_test_currency_calculations_test_eur_statement_rationale_and_policy_text_quote_euros",
@@ -17590,6 +17482,18 @@
       "norm_label": "test_eur_statement_subagent_figures_quote_euros()",
       "source_file": "tests/unit/test_currency_calculations.py",
       "source_location": "L266"
+    },
+    {
+      "id": "tests_unit_test_currency_calculations_test_format_money_uses_decimal_and_currency_symbol",
+      "label": "test_format_money_uses_decimal_and_currency_symbol()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 318,
+      "community_name": "run_copilot_supervisor",
+      "file_type": "code",
+      "norm_label": "test_format_money_uses_decimal_and_currency_symbol()",
+      "source_file": "tests/unit/test_currency_calculations.py",
+      "source_location": "L300"
     },
     {
       "id": "tests_unit_test_currency_calculations_test_supervisor_respects_request_currency",
@@ -17710,30 +17614,6 @@
       "norm_label": ".test_supervisor_dispatch_wacc()",
       "source_file": "tests/unit/test_enterprise_finance_tools.py",
       "source_location": "L469"
-    },
-    {
-      "id": "tests_unit_test_prompts_test_api_key_detection_and_guidance",
-      "label": "test_api_key_detection_and_guidance()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 318,
-      "community_name": "run_copilot_supervisor",
-      "file_type": "code",
-      "norm_label": "test_api_key_detection_and_guidance()",
-      "source_file": "tests/unit/test_prompts.py",
-      "source_location": "L219"
-    },
-    {
-      "id": "tests_unit_test_prompts_test_off_topic_query_redirects_to_cfo_domain",
-      "label": "test_off_topic_query_redirects_to_cfo_domain()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 318,
-      "community_name": "run_copilot_supervisor",
-      "file_type": "code",
-      "norm_label": "test_off_topic_query_redirects_to_cfo_domain()",
-      "source_file": "tests/unit/test_prompts.py",
-      "source_location": "L270"
     },
     {
       "id": "tests_unit_test_prompts_test_pasted_csv_dynamic_intent_routing",
@@ -18144,6 +18024,78 @@
       "source_location": "L554"
     },
     {
+      "id": "services_agent_prompts_is_question",
+      "label": "is_question()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 328,
+      "community_name": "detect_intent",
+      "file_type": "code",
+      "norm_label": "is_question()",
+      "source_file": "services/agent/prompts.py",
+      "source_location": "L158"
+    },
+    {
+      "id": "services_agent_prompts_staging_action_from_text",
+      "label": "staging_action_from_text()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 328,
+      "community_name": "detect_intent",
+      "file_type": "code",
+      "norm_label": "staging_action_from_text()",
+      "source_file": "services/agent/prompts.py",
+      "source_location": "L172"
+    },
+    {
+      "id": "services_agent_supervisor_detect_intent",
+      "label": "detect_intent()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 328,
+      "community_name": "detect_intent",
+      "file_type": "code",
+      "norm_label": "detect_intent()",
+      "source_file": "services/agent/supervisor.py",
+      "source_location": "L195"
+    },
+    {
+      "id": "services_agent_supervisor_inspect_for_api_key",
+      "label": "inspect_for_api_key()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 328,
+      "community_name": "detect_intent",
+      "file_type": "code",
+      "norm_label": "inspect_for_api_key()",
+      "source_file": "services/agent/supervisor.py",
+      "source_location": "L117"
+    },
+    {
+      "id": "services_agent_supervisor_inspect_for_prompt_injection",
+      "label": "inspect_for_prompt_injection()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 328,
+      "community_name": "detect_intent",
+      "file_type": "code",
+      "norm_label": "inspect_for_prompt_injection()",
+      "source_file": "services/agent/supervisor.py",
+      "source_location": "L102"
+    },
+    {
+      "id": "tests_unit_test_prompts_test_api_key_detection_and_guidance",
+      "label": "test_api_key_detection_and_guidance()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 328,
+      "community_name": "detect_intent",
+      "file_type": "code",
+      "norm_label": "test_api_key_detection_and_guidance()",
+      "source_file": "tests/unit/test_prompts.py",
+      "source_location": "L219"
+    },
+    {
       "id": "scripts_verify_local_inference_main",
       "label": "main()",
       "_callable": true,
@@ -18285,7 +18237,7 @@
       "file_type": "code",
       "norm_label": ".delete_model()",
       "source_file": "services/agent/local_transformers.py",
-      "source_location": "L961"
+      "source_location": "L964"
     },
     {
       "id": "services_agent_local_transformers_localtransformersengine_download_model",
@@ -18297,7 +18249,7 @@
       "file_type": "code",
       "norm_label": ".download_model()",
       "source_file": "services/agent/local_transformers.py",
-      "source_location": "L843"
+      "source_location": "L846"
     },
     {
       "id": "services_agent_local_transformers_localtransformersengine_ensure_loaded",
@@ -18321,7 +18273,7 @@
       "file_type": "code",
       "norm_label": ".generate()",
       "source_file": "services/agent/local_transformers.py",
-      "source_location": "L1057"
+      "source_location": "L1071"
     },
     {
       "id": "services_agent_local_transformers_localtransformersengine_get_model_path",
@@ -18406,6 +18358,54 @@
       "norm_label": "test_base_aliases_resolve()",
       "source_file": "tests/unit/test_download_model.py",
       "source_location": "L237"
+    },
+    {
+      "id": "services_agent_knowledge_cardindex_search",
+      "label": ".search()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 332,
+      "community_name": "Instructions",
+      "file_type": "code",
+      "norm_label": ".search()",
+      "source_file": "services/agent/knowledge.py",
+      "source_location": "L132"
+    },
+    {
+      "id": "services_agent_tools_tool_evaluate_financial_math",
+      "label": "tool_evaluate_financial_math()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 333,
+      "community_name": "tool_evaluate_financial_math",
+      "file_type": "code",
+      "norm_label": "tool_evaluate_financial_math()",
+      "source_file": "services/agent/tools.py",
+      "source_location": "L1302"
+    },
+    {
+      "id": "services_agent_tools_tool_evaluate_financial_math_eval",
+      "label": "_eval()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 333,
+      "community_name": "tool_evaluate_financial_math",
+      "file_type": "code",
+      "norm_label": "_eval()",
+      "source_file": "services/agent/tools.py",
+      "source_location": "L1322"
+    },
+    {
+      "id": "tests_unit_test_currency_calculations_test_tool_evaluate_financial_math",
+      "label": "test_tool_evaluate_financial_math()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 333,
+      "community_name": "tool_evaluate_financial_math",
+      "file_type": "code",
+      "norm_label": "test_tool_evaluate_financial_math()",
+      "source_file": "tests/unit/test_currency_calculations.py",
+      "source_location": "L157"
     },
     {
       "id": "services_calculations_cash_scenario_burn",
@@ -20347,24 +20347,68 @@
       "source_location": "L18"
     },
     {
+      "id": "services_security_file_utils",
+      "label": "file_utils.py",
+      "_origin": "ast",
+      "community": 106,
+      "community_name": "staging_ledger.py",
+      "file_type": "code",
+      "norm_label": "file_utils.py",
+      "source_file": "services/security/file_utils.py",
+      "source_location": "L1"
+    },
+    {
       "id": "services_security_init",
       "label": "services/security/__init__.py",
       "_origin": "ast",
       "community": 106,
-      "community_name": "three_tier_gate.py",
+      "community_name": "staging_ledger.py",
       "file_type": "code",
       "norm_label": "services/security/__init__.py",
       "source_file": "services/security/__init__.py",
       "source_location": "L1"
     },
     {
+      "id": "services_security_staging_ledger",
+      "label": "staging_ledger.py",
+      "_origin": "ast",
+      "community": 106,
+      "community_name": "staging_ledger.py",
+      "file_type": "code",
+      "norm_label": "staging_ledger.py",
+      "source_file": "services/security/staging_ledger.py",
+      "source_location": "L1"
+    },
+    {
+      "id": "services_security_staging_ledger_py_enum",
+      "label": "Enum",
+      "_origin": "ast",
+      "community": 106,
+      "community_name": "staging_ledger.py",
+      "file_type": "code",
+      "norm_label": "enum",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
       "id": "services_security_staging_ledger_py_exception",
       "label": "Exception",
       "_origin": "ast",
       "community": 106,
-      "community_name": "three_tier_gate.py",
+      "community_name": "staging_ledger.py",
       "file_type": "code",
       "norm_label": "exception",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "services_security_staging_ledger_py_str",
+      "label": "str",
+      "_origin": "ast",
+      "community": 106,
+      "community_name": "staging_ledger.py",
+      "file_type": "code",
+      "norm_label": "str",
       "source_file": "",
       "source_location": ""
     },
@@ -20373,29 +20417,18 @@
       "label": "three_tier_gate.py",
       "_origin": "ast",
       "community": 106,
-      "community_name": "three_tier_gate.py",
+      "community_name": "staging_ledger.py",
       "file_type": "code",
       "norm_label": "three_tier_gate.py",
       "source_file": "services/security/three_tier_gate.py",
       "source_location": "L1"
     },
     {
-      "id": "services_security_three_tier_gate_py_basemodel",
-      "label": "BaseModel",
-      "_origin": "ast",
-      "community": 106,
-      "community_name": "three_tier_gate.py",
-      "file_type": "code",
-      "norm_label": "basemodel",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
       "id": "services_security_three_tier_gate_py_enum",
       "label": "Enum",
       "_origin": "ast",
       "community": 106,
-      "community_name": "three_tier_gate.py",
+      "community_name": "staging_ledger.py",
       "file_type": "code",
       "norm_label": "enum",
       "source_file": "",
@@ -20406,62 +20439,73 @@
       "label": "str",
       "_origin": "ast",
       "community": 106,
-      "community_name": "three_tier_gate.py",
+      "community_name": "staging_ledger.py",
       "file_type": "code",
       "norm_label": "str",
       "source_file": "",
       "source_location": ""
     },
     {
-      "id": "services_security_staging_ledger_rationale_174",
-      "label": "Retrieves a staged intent by ID.",
+      "id": "services_security_file_utils_rationale_1",
+      "label": "Filesystem helpers for sensitive local state. Session files contain raw bank\u2026",
       "_origin": "ast",
       "community": 106,
-      "community_name": "three_tier_gate.py",
+      "community_name": "staging_ledger.py",
       "file_type": "rationale",
-      "norm_label": "retrieves a staged intent by id.",
-      "source_file": "services/security/staging_ledger.py",
-      "source_location": "L174"
+      "norm_label": "filesystem helpers for sensitive local state. session files contain raw bank...",
+      "source_file": "services/security/file_utils.py",
+      "source_location": "L1"
     },
     {
-      "id": "services_security_staging_ledger_rationale_182",
-      "label": "Lists staged action intents, optionally filtered by tenant.",
+      "id": "services_security_file_utils_rationale_18",
+      "label": "Creates the directory if needed and restricts it to the owner (0700).",
       "_origin": "ast",
       "community": 106,
-      "community_name": "three_tier_gate.py",
+      "community_name": "staging_ledger.py",
       "file_type": "rationale",
-      "norm_label": "lists staged action intents, optionally filtered by tenant.",
+      "norm_label": "creates the directory if needed and restricts it to the owner (0700).",
+      "source_file": "services/security/file_utils.py",
+      "source_location": "L18"
+    },
+    {
+      "id": "services_security_file_utils_rationale_27",
+      "label": "Restricts a written file to the owner (0600).",
+      "_origin": "ast",
+      "community": 106,
+      "community_name": "staging_ledger.py",
+      "file_type": "rationale",
+      "norm_label": "restricts a written file to the owner (0600).",
+      "source_file": "services/security/file_utils.py",
+      "source_location": "L27"
+    },
+    {
+      "id": "services_security_staging_ledger_rationale_1",
+      "label": "Staging ledger for drafted actions. CashPilot works from uploaded statements\u2026",
+      "_origin": "ast",
+      "community": 106,
+      "community_name": "staging_ledger.py",
+      "file_type": "rationale",
+      "norm_label": "staging ledger for drafted actions. cashpilot works from uploaded statements...",
       "source_file": "services/security/staging_ledger.py",
-      "source_location": "L182"
+      "source_location": "L1"
     },
     {
       "id": "services_security_staging_ledger_rationale_44",
       "label": "Base exception for staging ledger errors.",
       "_origin": "ast",
       "community": 106,
-      "community_name": "three_tier_gate.py",
+      "community_name": "staging_ledger.py",
       "file_type": "rationale",
       "norm_label": "base exception for staging ledger errors.",
       "source_file": "services/security/staging_ledger.py",
       "source_location": "L44"
     },
     {
-      "id": "services_security_staging_ledger_rationale_48",
-      "label": "Raised when an intent ID does not exist in the ledger.",
-      "_origin": "ast",
-      "community": 106,
-      "community_name": "three_tier_gate.py",
-      "file_type": "rationale",
-      "norm_label": "raised when an intent id does not exist in the ledger.",
-      "source_file": "services/security/staging_ledger.py",
-      "source_location": "L48"
-    },
-    {
       "id": "services_security_staging_ledger_rationale_52",
       "label": "Raised when an action is performed on an intent in an invalid state.",
       "_origin": "ast",
       "community": 106,
-      "community_name": "three_tier_gate.py",
+      "community_name": "staging_ledger.py",
       "file_type": "rationale",
       "norm_label": "raised when an action is performed on an intent in an invalid state.",
       "source_file": "services/security/staging_ledger.py",
@@ -20472,7 +20516,7 @@
       "label": "Three-Tier Security Gate and Action Intent Staging. Aligns with\u2026",
       "_origin": "ast",
       "community": 106,
-      "community_name": "three_tier_gate.py",
+      "community_name": "staging_ledger.py",
       "file_type": "rationale",
       "norm_label": "three-tier security gate and action intent staging. aligns with...",
       "source_file": "services/security/three_tier_gate.py",
@@ -20483,7 +20527,7 @@
       "label": "True for Tier 3 actions (credit draws, transfers, invoice sales). CashPilot has\u2026",
       "_origin": "ast",
       "community": 106,
-      "community_name": "three_tier_gate.py",
+      "community_name": "staging_ledger.py",
       "file_type": "rationale",
       "norm_label": "true for tier 3 actions (credit draws, transfers, invoice sales). cashpilot has...",
       "source_file": "services/security/three_tier_gate.py",
@@ -20494,7 +20538,7 @@
       "label": "Money transfers and loan commitments are Tier 3: CashPilot prepares them, the\u2026",
       "_origin": "ast",
       "community": 106,
-      "community_name": "three_tier_gate.py",
+      "community_name": "staging_ledger.py",
       "file_type": "rationale",
       "norm_label": "money transfers and loan commitments are tier 3: cashpilot prepares them, the...",
       "source_file": "tests/security/test_invariants.py",
@@ -23877,168 +23921,80 @@
       "source_location": "L10"
     },
     {
+      "id": "api_rate_limit",
+      "label": "rate_limit.py",
+      "_origin": "ast",
+      "community": 14,
+      "community_name": "os",
+      "file_type": "code",
+      "norm_label": "rate_limit.py",
+      "source_file": "api/rate_limit.py",
+      "source_location": "L1"
+    },
+    {
+      "id": "api_rate_limit_py_any",
+      "label": "Any",
+      "_origin": "ast",
+      "community": 14,
+      "community_name": "os",
+      "file_type": "code",
+      "norm_label": "any",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
       "id": "services_agent_local_slm",
       "label": "local_slm.py",
       "_origin": "ast",
       "community": 14,
-      "community_name": "staging_ledger.py",
+      "community_name": "os",
       "file_type": "code",
       "norm_label": "local_slm.py",
       "source_file": "services/agent/local_slm.py",
       "source_location": "L1"
     },
     {
-      "id": "services_agent_session_store",
-      "label": "session_store.py",
-      "_origin": "ast",
-      "community": 14,
-      "community_name": "staging_ledger.py",
-      "file_type": "code",
-      "norm_label": "session_store.py",
-      "source_file": "services/agent/session_store.py",
-      "source_location": "L1"
-    },
-    {
-      "id": "services_security_file_utils",
-      "label": "file_utils.py",
-      "_origin": "ast",
-      "community": 14,
-      "community_name": "staging_ledger.py",
-      "file_type": "code",
-      "norm_label": "file_utils.py",
-      "source_file": "services/security/file_utils.py",
-      "source_location": "L1"
-    },
-    {
-      "id": "services_security_staging_ledger",
-      "label": "staging_ledger.py",
-      "_origin": "ast",
-      "community": 14,
-      "community_name": "staging_ledger.py",
-      "file_type": "code",
-      "norm_label": "staging_ledger.py",
-      "source_file": "services/security/staging_ledger.py",
-      "source_location": "L1"
-    },
-    {
-      "id": "services_security_staging_ledger_py_basemodel",
-      "label": "BaseModel",
-      "_origin": "ast",
-      "community": 14,
-      "community_name": "staging_ledger.py",
-      "file_type": "code",
-      "norm_label": "basemodel",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "services_security_staging_ledger_py_enum",
-      "label": "Enum",
-      "_origin": "ast",
-      "community": 14,
-      "community_name": "staging_ledger.py",
-      "file_type": "code",
-      "norm_label": "enum",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "services_security_staging_ledger_py_str",
-      "label": "str",
-      "_origin": "ast",
-      "community": 14,
-      "community_name": "staging_ledger.py",
-      "file_type": "code",
-      "norm_label": "str",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
       "id": "tests_conftest",
       "label": "conftest.py",
       "_origin": "ast",
       "community": 14,
-      "community_name": "staging_ledger.py",
+      "community_name": "os",
       "file_type": "code",
       "norm_label": "conftest.py",
       "source_file": "tests/conftest.py",
       "source_location": "L1"
     },
     {
-      "id": "tests_unit_test_persistence",
-      "label": "test_persistence.py",
+      "id": "api_rate_limit_rationale_1",
+      "label": "Token-bucket rate limiting for the public API. Kept as a pure ASGI middleware\u2026",
       "_origin": "ast",
       "community": 14,
-      "community_name": "staging_ledger.py",
-      "file_type": "code",
-      "norm_label": "test_persistence.py",
-      "source_file": "tests/unit/test_persistence.py",
+      "community_name": "os",
+      "file_type": "rationale",
+      "norm_label": "token-bucket rate limiting for the public api. kept as a pure asgi middleware...",
+      "source_file": "api/rate_limit.py",
       "source_location": "L1"
+    },
+    {
+      "id": "api_rate_limit_rationale_30",
+      "label": "Number of reverse proxies that append to X-Forwarded-For (0 disables the\u2026",
+      "_origin": "ast",
+      "community": 14,
+      "community_name": "os",
+      "file_type": "rationale",
+      "norm_label": "number of reverse proxies that append to x-forwarded-for (0 disables the...",
+      "source_file": "api/rate_limit.py",
+      "source_location": "L30"
     },
     {
       "id": "services_agent_local_slm_rationale_1",
       "label": "On-device local SLM inference engine powered by onnxruntime-genai. Runs local\u2026",
       "_origin": "ast",
       "community": 14,
-      "community_name": "staging_ledger.py",
+      "community_name": "os",
       "file_type": "rationale",
       "norm_label": "on-device local slm inference engine powered by onnxruntime-genai. runs local...",
       "source_file": "services/agent/local_slm.py",
-      "source_location": "L1"
-    },
-    {
-      "id": "services_agent_session_store_rationale_1",
-      "label": "In-memory and persistent session store for Autonomous SME Finance Copilot.\u2026",
-      "_origin": "ast",
-      "community": 14,
-      "community_name": "staging_ledger.py",
-      "file_type": "rationale",
-      "norm_label": "in-memory and persistent session store for autonomous sme finance copilot....",
-      "source_file": "services/agent/session_store.py",
-      "source_location": "L1"
-    },
-    {
-      "id": "services_security_file_utils_rationale_1",
-      "label": "Filesystem helpers for sensitive local state. Session files contain raw bank\u2026",
-      "_origin": "ast",
-      "community": 14,
-      "community_name": "staging_ledger.py",
-      "file_type": "rationale",
-      "norm_label": "filesystem helpers for sensitive local state. session files contain raw bank...",
-      "source_file": "services/security/file_utils.py",
-      "source_location": "L1"
-    },
-    {
-      "id": "services_security_file_utils_rationale_18",
-      "label": "Creates the directory if needed and restricts it to the owner (0700).",
-      "_origin": "ast",
-      "community": 14,
-      "community_name": "staging_ledger.py",
-      "file_type": "rationale",
-      "norm_label": "creates the directory if needed and restricts it to the owner (0700).",
-      "source_file": "services/security/file_utils.py",
-      "source_location": "L18"
-    },
-    {
-      "id": "services_security_file_utils_rationale_27",
-      "label": "Restricts a written file to the owner (0600).",
-      "_origin": "ast",
-      "community": 14,
-      "community_name": "staging_ledger.py",
-      "file_type": "rationale",
-      "norm_label": "restricts a written file to the owner (0600).",
-      "source_file": "services/security/file_utils.py",
-      "source_location": "L27"
-    },
-    {
-      "id": "services_security_staging_ledger_rationale_1",
-      "label": "Staging ledger for drafted actions. CashPilot works from uploaded statements\u2026",
-      "_origin": "ast",
-      "community": 14,
-      "community_name": "staging_ledger.py",
-      "file_type": "rationale",
-      "norm_label": "staging ledger for drafted actions. cashpilot works from uploaded statements...",
-      "source_file": "services/security/staging_ledger.py",
       "source_location": "L1"
     },
     {
@@ -24046,21 +24002,10 @@
       "label": "Points the session/ledger stores at throwaway folders and configures test-only\u2026",
       "_origin": "ast",
       "community": 14,
-      "community_name": "staging_ledger.py",
+      "community_name": "os",
       "file_type": "rationale",
       "norm_label": "points the session/ledger stores at throwaway folders and configures test-only...",
       "source_file": "tests/conftest.py",
-      "source_location": "L1"
-    },
-    {
-      "id": "tests_unit_test_persistence_rationale_1",
-      "label": "Unit tests for disk persistence across process restarts. Verifies crash-safe\u2026",
-      "_origin": "ast",
-      "community": 14,
-      "community_name": "staging_ledger.py",
-      "file_type": "rationale",
-      "norm_label": "unit tests for disk persistence across process restarts. verifies crash-safe...",
-      "source_file": "tests/unit/test_persistence.py",
       "source_location": "L1"
     },
     {
@@ -24532,11 +24477,22 @@
       "source_location": "L6"
     },
     {
+      "id": "services_agent_session_store",
+      "label": "session_store.py",
+      "_origin": "ast",
+      "community": 149,
+      "community_name": "session_store.py",
+      "file_type": "code",
+      "norm_label": "session_store.py",
+      "source_file": "services/agent/session_store.py",
+      "source_location": "L1"
+    },
+    {
       "id": "services_security_crypto",
       "label": "crypto.py",
       "_origin": "ast",
       "community": 149,
-      "community_name": "test_encryption_at_rest.py",
+      "community_name": "session_store.py",
       "file_type": "code",
       "norm_label": "crypto.py",
       "source_file": "services/security/crypto.py",
@@ -24547,7 +24503,7 @@
       "label": "Exception",
       "_origin": "ast",
       "community": 149,
-      "community_name": "test_encryption_at_rest.py",
+      "community_name": "session_store.py",
       "file_type": "code",
       "norm_label": "exception",
       "source_file": "",
@@ -24558,7 +24514,7 @@
       "label": "test_encryption_at_rest.py",
       "_origin": "ast",
       "community": 149,
-      "community_name": "test_encryption_at_rest.py",
+      "community_name": "session_store.py",
       "file_type": "code",
       "norm_label": "test_encryption_at_rest.py",
       "source_file": "tests/security/test_encryption_at_rest.py",
@@ -24569,18 +24525,29 @@
       "label": "fixture",
       "_origin": "ast",
       "community": 149,
-      "community_name": "test_encryption_at_rest.py",
+      "community_name": "session_store.py",
       "file_type": "code",
       "norm_label": "fixture",
       "source_file": "",
       "source_location": ""
     },
     {
+      "id": "services_agent_session_store_rationale_1",
+      "label": "In-memory and persistent session store for Autonomous SME Finance Copilot.\u2026",
+      "_origin": "ast",
+      "community": 149,
+      "community_name": "session_store.py",
+      "file_type": "rationale",
+      "norm_label": "in-memory and persistent session store for autonomous sme finance copilot....",
+      "source_file": "services/agent/session_store.py",
+      "source_location": "L1"
+    },
+    {
       "id": "services_security_crypto_rationale_1",
       "label": "Optional encryption at rest for sensitive local JSON stores. Session files hold\u2026",
       "_origin": "ast",
       "community": 149,
-      "community_name": "test_encryption_at_rest.py",
+      "community_name": "session_store.py",
       "file_type": "rationale",
       "norm_label": "optional encryption at rest for sensitive local json stores. session files hold...",
       "source_file": "services/security/crypto.py",
@@ -24591,7 +24558,7 @@
       "label": "Decrypts a sealed payload, passes legacy plaintext through, and fails clearly\u2026",
       "_origin": "ast",
       "community": 149,
-      "community_name": "test_encryption_at_rest.py",
+      "community_name": "session_store.py",
       "file_type": "rationale",
       "norm_label": "decrypts a sealed payload, passes legacy plaintext through, and fails clearly...",
       "source_file": "services/security/crypto.py",
@@ -24602,7 +24569,7 @@
       "label": "Raised when a sealed payload cannot be opened with the configured key.",
       "_origin": "ast",
       "community": 149,
-      "community_name": "test_encryption_at_rest.py",
+      "community_name": "session_store.py",
       "file_type": "rationale",
       "norm_label": "raised when a sealed payload cannot be opened with the configured key.",
       "source_file": "services/security/crypto.py",
@@ -24613,7 +24580,7 @@
       "label": "Raised when a deployed environment is missing the required data key.",
       "_origin": "ast",
       "community": 149,
-      "community_name": "test_encryption_at_rest.py",
+      "community_name": "session_store.py",
       "file_type": "rationale",
       "norm_label": "raised when a deployed environment is missing the required data key.",
       "source_file": "services/security/crypto.py",
@@ -24624,7 +24591,7 @@
       "label": "True when a data key is configured (for startup diagnostics).",
       "_origin": "ast",
       "community": 149,
-      "community_name": "test_encryption_at_rest.py",
+      "community_name": "session_store.py",
       "file_type": "rationale",
       "norm_label": "true when a data key is configured (for startup diagnostics).",
       "source_file": "services/security/crypto.py",
@@ -24635,7 +24602,7 @@
       "label": "COPILOT_ENV (or APP_ENV/ENVIRONMENT) reduced to a lowercase label; 'local' by\u2026",
       "_origin": "ast",
       "community": 149,
-      "community_name": "test_encryption_at_rest.py",
+      "community_name": "session_store.py",
       "file_type": "rationale",
       "norm_label": "copilot_env (or app_env/environment) reduced to a lowercase label; 'local' by...",
       "source_file": "services/security/crypto.py",
@@ -24646,7 +24613,7 @@
       "label": "Fails at startup on a malformed key, or on a missing key outside local\u2026",
       "_origin": "ast",
       "community": 149,
-      "community_name": "test_encryption_at_rest.py",
+      "community_name": "session_store.py",
       "file_type": "rationale",
       "norm_label": "fails at startup on a malformed key, or on a missing key outside local...",
       "source_file": "services/security/crypto.py",
@@ -24657,7 +24624,7 @@
       "label": "Encrypts text when a key is configured; otherwise returns it unchanged.",
       "_origin": "ast",
       "community": 149,
-      "community_name": "test_encryption_at_rest.py",
+      "community_name": "session_store.py",
       "file_type": "rationale",
       "norm_label": "encrypts text when a key is configured; otherwise returns it unchanged.",
       "source_file": "services/security/crypto.py",
@@ -24668,7 +24635,7 @@
       "label": "Tests for optional Fernet encryption at rest on session and .data stores.",
       "_origin": "ast",
       "community": 149,
-      "community_name": "test_encryption_at_rest.py",
+      "community_name": "session_store.py",
       "file_type": "rationale",
       "norm_label": "tests for optional fernet encryption at rest on session and .data stores.",
       "source_file": "tests/security/test_encryption_at_rest.py",
@@ -30347,7 +30314,7 @@
       "label": "dynamic_router.py",
       "_origin": "ast",
       "community": 187,
-      "community_name": "supervisor.py",
+      "community_name": "LLMConfig",
       "file_type": "code",
       "norm_label": "dynamic_router.py",
       "source_file": "services/agent/dynamic_router.py",
@@ -30358,7 +30325,7 @@
       "label": "Any",
       "_origin": "ast",
       "community": 187,
-      "community_name": "supervisor.py",
+      "community_name": "LLMConfig",
       "file_type": "code",
       "norm_label": "any",
       "source_file": "",
@@ -30369,41 +30336,18 @@
       "label": "Any",
       "_origin": "ast",
       "community": 187,
-      "community_name": "supervisor.py",
+      "community_name": "LLMConfig",
       "file_type": "code",
       "norm_label": "any",
       "source_file": "",
       "source_location": ""
     },
     {
-      "id": "services_agent_supervisor",
-      "label": "supervisor.py",
-      "_origin": "ast",
-      "community": 187,
-      "community_name": "supervisor.py",
-      "file_type": "code",
-      "norm_label": "supervisor.py",
-      "source_file": "services/agent/supervisor.py",
-      "source_location": "L1"
-    },
-    {
-      "id": "docs_security_3_threat_modeling_offensive_tool_defense",
-      "label": "3. Threat Modeling & Offensive Tool Defense",
-      "_origin": "ast",
-      "community": 187,
-      "community_name": "supervisor.py",
-      "file_type": "document",
-      "node_kind": "heading",
-      "norm_label": "3. threat modeling & offensive tool defense",
-      "source_file": "docs/security.md",
-      "source_location": "L77"
-    },
-    {
       "id": "services_agent_dynamic_router_rationale_1",
       "label": "Dynamic Vector Semantic & LLM Intent Router for Autonomous SME Finance Copilot.\u2026",
       "_origin": "ast",
       "community": 187,
-      "community_name": "supervisor.py",
+      "community_name": "LLMConfig",
       "file_type": "rationale",
       "norm_label": "dynamic vector semantic & llm intent router for autonomous sme finance copilot....",
       "source_file": "services/agent/dynamic_router.py",
@@ -30414,7 +30358,7 @@
       "label": "Classifies intent, sub-intent, and domain alignment using vector embeddings.",
       "_origin": "ast",
       "community": 187,
-      "community_name": "supervisor.py",
+      "community_name": "LLMConfig",
       "file_type": "rationale",
       "norm_label": "classifies intent, sub-intent, and domain alignment using vector embeddings.",
       "source_file": "services/agent/dynamic_router.py",
@@ -30425,7 +30369,7 @@
       "label": "Determines if query is out of domain using semantic distance.",
       "_origin": "ast",
       "community": 187,
-      "community_name": "supervisor.py",
+      "community_name": "LLMConfig",
       "file_type": "rationale",
       "norm_label": "determines if query is out of domain using semantic distance.",
       "source_file": "services/agent/dynamic_router.py",
@@ -30436,7 +30380,7 @@
       "label": "Determines if text is an unhelpful AI capability disclaimer or refusal via\u2026",
       "_origin": "ast",
       "community": 187,
-      "community_name": "supervisor.py",
+      "community_name": "LLMConfig",
       "file_type": "rationale",
       "norm_label": "determines if text is an unhelpful ai capability disclaimer or refusal via...",
       "source_file": "services/agent/dynamic_router.py",
@@ -30447,29 +30391,18 @@
       "label": "Classifies cash diagnostic sub-intent via semantic prototype matching.",
       "_origin": "ast",
       "community": 187,
-      "community_name": "supervisor.py",
+      "community_name": "LLMConfig",
       "file_type": "rationale",
       "norm_label": "classifies cash diagnostic sub-intent via semantic prototype matching.",
       "source_file": "services/agent/dynamic_router.py",
       "source_location": "L255"
     },
     {
-      "id": "services_agent_dynamic_router_rationale_261",
-      "label": "Detects whether generated text is an unhelpful AI disclaimer or refusal using\u2026",
-      "_origin": "ast",
-      "community": 187,
-      "community_name": "supervisor.py",
-      "file_type": "rationale",
-      "norm_label": "detects whether generated text is an unhelpful ai disclaimer or refusal using...",
-      "source_file": "services/agent/dynamic_router.py",
-      "source_location": "L261"
-    },
-    {
       "id": "services_agent_dynamic_router_rationale_266",
       "label": "Evaluates whether user message is within the SME Finance & Copilot domain.",
       "_origin": "ast",
       "community": 187,
-      "community_name": "supervisor.py",
+      "community_name": "LLMConfig",
       "file_type": "rationale",
       "norm_label": "evaluates whether user message is within the sme finance & copilot domain.",
       "source_file": "services/agent/dynamic_router.py",
@@ -30480,7 +30413,7 @@
       "label": "Detects if a user message is non-financial and off-topic using vector semantic\u2026",
       "_origin": "ast",
       "community": 187,
-      "community_name": "supervisor.py",
+      "community_name": "LLMConfig",
       "file_type": "rationale",
       "norm_label": "detects if a user message is non-financial and off-topic using vector semantic...",
       "source_file": "services/agent/dynamic_router.py",
@@ -30491,7 +30424,7 @@
       "label": "Queries either local on-device SLM or cloud LLM to classify user intent\u2026",
       "_origin": "ast",
       "community": 187,
-      "community_name": "supervisor.py",
+      "community_name": "LLMConfig",
       "file_type": "rationale",
       "norm_label": "queries either local on-device slm or cloud llm to classify user intent...",
       "source_file": "services/agent/dynamic_router.py",
@@ -30502,7 +30435,7 @@
       "label": "Extracts valid intent enum name from raw LLM output.",
       "_origin": "ast",
       "community": 187,
-      "community_name": "supervisor.py",
+      "community_name": "LLMConfig",
       "file_type": "rationale",
       "norm_label": "extracts valid intent enum name from raw llm output.",
       "source_file": "services/agent/dynamic_router.py",
@@ -30513,7 +30446,7 @@
       "label": "Dynamically classifies user message into a financial intent using vector\u2026",
       "_origin": "ast",
       "community": 187,
-      "community_name": "supervisor.py",
+      "community_name": "LLMConfig",
       "file_type": "rationale",
       "norm_label": "dynamically classifies user message into a financial intent using vector...",
       "source_file": "services/agent/dynamic_router.py",
@@ -30524,7 +30457,7 @@
       "label": "Classifies cash diagnostic sub-intent dynamically by reference via\u2026",
       "_origin": "ast",
       "community": 187,
-      "community_name": "supervisor.py",
+      "community_name": "LLMConfig",
       "file_type": "rationale",
       "norm_label": "classifies cash diagnostic sub-intent dynamically by reference via...",
       "source_file": "services/agent/dynamic_router.py",
@@ -30535,7 +30468,7 @@
       "label": "A short turn that only changes a figure (\"and at 6%?\", \"what about 60 months?\").",
       "_origin": "ast",
       "community": 187,
-      "community_name": "supervisor.py",
+      "community_name": "LLMConfig",
       "file_type": "rationale",
       "norm_label": "a short turn that only changes a figure (\"and at 6%?\", \"what about 60 months?\").",
       "source_file": "services/agent/dynamic_router.py",
@@ -30546,7 +30479,7 @@
       "label": "Zero-keyword vector semantic router using on-device FastEmbed embeddings (ONNX).",
       "_origin": "ast",
       "community": 187,
-      "community_name": "supervisor.py",
+      "community_name": "LLMConfig",
       "file_type": "rationale",
       "norm_label": "zero-keyword vector semantic router using on-device fastembed embeddings (onnx).",
       "source_file": "services/agent/dynamic_router.py",
@@ -30557,7 +30490,7 @@
       "label": "Queries configured external or local LLM with PII redaction, multi-turn\u2026",
       "_origin": "ast",
       "community": 187,
-      "community_name": "supervisor.py",
+      "community_name": "LLMConfig",
       "file_type": "rationale",
       "norm_label": "queries configured external or local llm with pii redaction, multi-turn...",
       "source_file": "services/agent/llm_bridge.py",
@@ -30568,106 +30501,40 @@
       "label": "Safely extracts role and text from either Pydantic model or dictionary turn.",
       "_origin": "ast",
       "community": 187,
-      "community_name": "supervisor.py",
+      "community_name": "LLMConfig",
       "file_type": "rationale",
       "norm_label": "safely extracts role and text from either pydantic model or dictionary turn.",
       "source_file": "services/agent/llm_bridge.py",
       "source_location": "L58"
     },
     {
-      "id": "services_agent_prompts_rationale_173",
-      "label": "The action a chat instruction names, or None. Staging needs both an action verb\u2026",
+      "id": "tests_unit_test_knowledge_retrieval_rationale_57",
+      "label": "The model writing a cash diagnostic reply receives the matching concept cards.",
       "_origin": "ast",
       "community": 187,
-      "community_name": "supervisor.py",
+      "community_name": "LLMConfig",
       "file_type": "rationale",
-      "norm_label": "the action a chat instruction names, or none. staging needs both an action verb...",
-      "source_file": "services/agent/prompts.py",
-      "source_location": "L173"
+      "norm_label": "the model writing a cash diagnostic reply receives the matching concept cards.",
+      "source_file": "tests/unit/test_knowledge_retrieval.py",
+      "source_location": "L57"
     },
     {
-      "id": "services_agent_supervisor_rationale_1",
-      "label": "Agentic Supervisor for the Autonomous SME Finance Copilot. Enforces: 1. Pure\u2026",
+      "id": "tests_unit_test_prompts_rationale_271",
+      "label": "Verify off-topic non-financial queries receive institutional CFO domain\u2026",
       "_origin": "ast",
       "community": 187,
-      "community_name": "supervisor.py",
+      "community_name": "LLMConfig",
       "file_type": "rationale",
-      "norm_label": "agentic supervisor for the autonomous sme finance copilot. enforces: 1. pure...",
-      "source_file": "services/agent/supervisor.py",
-      "source_location": "L1"
-    },
-    {
-      "id": "services_agent_supervisor_rationale_103",
-      "label": "Detects adversarial prompt injection and jailbreak override attempts via\u2026",
-      "_origin": "ast",
-      "community": 187,
-      "community_name": "supervisor.py",
-      "file_type": "rationale",
-      "norm_label": "detects adversarial prompt injection and jailbreak override attempts via...",
-      "source_file": "services/agent/supervisor.py",
-      "source_location": "L103"
-    },
-    {
-      "id": "services_agent_supervisor_rationale_118",
-      "label": "Detects raw API keys, passwords, PINs, or credential secrets pasted into chat\u2026",
-      "_origin": "ast",
-      "community": 187,
-      "community_name": "supervisor.py",
-      "file_type": "rationale",
-      "norm_label": "detects raw api keys, passwords, pins, or credential secrets pasted into chat...",
-      "source_file": "services/agent/supervisor.py",
-      "source_location": "L118"
-    },
-    {
-      "id": "services_agent_supervisor_rationale_196",
-      "label": "Classifies user chat message into structured financial intent categories\u2026",
-      "_origin": "ast",
-      "community": 187,
-      "community_name": "supervisor.py",
-      "file_type": "rationale",
-      "norm_label": "classifies user chat message into structured financial intent categories...",
-      "source_file": "services/agent/supervisor.py",
-      "source_location": "L196"
-    },
-    {
-      "id": "services_agent_supervisor_rationale_241",
-      "label": "ISO code of the active statement; USD when there is none or it does not parse.",
-      "_origin": "ast",
-      "community": 187,
-      "community_name": "supervisor.py",
-      "file_type": "rationale",
-      "norm_label": "iso code of the active statement; usd when there is none or it does not parse.",
-      "source_file": "services/agent/supervisor.py",
-      "source_location": "L241"
-    },
-    {
-      "id": "services_agent_tools_rationale_434",
-      "label": "Stage a financial action into the immutable staging queue (Tier 2). No money\u2026",
-      "_origin": "ast",
-      "community": 187,
-      "community_name": "supervisor.py",
-      "file_type": "rationale",
-      "norm_label": "stage a financial action into the immutable staging queue (tier 2). no money...",
-      "source_file": "services/agent/tools.py",
-      "source_location": "L434"
-    },
-    {
-      "id": "tests_unit_test_prompts_rationale_322",
-      "label": "Verify vector semantic detection flags unhelpful AI disclaimers and preserves\u2026",
-      "_origin": "ast",
-      "community": 187,
-      "community_name": "supervisor.py",
-      "file_type": "rationale",
-      "norm_label": "verify vector semantic detection flags unhelpful ai disclaimers and preserves...",
+      "norm_label": "verify off-topic non-financial queries receive institutional cfo domain...",
       "source_file": "tests/unit/test_prompts.py",
-      "source_location": "L322"
+      "source_location": "L271"
     },
     {
       "id": "tests_unit_test_prompts_rationale_368",
       "label": "Verify greetings classify into GENERAL_ASSISTANCE via semantic embeddings\u2026",
       "_origin": "ast",
       "community": 187,
-      "community_name": "supervisor.py",
+      "community_name": "LLMConfig",
       "file_type": "rationale",
       "norm_label": "verify greetings classify into general_assistance via semantic embeddings...",
       "source_file": "tests/unit/test_prompts.py",
@@ -30927,17 +30794,6 @@
       "norm_label": "condenses older conversation turns into an objective narrative summary without...",
       "source_file": "services/agent/context_summarizer.py",
       "source_location": "L22"
-    },
-    {
-      "id": "services_agent_supervisor_rationale_144",
-      "label": "Appends verified episodic facts and rolling conversation summary to prompt\u2026",
-      "_origin": "ast",
-      "community": 190,
-      "community_name": "test_context_summarizer.py",
-      "file_type": "rationale",
-      "norm_label": "appends verified episodic facts and rolling conversation summary to prompt...",
-      "source_file": "services/agent/supervisor.py",
-      "source_location": "L144"
     },
     {
       "id": "tests_unit_test_context_summarizer_rationale_1",
@@ -34604,7 +34460,7 @@
       "label": "knowledge.py",
       "_origin": "ast",
       "community": 218,
-      "community_name": "knowledge.py",
+      "community_name": "supervisor.py",
       "file_type": "code",
       "norm_label": "knowledge.py",
       "source_file": "services/agent/knowledge.py",
@@ -34615,18 +34471,29 @@
       "label": "Path",
       "_origin": "ast",
       "community": 218,
-      "community_name": "knowledge.py",
+      "community_name": "supervisor.py",
       "file_type": "code",
       "norm_label": "path",
       "source_file": "",
       "source_location": ""
     },
     {
+      "id": "services_agent_supervisor",
+      "label": "supervisor.py",
+      "_origin": "ast",
+      "community": 218,
+      "community_name": "supervisor.py",
+      "file_type": "code",
+      "norm_label": "supervisor.py",
+      "source_file": "services/agent/supervisor.py",
+      "source_location": "L1"
+    },
+    {
       "id": "tests_unit_test_knowledge_retrieval",
       "label": "test_knowledge_retrieval.py",
       "_origin": "ast",
       "community": 218,
-      "community_name": "knowledge.py",
+      "community_name": "supervisor.py",
       "file_type": "code",
       "norm_label": "test_knowledge_retrieval.py",
       "source_file": "tests/unit/test_knowledge_retrieval.py",
@@ -34637,118 +34504,29 @@
       "label": "parametrize",
       "_origin": "ast",
       "community": 218,
-      "community_name": "knowledge.py",
+      "community_name": "supervisor.py",
       "file_type": "code",
       "norm_label": "parametrize",
       "source_file": "",
       "source_location": ""
     },
     {
-      "id": "agent_skills_subagent_catalog_invalidate",
-      "label": "invalidate.md",
+      "id": "services_agent_dynamic_router_rationale_261",
+      "label": "Detects whether generated text is an unhelpful AI disclaimer or refusal using\u2026",
       "_origin": "ast",
       "community": 218,
-      "community_name": "knowledge.py",
-      "file_type": "document",
-      "frontmatter": {
-        "name": "invalidate",
-        "description": "Invalidate the subagent-catalog cache. Use when results seem stale or user explicitly asks to refresh or clear cache."
-      },
-      "node_kind": "page",
-      "norm_label": "invalidate.md",
-      "source_file": ".agent/skills/subagent-catalog/invalidate.md",
-      "source_location": "L1"
-    },
-    {
-      "id": "agent_skills_subagent_catalog_invalidate_input_arguments",
-      "label": "Input: $ARGUMENTS",
-      "_origin": "ast",
-      "community": 218,
-      "community_name": "knowledge.py",
-      "file_type": "document",
-      "node_kind": "heading",
-      "norm_label": "input: $arguments",
-      "source_file": ".agent/skills/subagent-catalog/invalidate.md",
-      "source_location": "L10"
-    },
-    {
-      "id": "agent_skills_subagent_catalog_invalidate_instructions",
-      "label": "Instructions",
-      "_origin": "ast",
-      "community": 218,
-      "community_name": "knowledge.py",
-      "file_type": "document",
-      "node_kind": "heading",
-      "norm_label": "instructions",
-      "source_file": ".agent/skills/subagent-catalog/invalidate.md",
-      "source_location": "L14"
-    },
-    {
-      "id": "agent_skills_subagent_catalog_invalidate_step_1_source_config",
-      "label": "Step 1: Source config",
-      "_origin": "ast",
-      "community": 218,
-      "community_name": "knowledge.py",
-      "file_type": "document",
-      "node_kind": "heading",
-      "norm_label": "step 1: source config",
-      "source_file": ".agent/skills/subagent-catalog/invalidate.md",
-      "source_location": "L16"
-    },
-    {
-      "id": "agent_skills_subagent_catalog_invalidate_step_2_invalidate_and_optionally_refresh",
-      "label": "Step 2: Invalidate (and optionally refresh)",
-      "_origin": "ast",
-      "community": 218,
-      "community_name": "knowledge.py",
-      "file_type": "document",
-      "node_kind": "heading",
-      "norm_label": "step 2: invalidate (and optionally refresh)",
-      "source_file": ".agent/skills/subagent-catalog/invalidate.md",
-      "source_location": "L22"
-    },
-    {
-      "id": "agent_skills_subagent_catalog_invalidate_step_3_confirm",
-      "label": "Step 3: Confirm",
-      "_origin": "ast",
-      "community": 218,
-      "community_name": "knowledge.py",
-      "file_type": "document",
-      "node_kind": "heading",
-      "norm_label": "step 3: confirm",
-      "source_file": ".agent/skills/subagent-catalog/invalidate.md",
-      "source_location": "L37"
-    },
-    {
-      "id": "agent_skills_subagent_catalog_invalidate_subagent_catalog_invalidate",
-      "label": "Subagent Catalog - Invalidate",
-      "_origin": "ast",
-      "community": 218,
-      "community_name": "knowledge.py",
-      "file_type": "document",
-      "node_kind": "heading",
-      "norm_label": "subagent catalog - invalidate",
-      "source_file": ".agent/skills/subagent-catalog/invalidate.md",
-      "source_location": "L6"
-    },
-    {
-      "id": "agent_skills_subagent_catalog_invalidate_when_to_use",
-      "label": "When to use",
-      "_origin": "ast",
-      "community": 218,
-      "community_name": "knowledge.py",
-      "file_type": "document",
-      "node_kind": "heading",
-      "norm_label": "when to use",
-      "source_file": ".agent/skills/subagent-catalog/invalidate.md",
-      "source_location": "L43"
+      "community_name": "supervisor.py",
+      "file_type": "rationale",
+      "norm_label": "detects whether generated text is an unhelpful ai disclaimer or refusal using...",
+      "source_file": "services/agent/dynamic_router.py",
+      "source_location": "L261"
     },
     {
       "id": "services_agent_knowledge_rationale_1",
       "label": "Concept-card retrieval for model prompts. Cards in knowledge/cards/*.md (one\u2026",
       "_origin": "ast",
       "community": 218,
-      "community_name": "knowledge.py",
+      "community_name": "supervisor.py",
       "file_type": "rationale",
       "norm_label": "concept-card retrieval for model prompts. cards in knowledge/cards/*.md (one...",
       "source_file": "services/agent/knowledge.py",
@@ -34759,7 +34537,7 @@
       "label": "Expands anaphoric or elliptical follow-up questions with recent user context.\u2026",
       "_origin": "ast",
       "community": 218,
-      "community_name": "knowledge.py",
+      "community_name": "supervisor.py",
       "file_type": "rationale",
       "norm_label": "expands anaphoric or elliptical follow-up questions with recent user context....",
       "source_file": "services/agent/knowledge.py",
@@ -34770,7 +34548,7 @@
       "label": "Picks the card to summarise for a missing-input question and whether the\u2026",
       "_origin": "ast",
       "community": 218,
-      "community_name": "knowledge.py",
+      "community_name": "supervisor.py",
       "file_type": "rationale",
       "norm_label": "picks the card to summarise for a missing-input question and whether the...",
       "source_file": "services/agent/knowledge.py",
@@ -34781,44 +34559,88 @@
       "label": "The card's definition and importance as plain prose, used when no model is\u2026",
       "_origin": "ast",
       "community": 218,
-      "community_name": "knowledge.py",
+      "community_name": "supervisor.py",
       "file_type": "rationale",
       "norm_label": "the card's definition and importance as plain prose, used when no model is...",
       "source_file": "services/agent/knowledge.py",
       "source_location": "L226"
     },
     {
+      "id": "services_agent_prompts_rationale_145",
+      "label": "System prompt for explaining a concept when the inputs for its calculation are\u2026",
+      "_origin": "ast",
+      "community": 218,
+      "community_name": "supervisor.py",
+      "file_type": "rationale",
+      "norm_label": "system prompt for explaining a concept when the inputs for its calculation are...",
+      "source_file": "services/agent/prompts.py",
+      "source_location": "L145"
+    },
+    {
+      "id": "services_agent_supervisor_rationale_1",
+      "label": "Agentic Supervisor for the Autonomous SME Finance Copilot. Enforces: 1. Pure\u2026",
+      "_origin": "ast",
+      "community": 218,
+      "community_name": "supervisor.py",
+      "file_type": "rationale",
+      "norm_label": "agentic supervisor for the autonomous sme finance copilot. enforces: 1. pure...",
+      "source_file": "services/agent/supervisor.py",
+      "source_location": "L1"
+    },
+    {
+      "id": "services_agent_supervisor_rationale_144",
+      "label": "Appends verified episodic facts and rolling conversation summary to prompt\u2026",
+      "_origin": "ast",
+      "community": 218,
+      "community_name": "supervisor.py",
+      "file_type": "rationale",
+      "norm_label": "appends verified episodic facts and rolling conversation summary to prompt...",
+      "source_file": "services/agent/supervisor.py",
+      "source_location": "L144"
+    },
+    {
       "id": "services_agent_supervisor_rationale_174",
       "label": "Appends user language and currency formatting requirements to prompt directives.",
       "_origin": "ast",
       "community": 218,
-      "community_name": "knowledge.py",
+      "community_name": "supervisor.py",
       "file_type": "rationale",
       "norm_label": "appends user language and currency formatting requirements to prompt directives.",
       "source_file": "services/agent/supervisor.py",
       "source_location": "L174"
     },
     {
+      "id": "services_agent_supervisor_rationale_241",
+      "label": "ISO code of the active statement; USD when there is none or it does not parse.",
+      "_origin": "ast",
+      "community": 218,
+      "community_name": "supervisor.py",
+      "file_type": "rationale",
+      "norm_label": "iso code of the active statement; usd when there is none or it does not parse.",
+      "source_file": "services/agent/supervisor.py",
+      "source_location": "L241"
+    },
+    {
+      "id": "services_agent_tools_rationale_434",
+      "label": "Stage a financial action into the immutable staging queue (Tier 2). No money\u2026",
+      "_origin": "ast",
+      "community": 218,
+      "community_name": "supervisor.py",
+      "file_type": "rationale",
+      "norm_label": "stage a financial action into the immutable staging queue (tier 2). no money...",
+      "source_file": "services/agent/tools.py",
+      "source_location": "L434"
+    },
+    {
       "id": "tests_unit_test_knowledge_retrieval_rationale_1",
       "label": "Retrieval of concept cards into model prompts.",
       "_origin": "ast",
       "community": 218,
-      "community_name": "knowledge.py",
+      "community_name": "supervisor.py",
       "file_type": "rationale",
       "norm_label": "retrieval of concept cards into model prompts.",
       "source_file": "tests/unit/test_knowledge_retrieval.py",
       "source_location": "L1"
-    },
-    {
-      "id": "tests_unit_test_knowledge_retrieval_rationale_57",
-      "label": "The model writing a cash diagnostic reply receives the matching concept cards.",
-      "_origin": "ast",
-      "community": 218,
-      "community_name": "knowledge.py",
-      "file_type": "rationale",
-      "norm_label": "the model writing a cash diagnostic reply receives the matching concept cards.",
-      "source_file": "tests/unit/test_knowledge_retrieval.py",
-      "source_location": "L57"
     },
     {
       "id": "agent_skills_earnings_analysis_skill",
@@ -35443,6 +35265,17 @@
       "source_location": ""
     },
     {
+      "id": "tests_unit_test_persistence",
+      "label": "test_persistence.py",
+      "_origin": "ast",
+      "community": 222,
+      "community_name": "invoice_hasher.py",
+      "file_type": "code",
+      "norm_label": "test_persistence.py",
+      "source_file": "tests/unit/test_persistence.py",
+      "source_location": "L1"
+    },
+    {
       "id": "services_blockchain_invoice_hasher_rationale_1",
       "label": "Consortium Blockchain Invoice Registry Service. Calculates deterministic\u2026",
       "_origin": "ast",
@@ -35561,6 +35394,17 @@
       "file_type": "rationale",
       "norm_label": "unit tests for consortium blockchain invoice registry service (fisco bcos...",
       "source_file": "tests/unit/test_blockchain_registry.py",
+      "source_location": "L1"
+    },
+    {
+      "id": "tests_unit_test_persistence_rationale_1",
+      "label": "Unit tests for disk persistence across process restarts. Verifies crash-safe\u2026",
+      "_origin": "ast",
+      "community": 222,
+      "community_name": "invoice_hasher.py",
+      "file_type": "rationale",
+      "norm_label": "unit tests for disk persistence across process restarts. verifies crash-safe...",
+      "source_file": "tests/unit/test_persistence.py",
       "source_location": "L1"
     },
     {
@@ -38319,18 +38163,29 @@
       "label": "Any",
       "_origin": "ast",
       "community": 245,
-      "community_name": "resolve_subagent_routing",
+      "community_name": "test_treasury_dupont_lease.py",
       "file_type": "code",
       "norm_label": "any",
       "source_file": "",
       "source_location": ""
     },
     {
+      "id": "tests_unit_test_treasury_dupont_lease",
+      "label": "test_treasury_dupont_lease.py",
+      "_origin": "ast",
+      "community": 245,
+      "community_name": "test_treasury_dupont_lease.py",
+      "file_type": "code",
+      "norm_label": "test_treasury_dupont_lease.py",
+      "source_file": "tests/unit/test_treasury_dupont_lease.py",
+      "source_location": "L1"
+    },
+    {
       "id": "services_agent_prompts_rationale_188",
       "label": "Resolves target specialist subagent for a financial sub-intent by reference via\u2026",
       "_origin": "ast",
       "community": 245,
-      "community_name": "resolve_subagent_routing",
+      "community_name": "test_treasury_dupont_lease.py",
       "file_type": "rationale",
       "norm_label": "resolves target specialist subagent for a financial sub-intent by reference via...",
       "source_file": "services/agent/prompts.py",
@@ -38341,42 +38196,42 @@
       "label": "Delegates quantitative calculation inquiries to specialized domain subagents.",
       "_origin": "ast",
       "community": 245,
-      "community_name": "resolve_subagent_routing",
+      "community_name": "test_treasury_dupont_lease.py",
       "file_type": "rationale",
       "norm_label": "delegates quantitative calculation inquiries to specialized domain subagents.",
       "source_file": "services/agent/supervisor.py",
       "source_location": "L259"
     },
     {
+      "id": "tests_unit_test_treasury_dupont_lease_rationale_1",
+      "label": "Unit tests for Treasury Cash Drag (Cluster 3), DuPont ROE Decomposition\u2026",
+      "_origin": "ast",
+      "community": 245,
+      "community_name": "test_treasury_dupont_lease.py",
+      "file_type": "rationale",
+      "norm_label": "unit tests for treasury cash drag (cluster 3), dupont roe decomposition...",
+      "source_file": "tests/unit/test_treasury_dupont_lease.py",
+      "source_location": "L1"
+    },
+    {
       "id": "tests_unit_test_treasury_dupont_lease_rationale_346",
       "label": "Verifies subagent routing matrix and live supervisor responses.",
       "_origin": "ast",
       "community": 245,
-      "community_name": "resolve_subagent_routing",
+      "community_name": "test_treasury_dupont_lease.py",
       "file_type": "rationale",
       "norm_label": "verifies subagent routing matrix and live supervisor responses.",
       "source_file": "tests/unit/test_treasury_dupont_lease.py",
       "source_location": "L346"
     },
     {
-      "id": "tests_security_test_backend_hardening_py_skipif",
-      "label": "skipif",
+      "id": "services_security_three_tier_gate_py_basemodel",
+      "label": "BaseModel",
       "_origin": "ast",
       "community": 246,
       "community_name": "StagingLedger",
       "file_type": "code",
-      "norm_label": "skipif",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "tests_unit_test_security_gate_py_fixture",
-      "label": "fixture",
-      "_origin": "ast",
-      "community": 246,
-      "community_name": "StagingLedger",
-      "file_type": "code",
-      "norm_label": "fixture",
+      "norm_label": "basemodel",
       "source_file": "",
       "source_location": ""
     },
@@ -38425,6 +38280,28 @@
       "source_location": "L143"
     },
     {
+      "id": "services_security_staging_ledger_rationale_174",
+      "label": "Retrieves a staged intent by ID.",
+      "_origin": "ast",
+      "community": 246,
+      "community_name": "StagingLedger",
+      "file_type": "rationale",
+      "norm_label": "retrieves a staged intent by id.",
+      "source_file": "services/security/staging_ledger.py",
+      "source_location": "L174"
+    },
+    {
+      "id": "services_security_staging_ledger_rationale_182",
+      "label": "Lists staged action intents, optionally filtered by tenant.",
+      "_origin": "ast",
+      "community": 246,
+      "community_name": "StagingLedger",
+      "file_type": "rationale",
+      "norm_label": "lists staged action intents, optionally filtered by tenant.",
+      "source_file": "services/security/staging_ledger.py",
+      "source_location": "L182"
+    },
+    {
       "id": "services_security_staging_ledger_rationale_190",
       "label": "Moves a pending intent to the owner's decision; a decided intent stays as it is.",
       "_origin": "ast",
@@ -38467,6 +38344,17 @@
       "norm_label": "clears all intents (used for testing).",
       "source_file": "services/security/staging_ledger.py",
       "source_location": "L211"
+    },
+    {
+      "id": "services_security_staging_ledger_rationale_48",
+      "label": "Raised when an intent ID does not exist in the ledger.",
+      "_origin": "ast",
+      "community": 246,
+      "community_name": "StagingLedger",
+      "file_type": "rationale",
+      "norm_label": "raised when an intent id does not exist in the ledger.",
+      "source_file": "services/security/staging_ledger.py",
+      "source_location": "L48"
     },
     {
       "id": "services_security_staging_ledger_rationale_67",
@@ -38809,7 +38697,7 @@
       "label": "Any",
       "_origin": "ast",
       "community": 250,
-      "community_name": "test_currency_calculations.py",
+      "community_name": "calculate_cash_drag",
       "file_type": "code",
       "norm_label": "any",
       "source_file": "",
@@ -38820,95 +38708,29 @@
       "label": "Decimal",
       "_origin": "ast",
       "community": 250,
-      "community_name": "test_currency_calculations.py",
+      "community_name": "calculate_cash_drag",
       "file_type": "code",
       "norm_label": "decimal",
       "source_file": "",
       "source_location": ""
     },
     {
-      "id": "tests_unit_test_currency_calculations",
-      "label": "test_currency_calculations.py",
-      "_origin": "ast",
-      "community": 250,
-      "community_name": "test_currency_calculations.py",
-      "file_type": "code",
-      "norm_label": "test_currency_calculations.py",
-      "source_file": "tests/unit/test_currency_calculations.py",
-      "source_location": "L1"
-    },
-    {
-      "id": "tests_unit_test_currency_calculations_py_fixture",
-      "label": "fixture",
-      "_origin": "ast",
-      "community": 250,
-      "community_name": "test_currency_calculations.py",
-      "file_type": "code",
-      "norm_label": "fixture",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "tests_unit_test_treasury_dupont_lease",
-      "label": "test_treasury_dupont_lease.py",
-      "_origin": "ast",
-      "community": 250,
-      "community_name": "test_currency_calculations.py",
-      "file_type": "code",
-      "norm_label": "test_treasury_dupont_lease.py",
-      "source_file": "tests/unit/test_treasury_dupont_lease.py",
-      "source_location": "L1"
-    },
-    {
-      "id": "services_agent_tools_rationale_1303",
-      "label": "Safely and deterministically evaluates an arithmetic expression using pure\u2026",
-      "_origin": "ast",
-      "community": 250,
-      "community_name": "test_currency_calculations.py",
-      "file_type": "rationale",
-      "norm_label": "safely and deterministically evaluates an arithmetic expression using pure...",
-      "source_file": "services/agent/tools.py",
-      "source_location": "L1303"
-    },
-    {
       "id": "services_calculations_treasury_rationale_24",
       "label": "Calculate idle cash and annualized yield loss from uninvested commercial\u2026",
       "_origin": "ast",
       "community": 250,
-      "community_name": "test_currency_calculations.py",
+      "community_name": "calculate_cash_drag",
       "file_type": "rationale",
       "norm_label": "calculate idle cash and annualized yield loss from uninvested commercial...",
       "source_file": "services/calculations/treasury.py",
       "source_location": "L24"
     },
     {
-      "id": "tests_unit_test_currency_calculations_rationale_1",
-      "label": "Unit tests for deterministic multi-currency conversion, FX exposure, and ISO\u2026",
-      "_origin": "ast",
-      "community": 250,
-      "community_name": "test_currency_calculations.py",
-      "file_type": "rationale",
-      "norm_label": "unit tests for deterministic multi-currency conversion, fx exposure, and iso...",
-      "source_file": "tests/unit/test_currency_calculations.py",
-      "source_location": "L1"
-    },
-    {
-      "id": "tests_unit_test_treasury_dupont_lease_rationale_1",
-      "label": "Unit tests for Treasury Cash Drag (Cluster 3), DuPont ROE Decomposition\u2026",
-      "_origin": "ast",
-      "community": 250,
-      "community_name": "test_currency_calculations.py",
-      "file_type": "rationale",
-      "norm_label": "unit tests for treasury cash drag (cluster 3), dupont roe decomposition...",
-      "source_file": "tests/unit/test_treasury_dupont_lease.py",
-      "source_location": "L1"
-    },
-    {
       "id": "tests_unit_test_treasury_dupont_lease_rationale_44",
       "label": "Test suite for Treasury Cash Drag and Idle Liquidity Yield Loss.",
       "_origin": "ast",
       "community": 250,
-      "community_name": "test_currency_calculations.py",
+      "community_name": "calculate_cash_drag",
       "file_type": "rationale",
       "norm_label": "test suite for treasury cash drag and idle liquidity yield loss.",
       "source_file": "tests/unit/test_treasury_dupont_lease.py",
@@ -41601,17 +41423,6 @@
       "source_location": "L14"
     },
     {
-      "id": "services_agent_prompts_rationale_145",
-      "label": "System prompt for explaining a concept when the inputs for its calculation are\u2026",
-      "_origin": "ast",
-      "community": 267,
-      "community_name": "test_prompts.py",
-      "file_type": "rationale",
-      "norm_label": "system prompt for explaining a concept when the inputs for its calculation are...",
-      "source_file": "services/agent/prompts.py",
-      "source_location": "L145"
-    },
-    {
       "id": "services_agent_prompts_rationale_271",
       "label": "Helper to preserve UPPERCASE and TitleCase when substituting slop words.",
       "_origin": "ast",
@@ -41742,6 +41553,17 @@
       "norm_label": "verify throat-clearing phrases are deterministically stripped.",
       "source_file": "tests/unit/test_prompts.py",
       "source_location": "L20"
+    },
+    {
+      "id": "tests_unit_test_prompts_rationale_322",
+      "label": "Verify vector semantic detection flags unhelpful AI disclaimers and preserves\u2026",
+      "_origin": "ast",
+      "community": 267,
+      "community_name": "test_prompts.py",
+      "file_type": "rationale",
+      "norm_label": "verify vector semantic detection flags unhelpful ai disclaimers and preserves...",
+      "source_file": "tests/unit/test_prompts.py",
+      "source_location": "L322"
     },
     {
       "id": "tests_unit_test_prompts_rationale_54",
@@ -42290,28 +42112,6 @@
       "source_location": "L35"
     },
     {
-      "id": "api_rate_limit",
-      "label": "rate_limit.py",
-      "_origin": "ast",
-      "community": 273,
-      "community_name": "TokenBucketRateLimiter",
-      "file_type": "code",
-      "norm_label": "rate_limit.py",
-      "source_file": "api/rate_limit.py",
-      "source_location": "L1"
-    },
-    {
-      "id": "api_rate_limit_py_any",
-      "label": "Any",
-      "_origin": "ast",
-      "community": 273,
-      "community_name": "TokenBucketRateLimiter",
-      "file_type": "code",
-      "norm_label": "any",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
       "id": "tests_security_test_rate_limit",
       "label": "test_rate_limit.py",
       "_origin": "ast",
@@ -42321,28 +42121,6 @@
       "norm_label": "test_rate_limit.py",
       "source_file": "tests/security/test_rate_limit.py",
       "source_location": "L1"
-    },
-    {
-      "id": "api_rate_limit_rationale_1",
-      "label": "Token-bucket rate limiting for the public API. Kept as a pure ASGI middleware\u2026",
-      "_origin": "ast",
-      "community": 273,
-      "community_name": "TokenBucketRateLimiter",
-      "file_type": "rationale",
-      "norm_label": "token-bucket rate limiting for the public api. kept as a pure asgi middleware...",
-      "source_file": "api/rate_limit.py",
-      "source_location": "L1"
-    },
-    {
-      "id": "api_rate_limit_rationale_30",
-      "label": "Number of reverse proxies that append to X-Forwarded-For (0 disables the\u2026",
-      "_origin": "ast",
-      "community": 273,
-      "community_name": "TokenBucketRateLimiter",
-      "file_type": "rationale",
-      "norm_label": "number of reverse proxies that append to x-forwarded-for (0 disables the...",
-      "source_file": "api/rate_limit.py",
-      "source_location": "L30"
     },
     {
       "id": "api_rate_limit_rationale_39",
@@ -46003,6 +45781,28 @@
       "source_location": "L306"
     },
     {
+      "id": "services_security_staging_ledger_py_basemodel",
+      "label": "BaseModel",
+      "_origin": "ast",
+      "community": 314,
+      "community_name": "test_security_gate.py",
+      "file_type": "code",
+      "norm_label": "basemodel",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "tests_security_test_backend_hardening_py_skipif",
+      "label": "skipif",
+      "_origin": "ast",
+      "community": 314,
+      "community_name": "test_security_gate.py",
+      "file_type": "code",
+      "norm_label": "skipif",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
       "id": "tests_unit_test_security_gate",
       "label": "test_security_gate.py",
       "_origin": "ast",
@@ -46012,6 +45812,17 @@
       "norm_label": "test_security_gate.py",
       "source_file": "tests/unit/test_security_gate.py",
       "source_location": "L1"
+    },
+    {
+      "id": "tests_unit_test_security_gate_py_fixture",
+      "label": "fixture",
+      "_origin": "ast",
+      "community": 314,
+      "community_name": "test_security_gate.py",
+      "file_type": "code",
+      "norm_label": "fixture",
+      "source_file": "",
+      "source_location": ""
     },
     {
       "id": "tests_unit_test_security_gate_rationale_1",
@@ -46135,6 +45946,28 @@
       "source_location": ""
     },
     {
+      "id": "tests_unit_test_currency_calculations",
+      "label": "test_currency_calculations.py",
+      "_origin": "ast",
+      "community": 318,
+      "community_name": "run_copilot_supervisor",
+      "file_type": "code",
+      "norm_label": "test_currency_calculations.py",
+      "source_file": "tests/unit/test_currency_calculations.py",
+      "source_location": "L1"
+    },
+    {
+      "id": "tests_unit_test_currency_calculations_py_fixture",
+      "label": "fixture",
+      "_origin": "ast",
+      "community": 318,
+      "community_name": "run_copilot_supervisor",
+      "file_type": "code",
+      "norm_label": "fixture",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
       "id": "api_routes_agent_rationale_207",
       "label": "Dispatches user prompt to the Agent Supervisor with authoritative header-based\u2026",
       "_origin": "ast",
@@ -46179,6 +46012,17 @@
       "source_location": "L1"
     },
     {
+      "id": "tests_unit_test_currency_calculations_rationale_1",
+      "label": "Unit tests for deterministic multi-currency conversion, FX exposure, and ISO\u2026",
+      "_origin": "ast",
+      "community": 318,
+      "community_name": "run_copilot_supervisor",
+      "file_type": "rationale",
+      "norm_label": "unit tests for deterministic multi-currency conversion, fx exposure, and iso...",
+      "source_file": "tests/unit/test_currency_calculations.py",
+      "source_location": "L1"
+    },
+    {
       "id": "tests_unit_test_download_model_rationale_152",
       "label": "Verifies supervisor prompts the user to download a model first when in local\u2026",
       "_origin": "ast",
@@ -46201,17 +46045,6 @@
       "source_location": "L435"
     },
     {
-      "id": "tests_unit_test_prompts_rationale_220",
-      "label": "Verify raw API keys pasted into chat are intercepted with security guidance.",
-      "_origin": "ast",
-      "community": 318,
-      "community_name": "run_copilot_supervisor",
-      "file_type": "rationale",
-      "norm_label": "verify raw api keys pasted into chat are intercepted with security guidance.",
-      "source_file": "tests/unit/test_prompts.py",
-      "source_location": "L220"
-    },
-    {
       "id": "tests_unit_test_prompts_rationale_250",
       "label": "Verify bank statement CSV pasted directly into message is parsed\u2026",
       "_origin": "ast",
@@ -46221,17 +46054,6 @@
       "norm_label": "verify bank statement csv pasted directly into message is parsed...",
       "source_file": "tests/unit/test_prompts.py",
       "source_location": "L250"
-    },
-    {
-      "id": "tests_unit_test_prompts_rationale_271",
-      "label": "Verify off-topic non-financial queries receive institutional CFO domain\u2026",
-      "_origin": "ast",
-      "community": 318,
-      "community_name": "run_copilot_supervisor",
-      "file_type": "rationale",
-      "norm_label": "verify off-topic non-financial queries receive institutional cfo domain...",
-      "source_file": "tests/unit/test_prompts.py",
-      "source_location": "L271"
     },
     {
       "id": "tests_unit_test_prompts_rationale_340",
@@ -46568,6 +46390,73 @@
       "source_location": "L58"
     },
     {
+      "id": "docs_security_3_threat_modeling_offensive_tool_defense",
+      "label": "3. Threat Modeling & Offensive Tool Defense",
+      "_origin": "ast",
+      "community": 328,
+      "community_name": "detect_intent",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "3. threat modeling & offensive tool defense",
+      "source_file": "docs/security.md",
+      "source_location": "L77"
+    },
+    {
+      "id": "services_agent_prompts_rationale_173",
+      "label": "The action a chat instruction names, or None. Staging needs both an action verb\u2026",
+      "_origin": "ast",
+      "community": 328,
+      "community_name": "detect_intent",
+      "file_type": "rationale",
+      "norm_label": "the action a chat instruction names, or none. staging needs both an action verb...",
+      "source_file": "services/agent/prompts.py",
+      "source_location": "L173"
+    },
+    {
+      "id": "services_agent_supervisor_rationale_103",
+      "label": "Detects adversarial prompt injection and jailbreak override attempts via\u2026",
+      "_origin": "ast",
+      "community": 328,
+      "community_name": "detect_intent",
+      "file_type": "rationale",
+      "norm_label": "detects adversarial prompt injection and jailbreak override attempts via...",
+      "source_file": "services/agent/supervisor.py",
+      "source_location": "L103"
+    },
+    {
+      "id": "services_agent_supervisor_rationale_118",
+      "label": "Detects raw API keys, passwords, PINs, or credential secrets pasted into chat\u2026",
+      "_origin": "ast",
+      "community": 328,
+      "community_name": "detect_intent",
+      "file_type": "rationale",
+      "norm_label": "detects raw api keys, passwords, pins, or credential secrets pasted into chat...",
+      "source_file": "services/agent/supervisor.py",
+      "source_location": "L118"
+    },
+    {
+      "id": "services_agent_supervisor_rationale_196",
+      "label": "Classifies user chat message into structured financial intent categories\u2026",
+      "_origin": "ast",
+      "community": 328,
+      "community_name": "detect_intent",
+      "file_type": "rationale",
+      "norm_label": "classifies user chat message into structured financial intent categories...",
+      "source_file": "services/agent/supervisor.py",
+      "source_location": "L196"
+    },
+    {
+      "id": "tests_unit_test_prompts_rationale_220",
+      "label": "Verify raw API keys pasted into chat are intercepted with security guidance.",
+      "_origin": "ast",
+      "community": 328,
+      "community_name": "detect_intent",
+      "file_type": "rationale",
+      "norm_label": "verify raw api keys pasted into chat are intercepted with security guidance.",
+      "source_file": "tests/unit/test_prompts.py",
+      "source_location": "L220"
+    },
+    {
       "id": "scripts_verify_local_inference",
       "label": "verify_local_inference.py",
       "_origin": "ast",
@@ -46623,7 +46512,7 @@
       "source_location": "L102"
     },
     {
-      "id": "services_agent_local_transformers_rationale_1066",
+      "id": "services_agent_local_transformers_rationale_1080",
       "label": "Generates contextual response using local GGUF model via llama.cpp.",
       "_origin": "ast",
       "community": 329,
@@ -46631,7 +46520,7 @@
       "file_type": "rationale",
       "norm_label": "generates contextual response using local gguf model via llama.cpp.",
       "source_file": "services/agent/local_transformers.py",
-      "source_location": "L1066"
+      "source_location": "L1080"
     },
     {
       "id": "services_agent_local_transformers_rationale_126",
@@ -46777,7 +46666,7 @@
       "source_location": "L710"
     },
     {
-      "id": "services_agent_local_transformers_rationale_844",
+      "id": "services_agent_local_transformers_rationale_847",
       "label": "Explicitly downloads target GGUF model weights on demand with robust exception\u2026",
       "_origin": "ast",
       "community": 329,
@@ -46785,10 +46674,10 @@
       "file_type": "rationale",
       "norm_label": "explicitly downloads target gguf model weights on demand with robust exception...",
       "source_file": "services/agent/local_transformers.py",
-      "source_location": "L844"
+      "source_location": "L847"
     },
     {
-      "id": "services_agent_local_transformers_rationale_962",
+      "id": "services_agent_local_transformers_rationale_965",
       "label": "Explicitly deletes downloaded model weights to reclaim disk space.",
       "_origin": "ast",
       "community": 329,
@@ -46796,7 +46685,7 @@
       "file_type": "rationale",
       "norm_label": "explicitly deletes downloaded model weights to reclaim disk space.",
       "source_file": "services/agent/local_transformers.py",
-      "source_location": "L962"
+      "source_location": "L965"
     },
     {
       "id": "agent_skills_code_optimizer_skill",
@@ -46909,6 +46798,117 @@
       "norm_label": "role & mission",
       "source_file": ".agent/skills/code-optimizer/SKILL.md",
       "source_location": "L8"
+    },
+    {
+      "id": "agent_skills_subagent_catalog_invalidate",
+      "label": "invalidate.md",
+      "_origin": "ast",
+      "community": 332,
+      "community_name": "Instructions",
+      "file_type": "document",
+      "frontmatter": {
+        "name": "invalidate",
+        "description": "Invalidate the subagent-catalog cache. Use when results seem stale or user explicitly asks to refresh or clear cache."
+      },
+      "node_kind": "page",
+      "norm_label": "invalidate.md",
+      "source_file": ".agent/skills/subagent-catalog/invalidate.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "agent_skills_subagent_catalog_invalidate_input_arguments",
+      "label": "Input: $ARGUMENTS",
+      "_origin": "ast",
+      "community": 332,
+      "community_name": "Instructions",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "input: $arguments",
+      "source_file": ".agent/skills/subagent-catalog/invalidate.md",
+      "source_location": "L10"
+    },
+    {
+      "id": "agent_skills_subagent_catalog_invalidate_instructions",
+      "label": "Instructions",
+      "_origin": "ast",
+      "community": 332,
+      "community_name": "Instructions",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "instructions",
+      "source_file": ".agent/skills/subagent-catalog/invalidate.md",
+      "source_location": "L14"
+    },
+    {
+      "id": "agent_skills_subagent_catalog_invalidate_step_1_source_config",
+      "label": "Step 1: Source config",
+      "_origin": "ast",
+      "community": 332,
+      "community_name": "Instructions",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "step 1: source config",
+      "source_file": ".agent/skills/subagent-catalog/invalidate.md",
+      "source_location": "L16"
+    },
+    {
+      "id": "agent_skills_subagent_catalog_invalidate_step_2_invalidate_and_optionally_refresh",
+      "label": "Step 2: Invalidate (and optionally refresh)",
+      "_origin": "ast",
+      "community": 332,
+      "community_name": "Instructions",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "step 2: invalidate (and optionally refresh)",
+      "source_file": ".agent/skills/subagent-catalog/invalidate.md",
+      "source_location": "L22"
+    },
+    {
+      "id": "agent_skills_subagent_catalog_invalidate_step_3_confirm",
+      "label": "Step 3: Confirm",
+      "_origin": "ast",
+      "community": 332,
+      "community_name": "Instructions",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "step 3: confirm",
+      "source_file": ".agent/skills/subagent-catalog/invalidate.md",
+      "source_location": "L37"
+    },
+    {
+      "id": "agent_skills_subagent_catalog_invalidate_subagent_catalog_invalidate",
+      "label": "Subagent Catalog - Invalidate",
+      "_origin": "ast",
+      "community": 332,
+      "community_name": "Instructions",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "subagent catalog - invalidate",
+      "source_file": ".agent/skills/subagent-catalog/invalidate.md",
+      "source_location": "L6"
+    },
+    {
+      "id": "agent_skills_subagent_catalog_invalidate_when_to_use",
+      "label": "When to use",
+      "_origin": "ast",
+      "community": 332,
+      "community_name": "Instructions",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "when to use",
+      "source_file": ".agent/skills/subagent-catalog/invalidate.md",
+      "source_location": "L43"
+    },
+    {
+      "id": "services_agent_tools_rationale_1303",
+      "label": "Safely and deterministically evaluates an arithmetic expression using pure\u2026",
+      "_origin": "ast",
+      "community": 333,
+      "community_name": "tool_evaluate_financial_math",
+      "file_type": "rationale",
+      "norm_label": "safely and deterministically evaluates an arithmetic expression using pure...",
+      "source_file": "services/agent/tools.py",
+      "source_location": "L1303"
     },
     {
       "id": "agent_skills_code_reviewer_skill",
@@ -55323,6 +55323,18 @@
       "source_location": "L18"
     },
     {
+      "id": "uuid",
+      "label": "uuid",
+      "_origin": "semantic",
+      "community": 106,
+      "community_name": "staging_ledger.py",
+      "external": true,
+      "file_type": "concept",
+      "norm_label": "uuid",
+      "source_file": "",
+      "type": "external"
+    },
+    {
       "id": "starlette_concurrency",
       "label": "starlette_concurrency",
       "_origin": "semantic",
@@ -55339,7 +55351,7 @@
       "label": "json",
       "_origin": "semantic",
       "community": 14,
-      "community_name": "staging_ledger.py",
+      "community_name": "os",
       "external": true,
       "file_type": "concept",
       "norm_label": "json",
@@ -55351,7 +55363,7 @@
       "label": "os",
       "_origin": "semantic",
       "community": 14,
-      "community_name": "staging_ledger.py",
+      "community_name": "os",
       "external": true,
       "file_type": "concept",
       "norm_label": "os",
@@ -55363,7 +55375,7 @@
       "label": "tempfile",
       "_origin": "semantic",
       "community": 14,
-      "community_name": "staging_ledger.py",
+      "community_name": "os",
       "external": true,
       "file_type": "concept",
       "norm_label": "tempfile",
@@ -55375,7 +55387,7 @@
       "label": "threading",
       "_origin": "semantic",
       "community": 14,
-      "community_name": "staging_ledger.py",
+      "community_name": "os",
       "external": true,
       "file_type": "concept",
       "norm_label": "threading",
@@ -55383,14 +55395,14 @@
       "type": "external"
     },
     {
-      "id": "uuid",
-      "label": "uuid",
+      "id": "time",
+      "label": "time",
       "_origin": "semantic",
       "community": 14,
-      "community_name": "staging_ledger.py",
+      "community_name": "os",
       "external": true,
       "file_type": "concept",
-      "norm_label": "uuid",
+      "norm_label": "time",
       "source_file": "",
       "type": "external"
     },
@@ -55399,7 +55411,7 @@
       "label": "cryptography_fernet",
       "_origin": "semantic",
       "community": 149,
-      "community_name": "test_encryption_at_rest.py",
+      "community_name": "session_store.py",
       "external": true,
       "file_type": "concept",
       "norm_label": "cryptography_fernet",
@@ -55411,7 +55423,7 @@
       "label": "importlib",
       "_origin": "semantic",
       "community": 149,
-      "community_name": "test_encryption_at_rest.py",
+      "community_name": "session_store.py",
       "external": true,
       "file_type": "concept",
       "norm_label": "importlib",
@@ -55563,6 +55575,18 @@
       "type": "external"
     },
     {
+      "id": "numpy",
+      "label": "numpy",
+      "_origin": "semantic",
+      "community": 187,
+      "community_name": "LLMConfig",
+      "external": true,
+      "file_type": "concept",
+      "norm_label": "numpy",
+      "source_file": "",
+      "type": "external"
+    },
+    {
       "id": "ref_path",
       "label": "ref_path",
       "_origin": "semantic",
@@ -55667,18 +55691,6 @@
       "external": true,
       "file_type": "concept",
       "norm_label": "src_components_ui_popover_popovertrigger",
-      "source_file": "",
-      "type": "external"
-    },
-    {
-      "id": "numpy",
-      "label": "numpy",
-      "_origin": "semantic",
-      "community": 218,
-      "community_name": "knowledge.py",
-      "external": true,
-      "file_type": "concept",
-      "norm_label": "numpy",
       "source_file": "",
       "type": "external"
     },
@@ -56003,18 +56015,6 @@
       "external": true,
       "file_type": "concept",
       "norm_label": "cbor2",
-      "source_file": "",
-      "type": "external"
-    },
-    {
-      "id": "time",
-      "label": "time",
-      "_origin": "semantic",
-      "community": 273,
-      "community_name": "TokenBucketRateLimiter",
-      "external": true,
-      "file_type": "concept",
-      "norm_label": "time",
       "source_file": "",
       "type": "external"
     },
@@ -60205,7 +60205,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/agent/local_transformers.py",
-      "source_location": "L966",
+      "source_location": "L969",
       "weight": 1.0
     },
     {
@@ -60217,7 +60217,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/agent/local_transformers.py",
-      "source_location": "L977",
+      "source_location": "L990",
       "weight": 1.0
     },
     {
@@ -60229,7 +60229,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/agent/local_transformers.py",
-      "source_location": "L981",
+      "source_location": "L994",
       "weight": 1.0
     },
     {
@@ -60241,7 +60241,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/agent/local_transformers.py",
-      "source_location": "L982",
+      "source_location": "L995",
       "weight": 1.0
     },
     {
@@ -60253,7 +60253,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/agent/local_transformers.py",
-      "source_location": "L845",
+      "source_location": "L848",
       "weight": 1.0
     },
     {
@@ -60265,7 +60265,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/agent/local_transformers.py",
-      "source_location": "L858",
+      "source_location": "L861",
       "weight": 1.0
     },
     {
@@ -60313,7 +60313,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/agent/local_transformers.py",
-      "source_location": "L1069",
+      "source_location": "L1083",
       "weight": 1.0
     },
     {
@@ -60325,7 +60325,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/agent/local_transformers.py",
-      "source_location": "L1070",
+      "source_location": "L1084",
       "weight": 1.0
     },
     {
@@ -63673,7 +63673,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/agent/supervisor.py",
-      "source_location": "L404",
+      "source_location": "L403",
       "weight": 1.0
     },
     {
@@ -63685,7 +63685,19 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/agent/supervisor.py",
-      "source_location": "L407",
+      "source_location": "L406",
+      "weight": 1.0
+    },
+    {
+      "source": "services_agent_supervisor_run_copilot_supervisor",
+      "target": "services_agent_local_transformers_resolve_canonical_model_name",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "services/agent/supervisor.py",
+      "source_location": "L414",
       "weight": 1.0
     },
     {
@@ -63697,7 +63709,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/agent/supervisor.py",
-      "source_location": "L442",
+      "source_location": "L443",
       "weight": 1.0
     },
     {
@@ -63709,7 +63721,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/agent/supervisor.py",
-      "source_location": "L445",
+      "source_location": "L446",
       "weight": 1.0
     },
     {
@@ -63721,7 +63733,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/agent/supervisor.py",
-      "source_location": "L447",
+      "source_location": "L448",
       "weight": 1.0
     },
     {
@@ -63733,7 +63745,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/agent/supervisor.py",
-      "source_location": "L450",
+      "source_location": "L451",
       "weight": 1.0
     },
     {
@@ -63745,7 +63757,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/agent/supervisor.py",
-      "source_location": "L451",
+      "source_location": "L452",
       "weight": 1.0
     },
     {
@@ -63757,7 +63769,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/agent/supervisor.py",
-      "source_location": "L461",
+      "source_location": "L462",
       "weight": 1.0
     },
     {
@@ -63769,7 +63781,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/agent/supervisor.py",
-      "source_location": "L463",
+      "source_location": "L464",
       "weight": 1.0
     },
     {
@@ -63781,7 +63793,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/agent/supervisor.py",
-      "source_location": "L466",
+      "source_location": "L467",
       "weight": 1.0
     },
     {
@@ -63793,7 +63805,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/agent/supervisor.py",
-      "source_location": "L471",
+      "source_location": "L472",
       "weight": 1.0
     },
     {
@@ -63805,7 +63817,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/agent/supervisor.py",
-      "source_location": "L479",
+      "source_location": "L480",
       "weight": 1.0
     },
     {
@@ -63817,7 +63829,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/agent/supervisor.py",
-      "source_location": "L486",
+      "source_location": "L487",
       "weight": 1.0
     },
     {
@@ -63829,7 +63841,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/agent/supervisor.py",
-      "source_location": "L489",
+      "source_location": "L490",
       "weight": 1.0
     },
     {
@@ -63841,7 +63853,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/agent/supervisor.py",
-      "source_location": "L491",
+      "source_location": "L492",
       "weight": 1.0
     },
     {
@@ -63853,7 +63865,19 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/agent/supervisor.py",
-      "source_location": "L508",
+      "source_location": "L509",
+      "weight": 1.0
+    },
+    {
+      "source": "services_agent_supervisor_run_copilot_supervisor",
+      "target": "services_agent_llm_bridge_get_system_specs",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "services/agent/supervisor.py",
+      "source_location": "L545",
       "weight": 1.0
     },
     {
@@ -63865,7 +63889,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/agent/supervisor.py",
-      "source_location": "L562",
+      "source_location": "L566",
       "weight": 1.0
     },
     {
@@ -63877,7 +63901,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/agent/supervisor.py",
-      "source_location": "L572",
+      "source_location": "L576",
       "weight": 1.0
     },
     {
@@ -63889,7 +63913,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/agent/supervisor.py",
-      "source_location": "L583",
+      "source_location": "L587",
       "weight": 1.0
     },
     {
@@ -63901,7 +63925,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/agent/supervisor.py",
-      "source_location": "L598",
+      "source_location": "L602",
       "weight": 1.0
     },
     {
@@ -63913,7 +63937,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/agent/supervisor.py",
-      "source_location": "L603",
+      "source_location": "L607",
       "weight": 1.0
     },
     {
@@ -63925,7 +63949,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/agent/supervisor.py",
-      "source_location": "L608",
+      "source_location": "L612",
       "weight": 1.0
     },
     {
@@ -63937,7 +63961,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/agent/supervisor.py",
-      "source_location": "L626",
+      "source_location": "L630",
       "weight": 1.0
     },
     {
@@ -63949,7 +63973,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/agent/supervisor.py",
-      "source_location": "L633",
+      "source_location": "L637",
       "weight": 1.0
     },
     {
@@ -63961,7 +63985,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/agent/supervisor.py",
-      "source_location": "L643",
+      "source_location": "L647",
       "weight": 1.0
     },
     {
@@ -63973,7 +63997,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/agent/supervisor.py",
-      "source_location": "L655",
+      "source_location": "L659",
       "weight": 1.0
     },
     {
@@ -63985,7 +64009,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/agent/supervisor.py",
-      "source_location": "L680",
+      "source_location": "L684",
       "weight": 1.0
     },
     {
@@ -63997,7 +64021,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/agent/supervisor.py",
-      "source_location": "L681",
+      "source_location": "L685",
       "weight": 1.0
     },
     {
@@ -64009,7 +64033,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/agent/supervisor.py",
-      "source_location": "L682",
+      "source_location": "L686",
       "weight": 1.0
     },
     {
@@ -64021,7 +64045,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/agent/supervisor.py",
-      "source_location": "L711",
+      "source_location": "L715",
       "weight": 1.0
     },
     {
@@ -64033,7 +64057,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/agent/supervisor.py",
-      "source_location": "L715",
+      "source_location": "L719",
       "weight": 1.0
     },
     {
@@ -64045,7 +64069,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/agent/supervisor.py",
-      "source_location": "L793",
+      "source_location": "L797",
       "weight": 1.0
     },
     {
@@ -64057,7 +64081,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/agent/supervisor.py",
-      "source_location": "L814",
+      "source_location": "L818",
       "weight": 1.0
     },
     {
@@ -64069,7 +64093,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/agent/supervisor.py",
-      "source_location": "L844",
+      "source_location": "L848",
       "weight": 1.0
     },
     {
@@ -64081,7 +64105,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/agent/supervisor.py",
-      "source_location": "L877",
+      "source_location": "L881",
       "weight": 1.0
     },
     {
@@ -64093,7 +64117,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/agent/supervisor.py",
-      "source_location": "L941",
+      "source_location": "L945",
       "weight": 1.0
     },
     {
@@ -64105,7 +64129,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/agent/supervisor.py",
-      "source_location": "L943",
+      "source_location": "L947",
       "weight": 1.0
     },
     {
@@ -64117,7 +64141,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/agent/supervisor.py",
-      "source_location": "L958",
+      "source_location": "L962",
       "weight": 1.0
     },
     {
@@ -64129,7 +64153,19 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/agent/supervisor.py",
-      "source_location": "L959",
+      "source_location": "L963",
+      "weight": 1.0
+    },
+    {
+      "source": "services_agent_supervisor_run_copilot_supervisor_enrich_reply",
+      "target": "services_agent_local_transformers_resolve_canonical_model_name",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "services/agent/supervisor.py",
+      "source_location": "L435",
       "weight": 1.0
     },
     {
@@ -64141,7 +64177,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/agent/supervisor.py",
-      "source_location": "L442",
+      "source_location": "L443",
       "weight": 1.0
     },
     {
@@ -64153,7 +64189,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/agent/supervisor.py",
-      "source_location": "L445",
+      "source_location": "L446",
       "weight": 1.0
     },
     {
@@ -64165,7 +64201,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/agent/supervisor.py",
-      "source_location": "L447",
+      "source_location": "L448",
       "weight": 1.0
     },
     {
@@ -64177,7 +64213,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/agent/supervisor.py",
-      "source_location": "L450",
+      "source_location": "L451",
       "weight": 1.0
     },
     {
@@ -64189,7 +64225,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/agent/supervisor.py",
-      "source_location": "L451",
+      "source_location": "L452",
       "weight": 1.0
     },
     {
@@ -64201,7 +64237,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/agent/supervisor.py",
-      "source_location": "L451",
+      "source_location": "L452",
       "weight": 1.0
     },
     {
@@ -64213,7 +64249,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/agent/supervisor.py",
-      "source_location": "L453",
+      "source_location": "L454",
       "weight": 1.0
     },
     {
@@ -64225,7 +64261,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/agent/supervisor.py",
-      "source_location": "L461",
+      "source_location": "L462",
       "weight": 1.0
     },
     {
@@ -64237,7 +64273,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/agent/supervisor.py",
-      "source_location": "L463",
+      "source_location": "L464",
       "weight": 1.0
     },
     {
@@ -64249,7 +64285,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/agent/supervisor.py",
-      "source_location": "L466",
+      "source_location": "L467",
       "weight": 1.0
     },
     {
@@ -64261,7 +64297,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/agent/supervisor.py",
-      "source_location": "L471",
+      "source_location": "L472",
       "weight": 1.0
     },
     {
@@ -64273,7 +64309,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/agent/supervisor.py",
-      "source_location": "L479",
+      "source_location": "L480",
       "weight": 1.0
     },
     {
@@ -64285,7 +64321,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/agent/supervisor.py",
-      "source_location": "L486",
+      "source_location": "L487",
       "weight": 1.0
     },
     {
@@ -64297,7 +64333,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/agent/supervisor.py",
-      "source_location": "L489",
+      "source_location": "L490",
       "weight": 1.0
     },
     {
@@ -64309,7 +64345,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/agent/supervisor.py",
-      "source_location": "L491",
+      "source_location": "L492",
       "weight": 1.0
     },
     {
@@ -71881,7 +71917,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/settings/page.tsx",
-      "source_location": "L488",
+      "source_location": "L431",
       "weight": 1.0
     },
     {
@@ -71893,7 +71929,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/settings/page.tsx",
-      "source_location": "L491",
+      "source_location": "L434",
       "weight": 1.0
     },
     {
@@ -71905,7 +71941,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/settings/page.tsx",
-      "source_location": "L540",
+      "source_location": "L483",
       "weight": 1.0
     },
     {
@@ -71917,7 +71953,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/settings/page.tsx",
-      "source_location": "L541",
+      "source_location": "L484",
       "weight": 1.0
     },
     {
@@ -71929,7 +71965,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/settings/page.tsx",
-      "source_location": "L542",
+      "source_location": "L485",
       "weight": 1.0
     },
     {
@@ -71941,7 +71977,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/settings/page.tsx",
-      "source_location": "L543",
+      "source_location": "L486",
       "weight": 1.0
     },
     {
@@ -71953,7 +71989,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/settings/page.tsx",
-      "source_location": "L545",
+      "source_location": "L488",
       "weight": 1.0
     },
     {
@@ -71965,7 +72001,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/settings/page.tsx",
-      "source_location": "L562",
+      "source_location": "L505",
       "weight": 1.0
     },
     {
@@ -71977,7 +72013,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/settings/page.tsx",
-      "source_location": "L565",
+      "source_location": "L508",
       "weight": 1.0
     },
     {
@@ -71989,7 +72025,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/settings/page.tsx",
-      "source_location": "L586",
+      "source_location": "L529",
       "weight": 1.0
     },
     {
@@ -72001,7 +72037,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/settings/page.tsx",
-      "source_location": "L587",
+      "source_location": "L530",
       "weight": 1.0
     },
     {
@@ -72013,7 +72049,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/settings/page.tsx",
-      "source_location": "L598",
+      "source_location": "L541",
       "weight": 1.0
     },
     {
@@ -72025,7 +72061,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/settings/page.tsx",
-      "source_location": "L599",
+      "source_location": "L542",
       "weight": 1.0
     },
     {
@@ -72037,7 +72073,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/settings/page.tsx",
-      "source_location": "L608",
+      "source_location": "L551",
       "weight": 1.0
     },
     {
@@ -73686,18 +73722,6 @@
     },
     {
       "source": "src_components_copilot_model_menu_modelmenu",
-      "target": "src_components_ui_button_button",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "src/components/copilot/model-menu.tsx",
-      "source_location": "L31",
-      "weight": 1.0
-    },
-    {
-      "source": "src_components_copilot_model_menu_modelmenu",
       "target": "src_lib_providers_providername",
       "relation": "calls",
       "_origin": "ast",
@@ -73705,12 +73729,12 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/copilot/model-menu.tsx",
-      "source_location": "L31",
+      "source_location": "L27",
       "weight": 1.0
     },
     {
       "source": "src_components_copilot_model_menu_modelmenu",
-      "target": "src_lib_utils_cn",
+      "target": "src_components_ui_button_button",
       "relation": "calls",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -73722,19 +73746,19 @@
     },
     {
       "source": "src_components_copilot_model_menu_modelmenu",
-      "target": "src_components_ui_dropdown_menu_dropdownmenucontent",
+      "target": "src_lib_utils_cn",
       "relation": "calls",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/copilot/model-menu.tsx",
-      "source_location": "L38",
+      "source_location": "L33",
       "weight": 1.0
     },
     {
       "source": "src_components_copilot_model_menu_modelmenu",
-      "target": "src_components_ui_dropdown_menu_dropdownmenulabel",
+      "target": "src_components_ui_dropdown_menu_dropdownmenucontent",
       "relation": "calls",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -73746,6 +73770,18 @@
     },
     {
       "source": "src_components_copilot_model_menu_modelmenu",
+      "target": "src_components_ui_dropdown_menu_dropdownmenulabel",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/components/copilot/model-menu.tsx",
+      "source_location": "L40",
+      "weight": 1.0
+    },
+    {
+      "source": "src_components_copilot_model_menu_modelmenu",
       "target": "src_lib_providers_isproviderready",
       "relation": "calls",
       "_origin": "ast",
@@ -73753,7 +73789,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/copilot/model-menu.tsx",
-      "source_location": "L41",
+      "source_location": "L42",
       "weight": 1.0
     },
     {
@@ -73765,7 +73801,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/copilot/model-menu.tsx",
-      "source_location": "L43",
+      "source_location": "L45",
       "weight": 1.0
     },
     {
@@ -73777,7 +73813,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/copilot/model-menu.tsx",
-      "source_location": "L53",
+      "source_location": "L55",
       "weight": 1.0
     },
     {
@@ -87817,7 +87853,7 @@
       "confidence_score": 1.0,
       "context": "generic_arg",
       "source_file": "services/agent/local_transformers.py",
-      "source_location": "L1057",
+      "source_location": "L1071",
       "weight": 1.0
     },
     {
@@ -94794,6 +94830,18 @@
     },
     {
       "source": "services_agent_supervisor",
+      "target": "services_agent_local_transformers_resolve_canonical_model_name",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "services/agent/supervisor.py",
+      "source_location": "L380",
+      "weight": 1.0
+    },
+    {
+      "source": "services_agent_supervisor",
       "target": "services_agent_knowledge_append_reference_cards",
       "relation": "imports",
       "_origin": "ast",
@@ -94994,6 +95042,18 @@
       "context": "import",
       "source_file": "services/agent/supervisor.py",
       "source_location": "L48",
+      "weight": 1.0
+    },
+    {
+      "source": "services_agent_supervisor",
+      "target": "services_agent_llm_bridge_get_system_specs",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "services/agent/supervisor.py",
+      "source_location": "L544",
       "weight": 1.0
     },
     {
@@ -160556,7 +160616,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "services/agent/local_transformers.py",
-      "source_location": "L1057",
+      "source_location": "L1071",
       "weight": 1.0
     },
     {
@@ -160611,7 +160671,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "services/agent/local_transformers.py",
-      "source_location": "L843",
+      "source_location": "L846",
       "weight": 1.0
     },
     {
@@ -160622,7 +160682,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "services/agent/local_transformers.py",
-      "source_location": "L961",
+      "source_location": "L964",
       "weight": 1.0
     },
     {
@@ -164399,14 +164459,14 @@
       "weight": 1.0
     },
     {
-      "source": "services_agent_local_transformers_rationale_1066",
+      "source": "services_agent_local_transformers_rationale_1080",
       "target": "services_agent_local_transformers_localtransformersengine_generate",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "services/agent/local_transformers.py",
-      "source_location": "L1066",
+      "source_location": "L1080",
       "weight": 1.0
     },
     {
@@ -164597,25 +164657,25 @@
       "weight": 1.0
     },
     {
-      "source": "services_agent_local_transformers_rationale_844",
+      "source": "services_agent_local_transformers_rationale_847",
       "target": "services_agent_local_transformers_localtransformersengine_download_model",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "services/agent/local_transformers.py",
-      "source_location": "L844",
+      "source_location": "L847",
       "weight": 1.0
     },
     {
-      "source": "services_agent_local_transformers_rationale_962",
+      "source": "services_agent_local_transformers_rationale_965",
       "target": "services_agent_local_transformers_localtransformersengine_delete_model",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "services/agent/local_transformers.py",
-      "source_location": "L962",
+      "source_location": "L965",
       "weight": 1.0
     },
     {
@@ -172595,7 +172655,7 @@
       "confidence_score": 0.85,
       "context": "argument",
       "source_file": "services/agent/supervisor.py",
-      "source_location": "L660",
+      "source_location": "L664",
       "weight": 1.0
     },
     {
@@ -174347,7 +174407,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.95,
       "source_file": "services/agent/supervisor.py",
-      "source_location": "L807",
+      "source_location": "L811",
       "weight": 0.8
     },
     {
@@ -174358,7 +174418,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.95,
       "source_file": "services/agent/supervisor.py",
-      "source_location": "L844",
+      "source_location": "L848",
       "weight": 0.8
     },
     {
@@ -175672,5 +175732,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "f38aef702181171aa1bed021e687aef9fbc42b5f"
+  "built_at_commit": "2b17faad8180c284cf865b52fb2a05c2998dcad3"
 }

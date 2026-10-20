@@ -21,16 +21,17 @@ import { cn } from '@/lib/utils';
  * endpoints stay in Settings so the chat never becomes a second configuration screen.
  */
 export function ModelMenu({ onSwitch, disabled }: { onSwitch: (id: string) => void; disabled?: boolean }) {
-  const { provider, providerKeys, providerUrls } = useWorkspace();
+  const { provider, localModel, providerKeys, providerUrls } = useWorkspace();
   const { t } = useT();
   const current = PROVIDERS.find((p) => p.id === provider) ?? PROVIDERS[0];
+  const currentLabel = current.local && localModel ? `Local (${localModel.replace('-instruct', '')})` : providerName(current.id, t, true);
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button type="button" variant="ghost" size="sm" disabled={disabled} className="h-8 gap-1.5 rounded-full px-2.5 text-xs text-ink-2" aria-label={`${t('as.model')}: ${providerName(current.id, t, true)}`}>
+        <Button type="button" variant="ghost" size="sm" disabled={disabled} className="h-8 gap-1.5 rounded-full px-2.5 text-xs text-ink-2" aria-label={`${t('as.model')}: ${currentLabel}`}>
           <span className={cn('size-1.5 rounded-full', current.local ? 'bg-good' : 'bg-series-1')} aria-hidden />
-          {providerName(current.id, t, true)}
+          {currentLabel}
           <span className="text-muted-foreground">{current.local ? t('as.modelLocal') : t('as.modelCloud')}</span>
           <ChevronDown className="size-3.5 text-muted-foreground" aria-hidden />
         </Button>
@@ -39,11 +40,12 @@ export function ModelMenu({ onSwitch, disabled }: { onSwitch: (id: string) => vo
         <DropdownMenuLabel className="text-xs font-normal text-muted-foreground">{t('as.model')}</DropdownMenuLabel>
         {PROVIDERS.map((p) => {
           const ready = isProviderReady(p.id, providerKeys, providerUrls);
+          const pLabel = p.local && localModel ? `Local GGUF (${localModel.replace('-instruct', '')})` : providerName(p.id, t);
           return (
             <DropdownMenuItem key={p.id} disabled={!ready} onSelect={() => ready && p.id !== provider && onSwitch(p.id)} className="items-start gap-2.5 py-2">
               <span className={cn('mt-1.5 size-1.5 shrink-0 rounded-full', p.local ? 'bg-good' : 'bg-series-1')} aria-hidden />
               <span className="flex-1">
-                <span className="block text-sm">{providerName(p.id, t)}</span>
+                <span className="block text-sm">{pLabel}</span>
                 <span className="block text-xs text-muted-foreground">{!ready ? t('as.addKey') : p.local ? t('as.modelLocal') : t('as.modelCloud')}</span>
               </span>
               {p.id === provider && <Check className="mt-0.5 size-4 text-primary" aria-hidden />}

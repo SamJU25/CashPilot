@@ -377,7 +377,7 @@ def run_copilot_supervisor(
         return resp
 
     LOCAL_PROVIDERS = ("offline", "local", "local_native")
-    from services.agent.local_transformers import SUPPORTED_LOCAL_MODELS, get_default_model_id
+    from services.agent.local_transformers import SUPPORTED_LOCAL_MODELS, get_default_model_id, resolve_canonical_model_name
     LOCAL_MODELS = tuple(SUPPORTED_LOCAL_MODELS.keys()) + ("local", "offline", "default")
 
     trans_engine = LocalTransformersEngine.get_instance()
@@ -398,7 +398,6 @@ def run_copilot_supervisor(
             or ((effective_config.provider or "").lower() in LOCAL_PROVIDERS and not effective_config.model_name)
         )
         and "PYTEST_CURRENT_TEST" not in os.environ
-        and has_cuda
         and trans_engine.is_available(default_model)
     ):
         effective_config = LLMConfig(provider="offline", model_name=default_model)
@@ -412,6 +411,7 @@ def run_copilot_supervisor(
         and (
             not effective_config.model_name
             or (effective_config.model_name or "").lower() in LOCAL_MODELS
+            or resolve_canonical_model_name(effective_config.model_name) in SUPPORTED_LOCAL_MODELS
         )
     )
 
@@ -432,6 +432,7 @@ def run_copilot_supervisor(
             and (
                 not effective_config.model_name
                 or (effective_config.model_name or "").lower() in LOCAL_MODELS
+                or resolve_canonical_model_name(effective_config.model_name) in SUPPORTED_LOCAL_MODELS
             )
         )
         has_model = is_explicit_local or (
@@ -540,10 +541,13 @@ def run_copilot_supervisor(
     if status_match:
         provider_name = (effective_config.provider if effective_config else "local").lower()
         if provider_name in ("local", "offline", "local_native"):
-            gpu_info = "NVIDIA GeForce RTX 4050 GPU (PyTorch CUDA acceleration)" if has_cuda else "CPU inference"
+            from services.agent.llm_bridge import get_system_specs
+            specs = get_system_specs()
+            gpu_info = f"{specs['gpu_name']} (llama.cpp CUDA acceleration)" if specs.get("has_cuda") and specs.get("gpu_name") else "llama.cpp on-device CPU runtime"
+            active_name = effective_config.model_name if (effective_config and effective_config.model_name) else default_model
             status_reply = (
                 f"Yes, the model is fully connected and active. You are interacting with CashPilot "
-                f"running **{effective_config.model_name if (effective_config and effective_config.model_name) else 'MiniCPM5-2B'}** hosted on-device via {gpu_info}. "
+                f"running **{active_name}** hosted on-device via {gpu_info}. "
                 "Deterministic Decimal math engines, FastEmbed semantic routing, and institutional financial guardrails are operational."
             )
         else:

@@ -514,7 +514,7 @@ export default function AssistantPage() {
       <div className="space-y-0.5">
         <h1 className="text-xl font-semibold tracking-tight">{t('nav.assistant')}</h1>
         <p className="hidden max-w-xl text-xs leading-normal text-muted-foreground sm:block">
-          {t('as.desc', { model: providerName(provider, t, true) ?? t('rail.notSet') })}
+          {t('as.desc', { model: (provider === 'local' && localModel) ? `Local (${localModel.replace('-instruct', '')})` : (providerName(provider, t, true) ?? t('rail.notSet')) })}
         </p>
       </div>
       <div className="flex shrink-0 items-center gap-2 self-start sm:self-center">

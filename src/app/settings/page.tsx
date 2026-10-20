@@ -426,63 +426,6 @@ export default function SettingsPage() {
           </Row>
         )}
 
-        {provider.local && (
-          <Row title={t('set.model')} description={t('set.modelDesc')}>
-            <Select value={activeModelId} onValueChange={(v) => { ws.update({ localModel: v }); setModelActionMsg(null); }}>
-              <SelectTrigger className="max-w-md" aria-label={t('set.model')}>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {displayModels.map((m) => (
-                  <SelectItem key={m.id} value={m.id}>
-                    {m.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            {deviceMsg && <p className="mt-2 text-xs text-muted-foreground">{deviceMsg}</p>}
-            <div className="mt-3 flex flex-wrap items-center gap-3">
-              {isModelDownloaded ? (
-                <>
-                  <span className="inline-flex items-center gap-1.5 rounded-full bg-good/10 px-2.5 py-0.5 text-xs font-medium text-good-text">
-                    <span className="size-1.5 rounded-full bg-good" aria-hidden />
-                    {t('set.modelReady')}
-                  </span>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={deleteSelectedModel}
-                    disabled={modelActionState !== 'idle'}
-                    className="h-7 text-xs text-critical-text hover:bg-critical/10"
-                  >
-                    {modelActionState === 'deleting' ? t('set.deleting') : t('set.deleteModel')}
-                  </Button>
-                </>
-              ) : (
-                <>
-                  <span className="inline-flex items-center gap-1.5 rounded-full bg-muted px-2.5 py-0.5 text-xs font-medium text-muted-foreground">
-                    {t('set.modelNotDownloaded')}
-                  </span>
-                  <Button
-                    variant="default"
-                    size="sm"
-                    onClick={downloadSelectedModel}
-                    disabled={modelActionState !== 'idle'}
-                    className="h-7 text-xs"
-                  >
-                    {modelActionState === 'downloading' ? t('set.downloading') : t('set.downloadModel')}
-                  </Button>
-                </>
-              )}
-              {modelActionMsg && (
-                <span className={cn('text-xs', modelActionMsg.ok ? 'text-good-text' : 'text-critical-text')}>
-                  {modelActionMsg.text}
-                </span>
-              )}
-            </div>
-          </Row>
-        )}
-
         {(provider.id === 'custom' || provider.id === 'ollama') && (
           <Row title={t('set.endpoint')} description={t('set.endpointDesc')}>
             <Label htmlFor="base-url" className="sr-only">

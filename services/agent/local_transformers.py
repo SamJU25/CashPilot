@@ -804,8 +804,9 @@ class LocalTransformersEngine:
 
             n_gpu_layers = int(os.getenv("LOCAL_GPU_LAYERS", "-1" if has_cuda else "0"))
             n_ctx = int(os.getenv("LOCAL_MAX_CONTEXT", "4096"))
+            n_threads = int(os.getenv("LOCAL_THREADS", str(max(1, (os.cpu_count() or 4) - 1))))
 
-            logger.info("Loading local GGUF model '%s' from %s (n_gpu_layers=%s, n_ctx=%s)...", c_name, model_path, n_gpu_layers, n_ctx)
+            logger.info("Loading local GGUF model '%s' from %s (n_gpu_layers=%s, n_ctx=%s, n_threads=%s)...", c_name, model_path, n_gpu_layers, n_ctx, n_threads)
 
             try:
                 try:
@@ -813,6 +814,7 @@ class LocalTransformersEngine:
                         model_path=model_path,
                         n_ctx=n_ctx,
                         n_gpu_layers=n_gpu_layers,
+                        n_threads=n_threads,
                         verbose=False,
                     )
                     self._device = "cuda" if n_gpu_layers != 0 else "cpu"
@@ -823,6 +825,7 @@ class LocalTransformersEngine:
                             model_path=model_path,
                             n_ctx=n_ctx,
                             n_gpu_layers=0,
+                            n_threads=n_threads,
                             verbose=False,
                         )
                         self._device = "cpu"
@@ -973,9 +976,19 @@ class LocalTransformersEngine:
                     "freed_mb": 0.0,
                 }
 
+            # Unload in-memory instance first and force garbage collection so file handles are released on Windows
+            with self._lock:
+                if self._active_model_name == c_name:
+                    self._model = None
+                    self._is_ready = False
+                    self._active_model_name = None
+                    import gc
+                    gc.collect()
+
             meta = SUPPORTED_LOCAL_MODELS[c_name]
-            target_dir = local_base_dir(repo_id)
-            repo_dir = local_base_dir(meta.get("repo_id", c_name))
+            repo_id = meta.get("repo_id", c_name)
+            target_dir = meta.get("base_dir") or local_base_dir(repo_id)
+            repo_dir = local_base_dir(repo_id)
 
             # Protect adapters if any
             protected_adapter_dirs = {os.path.abspath(d) for d in get_adapter_dirs()}
@@ -984,8 +997,9 @@ class LocalTransformersEngine:
                 protected_adapter_dirs.add(os.path.abspath(primary_adapter))
 
             candidates = [target_dir, repo_dir]
-            if meta.get("local_dir") and meta["local_dir"] not in (MODELS_ROOT, BASE_MODELS_ROOT):
-                candidates.append(meta["local_dir"])
+            if not meta.get("is_lora") and c_name != "sme-finance-lora":
+                if meta.get("local_dir") and meta["local_dir"] not in (MODELS_ROOT, BASE_MODELS_ROOT):
+                    candidates.append(meta["local_dir"])
 
             total_bytes = 0
             deleted_paths = []
@@ -1041,7 +1055,7 @@ class LocalTransformersEngine:
                 "success": True,
                 "model_name": c_name,
                 "message": f"Model '{c_name}' removed successfully ({freed_mb} MB freed).",
-                "deleted_path": deleted_paths[0] if deleted_paths else target_dir,
+                "deleted_path": deleted_paths[0] if deleted_paths else repo_dir,
                 "freed_mb": freed_mb,
             }
         except Exception as exc:
