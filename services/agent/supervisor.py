@@ -12,9 +12,10 @@ from __future__ import annotations
 import logging
 import os
 import re
-from decimal import Decimal
+from decimal import Decimal, InvalidOperation
 from typing import Any, Dict, Optional
 
+from services.calculations.currency_registry import format_amount, format_money
 from services.agent.llm_bridge import mask_pii, query_external_llm
 from services.agent.local_slm import LocalSLMEngine, generate_local_reply
 from services.agent.local_transformers import LocalTransformersEngine
@@ -84,7 +85,7 @@ from services.agent.tools import (
     tool_stage_financial_action,
     tool_verify_invoice_hash,
 )
-from services.ingestion.csv_parser import CSVIngestionError
+from services.ingestion.csv_parser import CSVIngestionError, parse_bank_csv
 
 
 from services.decision.policy_loader import load_security_policy_config
@@ -194,6 +195,16 @@ def detect_intent(message: str, request: AgentChatRequest, config: Optional[LLMC
     return intent
 
 
+def _statement_currency(effective_csv: Optional[str]) -> str:
+    """ISO code of the active statement; USD when there is none or it does not parse."""
+    if not effective_csv:
+        return "USD"
+    try:
+        return parse_bank_csv(effective_csv.encode("utf-8")).currency
+    except (CSVIngestionError, ValueError):
+        return "USD"
+
+
 def _handle_quantitative_calculation(
     sub_intent: Optional[str],
     request: AgentChatRequest,
@@ -201,6 +212,7 @@ def _handle_quantitative_calculation(
     effective_config: Optional[LLMConfig],
     enrich_fn: Any,
     allow_staging: bool = False,
+    currency: str = "USD",
 ) -> Optional[CopilotResponse]:
     """Delegates quantitative calculation inquiries to specialized domain subagents."""
     if not sub_intent:
@@ -213,6 +225,7 @@ def _handle_quantitative_calculation(
             request=request,
             effective_csv=effective_csv,
             enrich_fn=enrich_fn,
+            currency=currency,
         )
 
     # 2. Liquidity & Working Capital Subagent (WCR, OCF Ratio, Defensive Interval, CCC)
@@ -223,6 +236,7 @@ def _handle_quantitative_calculation(
             effective_csv=effective_csv,
             enrich_fn=enrich_fn,
             allow_staging=allow_staging,
+            currency=currency,
         )
 
     # 3. Risk & Unit Economics Subagent (Break-Even, Break-Even Units, Concentration, Churn Attrition, Deficit)
@@ -232,6 +246,7 @@ def _handle_quantitative_calculation(
             request=request,
             effective_csv=effective_csv,
             enrich_fn=enrich_fn,
+            currency=currency,
         )
 
     return None
@@ -282,6 +297,7 @@ def run_copilot_supervisor(
     elif session_rec and session_rec.csv_content:
         effective_csv = session_rec.csv_content
         request.csv_content = effective_csv
+    statement_currency = _statement_currency(effective_csv)
 
     # Conversation History Memory: Hydrate from session store if empty
     if not request.history and session_rec and session_rec.messages:
@@ -515,10 +531,10 @@ def run_copilot_supervisor(
         if amount_match and not request.staged_amount_cents:
             try:
                 raw_str = amount_match.group(1).replace(",", "")
-                parsed_val = float(raw_str)
+                parsed_val = Decimal(raw_str)
                 if parsed_val > 0:
                     amount_cents = int(parsed_val * 100)
-            except ValueError:
+            except InvalidOperation:
                 pass
 
         staged = tool_stage_financial_action(
@@ -528,7 +544,7 @@ def run_copilot_supervisor(
             target_identifier=target,
         )
 
-        amount_display = f"${(amount_cents / 100):,.2f}"
+        amount_display = format_money(Decimal(amount_cents) / 100, statement_currency)
         reply = (
             f"Staged {action_type} proposal for {amount_display} (Target: {target}). "
             f"Intent ID is {staged['intent_id']}. "
@@ -559,6 +575,7 @@ def run_copilot_supervisor(
             effective_config=effective_config,
             enrich_fn=_enrich_reply,
             allow_staging=allow_staging,
+            currency=statement_currency,
         )
     except (ValueError, ArithmeticError) as exc:
         # Calculators reject impossible inputs (0 collection days, negative margin); answer instead of a 500.
@@ -712,6 +729,7 @@ def run_copilot_supervisor(
                 intent_detected=intent,
             ))
 
+        currency = cash_result["currency"]
         metrics = AgentMetricsSummary(
             current_balance=cash_result["current_balance"],
             net_period_change=cash_result["net_period_change"],
@@ -748,7 +766,7 @@ def run_copilot_supervisor(
             advisory_text = f" {cash_result['advisory_note']}" if cash_result.get("advisory_note") else ""
             target_snippet = (
                 f" Specifically for Day {cash_result['target_horizon_days']} ({cash_result['target_horizon_date']}){tier_label}, "
-                f"projected balance is ${float(cash_result['forecast_target_balance']):,.2f}.{advisory_text}"
+                f"projected balance is {format_money(cash_result['forecast_target_balance'], currency)}.{advisory_text}"
             )
 
         wc_snippet = ""
@@ -758,19 +776,19 @@ def run_copilot_supervisor(
         sub_intent = classify_sub_intent_dynamic(request.message, has_csv=True)
 
         if sub_intent == "RUNWAY":
-            headline = f"You have {runway_desc} of cash runway remaining at an average daily burn of ${float(cash_result['average_daily_burn']):,.2f}/day (current balance: ${float(cash_result['current_balance']):,.2f}, Status: {cash_result['cash_status']})."
+            headline = f"You have {runway_desc} of cash runway remaining at an average daily burn of {format_money(cash_result['average_daily_burn'], currency)}/day (current balance: {format_money(cash_result['current_balance'], currency)}, Status: {cash_result['cash_status']})."
             reply = f"{headline}{pred_snippet}{target_snippet}{wc_snippet}"
         elif sub_intent == "BALANCE":
-            headline = f"Your current cash balance is ${float(cash_result['current_balance']):,.2f} {cash_result['currency']} (net change across reviewed period: ${float(cash_result['net_period_change']):,.2f})."
+            headline = f"Your current cash balance is {format_money(cash_result['current_balance'], currency)} {cash_result['currency']} (net change across reviewed period: {format_money(cash_result['net_period_change'], currency)})."
             reply = f"{headline}{pred_snippet}{target_snippet}{wc_snippet}"
         elif sub_intent == "BURN":
-            headline = f"Your average daily burn rate is ${float(cash_result['average_daily_burn']):,.2f}/day (gross outflows: ${float(cash_result['gross_outflows']):,.2f} vs inflows: ${float(cash_result['gross_inflows']):,.2f}), providing {runway_desc} of cash runway remaining (Status: {cash_result['cash_status']})."
+            headline = f"Your average daily burn rate is {format_money(cash_result['average_daily_burn'], currency)}/day (gross outflows: {format_money(cash_result['gross_outflows'], currency)} vs inflows: {format_money(cash_result['gross_inflows'], currency)}), providing {runway_desc} of cash runway remaining (Status: {cash_result['cash_status']})."
             reply = f"{headline}{pred_snippet}{target_snippet}{wc_snippet}"
         elif sub_intent == "ADVICE":
             if cash_result.get("has_projected_deficit"):
                 shortfall_val = cash_result.get("projected_shortfall_amount")
                 bridge_val = cash_result.get("recommended_bridge_amount") or shortfall_val
-                bridge_text = f"${float(bridge_val):,.2f}" if bridge_val else "liquidity support"
+                bridge_text = f"{format_money(bridge_val, currency)}" if bridge_val else "liquidity support"
                 tmpl = evaluate_persona_policy(prompt_type="ADVICE_DEFICIT").get("guidance_text", "")
                 headline = tmpl.format(
                     cash_status=cash_result["cash_status"],
@@ -785,8 +803,8 @@ def run_copilot_supervisor(
                 headline = tmpl.format(
                     cash_status="WATCH",
                     runway_desc=runway_desc,
-                    balance=f"{float(cash_result['current_balance']):,.2f}",
-                    burn=f"{float(cash_result['average_daily_burn']):,.2f}",
+                    balance=f"{format_amount(cash_result['current_balance'])}",
+                    burn=f"{format_amount(cash_result['average_daily_burn'])}",
                     runway_days=cash_result["runway_days"],
                 )
             else:
@@ -794,7 +812,7 @@ def run_copilot_supervisor(
                 headline = tmpl.format(
                     cash_status="HEALTHY",
                     runway_desc=runway_desc,
-                    balance=f"{float(cash_result['current_balance']):,.2f}",
+                    balance=f"{format_amount(cash_result['current_balance'])}",
                 )
             reply = f"{headline}{pred_snippet}{target_snippet}{wc_snippet}"
         elif sub_intent == "DEFICIT":
@@ -821,8 +839,8 @@ def run_copilot_supervisor(
             wc_line = f"\n- **Working Capital**: {wc_snippet.strip()}" if wc_snippet else ""
             reply = (
                 f"### Financial Diagnostic Summary\n\n"
-                f"- **Current Balance**: ${float(cash_result['current_balance']):,.2f} {cash_result['currency']}\n"
-                f"- **Average Daily Burn**: ${float(cash_result['average_daily_burn']):,.2f}/day\n"
+                f"- **Current Balance**: {format_money(cash_result['current_balance'], currency)} {cash_result['currency']}\n"
+                f"- **Average Daily Burn**: {format_money(cash_result['average_daily_burn'], currency)}/day\n"
                 f"- **Estimated Historical Runway**: {runway_desc} (Status: `{cash_result['cash_status']}`, Threshold: {cash_result['alert_threshold_days']} days)"
                 f"{pred_line}{target_line}{wc_line}"
             )

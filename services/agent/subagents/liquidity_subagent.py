@@ -14,6 +14,7 @@ from __future__ import annotations
 from decimal import Decimal
 from typing import Any, Callable, Dict, Optional
 
+from services.calculations.currency_registry import format_amount, format_money
 from services.agent.param_extractor import (
     extract_cash_drag_params,
     extract_cash_scenario_params,
@@ -83,6 +84,7 @@ class LiquiditySubagent:
         effective_csv: Optional[str],
         enrich_fn: Callable[[str, str], str],
         allow_staging: bool = False,
+        currency: str = "USD",
     ) -> Optional[CopilotResponse]:
         """Dispatches liquidity and working capital calculations to specialized tools."""
         # 1. Working Capital Requirement (WCR)
@@ -96,10 +98,10 @@ class LiquiditySubagent:
                 res = tool_calculate_wcr(accounts_receivable=ar, inventory=inv, accounts_payable=ap)
                 base_reply = (
                     f"### Working Capital Requirement (WCR) Audit\n\n"
-                    f"- **Accounts Receivable (AR)**: ${float(res['accounts_receivable']):,.2f}\n"
-                    f"- **Inventory**: ${float(res['inventory']):,.2f}\n"
-                    f"- **Accounts Payable (AP)**: ${float(res['accounts_payable']):,.2f}\n"
-                    f"- **Net Working Capital Requirement**: ${float(res['working_capital_requirement']):,.2f}\n"
+                    f"- **Accounts Receivable (AR)**: {format_money(res['accounts_receivable'], currency)}\n"
+                    f"- **Inventory**: {format_money(res['inventory'], currency)}\n"
+                    f"- **Accounts Payable (AP)**: {format_money(res['accounts_payable'], currency)}\n"
+                    f"- **Net Working Capital Requirement**: {format_money(res['working_capital_requirement'], currency)}\n"
                     f"- **Liquidity Posture**: `{res['liquidity_posture']}`\n"
                     f"- **Structural Analysis**: {res['rationale']}"
                 )
@@ -125,8 +127,8 @@ class LiquiditySubagent:
                 res = tool_calculate_operating_cash_flow_ratio(operating_cash_flow=ocf, current_liabilities=cl)
                 base_reply = (
                     f"### Operating Cash Flow (OCF) Ratio Assessment\n\n"
-                    f"- **Operating Cash Flow**: ${float(res['operating_cash_flow']):,.2f}\n"
-                    f"- **Current Liabilities**: ${float(res['current_liabilities']):,.2f}\n"
+                    f"- **Operating Cash Flow**: {format_money(res['operating_cash_flow'], currency)}\n"
+                    f"- **Current Liabilities**: {format_money(res['current_liabilities'], currency)}\n"
                     f"- **Operating Cash Flow Ratio**: {res['operating_cash_flow_ratio']}x\n"
                     f"- **Solvency Classification**: `{res['solvency_tier']}`\n"
                     f"- **Evaluation**: {res['rationale']}"
@@ -175,8 +177,8 @@ class LiquiditySubagent:
                 advisory = res.get("summary") or res.get("rationale") or ""
                 base_reply = (
                     f"### Defensive Interval Ratio (DIR) Liquidity Audit\n\n"
-                    f"- **Liquid Quick Assets**: ${float(res['quick_assets']):,.2f}\n"
-                    f"- **Daily Operating Burn Rate**: ${float(res['daily_operating_expenses']):,.2f}/day\n"
+                    f"- **Liquid Quick Assets**: {format_money(res['quick_assets'], currency)}\n"
+                    f"- **Daily Operating Burn Rate**: {format_money(res['daily_operating_expenses'], currency)}/day\n"
                     f"- **Defensive Survival Horizon**: {res['defensive_interval_days']} days\n"
                     f"- **Buffer Assessment Tier**: `{tier}`\n"
                     f"- **Advisory Assessment**: {advisory}"
@@ -233,8 +235,8 @@ class LiquiditySubagent:
                 res = tool_calculate_current_ratio(current_assets=ca, current_liabilities=cl)
                 base_reply = (
                     f"### Current Ratio Liquidity Audit\n\n"
-                    f"- **Current Assets**: ${float(res['current_assets']):,.2f}\n"
-                    f"- **Current Liabilities**: ${float(res['current_liabilities']):,.2f}\n"
+                    f"- **Current Assets**: {format_money(res['current_assets'], currency)}\n"
+                    f"- **Current Liabilities**: {format_money(res['current_liabilities'], currency)}\n"
                     f"- **Current Ratio**: {_ratio_display(res['current_ratio'])}\n"
                     f"- **Working Capital Solvency**: `{res['liquidity_tier']}`\n"
                     f"- **Evaluation**: {res['rationale']}"
@@ -275,10 +277,10 @@ class LiquiditySubagent:
                 )
                 base_reply = (
                     f"### Quick Ratio (Acid Test) Audit\n\n"
-                    f"- **Current Assets**: ${float(res['current_assets']):,.2f}\n"
-                    f"- **Inventory Excluded**: ${float(res['inventory']):,.2f}\n"
-                    f"- **Quick Liquid Assets**: ${float(res['quick_assets']):,.2f}\n"
-                    f"- **Current Liabilities**: ${float(res['current_liabilities']):,.2f}\n"
+                    f"- **Current Assets**: {format_money(res['current_assets'], currency)}\n"
+                    f"- **Inventory Excluded**: {format_money(res['inventory'], currency)}\n"
+                    f"- **Quick Liquid Assets**: {format_money(res['quick_assets'], currency)}\n"
+                    f"- **Current Liabilities**: {format_money(res['current_liabilities'], currency)}\n"
                     f"- **Quick Ratio**: {_ratio_display(res['quick_ratio'])}\n"
                     f"- **Immediate Liquidity Tier**: `{res['liquidity_tier']}`\n"
                     f"- **Acid-Test Assessment**: {res['rationale']}"
@@ -313,17 +315,17 @@ class LiquiditySubagent:
                     benchmark_borrowing_rate_pct=bench_rate,
                 )
                 savings_line = (
-                    f"- **Gross Early Payment Savings**: ${float(res['discount_dollar_savings']):,.2f}\n"
+                    f"- **Gross Early Payment Savings**: {format_money(res['discount_dollar_savings'], currency)}\n"
                     if res.get("discount_dollar_savings")
                     else ""
                 )
                 borrow_cost_line = (
-                    f"- **Credit Facility Borrowing Cost**: ${float(res['borrowing_cost_dollars']):,.2f}\n"
+                    f"- **Credit Facility Borrowing Cost**: {format_money(res['borrowing_cost_dollars'], currency)}\n"
                     if res.get("borrowing_cost_dollars")
                     else ""
                 )
                 net_benefit_line = (
-                    f"- **Net Financial Benefit**: ${float(res['net_benefit_dollars']):,.2f}\n"
+                    f"- **Net Financial Benefit**: {format_money(res['net_benefit_dollars'], currency)}\n"
                     if res.get("net_benefit_dollars")
                     else ""
                 )
@@ -378,11 +380,11 @@ class LiquiditySubagent:
                 )
                 base_reply = (
                     f"### Treasury Cash Drag & Idle Liquidity Yield Audit\n\n"
-                    f"- **Current Cash Balance**: ${float(res['current_balance']):,.2f}\n"
-                    f"- **Target Operational Reserve**: ${float(res['operational_reserve_target']):,.2f}\n"
-                    f"- **Idle Surplus Cash**: ${float(res['idle_cash']):,.2f}\n"
+                    f"- **Current Cash Balance**: {format_money(res['current_balance'], currency)}\n"
+                    f"- **Target Operational Reserve**: {format_money(res['operational_reserve_target'], currency)}\n"
+                    f"- **Idle Surplus Cash**: {format_money(res['idle_cash'], currency)}\n"
                     f"- **Benchmark Money Market APY**: {res['benchmark_annual_yield_pct']}%\n"
-                    f"- **Annual Cash Drag / Yield Loss**: ${float(res['annual_yield_loss']):,.2f}/year (${float(res['monthly_yield_loss']):,.2f}/month)\n"
+                    f"- **Annual Cash Drag / Yield Loss**: {format_money(res['annual_yield_loss'], currency)}/year ({format_money(res['monthly_yield_loss'], currency)}/month)\n"
                     f"- **Allocation Status**: `{res['allocation_status']}`\n"
                     f"- **Treasury Recommendation**: {res['recommendation']}"
                 )
@@ -434,10 +436,10 @@ class LiquiditySubagent:
                 rec_val = res.get("recommendation") or res.get("interpretation") or ""
                 base_reply = (
                     f"### Free Cash Flow Audit (FCFF & FCFE)\n\n"
-                    f"- **Operating Cash Flow (OCF)**: ${float(res['operating_cash_flow']):,.2f}\n"
-                    f"- **Capital Expenditures (CapEx)**: ${float(capex_val):,.2f}\n"
-                    f"- **Free Cash Flow to Firm (FCFF)**: **${float(fcff_val):,.2f}**\n"
-                    f"- **Free Cash Flow to Equity (FCFE)**: **${float(fcfe_val):,.2f}**\n"
+                    f"- **Operating Cash Flow (OCF)**: {format_money(res['operating_cash_flow'], currency)}\n"
+                    f"- **Capital Expenditures (CapEx)**: {format_money(capex_val, currency)}\n"
+                    f"- **Free Cash Flow to Firm (FCFF)**: **{format_money(fcff_val, currency)}**\n"
+                    f"- **Free Cash Flow to Equity (FCFE)**: **{format_money(fcfe_val, currency)}**\n"
                     f"- **Cash Flow Quality Status**: `{status_val}`\n"
                     f"- **Working Capital Analysis**: {rec_val}"
                 )
@@ -476,12 +478,12 @@ class LiquiditySubagent:
                     return CopilotResponse(reply=str(exc), intent_detected="CASH_DIAGNOSTIC", requires_biometric_hitl=False)
                 base_reply = (
                     f"### Multi-Currency Conversion Audit\n\n"
-                    f"- **Original Amount**: {res['from_symbol']}{float(res['original_amount']):,.2f} ({res['from_currency_name']})\n"
+                    f"- **Original Amount**: {res['from_symbol']}{format_amount(res['original_amount'])} ({res['from_currency_name']})\n"
                     f"- **Target Currency**: {res['to_symbol']} ({res['to_currency_name']} / `{res['to_currency']}`)\n"
                     f"- **Spot Exchange Rate**: `{res['spot_exchange_rate']}` ({res['exchange_rate_source']})\n"
-                    f"- **Gross Converted**: {res['to_symbol']}{float(res['gross_converted_amount']):,.2f}\n"
-                    f"- **Bank Spread Fee ({float(res['spread_bps']):,.0f} bps)**: {res['to_symbol']}{float(res['spread_fee']):,.2f}\n"
-                    f"- **Net Converted Proceeds**: **{res['to_symbol']}{float(res['net_converted_amount']):,.2f}**\n"
+                    f"- **Gross Converted**: {res['to_symbol']}{format_amount(res['gross_converted_amount'])}\n"
+                    f"- **Bank Spread Fee ({format_amount(res['spread_bps'], 0)} bps)**: {res['to_symbol']}{format_amount(res['spread_fee'])}\n"
+                    f"- **Net Converted Proceeds**: **{res['to_symbol']}{format_amount(res['net_converted_amount'])}**\n"
                     f"- **Effective Exchange Rate**: `{res['effective_exchange_rate']}`"
                 )
                 return CopilotResponse(
@@ -522,12 +524,12 @@ class LiquiditySubagent:
                 hedge_note = "Forward contract hedge recommended." if res.get("recommend_forward_contract_hedge") else "Exposure within unhedged operating buffer."
                 base_reply = (
                     f"### Foreign Exchange (FX) Exposure & VaR Audit\n\n"
-                    f"- **Foreign Receivables**: {float(res['foreign_receivables']):,.2f} {res['foreign_currency']}\n"
-                    f"- **Foreign Payables**: {float(res['foreign_payables']):,.2f} {res['foreign_currency']}\n"
-                    f"- **Net Foreign Exposure (NOP)**: **{float(res['net_foreign_exposure']):,.2f} {res['foreign_currency']}** ({res['base_equivalent_exposure']} {res['base_currency']} value)\n"
+                    f"- **Foreign Receivables**: {format_amount(res['foreign_receivables'])} {res['foreign_currency']}\n"
+                    f"- **Foreign Payables**: {format_amount(res['foreign_payables'])} {res['foreign_currency']}\n"
+                    f"- **Net Foreign Exposure (NOP)**: **{format_amount(res['net_foreign_exposure'])} {res['foreign_currency']}** ({res['base_equivalent_exposure']} {res['base_currency']} value)\n"
                     f"- **Position Posture**: `{res['position_type']}`\n"
                     f"- **Spot Rate**: `{res['current_spot_rate']}` ({res['rate_source']})\n"
-                    f"- **Potential Volatility Loss ({float(res['adverse_shock_pct']):,.1f}% Shock)**: **${float(res['potential_cash_loss']):,.2f} {res['base_currency']}**\n"
+                    f"- **Potential Volatility Loss ({format_amount(res['adverse_shock_pct'], 1)}% Shock)**: **{format_money(res['potential_cash_loss'], res['base_currency'])} {res['base_currency']}**\n"
                     f"- **Treasury Guidance**: {res['risk_summary']} {hedge_note}"
                 )
                 return CopilotResponse(
@@ -564,8 +566,8 @@ class LiquiditySubagent:
                 return CopilotResponse(reply=enrich_fn(base_reply, prompt_type="diagnostic"), intent_detected="CASH_DIAGNOSTIC")
 
             leg_lines = "".join(
-                f"- **Step {i}: {leg['source']}**: ${float(leg['amount']):,.2f} at {leg['apr_percent']}% APR "
-                f"for {leg['term_days']} days (cost ${float(leg['cost']):,.2f})"
+                f"- **Step {i}: {leg['source']}**: {format_money(leg['amount'], currency)} at {leg['apr_percent']}% APR "
+                f"for {leg['term_days']} days (cost {format_money(leg['cost'], currency)})"
                 f"{'' if leg['stageable'] else ', needs supplier agreement'}\n"
                 for i, leg in enumerate(res["legs"], 1)
             )
@@ -581,12 +583,12 @@ class LiquiditySubagent:
                 staged_line = "- **Staged For Approval**: None yet; ask me to prepare the plan to stage it\n"
             base_reply = (
                 f"### Bridge Financing Plan\n\n"
-                f"- **Projected Shortfall**: ${float(res['shortfall']):,.2f} on {res['deficit_date']}\n"
-                f"- **Cash Buffer**: ${float(res['buffer']):,.2f}\n"
-                f"- **Bridge Target**: ${float(res['target']):,.2f}\n"
+                f"- **Projected Shortfall**: {format_money(res['shortfall'], currency)} on {res['deficit_date']}\n"
+                f"- **Cash Buffer**: {format_money(res['buffer'], currency)}\n"
+                f"- **Bridge Target**: {format_money(res['target'], currency)}\n"
                 f"{leg_lines}"
-                f"- **Total Estimated Cost**: ${float(res['total_cost']):,.2f}\n"
-                f"- **Uncovered Gap**: ${float(res['uncovered']):,.2f}\n"
+                f"- **Total Estimated Cost**: {format_money(res['total_cost'], currency)}\n"
+                f"- **Uncovered Gap**: {format_money(res['uncovered'], currency)}\n"
                 f"{staged_line}"
             ).rstrip()
             staged_action = None
@@ -628,22 +630,22 @@ class LiquiditySubagent:
             change = res["runway_change_days"]
             change_line = f"- **Runway Change**: {change:+d} days\n" if change is not None else ""
             delay_line = (
-                f"- **Balance During Delay**: ${float(res['balance_during_delay']):,.2f}\n"
+                f"- **Balance During Delay**: {format_money(res['balance_during_delay'], currency)}\n"
                 if res["balance_during_delay"] is not None
                 else ""
             )
             if res["scenario_has_deficit"] and res["scenario_days_until_deficit"] is not None:
                 deficit = (
-                    f"${float(res['scenario_shortfall']):,.2f} shortfall on {res['scenario_deficit_date']} "
+                    f"{format_money(res['scenario_shortfall'], currency)} shortfall on {res['scenario_deficit_date']} "
                     f"(day {res['scenario_days_until_deficit']}, `{res['scenario_severity']}`)"
                 )
             else:
                 deficit = "No projected deficit within the forecast horizon"
             base_reply = (
                 f"### What-If Cash Scenario ({res['scenario'].replace('_', ' ').title()})\n\n"
-                f"- **Current Balance**: ${float(res['current_balance']):,.2f}\n"
-                f"- **Baseline Daily Burn**: ${float(res['baseline_daily_burn']):,.2f}/day\n"
-                f"- **Scenario Daily Burn**: ${float(res['scenario_daily_burn']):,.2f}/day\n"
+                f"- **Current Balance**: {format_money(res['current_balance'], currency)}\n"
+                f"- **Baseline Daily Burn**: {format_money(res['baseline_daily_burn'], currency)}/day\n"
+                f"- **Scenario Daily Burn**: {format_money(res['scenario_daily_burn'], currency)}/day\n"
                 f"- **Baseline Runway**: {runway(res['baseline_runway_days'])}\n"
                 f"- **Scenario Runway**: {runway(res['scenario_runway_days'])}\n"
                 f"{change_line}{delay_line}"
@@ -676,15 +678,15 @@ class LiquiditySubagent:
             cats_lines = []
             for c in res["categories"]:
                 cats_lines.append(
-                    f"- **{c['category']}**: ${float(c['total_amount']):,.2f} ({c['percentage_of_outflows']}%, {c['transaction_count']} txs, avg: ${float(c['average_transaction']):,.2f})"
+                    f"- **{c['category']}**: {format_money(c['total_amount'], currency)} ({c['percentage_of_outflows']}%, {c['transaction_count']} txs, avg: {format_money(c['average_transaction'], currency)})"
                 )
             cats_formatted = "\n".join(cats_lines) if cats_lines else "- No outflows recorded in reviewed period."
 
             base_reply = (
                 f"### Operational Outflow Breakdown by Category\n\n"
-                f"- **Gross Outflows**: ${float(res['gross_outflows']):,.2f} across {res['period_days']} days\n"
-                f"- **Average Daily Outflow**: ${float(res['average_daily_outflow']):,.2f}/day\n"
-                f"- **Primary Cost Driver**: **{res['top_category']}** (${float(res['top_category_amount']):,.2f}, {res['top_category_percentage']}% of outflows)\n\n"
+                f"- **Gross Outflows**: {format_money(res['gross_outflows'], currency)} across {res['period_days']} days\n"
+                f"- **Average Daily Outflow**: {format_money(res['average_daily_outflow'], currency)}/day\n"
+                f"- **Primary Cost Driver**: **{res['top_category']}** ({format_money(res['top_category_amount'], currency)}, {res['top_category_percentage']}% of outflows)\n\n"
                 f"**Category Breakdown**:\n"
                 f"{cats_formatted}"
             )
@@ -728,14 +730,14 @@ class LiquiditySubagent:
             for b_key in ("CURRENT", "1_30", "31_60", "61_90", "OVER_90"):
                 b = buckets.get(b_key, {})
                 bucket_lines.append(
-                    f"- **{b.get('label', b_key)}**: ${float(b.get('amount', 0)):,.2f} ({b.get('percentage', 0)}%, {b.get('invoice_count', 0)} invoices)"
+                    f"- **{b.get('label', b_key)}**: {format_money(b.get('amount', 0), currency)} ({b.get('percentage', 0)}%, {b.get('invoice_count', 0)} invoices)"
                 )
             buckets_formatted = "\n".join(bucket_lines)
 
             debtor_lines = []
             for d in res.get("top_debtors", []):
                 debtor_lines.append(
-                    f"- **{d['customer_name']}**: ${float(d['total_open_balance']):,.2f} open (${float(d['overdue_amount']):,.2f} overdue, max {d['max_days_overdue']}d late, {d['share_of_total_ar']}% of AR)"
+                    f"- **{d['customer_name']}**: {format_money(d['total_open_balance'], currency)} open ({format_money(d['overdue_amount'], currency)} overdue, max {d['max_days_overdue']}d late, {d['share_of_total_ar']}% of AR)"
                 )
             debtors_formatted = "\n".join(debtor_lines) if debtor_lines else "- No individual debtor concentration identified."
 
@@ -745,9 +747,9 @@ class LiquiditySubagent:
             base_reply = (
                 f"### Accounts Receivable (AR) Ageing & Collections Audit\n\n"
                 f"- **Snapshot Date**: {res['as_of_date']}\n"
-                f"- **Total Outstanding AR**: ${float(res['total_ar']):,.2f}\n"
-                f"- **Current (Not Overdue)**: ${float(res['current_amount']):,.2f}\n"
-                f"- **Total Overdue**: ${float(res['total_overdue']):,.2f} ({res['overdue_ratio_pct']}% of AR)\n"
+                f"- **Total Outstanding AR**: {format_money(res['total_ar'], currency)}\n"
+                f"- **Current (Not Overdue)**: {format_money(res['current_amount'], currency)}\n"
+                f"- **Total Overdue**: {format_money(res['total_overdue'], currency)} ({res['overdue_ratio_pct']}% of AR)\n"
                 f"- **Weighted Average Days Overdue**: {res['weighted_average_days_overdue']} days\n"
                 f"- **Top Debtor Concentration**: {res['top_1_concentration_pct']}%\n"
                 f"- **Receivables Risk Posture**: `{res['risk_tier']}`\n\n"
@@ -783,6 +785,7 @@ class LiquiditySubagent:
                 effective_csv,
                 threshold_days=request.alert_threshold_days,
             )
+            currency = cash_result["currency"]
 
             metrics = AgentMetricsSummary(
                 current_balance=cash_result["current_balance"],
@@ -794,14 +797,14 @@ class LiquiditySubagent:
                 gross_outflows=cash_result.get("gross_outflows"),
             )
 
-            inflow_txt = f"- **Gross Inflows**: ${float(metrics.gross_inflows):,.2f}\n" if metrics.gross_inflows else ""
-            outflow_txt = f"- **Gross Outflows**: ${float(metrics.gross_outflows):,.2f}\n" if metrics.gross_outflows else ""
+            inflow_txt = f"- **Gross Inflows**: {format_money(metrics.gross_inflows, currency)}\n" if metrics.gross_inflows else ""
+            outflow_txt = f"- **Gross Outflows**: {format_money(metrics.gross_outflows, currency)}\n" if metrics.gross_outflows else ""
 
             base_reply = (
                 f"Financial diagnosis complete based on verified statement data:\n\n"
-                f"- **Current Balance**: ${float(metrics.current_balance):,.2f}\n"
+                f"- **Current Balance**: {format_money(metrics.current_balance, currency)}\n"
                 f"{inflow_txt}{outflow_txt}"
-                f"- **Average Daily Burn**: ${float(metrics.average_daily_burn):,.2f}/day\n"
+                f"- **Average Daily Burn**: {format_money(metrics.average_daily_burn, currency)}/day\n"
                 f"- **Runway Reserve**: {metrics.runway_days} days\n"
                 f"- **Cash Posture Status**: `{metrics.cash_status}`\n\n"
                 f"Your operations have approximately {metrics.runway_days} days of cash reserves remaining at the current net burn velocity."

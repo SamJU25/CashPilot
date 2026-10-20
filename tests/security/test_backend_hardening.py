@@ -202,8 +202,12 @@ def test_passkey_registry_bounds_active_challenges(monkeypatch):
 
 
 def test_delete_model_adapter_guard_still_holds():
+    from unittest.mock import patch
+
     engine = LocalTransformersEngine.get_instance()
-    result = engine.delete_model("sme-finance-lora")
+    # Unstubbed, this wipes the real models/base weights and the shared HF hub cache.
+    with patch("shutil.rmtree"):
+        result = engine.delete_model("sme-finance-lora")
     if result["success"]:
         # If it ever succeeds, it must not have targeted the fine-tuned adapter directory.
         assert "sme-finance-lora" not in str(result.get("deleted_path") or "")

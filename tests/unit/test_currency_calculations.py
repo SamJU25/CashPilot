@@ -223,3 +223,41 @@ def test_conversion_handler_asks_for_rate_and_suggested_phrasing_converts(offlin
     assert "Tell me the rate to use" in ask
     suggested = ask.split("for example '")[1].rstrip("'.")
     assert "Net Converted Proceeds" in handle(suggested)
+
+
+EUR_STATEMENT = (
+    "transaction_id,posted_on,amount,currency,description,closing_balance\n"
+    "tx_001,2026-01-01,1000.00,EUR,Initial Client Invoice,10000.00\n"
+    "tx_002,2026-01-05,-1500.00,EUR,Supplier Raw Materials,8500.00\n"
+    "tx_003,2026-01-10,-2000.00,EUR,Warehouse Rent Expense,6500.00\n"
+    "tx_004,2026-01-15,1000.00,EUR,Customer Invoice Settlement,7500.00\n"
+)
+
+
+def test_eur_statement_reply_quotes_euros_not_dollars():
+    from services.agent.supervisor import run_copilot_supervisor
+    from services.agent.schema import AgentChatRequest
+
+    resp = run_copilot_supervisor(AgentChatRequest(message="What is my cash runway?", csv_content=EUR_STATEMENT))
+    assert "€7,500.00" in resp.reply
+    assert "$" not in resp.reply
+
+
+def test_eur_statement_subagent_figures_quote_euros():
+    from services.agent.supervisor import run_copilot_supervisor
+    from services.agent.schema import AgentChatRequest
+
+    msg = "Calculate working capital requirement with accounts receivable 50000, inventory 20000 and accounts payable 30000"
+    resp = run_copilot_supervisor(AgentChatRequest(message=msg, csv_content=EUR_STATEMENT))
+    # The calculator's own rationale sentence still says "$"; only the agent-formatted lines are checked.
+    assert "- **Inventory**: €20,000.00" in resp.reply
+    assert "- **Net Working Capital Requirement**: €40,000.00" in resp.reply
+
+
+def test_format_money_uses_decimal_and_currency_symbol():
+    from services.calculations.currency_registry import format_money
+
+    assert format_money("1234.5", "EUR") == "€1,234.50"
+    assert format_money(Decimal("-0.125"), "USD") == "$-0.12"
+    assert format_money("7", "CHF") == "CHF 7.00"
+    assert format_money("100", None) == "$100.00"

@@ -14,6 +14,7 @@ import logging
 from decimal import Decimal
 from typing import Any, Callable, Dict, Optional
 
+from services.calculations.currency_registry import format_money
 from services.agent.param_extractor import (
     extract_altman_z_params,
     extract_amortization_params,
@@ -85,6 +86,7 @@ class CreditSubagent:
         request: AgentChatRequest,
         effective_csv: Optional[str],
         enrich_fn: Callable[[str, str], str],
+        currency: str = "USD",
     ) -> Optional[CopilotResponse]:
         """Dispatches quantitative debt calculation requests to specialized tools."""
         # 1. Fixed Charge Coverage Ratio (FCCR)
@@ -111,9 +113,9 @@ class CreditSubagent:
                 rationale_txt = res.get("assessment") or res.get("rationale") or ""
                 base_reply = (
                     f"### Fixed Charge Coverage Ratio (FCCR) Audit\n\n"
-                    f"- **Annual EBITDA**: ${float(res['ebitda']):,.2f}{eb_note}\n"
-                    f"- **Fixed Operational Charges**: ${float(res['fixed_charges']):,.2f}{fc_note}\n"
-                    f"- **Total Annual Debt Service**: ${float(res['total_debt_service']):,.2f}\n"
+                    f"- **Annual EBITDA**: {format_money(res['ebitda'], currency)}{eb_note}\n"
+                    f"- **Fixed Operational Charges**: {format_money(res['fixed_charges'], currency)}{fc_note}\n"
+                    f"- **Total Annual Debt Service**: {format_money(res['total_debt_service'], currency)}\n"
                     f"- **FCCR Metric**: {res['fccr']}x\n"
                     f"- **Covenant Approval Tier**: `{res['underwriting_tier']}`\n"
                     f"- **Underwriting Assessment**: {rationale_txt}"
@@ -154,11 +156,11 @@ class CreditSubagent:
                 )
                 base_reply = (
                     f"### Prudent Debt Capacity & Borrowing Limit\n\n"
-                    f"- **Net Operating Income (NOI)**: ${float(res['net_operating_income']):,.2f}{est_note}\n"
+                    f"- **Net Operating Income (NOI)**: {format_money(res['net_operating_income'], currency)}{est_note}\n"
                     f"- **Target DSCR Covenant**: {res['target_dscr']}x\n"
                     f"- **Assumed Facility APR**: {res['annual_interest_rate_pct']}%\n"
                     f"- **Facility Term**: {res['term_years']} years\n"
-                    f"- **Maximum Prudent Debt Capacity**: ${float(res['maximum_prudent_debt_capacity']):,.2f}\n"
+                    f"- **Maximum Prudent Debt Capacity**: {format_money(res['maximum_prudent_debt_capacity'], currency)}\n"
                     f"- **Advisory Assessment**: {res['advisory_summary']}\n\n"
                     "Borrowing within this ceiling protects operating liquidity from debt over-leveraging."
                 )
@@ -196,8 +198,8 @@ class CreditSubagent:
                 analysis_txt = res.get("interpretation") or res.get("rationale") or ""
                 base_reply = (
                     f"### Debt Service Coverage Ratio (DSCR) Assessment\n\n"
-                    f"- **Net Operating Income (NOI)**: ${float(res['net_operating_income']):,.2f}{est_note}\n"
-                    f"- **Annual Debt Service**: ${float(debt_service_amt):,.2f}\n"
+                    f"- **Net Operating Income (NOI)**: {format_money(res['net_operating_income'], currency)}{est_note}\n"
+                    f"- **Annual Debt Service**: {format_money(debt_service_amt, currency)}\n"
                     f"- **DSCR Metric**: {res['dscr']}x\n"
                     f"- **Underwriting Status**: `{res['underwriting_status']}`\n"
                     f"- **Analysis**: {analysis_txt}"
@@ -227,12 +229,12 @@ class CreditSubagent:
                 total_paid = res.get("total_amount_paid") or res.get("total_payments") or "0.00"
                 base_reply = (
                     f"### Commercial Loan Amortization Schedule\n\n"
-                    f"- **Loan Principal**: ${float(res['principal']):,.2f}\n"
+                    f"- **Loan Principal**: {format_money(res['principal'], currency)}\n"
                     f"- **Annual Interest Rate**: {res['annual_interest_rate_pct']}%\n"
                     f"- **Loan Term**: {res['term_months']} months ({int(res['term_months']) // 12} years)\n"
-                    f"- **Fixed Monthly Payment**: ${float(res['monthly_payment']):,.2f}/mo\n"
-                    f"- **Total Interest Cost**: ${float(res['total_interest']):,.2f}\n"
-                    f"- **Total Loan Obligation**: ${float(total_paid):,.2f}\n\n"
+                    f"- **Fixed Monthly Payment**: {format_money(res['monthly_payment'], currency)}/mo\n"
+                    f"- **Total Interest Cost**: {format_money(res['total_interest'], currency)}\n"
+                    f"- **Total Loan Obligation**: {format_money(total_paid, currency)}\n\n"
                     "To prepare this financing proposal for review, request action staging."
                 )
                 return CopilotResponse(
@@ -268,11 +270,11 @@ class CreditSubagent:
                 )
                 base_reply = (
                     f"### Invoice Factoring Net Proceeds & True APR Analysis\n\n"
-                    f"- **Invoice Face Value**: ${float(res['invoice_face_value']):,.2f}\n"
-                    f"- **Advance Rate**: {res['advance_rate_percent']}% (${float(res['advance_amount']):,.2f})\n"
-                    f"- **Factoring Discount Fee**: ${float(res['factoring_fee_amount']):,.2f}{fee_note}\n"
-                    f"- **Cash Received Now**: ${float(res['advance_amount']):,.2f}\n"
-                    f"- **Total Net Proceeds After Collection**: ${float(res['net_proceeds']):,.2f}\n"
+                    f"- **Invoice Face Value**: {format_money(res['invoice_face_value'], currency)}\n"
+                    f"- **Advance Rate**: {res['advance_rate_percent']}% ({format_money(res['advance_amount'], currency)})\n"
+                    f"- **Factoring Discount Fee**: {format_money(res['factoring_fee_amount'], currency)}{fee_note}\n"
+                    f"- **Cash Received Now**: {format_money(res['advance_amount'], currency)}\n"
+                    f"- **Total Net Proceeds After Collection**: {format_money(res['net_proceeds'], currency)}\n"
                     f"- **Collection Horizon**: {res['collection_days']} days{days_note}\n"
                     f"- **True Annualized APR**: {res['true_apr_percent']}%"
                     f"{pred_warning}\n\n"
@@ -314,7 +316,7 @@ class CreditSubagent:
                 f"- **Supplier Tax Identifier**: `{res['tax_id']}`\n"
                 f"- **Buyer Account Identifier**: `{res['buyer_id']}`\n"
                 f"- **Invoice Serial Number**: `{res['invoice_num']}`\n"
-                f"- **Face Value**: ${float(res['amount_dollars']):,.2f}\n"
+                f"- **Face Value**: {format_money(res['amount_dollars'], currency)}\n"
                 f"- **Canonical Cryptographic Hash (SHA-256)**: `{res['invoice_hash']}`\n"
                 f"- **Consortium Status**: `{res['consortium_status']}`\n"
                 f"- **Registry Audit**: {risk_tag}\n\n"
@@ -336,8 +338,8 @@ class CreditSubagent:
                 res = tool_calculate_debt_to_equity(total_debt=debt, total_equity=equity)
                 base_reply = (
                     f"### Debt-to-Equity (D/E) Leverage Audit\n\n"
-                    f"- **Total Debt Obligations**: ${float(res['total_debt']):,.2f}\n"
-                    f"- **Total Shareholder Equity**: ${float(res['total_equity']):,.2f}\n"
+                    f"- **Total Debt Obligations**: {format_money(res['total_debt'], currency)}\n"
+                    f"- **Total Shareholder Equity**: {format_money(res['total_equity'], currency)}\n"
                     f"- **Debt-to-Equity Ratio**: {res['debt_to_equity_ratio']}x\n"
                     f"- **Leverage Profile**: `{res['leverage_tier']}`\n"
                     f"- **Covenant Assessment**: {res['rationale']}"
@@ -373,8 +375,8 @@ class CreditSubagent:
                 res = tool_calculate_interest_coverage(ebit=ebit, interest_expense=interest)
                 base_reply = (
                     f"### Interest Coverage Ratio (TIE) Audit\n\n"
-                    f"- **Operating Income (EBIT)**: ${float(res['ebit']):,.2f}{est_note}\n"
-                    f"- **Annual Interest Expense**: ${float(res['interest_expense']):,.2f}\n"
+                    f"- **Operating Income (EBIT)**: {format_money(res['ebit'], currency)}{est_note}\n"
+                    f"- **Annual Interest Expense**: {format_money(res['interest_expense'], currency)}\n"
                     f"- **Interest Coverage Ratio**: {res['interest_coverage_ratio']}x\n"
                     f"- **Covenant Health Tier**: `{res['covenant_tier']}`\n"
                     f"- **Debt Service Assessment**: {res['rationale']}"
@@ -414,12 +416,12 @@ class CreditSubagent:
                 )
                 base_reply = (
                     f"### Equipment Lease vs. Buy Net Present Value (NPV) Analysis\n\n"
-                    f"- **Equipment Purchase Price**: ${float(res['purchase_price']):,.2f}\n"
-                    f"- **Annual Lease Payment**: ${float(res['annual_lease_payment']):,.2f}/yr ({res['term_years']} years)\n"
+                    f"- **Equipment Purchase Price**: {format_money(res['purchase_price'], currency)}\n"
+                    f"- **Annual Lease Payment**: {format_money(res['annual_lease_payment'], currency)}/yr ({res['term_years']} years)\n"
                     f"- **Discount Rate / Cost of Capital**: {res['discount_rate_pct']}%\n"
-                    f"- **Present Value Cost (Leasing)**: ${float(res['pv_leasing_cost']):,.2f}\n"
-                    f"- **Present Value Cost (Buying)**: ${float(res['pv_buying_cost']):,.2f}\n"
-                    f"- **Net Financial Advantage**: ${float(res['savings_dollars']):,.2f} favoring `{res['recommended_action']}`\n"
+                    f"- **Present Value Cost (Leasing)**: {format_money(res['pv_leasing_cost'], currency)}\n"
+                    f"- **Present Value Cost (Buying)**: {format_money(res['pv_buying_cost'], currency)}\n"
+                    f"- **Net Financial Advantage**: {format_money(res['savings_dollars'], currency)} favoring `{res['recommended_action']}`\n"
                     f"- **Decision Policy**: `{res['status']}`\n"
                     f"- **Capital Allocation Guidance**: {res['recommendation']}"
                 )
@@ -462,13 +464,13 @@ class CreditSubagent:
                 rec_val = res.get("recommendation") or res.get("interpretation") or ""
                 base_reply = (
                     f"### Altman Z'-Score SME Insolvency Distress Audit\n\n"
-                    f"- **Working Capital**: ${float(res['working_capital']):,.2f}\n"
-                    f"- **Retained Earnings**: ${float(res['retained_earnings']):,.2f}\n"
-                    f"- **Operating Income (EBIT)**: ${float(res['ebit']):,.2f}\n"
-                    f"- **Book Value of Equity**: ${float(res['book_value_equity']):,.2f}\n"
-                    f"- **Total Liabilities**: ${float(res['total_liabilities']):,.2f}\n"
-                    f"- **Total Balance Sheet Assets**: ${float(res['total_assets']):,.2f}\n"
-                    f"- **Annual Commercial Revenue**: ${float(res['revenue']):,.2f}\n"
+                    f"- **Working Capital**: {format_money(res['working_capital'], currency)}\n"
+                    f"- **Retained Earnings**: {format_money(res['retained_earnings'], currency)}\n"
+                    f"- **Operating Income (EBIT)**: {format_money(res['ebit'], currency)}\n"
+                    f"- **Book Value of Equity**: {format_money(res['book_value_equity'], currency)}\n"
+                    f"- **Total Liabilities**: {format_money(res['total_liabilities'], currency)}\n"
+                    f"- **Total Balance Sheet Assets**: {format_money(res['total_assets'], currency)}\n"
+                    f"- **Annual Commercial Revenue**: {format_money(res['revenue'], currency)}\n"
                     f"- **Altman Z'-Score**: **{z_score_val}**\n"
                     f"- **Credit Distress Tier**: `{zone_val}`\n"
                     f"- **Credit Risk Classification**: {class_val}\n"
@@ -505,10 +507,10 @@ class CreditSubagent:
                 rec_val = res.get("recommendation") or res.get("assessment") or ""
                 base_reply = (
                     f"### Net Debt to EBITDA Leverage Audit\n\n"
-                    f"- **Total Debt Obligations**: ${float(res['total_debt']):,.2f}\n"
-                    f"- **Cash & Equivalents**: ${float(res['cash_and_equivalents']):,.2f}\n"
-                    f"- **Net Debt**: ${float(res['net_debt']):,.2f}\n"
-                    f"- **Annual Operating EBITDA**: ${float(res['ebitda']):,.2f}\n"
+                    f"- **Total Debt Obligations**: {format_money(res['total_debt'], currency)}\n"
+                    f"- **Cash & Equivalents**: {format_money(res['cash_and_equivalents'], currency)}\n"
+                    f"- **Net Debt**: {format_money(res['net_debt'], currency)}\n"
+                    f"- **Annual Operating EBITDA**: {format_money(res['ebitda'], currency)}\n"
                     f"- **Net Debt to EBITDA Multiple**: **{ratio_val}x**\n"
                     f"- **Institutional Leverage Tier**: `{tier_val}`\n"
                     f"- **Credit Covenant Status**: `{status_val}`\n"
@@ -553,8 +555,8 @@ class CreditSubagent:
                 rec_val = res.get("recommendation") or res.get("assessment") or ""
                 base_reply = (
                     f"### Debt Service Burden Audit\n\n"
-                    f"- **Annual Debt Service Obligations**: ${float(res['annual_debt_service']):,.2f}\n"
-                    f"- **Gross Commercial Revenue**: ${float(rev_val):,.2f}{est_note}\n"
+                    f"- **Annual Debt Service Obligations**: {format_money(res['annual_debt_service'], currency)}\n"
+                    f"- **Gross Commercial Revenue**: {format_money(rev_val, currency)}{est_note}\n"
                     f"- **Debt Service Burden**: **{burden_val}%** of revenue\n"
                     f"- **Debt Service Tier**: `{tier_val}`\n"
                     f"- **Credit Covenant Status**: `{status_val}`\n"
@@ -593,12 +595,12 @@ class CreditSubagent:
                 rec_val = res.get("recommendation") or res.get("interpretation") or ""
                 base_reply = (
                     f"### Weighted Average Cost of Capital (WACC) Analysis\n\n"
-                    f"- **Equity Capital Value**: ${float(res['equity_value']):,.2f} ({res['equity_weight_pct']}%)\n"
-                    f"- **Total Debt Obligations**: ${float(res['total_debt']):,.2f} ({res['debt_weight_pct']}%)\n"
+                    f"- **Equity Capital Value**: {format_money(res['equity_value'], currency)} ({res['equity_weight_pct']}%)\n"
+                    f"- **Total Debt Obligations**: {format_money(res['total_debt'], currency)} ({res['debt_weight_pct']}%)\n"
                     f"- **Cost of Equity (Ke)**: {res['cost_of_equity_pct']}%\n"
                     f"- **Pre-Tax Cost of Debt (Kd)**: {res['pre_tax_cost_of_debt_pct']}%\n"
                     f"- **Corporate Tax Shield**: {tax_rate}% (Effective After-Tax Kd: {res['after_tax_cost_of_debt_pct']}%)\n"
-                    f"- **Total Enterprise Capital Base**: ${float(cap_base):,.2f}\n"
+                    f"- **Total Enterprise Capital Base**: {format_money(cap_base, currency)}\n"
                     f"- **Weighted Average Cost of Capital (WACC)**: **{res['wacc_pct']}%**\n"
                     f"- **Hurdle Rate Guidance**: {rec_val}"
                 )
@@ -640,11 +642,11 @@ class CreditSubagent:
                 rec_val = res.get("recommendation") or res.get("assessment") or ""
                 base_reply = (
                     f"### Enterprise Value & Valuation Multiples Audit\n\n"
-                    f"- **Equity Value (Market Cap)**: ${float(res['equity_value']):,.2f}\n"
-                    f"- **Total Debt Obligations**: ${float(res['total_debt']):,.2f}\n"
-                    f"- **Cash & Liquid Equivalents**: ${float(res['cash_and_equivalents']):,.2f}\n"
-                    f"- **Net Debt**: ${float(res['net_debt']):,.2f}\n"
-                    f"- **Enterprise Value (EV)**: **${float(res['enterprise_value']):,.2f}**\n"
+                    f"- **Equity Value (Market Cap)**: {format_money(res['equity_value'], currency)}\n"
+                    f"- **Total Debt Obligations**: {format_money(res['total_debt'], currency)}\n"
+                    f"- **Cash & Liquid Equivalents**: {format_money(res['cash_and_equivalents'], currency)}\n"
+                    f"- **Net Debt**: {format_money(res['net_debt'], currency)}\n"
+                    f"- **Enterprise Value (EV)**: **{format_money(res['enterprise_value'], currency)}**\n"
                     f"{multiples_lines}"
                     f"- **Valuation Assessment**: {rec_val}"
                 )
@@ -673,13 +675,13 @@ class CreditSubagent:
                     wacc_discount_rate_pct=wacc,
                     perpetual_growth_rate_pct=g_rate,
                 )
-                flows_str = ", ".join(f"${float(f):,.0f}" for f in flows)
+                flows_str = ", ".join(f"{format_money(f, currency, 0)}" for f in flows)
                 wacc_val = res.get("wacc_pct") or res.get("wacc_discount_rate_pct")
                 g_val = res.get("terminal_growth_rate_pct") or res.get("perpetual_growth_rate_pct")
                 years_val = res.get("forecast_years") or res.get("projection_years") or len(flows)
-                ev_float = float(res['enterprise_value'])
-                pv_tv_float = float(res['pv_terminal_value'])
-                tv_share = f"{(pv_tv_float / ev_float * 100):.1f}" if ev_float > 0 else "0.0"
+                ev = Decimal(str(res['enterprise_value']))
+                pv_tv = Decimal(str(res['pv_terminal_value']))
+                tv_share = f"{(pv_tv / ev * 100):.1f}" if ev > 0 else "0.0"
                 rec_val = res.get("recommendation") or ""
 
                 base_reply = (
@@ -687,10 +689,10 @@ class CreditSubagent:
                     f"- **Projected Cash Flows**: {flows_str}\n"
                     f"- **WACC Discount Rate**: {wacc_val}%\n"
                     f"- **Perpetual Terminal Growth Rate**: {g_val}%\n"
-                    f"- **Present Value of Explicit Cash Flows**: ${float(res['pv_explicit_cash_flows']):,.2f}\n"
-                    f"- **Terminal Value (Year {years_val})**: ${float(res['terminal_value']):,.2f}\n"
-                    f"- **Present Value of Terminal Value**: ${pv_tv_float:,.2f}\n"
-                    f"- **Enterprise Value (DCF)**: **${ev_float:,.2f}**\n"
+                    f"- **Present Value of Explicit Cash Flows**: {format_money(res['pv_explicit_cash_flows'], currency)}\n"
+                    f"- **Terminal Value (Year {years_val})**: {format_money(res['terminal_value'], currency)}\n"
+                    f"- **Present Value of Terminal Value**: {format_money(pv_tv, currency)}\n"
+                    f"- **Enterprise Value (DCF)**: **{format_money(ev, currency)}**\n"
                     f"- **Terminal Value Contribution**: {tv_share}% of Enterprise Value\n"
                     f"- **Advisory Assessment**: {rec_val}"
                 )
@@ -727,6 +729,7 @@ class CreditSubagent:
 
         try:
             uw_result = tool_underwrite_credit(effective_csv, nsf_count=request.nsf_count)
+            currency = uw_result["dossier"]["currency"]
             if session_id:
                 session_store.update_statement(
                     session_id,
@@ -749,7 +752,7 @@ class CreditSubagent:
             top_option = matched_opts[0] if matched_opts else None
             opt_summary = (
                 f"Top matched facility is {top_option.facility_name} from {top_option.provider} "
-                f"at {top_option.apr_percent}% APR (Max: ${float(top_option.max_amount):,.2f})."
+                f"at {top_option.apr_percent}% APR (Max: {format_money(top_option.max_amount, currency)})."
                 if top_option
                 else "No non-predatory credit facilities currently meet the underwriting criteria."
             )
@@ -757,8 +760,8 @@ class CreditSubagent:
             reply = (
                 f"### Credit Underwriting Assessment\n\n"
                 f"- **Underwriting evaluation complete**. Classification: `{dossier['risk_tier']}`\n"
-                f"- **Daily Average Balance (DAB)**: ${float(dossier['daily_average_balance']):,.2f}\n"
-                f"- **Maximum Qualified Limit**: ${float(dossier['max_qualified_limit']):,.2f}\n"
+                f"- **Daily Average Balance (DAB)**: {format_money(dossier['daily_average_balance'], currency)}\n"
+                f"- **Maximum Qualified Limit**: {format_money(dossier['max_qualified_limit'], currency)}\n"
                 f"- **Matched Facility**: {opt_summary}\n\n"
                 "To apply, request staging for the chosen facility."
             )

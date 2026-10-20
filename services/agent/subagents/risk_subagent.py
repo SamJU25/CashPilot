@@ -13,6 +13,7 @@ from __future__ import annotations
 from decimal import Decimal
 from typing import Any, Callable, Dict, Optional
 
+from services.calculations.currency_registry import format_money
 from services.agent.param_extractor import (
     extract_attrition_params,
     extract_break_even_params,
@@ -70,6 +71,7 @@ class RiskManagerSubagent:
         request: AgentChatRequest,
         effective_csv: Optional[str],
         enrich_fn: Callable[[str, str], str],
+        currency: str = "USD",
     ) -> Optional[CopilotResponse]:
         """Dispatches risk and unit economics calculations to specialized tools."""
         # 1. Break-Even Revenue & Margin of Safety
@@ -96,18 +98,18 @@ class RiskManagerSubagent:
                     revenue=rev,
                     variable_costs=vc,
                 )
-                cm_pct = f"{float(res['contribution_margin_ratio']) * 100:.1f}%" if res.get("contribution_margin_ratio") else "N/A"
+                cm_pct = f"{Decimal(str(res['contribution_margin_ratio'])) * 100:.1f}%" if res.get("contribution_margin_ratio") else "N/A"
                 mos_snippet = ""
                 if res.get("margin_of_safety_dollars") and res.get("margin_of_safety_percent"):
                     mos_snippet = (
-                        f"\n- **Margin of Safety**: ${float(res['margin_of_safety_dollars']):,.2f} "
+                        f"\n- **Margin of Safety**: {format_money(res['margin_of_safety_dollars'], currency)} "
                         f"({res['margin_of_safety_percent']}%, {res.get('resilience_tier', 'MODERATE')} buffer)"
                     )
                 base_reply = (
                     f"### Break-Even & Margin of Safety Analysis\n\n"
-                    f"- **Fixed Operating Overhead**: ${float(res['fixed_costs']):,.2f}{est_note}\n"
+                    f"- **Fixed Operating Overhead**: {format_money(res['fixed_costs'], currency)}{est_note}\n"
                     f"- **Contribution Margin Ratio**: {cm_pct}\n"
-                    f"- **Break-Even Revenue Requirement**: ${float(res['break_even_revenue']):,.2f}"
+                    f"- **Break-Even Revenue Requirement**: {format_money(res['break_even_revenue'], currency)}"
                     f"{mos_snippet}\n\n"
                     "Revenue above this threshold directly generates net operating profit."
                 )
@@ -134,10 +136,10 @@ class RiskManagerSubagent:
                 res = tool_calculate_break_even_units(fixed_costs=fc, unit_selling_price=price, unit_variable_cost=vc)
                 base_reply = (
                     f"### Break-Even Unit Volume Analysis\n\n"
-                    f"- **Fixed Operating Overhead**: ${float(res['fixed_costs']):,.2f}\n"
-                    f"- **Selling Price per Unit**: ${float(res['unit_selling_price']):,.2f}\n"
-                    f"- **Variable Cost per Unit**: ${float(res['unit_variable_cost']):,.2f}\n"
-                    f"- **Unit Contribution Margin**: ${float(res['unit_contribution_margin']):,.2f}/unit\n"
+                    f"- **Fixed Operating Overhead**: {format_money(res['fixed_costs'], currency)}\n"
+                    f"- **Selling Price per Unit**: {format_money(res['unit_selling_price'], currency)}\n"
+                    f"- **Variable Cost per Unit**: {format_money(res['unit_variable_cost'], currency)}\n"
+                    f"- **Unit Contribution Margin**: {format_money(res['unit_contribution_margin'], currency)}/unit\n"
                     f"- **Required Sales Volume to Break Even**: {res['break_even_units_required']:,} units\n"
                     f"- **Assessment**: {res['assessment']}"
                 )
@@ -220,10 +222,10 @@ class RiskManagerSubagent:
                 )
                 base_reply = (
                     f"### Client Revenue Attrition & Cash Flow Stress Test\n\n"
-                    f"- **Current Annual Inflows**: ${float(res['current_annual_revenue']):,.2f}{est_note}\n"
-                    f"- **Lost Client Annual Share**: ${float(res['lost_client_annual_revenue']):,.2f} ({res['lost_revenue_share_percent']}% of revenue)\n"
-                    f"- **Baseline Annual Operating Outflows**: ${float(res['current_annual_burn']):,.2f}\n"
-                    f"- **Projected Net Deficit Under Loss**: ${float(res['projected_annual_burn']):,.2f}/year\n"
+                    f"- **Current Annual Inflows**: {format_money(res['current_annual_revenue'], currency)}{est_note}\n"
+                    f"- **Lost Client Annual Share**: {format_money(res['lost_client_annual_revenue'], currency)} ({res['lost_revenue_share_percent']}% of revenue)\n"
+                    f"- **Baseline Annual Operating Outflows**: {format_money(res['current_annual_burn'], currency)}\n"
+                    f"- **Projected Net Deficit Under Loss**: {format_money(res['projected_annual_burn'], currency)}/year\n"
                     f"- **Burn Expansion Rate**: +{res['burn_expansion_rate_percent']}%\n"
                     f"- **Risk Classification**: `{res['severity']}`\n"
                     f"- **Strategic Recommendation**: {res['recommendation']}"
@@ -258,10 +260,10 @@ class RiskManagerSubagent:
                 )
                 base_reply = (
                     f"### 3-Stage DuPont Return on Equity (ROE) Decomposition\n\n"
-                    f"- **Annual Net Income**: ${float(res['net_income']):,.2f}\n"
-                    f"- **Annual Gross Revenue**: ${float(res['revenue']):,.2f}\n"
-                    f"- **Total Assets**: ${float(res['total_assets']):,.2f}\n"
-                    f"- **Total Shareholder Equity**: ${float(res['total_equity']):,.2f}\n\n"
+                    f"- **Annual Net Income**: {format_money(res['net_income'], currency)}\n"
+                    f"- **Annual Gross Revenue**: {format_money(res['revenue'], currency)}\n"
+                    f"- **Total Assets**: {format_money(res['total_assets'], currency)}\n"
+                    f"- **Total Shareholder Equity**: {format_money(res['total_equity'], currency)}\n\n"
                     f"**DuPont Pillar Breakdown**:\n"
                     f"1. **Operational Profitability (Net Margin)**: {res['net_profit_margin_pct']}%\n"
                     f"2. **Asset Efficiency (Asset Turnover)**: {res['asset_turnover']}x\n"
@@ -307,12 +309,12 @@ class RiskManagerSubagent:
                 rec_val = res.get("recommendation") or res.get("interpretation") or ""
                 base_reply = (
                     f"### Return on Invested Capital (ROIC) Audit\n\n"
-                    f"- **Operating Income (EBIT)**: ${float(res['ebit']):,.2f}\n"
-                    f"- **Net Operating Profit After Tax (NOPAT)**: ${float(res['nopat']):,.2f}\n"
-                    f"- **Total Debt Obligations**: ${float(res['total_debt']):,.2f}\n"
-                    f"- **Total Shareholder Equity**: ${float(res['total_equity']):,.2f}\n"
-                    f"- **Cash Deductions**: ${float(res['cash_and_equivalents']):,.2f}\n"
-                    f"- **Total Invested Capital**: ${float(res['invested_capital']):,.2f}\n"
+                    f"- **Operating Income (EBIT)**: {format_money(res['ebit'], currency)}\n"
+                    f"- **Net Operating Profit After Tax (NOPAT)**: {format_money(res['nopat'], currency)}\n"
+                    f"- **Total Debt Obligations**: {format_money(res['total_debt'], currency)}\n"
+                    f"- **Total Shareholder Equity**: {format_money(res['total_equity'], currency)}\n"
+                    f"- **Cash Deductions**: {format_money(res['cash_and_equivalents'], currency)}\n"
+                    f"- **Total Invested Capital**: {format_money(res['invested_capital'], currency)}\n"
                     f"- **Return on Invested Capital (ROIC)**: **{roic_val}%**\n"
                     f"- **Capital Efficiency Tier**: `{tier_val}`\n"
                     f"- **Capital Allocation Guidance**: {rec_val}"
@@ -345,8 +347,8 @@ class RiskManagerSubagent:
                 rec_val = res.get("recommendation") or res.get("interpretation") or ""
                 base_reply = (
                     f"### Return on Assets (ROA) Audit\n\n"
-                    f"- **Annual Net Income**: ${float(res['net_income']):,.2f}\n"
-                    f"- **Total Balance Sheet Assets**: ${float(res['total_assets']):,.2f}\n"
+                    f"- **Annual Net Income**: {format_money(res['net_income'], currency)}\n"
+                    f"- **Total Balance Sheet Assets**: {format_money(res['total_assets'], currency)}\n"
                     f"- **Return on Assets (ROA)**: **{roa_val}%**\n"
                     f"- **Asset Productivity Tier**: `{tier_val}`\n"
                     f"- **Asset Velocity Assessment**: {rec_val}"
@@ -384,12 +386,12 @@ class RiskManagerSubagent:
                 rec_val = res.get("recommendation") or res.get("interpretation") or ""
                 base_reply = (
                     f"### Economic Value Added (EVA) Audit\n\n"
-                    f"- **Operating Income (EBIT)**: ${float(res['ebit']):,.2f}\n"
-                    f"- **Net Operating Profit After Tax (NOPAT)**: ${float(res['nopat']):,.2f}\n"
-                    f"- **Total Invested Capital**: ${float(res['invested_capital']):,.2f}\n"
+                    f"- **Operating Income (EBIT)**: {format_money(res['ebit'], currency)}\n"
+                    f"- **Net Operating Profit After Tax (NOPAT)**: {format_money(res['nopat'], currency)}\n"
+                    f"- **Total Invested Capital**: {format_money(res['invested_capital'], currency)}\n"
                     f"- **Cost of Capital (WACC)**: {res['wacc_pct']}%\n"
-                    f"- **Capital Charge**: ${float(res['capital_charge']):,.2f}\n"
-                    f"- **Economic Value Added (EVA)**: **${float(eva_val):,.2f}**\n"
+                    f"- **Capital Charge**: {format_money(res['capital_charge'], currency)}\n"
+                    f"- **Economic Value Added (EVA)**: **{format_money(eva_val, currency)}**\n"
                     f"- **Economic Profit Status**: `{res['status']}`\n"
                     f"- **Value Creation Assessment**: {rec_val}"
                 )
@@ -419,8 +421,8 @@ class RiskManagerSubagent:
                 res = tool_calculate_ltv_cac(ltv=ltv, cac=cac)
                 base_reply = (
                     f"### LTV to CAC Audit\n\n"
-                    f"- **Customer Lifetime Value (LTV)**: ${float(res['lifetime_value']):,.2f}\n"
-                    f"- **Customer Acquisition Cost (CAC)**: ${float(res['cac']):,.2f}\n"
+                    f"- **Customer Lifetime Value (LTV)**: {format_money(res['lifetime_value'], currency)}\n"
+                    f"- **Customer Acquisition Cost (CAC)**: {format_money(res['cac'], currency)}\n"
                     f"- **LTV to CAC Ratio**: **{res['ltv_to_cac_ratio']}x**\n"
                     f"- **Unit Economics Tier**: `{res['unit_economics_tier']}`\n"
                     f"- **Acquisition Efficiency Assessment**: {res['recommendation']}"
@@ -448,11 +450,11 @@ class RiskManagerSubagent:
 
                 base_reply = (
                     f"### Customer Lifetime Value (LTV) & LTV/CAC Audit\n\n"
-                    f"- **Annual Revenue Per User (ARPU)**: ${float(arpu_val):,.2f}\n"
+                    f"- **Annual Revenue Per User (ARPU)**: {format_money(arpu_val, currency)}\n"
                     f"- **Gross Margin**: {res['gross_margin_pct']}%\n"
                     f"- **Customer Churn Rate**: {churn_val}%\n"
-                    f"- **Customer Lifetime Value (LTV)**: ${float(ltv_val):,.2f}\n"
-                    f"- **Customer Acquisition Cost (CAC)**: ${float(cac_val):,.2f}\n"
+                    f"- **Customer Lifetime Value (LTV)**: {format_money(ltv_val, currency)}\n"
+                    f"- **Customer Acquisition Cost (CAC)**: {format_money(cac_val, currency)}\n"
                     f"- **LTV to CAC Ratio**: **{res['ltv_to_cac_ratio']}x**\n"
                     f"- **Unit Economics Tier**: `{tier_val}`\n"
                     f"- **Acquisition Efficiency Assessment**: {rec_val}"
@@ -489,10 +491,10 @@ class RiskManagerSubagent:
 
                 base_reply = (
                     f"### CAC Payback Period Audit\n\n"
-                    f"- **Customer Acquisition Cost (CAC)**: ${float(res['cac']):,.2f}\n"
-                    f"- **Monthly ARPU**: ${float(res['monthly_arpu']):,.2f}\n"
+                    f"- **Customer Acquisition Cost (CAC)**: {format_money(res['cac'], currency)}\n"
+                    f"- **Monthly ARPU**: {format_money(res['monthly_arpu'], currency)}\n"
                     f"- **Gross Margin**: {res['gross_margin_pct']}%\n"
-                    f"- **Monthly Gross Profit per Account**: ${float(gp_val):,.2f}\n"
+                    f"- **Monthly Gross Profit per Account**: {format_money(gp_val, currency)}\n"
                     f"- **CAC Payback Period**: **{payback_val} months**\n"
                     f"- **Payback Velocity Tier**: `{tier_val}`\n"
                     f"- **Capital Recycling Assessment**: {rec_val}"
@@ -538,11 +540,11 @@ class RiskManagerSubagent:
 
                 base_reply = (
                     f"### Net Revenue Retention (NRR) Audit\n\n"
-                    f"- **Starting Revenue Base**: ${float(start_val):,.2f}\n"
-                    f"- **Expansion Revenue**: +${float(exp_val):,.2f}\n"
-                    f"- **Contraction Revenue**: -${float(con_val):,.2f}\n"
-                    f"- **Churn Revenue**: -${float(churn_val):,.2f}\n"
-                    f"- **Ending Cohort Revenue**: ${float(end_val):,.2f}\n"
+                    f"- **Starting Revenue Base**: {format_money(start_val, currency)}\n"
+                    f"- **Expansion Revenue**: +{format_money(exp_val, currency)}\n"
+                    f"- **Contraction Revenue**: -{format_money(con_val, currency)}\n"
+                    f"- **Churn Revenue**: -{format_money(churn_val, currency)}\n"
+                    f"- **Ending Cohort Revenue**: {format_money(end_val, currency)}\n"
                     f"- **Net Revenue Retention (NRR)**: **{nrr_val}%**\n"
                     f"- **Gross Revenue Retention (GRR)**: **{grr_val}%**\n"
                     f"- **Retention Health Tier**: `{tier_val}`\n"
@@ -590,6 +592,7 @@ class RiskManagerSubagent:
                 forecast_horizon_days=target_horizon_days,
             )
 
+            currency = pred_res["currency"]
             severity = pred_res["severity"]
             projected_deficit = Decimal(pred_res["projected_shortfall"])
             shortfall_date = pred_res["shortfall_date"]
@@ -611,7 +614,7 @@ class RiskManagerSubagent:
                 f"### Predictive Cash Deficit Early-Warning ({target_horizon_days}-Day Horizon)\n\n"
                 f"- **Severity Status**: `{severity}`\n"
                 f"- **Projected Deficit Date**: {shortfall_date or 'No deficit projected in horizon'}\n"
-                f"- **Estimated Cash Shortfall**: ${float(projected_deficit):,.2f}\n"
+                f"- **Estimated Cash Shortfall**: {format_money(projected_deficit, currency)}\n"
                 f"- **Root-Cause Analysis**: {root_cause}\n"
                 f"- **Strategic Recommendation**: {recommendation}\n\n"
                 "Proactively securing bridge working capital or drawing a credit facility before deficit dates preserves operational solvency."

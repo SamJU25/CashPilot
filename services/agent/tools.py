@@ -823,6 +823,7 @@ def tool_calculate_predictive_cash(
     """Projects cash balance and identifies deficit points over custom horizons."""
     cf = tool_analyze_cash_flow(csv_content, target_horizon_days=forecast_horizon_days)
     return {
+        "currency": cf["currency"],
         "severity": cf.get("deficit_severity", "SAFE"),
         "projected_shortfall": cf.get("projected_shortfall_amount", "0.00"),
         "shortfall_date": cf.get("projected_deficit_date"),

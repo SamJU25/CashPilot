@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import re
 from dataclasses import dataclass
+from decimal import Decimal
 from typing import Dict, List, Optional, Set
 
 
@@ -236,3 +237,16 @@ class CurrencyRegistry:
     def get_currencies_by_region(cls, region: str) -> List[CurrencyMetadata]:
         """Return currencies matching a specific geographic region."""
         return [c for c in WORLD_CURRENCIES.values() if region.lower() in c.region.lower()]
+
+
+def format_amount(value: object, places: int = 2) -> str:
+    """Thousands-separated Decimal text; str() first so a float input never leaks binary noise."""
+    return format(Decimal(str(value)), f",.{places}f")
+
+
+def format_money(value: object, currency: Optional[str] = "USD", places: int = 2) -> str:
+    """Amount with the currency's symbol, e.g. format_money("1234.5", "EUR") -> "€1,234.50"."""
+    symbol = CurrencyRegistry.get_metadata(currency or "USD").symbol
+    # Letter symbols (CHF, RM, Rs) need a space so they don't fuse with the digits.
+    sep = " " if symbol[-1].isalpha() else ""
+    return f"{symbol}{sep}{format_amount(value, places)}"
