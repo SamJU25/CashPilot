@@ -1308,9 +1308,9 @@
     "semantic_hash": ""
   },
   ".agent/skills/docker-patterns/SKILL.md": {
-    "mtime": 1791998478.6290638,
-    "seen": 1791998728.4012399,
-    "ast_hash": "f16f1eb508982313198f98c92f130488",
+    "mtime": 1792458950.9653752,
+    "seen": 1792459197.7437048,
+    "ast_hash": "756c626a588174353d99261b0f660521",
     "semantic_hash": ""
   },
   ".agent/skills/e2e-testing/SKILL.md": {
@@ -1320,9 +1320,9 @@
     "semantic_hash": ""
   },
   "docker-compose.yml": {
-    "mtime": 1792426632.5990007,
-    "seen": 1792428423.5745518,
-    "ast_hash": "0a826946cbb73d0969946b4051084746",
+    "mtime": 1792458940.1533663,
+    "seen": 1792459197.7511585,
+    "ast_hash": "7761468fe1937e8e696c2a2e3ec1a2b3",
     "semantic_hash": ""
   },
   "api/routes/agent.py": {
@@ -1416,9 +1416,9 @@
     "semantic_hash": ""
   },
   "services/calculations/debt_service.py": {
-    "mtime": 1792140014.3866572,
-    "seen": 1792140224.8012557,
-    "ast_hash": "45a6ec998e38ec4f70ef920c5bf69b8d",
+    "mtime": 1792458878.2288177,
+    "seen": 1792459197.7141037,
+    "ast_hash": "c0e4507b587526b75885d420a15aba48",
     "semantic_hash": ""
   },
   "services/calculations/unit_economics.py": {
@@ -2250,9 +2250,9 @@
     "semantic_hash": ""
   },
   "src/app/assistant/page.tsx": {
-    "mtime": 1792457381.7148106,
-    "seen": 1792457494.892089,
-    "ast_hash": "f96ec78e9c7ad7886cae38fb90aa5405",
+    "mtime": 1792459100.5287561,
+    "seen": 1792459197.7192292,
+    "ast_hash": "5d60f9f245752e3276d555d91196d63c",
     "semantic_hash": ""
   },
   "src/app/funding/page.tsx": {
@@ -2274,9 +2274,9 @@
     "semantic_hash": ""
   },
   "src/app/receivables/page.tsx": {
-    "mtime": 1792457221.0034533,
-    "seen": 1792457494.8922315,
-    "ast_hash": "8e4101f7977e18c1eb924a527ae0e4d7",
+    "mtime": 1792459012.866071,
+    "seen": 1792459197.7196033,
+    "ast_hash": "14594f07130dc2eb7d652a778f9bcc7d",
     "semantic_hash": ""
   },
   "src/app/settings/page.tsx": {
@@ -2364,9 +2364,9 @@
     "semantic_hash": ""
   },
   "src/components/shell/app-shell.tsx": {
-    "mtime": 1792457949.2080698,
-    "seen": 1792458015.5118694,
-    "ast_hash": "f3d5f90e3868817381a5ea217d844cbe",
+    "mtime": 1792458669.1009197,
+    "seen": 1792459197.7217677,
+    "ast_hash": "57ddbd782fee841162184b1f45adf6b4",
     "semantic_hash": ""
   },
   "src/components/shell/brand.tsx": {
@@ -2376,9 +2376,9 @@
     "semantic_hash": ""
   },
   "src/components/shell/language-menu.tsx": {
-    "mtime": 1792444137.118523,
-    "seen": 1792445696.5884511,
-    "ast_hash": "a1ec0581d54646b3b1652a171e99377a",
+    "mtime": 1792458683.05727,
+    "seen": 1792459197.7218876,
+    "ast_hash": "6ad8f378ea79620cf3d349bd4a98b63c",
     "semantic_hash": ""
   },
   "src/components/shell/providers.tsx": {
