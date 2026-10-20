@@ -32,6 +32,7 @@ def list_models(engine: LocalTransformersEngine) -> None:
         print(f"* Model ID:     {m_id}")
         print(f"  Name:         {meta['name']}")
         print(f"  Status:       {status_badge}")
+        print(f"  Tool Calling: {meta.get('tool_calling', 'Native')}")
         print(f"  Target HW:    {meta['device_preferred'].upper()} ({meta['description']})")
         print(f"  HuggingFace:  {meta['repo_id']}")
         print("-" * 56)

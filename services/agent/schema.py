@@ -39,6 +39,9 @@ class ModelItem(BaseModel):
 
     id: str
     name: str
+    tool_calling: Optional[str] = Field(default=None, description="Tool calling capability tier: Native, Supported, Basic")
+    size_gb: Optional[float] = Field(default=None, description="Model size on disk in gigabytes")
+    tier: Optional[str] = Field(default=None, description="Hardware recommendation tier")
 
 
 class FetchModelsRequest(BaseModel):

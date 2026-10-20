@@ -1290,9 +1290,9 @@
     "semantic_hash": ""
   },
   "services/agent/schema.py": {
-    "mtime": 1792443457.83172,
-    "seen": 1792444050.101742,
-    "ast_hash": "5eb07ed8463b47c78bdc7e6182a66a05",
+    "mtime": 1792520281.7697198,
+    "seen": 1792520531.3783338,
+    "ast_hash": "1029e0d984eb3822a65f67ab25cce8cd",
     "semantic_hash": ""
   },
   "services/agent/supervisor.py": {
@@ -1314,9 +1314,9 @@
     "semantic_hash": ""
   },
   "services/agent/llm_bridge.py": {
-    "mtime": 1792518455.0990248,
-    "seen": 1792519063.4674435,
-    "ast_hash": "3a5695b58be767de85f4a305e103026c",
+    "mtime": 1792520321.709282,
+    "seen": 1792520531.3777988,
+    "ast_hash": "b5e3532a31601b2ee5d640f2d18e1441",
     "semantic_hash": ""
   },
   "services/calculations/predictive_cash.py": {
@@ -1680,9 +1680,9 @@
     "semantic_hash": ""
   },
   "services/agent/local_transformers.py": {
-    "mtime": 1792519952.721062,
-    "seen": 1792520017.4476216,
-    "ast_hash": "b50cbae90c6f831a1b7b27b1172d1350",
+    "mtime": 1792520304.653811,
+    "seen": 1792520531.3779352,
+    "ast_hash": "4233c682d6bb68a36f92e50ddc8f184e",
     "semantic_hash": ""
   },
   "services/calculations/currency.py": {
@@ -1710,9 +1710,9 @@
     "semantic_hash": ""
   },
   "scripts/download_model.py": {
-    "mtime": 1792512645.7629569,
-    "seen": 1792519063.4666288,
-    "ast_hash": "c7cec89e0dad743f0ec362a6ca2f977b",
+    "mtime": 1792520438.751251,
+    "seen": 1792520531.3768015,
+    "ast_hash": "28020b2e39f0feeefc348b9fac1711e4",
     "semantic_hash": ""
   },
   "tests/unit/test_download_model.py": {
@@ -2058,9 +2058,9 @@
     "semantic_hash": ""
   },
   "config/models.json": {
-    "mtime": 1792517994.7139683,
-    "seen": 1792519063.4643693,
-    "ast_hash": "f4a4cf6c682f8a56f3a0fa7641fd4d98",
+    "mtime": 1792520268.3887737,
+    "seen": 1792520531.3744845,
+    "ast_hash": "8a0f5ec6b2d1f3cd70b4a8c7d5786074",
     "semantic_hash": ""
   },
   "components.json": {
@@ -2142,9 +2142,9 @@
     "semantic_hash": ""
   },
   "src/app/settings/page.tsx": {
-    "mtime": 1792519690.5977087,
-    "seen": 1792520017.45753,
-    "ast_hash": "ff905d7d058f5fba59cf9e4843f0b915",
+    "mtime": 1792520383.8880384,
+    "seen": 1792520531.3883748,
+    "ast_hash": "074b6c6db0f15be6109332278671380f",
     "semantic_hash": ""
   },
   "src/app/statements/page.tsx": {
@@ -2364,9 +2364,9 @@
     "semantic_hash": ""
   },
   "src/types/api.ts": {
-    "mtime": 1792427527.7031205,
-    "seen": 1792431959.8000286,
-    "ast_hash": "fa930ee87127235b9e3418a1128819db",
+    "mtime": 1792520346.9863691,
+    "seen": 1792520531.3981788,
+    "ast_hash": "14776e8626180fd67b44b74c7ff908a6",
     "semantic_hash": ""
   },
   "src/app/icon.svg": {
@@ -2466,9 +2466,9 @@
     "semantic_hash": ""
   },
   "src/lib/api.ts": {
-    "mtime": 1792519723.3872564,
-    "seen": 1792520017.463116,
-    "ast_hash": "13d1f48a61683b77ba337f0325eafdde",
+    "mtime": 1792520356.955734,
+    "seen": 1792520531.3945904,
+    "ast_hash": "7d6b2668409948a311342e078df353a9",
     "semantic_hash": ""
   },
   "src/lib/currencies.ts": {

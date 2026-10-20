@@ -158,7 +158,7 @@ export const api = {
   health: () => request<{ status: string; version: string }>('/api/v1/health', {}, 5_000),
   clearSession: () => request<{ cleared: boolean }>(`/api/v1/agent/session/${encodeURIComponent(sessionId())}`, { method: 'DELETE' }),
   fetchModels: (provider: string, apiKey?: string, baseUrl?: string) =>
-    request<{ success: boolean; provider: string; models: { id: string; name: string }[]; message?: string }>('/api/v1/agent/fetch-models', {
+    request<{ success: boolean; provider: string; models: { id: string; name: string; tool_calling?: string; size_gb?: number; tier?: string }[]; message?: string }>('/api/v1/agent/fetch-models', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ provider, api_key: apiKey, base_url: baseUrl }),

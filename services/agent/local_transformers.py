@@ -529,6 +529,7 @@ def build_supported_models_catalog() -> dict[str, dict]:
                 "repo_id": repo_id,
                 "filename": filename,
                 "size_gb": size_gb,
+                "tool_calling": item.get("tool_calling", "Supported"),
                 "local_dir": local_dir,
                 "base_dir": resolved_base_dir,
                 "description": item.get("description", ""),

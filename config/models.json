@@ -17,7 +17,8 @@
         "qwen2.5-3b",
         "qwen",
         "default"
-      ]
+      ],
+      "tool_calling": "Native (Hermes / Function Calling)"
     },
     "qwen2.5-1.5b-instruct": {
       "id": "qwen2.5-1.5b-instruct",
@@ -33,7 +34,8 @@
         "qwen-1.5b",
         "qwen2.5-1.5b",
         "qwen-fast"
-      ]
+      ],
+      "tool_calling": "Native (Function Calling)"
     },
     "llama-3.2-3b-instruct": {
       "id": "llama-3.2-3b-instruct",
@@ -49,7 +51,8 @@
         "llama-3.2-3b",
         "llama3-3b",
         "llama-3b"
-      ]
+      ],
+      "tool_calling": "Supported (Llama 3.2 Tools)"
     },
     "llama-3.2-1b-instruct": {
       "id": "llama-3.2-1b-instruct",
@@ -64,7 +67,8 @@
       "aliases": [
         "llama-3.2-1b",
         "llama-1b"
-      ]
+      ],
+      "tool_calling": "Basic (Lightweight Tools)"
     },
     "minicpm5-2b": {
       "id": "minicpm5-2b",

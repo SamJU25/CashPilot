@@ -593,13 +593,17 @@ def fetch_remote_models(req: FetchModelsRequest) -> FetchModelsResponse:
             else:
                 tier = "Requires 4GB+ Free RAM"
 
-            extra = f" ({size_str} · {tier})" if size_str else ""
+            tool_calling = m_meta.get("tool_calling") or "Supported"
+            extra = f" ({size_str} · {tier} · Tools: {tool_calling})" if size_str else ""
             display_name = f"{m_meta['name']}{extra} [{tag}]"
 
             models.append(
                 ModelItem(
                     id=m_id,
                     name=display_name,
+                    tool_calling=tool_calling,
+                    size_gb=size_gb,
+                    tier=tier,
                 )
             )
         ready_count = sum(1 for m in models if "[Ready]" in m.name)

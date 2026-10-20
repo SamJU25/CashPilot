@@ -924,9 +924,9 @@
     "semantic_hash": ""
   },
   "AGENTS.md": {
-    "mtime": 1792519007.2341678,
-    "seen": 1792519063.5117917,
-    "ast_hash": "dcb7ff032df3c45871571ae80ca0459c",
+    "mtime": 1792519793.1222765,
+    "seen": 1792520017.499126,
+    "ast_hash": "31b4badb64a2f7dea89546239746a780",
     "semantic_hash": ""
   },
   "GEMINI.md": {
@@ -1026,9 +1026,9 @@
     "semantic_hash": ""
   },
   "api/main.py": {
-    "mtime": 1792513268.9559147,
-    "seen": 1792519063.46319,
-    "ast_hash": "b9f9ebefed56a7b5d716e1a3e2a239ca",
+    "mtime": 1792519320.820014,
+    "seen": 1792520017.4420629,
+    "ast_hash": "a5f54d1ad5cdaae0d7bb755f86a166db",
     "semantic_hash": ""
   },
   "api/routes/__init__.py": {
@@ -1296,9 +1296,9 @@
     "semantic_hash": ""
   },
   "services/agent/supervisor.py": {
-    "mtime": 1792491141.8350465,
-    "seen": 1792491626.1543949,
-    "ast_hash": "700b9117eef1381ab1ed3f29e2be897b",
+    "mtime": 1792519770.0947495,
+    "seen": 1792520017.448896,
+    "ast_hash": "2f83b4d1983d0440be039f310979d145",
     "semantic_hash": ""
   },
   "services/agent/tools.py": {
@@ -1680,9 +1680,9 @@
     "semantic_hash": ""
   },
   "services/agent/local_transformers.py": {
-    "mtime": 1792518567.1959531,
-    "seen": 1792519063.4675648,
-    "ast_hash": "3e2f57339cd25543637655ddbc6699dc",
+    "mtime": 1792519952.721062,
+    "seen": 1792520017.4476216,
+    "ast_hash": "b50cbae90c6f831a1b7b27b1172d1350",
     "semantic_hash": ""
   },
   "services/calculations/currency.py": {
@@ -2112,9 +2112,9 @@
     "semantic_hash": ""
   },
   "src/app/assistant/page.tsx": {
-    "mtime": 1792518887.644994,
-    "seen": 1792519063.4756982,
-    "ast_hash": "44c1d36c1fa38532e2210a2b39b9c29f",
+    "mtime": 1792519746.706697,
+    "seen": 1792520017.4568384,
+    "ast_hash": "70db35a4fec4bbdd3bbb967a48d4e115",
     "semantic_hash": ""
   },
   "src/app/funding/page.tsx": {
@@ -2142,9 +2142,9 @@
     "semantic_hash": ""
   },
   "src/app/settings/page.tsx": {
-    "mtime": 1792518858.1567614,
-    "seen": 1792519063.4761865,
-    "ast_hash": "7da5df465144065b639a61f484d3947d",
+    "mtime": 1792519690.5977087,
+    "seen": 1792520017.45753,
+    "ast_hash": "ff905d7d058f5fba59cf9e4843f0b915",
     "semantic_hash": ""
   },
   "src/app/statements/page.tsx": {
@@ -2178,9 +2178,9 @@
     "semantic_hash": ""
   },
   "src/components/copilot/model-menu.tsx": {
-    "mtime": 1792375507.097785,
-    "seen": 1792431959.799988,
-    "ast_hash": "a466708147fa1764979137da09a6aa02",
+    "mtime": 1792519337.7253964,
+    "seen": 1792520017.458437,
+    "ast_hash": "b71ee97711d1474a94dbcd0a6599ae84",
     "semantic_hash": ""
   },
   "src/components/copilot/run-receipt.tsx": {
@@ -2466,9 +2466,9 @@
     "semantic_hash": ""
   },
   "src/lib/api.ts": {
-    "mtime": 1792518921.8734908,
-    "seen": 1792519063.4813957,
-    "ast_hash": "c7051630cf0cb1c134a01078dc444dd6",
+    "mtime": 1792519723.3872564,
+    "seen": 1792520017.463116,
+    "ast_hash": "13d1f48a61683b77ba337f0325eafdde",
     "semantic_hash": ""
   },
   "src/lib/currencies.ts": {

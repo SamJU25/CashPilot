@@ -256,7 +256,7 @@ export default function SettingsPage() {
   const setBaseUrl = (v: string) => ws.update({ providerUrls: { ...ws.providerUrls, [provider.id]: v } });
   const setApiKey = (v: string) => ws.update({ providerKeys: { ...ws.providerKeys, [provider.id]: v } });
   const [test, setTest] = useState<{ state: 'idle' | 'checking' } | { state: 'result'; ok: boolean; message: string }>({ state: 'idle' });
-  const [localModels, setLocalModels] = useState<Array<{ id: string; name: string }>>([]);
+  const [localModels, setLocalModels] = useState<Array<{ id: string; name: string; tool_calling?: string }>>([]);
   const [deviceMsg, setDeviceMsg] = useState<string>('');
   const [modelActionState, setModelActionState] = useState<'idle' | 'downloading' | 'deleting'>('idle');
   const [modelActionMsg, setModelActionMsg] = useState<{ ok: boolean; text: string } | null>(null);
@@ -281,10 +281,10 @@ export default function SettingsPage() {
   }, [provider, refreshModels]);
 
   const FALLBACK_GGUF_MODELS = useMemo(() => [
-    { id: 'qwen2.5-3b-instruct', name: 'Qwen 2.5 3B Instruct (GGUF · 2.0 GB · Recommended)' },
-    { id: 'qwen2.5-1.5b-instruct', name: 'Qwen 2.5 1.5B Instruct (GGUF · 1.0 GB · Fast / Low RAM)' },
-    { id: 'llama-3.2-3b-instruct', name: 'Llama 3.2 3B Instruct (GGUF · 2.0 GB · Meta 128k)' },
-    { id: 'llama-3.2-1b-instruct', name: 'Llama 3.2 1B Instruct (GGUF · 0.8 GB · Minimal RAM)' },
+    { id: 'qwen2.5-3b-instruct', name: 'Qwen 2.5 3B Instruct (GGUF · 2.0 GB · Recommended · Tools: Native)', tool_calling: 'Native (Hermes / Function Calling)' },
+    { id: 'qwen2.5-1.5b-instruct', name: 'Qwen 2.5 1.5B Instruct (GGUF · 1.0 GB · Fast / Low RAM · Tools: Native)', tool_calling: 'Native (Function Calling)' },
+    { id: 'llama-3.2-3b-instruct', name: 'Llama 3.2 3B Instruct (GGUF · 2.0 GB · Meta 128k · Tools: Supported)', tool_calling: 'Supported (Llama 3.2 Tools)' },
+    { id: 'llama-3.2-1b-instruct', name: 'Llama 3.2 1B Instruct (GGUF · 0.8 GB · Minimal RAM · Tools: Basic)', tool_calling: 'Basic (Lightweight Tools)' },
   ], []);
 
   const displayModels = localModels.length > 0 ? localModels : FALLBACK_GGUF_MODELS;
@@ -384,6 +384,16 @@ export default function SettingsPage() {
               </SelectContent>
             </Select>
             {deviceMsg && <p className="mt-2 text-xs text-muted-foreground">{deviceMsg}</p>}
+            {activeMeta?.tool_calling && (
+              <div className="mt-2.5 flex items-center gap-2">
+                <span className="inline-flex items-center gap-1 rounded bg-accent/70 px-2 py-0.5 text-[11px] font-mono font-medium text-foreground border border-border/50">
+                  <span className="text-good font-bold">⚡</span> Tool Calling: {activeMeta.tool_calling}
+                </span>
+                <span className="text-[11px] text-muted-foreground">
+                  Required for financial calculation engines & ledger staging.
+                </span>
+              </div>
+            )}
             <div className="mt-3 flex flex-wrap items-center gap-3">
               {isModelDownloaded ? (
                 <>

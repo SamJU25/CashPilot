@@ -201,6 +201,9 @@ export interface TestConnectionResponse {
 export interface ModelItem {
   id: string;
   name: string;
+  tool_calling?: string;
+  size_gb?: number;
+  tier?: string;
 }
 
 export interface FetchModelsRequest {
