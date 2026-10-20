@@ -23227,6 +23227,18 @@
       "source_location": "L123"
     },
     {
+      "id": "gemini_cashpilot_engineering_rules_operational_protocol",
+      "label": "CashPilot \u2014 Engineering Rules & Operational Protocol",
+      "_origin": "ast",
+      "community": 13,
+      "community_name": "1. Mandatory Invariants for Every Project",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "cashpilot \u2014 engineering rules & operational protocol",
+      "source_file": "GEMINI.md",
+      "source_location": "L1"
+    },
+    {
       "id": "gemini_detailed_phase_breakdown_when_to_use_which_agent_skill_and_rule",
       "label": "Detailed Phase Breakdown: When to Use Which Agent, Skill, and Rule",
       "_origin": "ast",
@@ -23249,18 +23261,6 @@
       "norm_label": "relevant references",
       "source_file": "GEMINI.md",
       "source_location": "L11"
-    },
-    {
-      "id": "gemini_sme_finance_copilot_engineering_rules_operational_protocol",
-      "label": "SME Finance Copilot \u2014 Engineering Rules & Operational Protocol",
-      "_origin": "ast",
-      "community": 13,
-      "community_name": "1. Mandatory Invariants for Every Project",
-      "file_type": "document",
-      "node_kind": "heading",
-      "norm_label": "sme finance copilot \u2014 engineering rules & operational protocol",
-      "source_file": "GEMINI.md",
-      "source_location": "L1"
     },
     {
       "id": "gemini_workflow_1_beginner_research_first_principles_learning",
@@ -23595,11 +23595,11 @@
       "label": "fastapi-backend-craft/SKILL.md",
       "_origin": "ast",
       "community": 135,
-      "community_name": "FastAPI Backend Craft for SME Finance Copilot",
+      "community_name": "FastAPI Backend Craft for CashPilot",
       "file_type": "document",
       "frontmatter": {
         "name": "fastapi-backend-craft",
-        "description": "Best practices for building high-performance asynchronous FastAPI backends for the SME Finance Copilot. Use when designing REST APIs, Pydantic v2 validation models, dependency injection, async database sessions, and deterministic calculation endpoints."
+        "description": "Best practices for building high-performance asynchronous FastAPI backends for CashPilot. Use when designing REST APIs, Pydantic v2 validation models, dependency injection, async database sessions, and deterministic calculation endpoints."
       },
       "node_kind": "page",
       "norm_label": "fastapi-backend-craft/skill.md",
@@ -23611,7 +23611,7 @@
       "label": "1. Architecture & Layering",
       "_origin": "ast",
       "community": 135,
-      "community_name": "FastAPI Backend Craft for SME Finance Copilot",
+      "community_name": "FastAPI Backend Craft for CashPilot",
       "file_type": "document",
       "node_kind": "heading",
       "norm_label": "1. architecture & layering",
@@ -23623,7 +23623,7 @@
       "label": "2. Invariants & Rules",
       "_origin": "ast",
       "community": 135,
-      "community_name": "FastAPI Backend Craft for SME Finance Copilot",
+      "community_name": "FastAPI Backend Craft for CashPilot",
       "file_type": "document",
       "node_kind": "heading",
       "norm_label": "2. invariants & rules",
@@ -23631,14 +23631,14 @@
       "source_location": "L29"
     },
     {
-      "id": "agent_skills_fastapi_backend_craft_skill_fastapi_backend_craft_for_sme_finance_copilot",
-      "label": "FastAPI Backend Craft for SME Finance Copilot",
+      "id": "agent_skills_fastapi_backend_craft_skill_fastapi_backend_craft_for_cashpilot",
+      "label": "FastAPI Backend Craft for CashPilot",
       "_origin": "ast",
       "community": 135,
-      "community_name": "FastAPI Backend Craft for SME Finance Copilot",
+      "community_name": "FastAPI Backend Craft for CashPilot",
       "file_type": "document",
       "node_kind": "heading",
-      "norm_label": "fastapi backend craft for sme finance copilot",
+      "norm_label": "fastapi backend craft for cashpilot",
       "source_file": ".agent/skills/fastapi-backend-craft/SKILL.md",
       "source_location": "L6"
     },
@@ -23957,7 +23957,7 @@
       "file_type": "document",
       "frontmatter": {
         "name": "mcp-builder",
-        "description": "Design and implementation of Model Context Protocol (MCP) tool servers for the SME Finance Copilot. Use when exposing local databases, ERP connectors, bank statement parsers, and financial calculator tools to LLMs via standard JSON-RPC protocol."
+        "description": "Design and implementation of Model Context Protocol (MCP) tool servers for CashPilot. Use when exposing local databases, ERP connectors, bank statement parsers, and financial calculator tools to LLMs via standard JSON-RPC protocol."
       },
       "node_kind": "page",
       "norm_label": "mcp-builder/skill.md",
@@ -26451,6 +26451,18 @@
       "source_location": "L147"
     },
     {
+      "id": "claude_cashpilot_claude_code_operational_protocol",
+      "label": "CashPilot \u2014 Claude Code Operational Protocol",
+      "_origin": "ast",
+      "community": 170,
+      "community_name": "2. Mandatory Invariants (Strict Enforcement)",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "cashpilot \u2014 claude code operational protocol",
+      "source_file": "CLAUDE.md",
+      "source_location": "L1"
+    },
+    {
       "id": "claude_complete_57_skill_directory_by_domain",
       "label": "Complete 57-Skill Directory by Domain:",
       "_origin": "ast",
@@ -26461,18 +26473,6 @@
       "norm_label": "complete 57-skill directory by domain:",
       "source_file": "CLAUDE.md",
       "source_location": "L87"
-    },
-    {
-      "id": "claude_sme_finance_copilot_claude_code_operational_protocol",
-      "label": "SME Finance Copilot \u2014 Claude Code Operational Protocol",
-      "_origin": "ast",
-      "community": 170,
-      "community_name": "2. Mandatory Invariants (Strict Enforcement)",
-      "file_type": "document",
-      "node_kind": "heading",
-      "norm_label": "sme finance copilot \u2014 claude code operational protocol",
-      "source_file": "CLAUDE.md",
-      "source_location": "L1"
     },
     {
       "id": "src_app_api_session_route",
@@ -29130,7 +29130,7 @@
       "label": "1.1 Project Form Factor: Responsive Web Application with PWA",
       "_origin": "ast",
       "community": 182,
-      "community_name": "SME Finance Copilot: Master System Design (`system.md`)",
+      "community_name": "CashPilot: Master System Design (`system.md`)",
       "file_type": "document",
       "node_kind": "heading",
       "norm_label": "1.1 project form factor: responsive web application with pwa",
@@ -29142,7 +29142,7 @@
       "label": "1.2 Form Factor Decision & Trade-Off Matrix",
       "_origin": "ast",
       "community": 182,
-      "community_name": "SME Finance Copilot: Master System Design (`system.md`)",
+      "community_name": "CashPilot: Master System Design (`system.md`)",
       "file_type": "document",
       "node_kind": "heading",
       "norm_label": "1.2 form factor decision & trade-off matrix",
@@ -29154,7 +29154,7 @@
       "label": "1. Executive System Overview & Form Factor",
       "_origin": "ast",
       "community": 182,
-      "community_name": "SME Finance Copilot: Master System Design (`system.md`)",
+      "community_name": "CashPilot: Master System Design (`system.md`)",
       "file_type": "document",
       "node_kind": "heading",
       "norm_label": "1. executive system overview & form factor",
@@ -29166,7 +29166,7 @@
       "label": "3.1 Technology Stack & Rendering",
       "_origin": "ast",
       "community": 182,
-      "community_name": "SME Finance Copilot: Master System Design (`system.md`)",
+      "community_name": "CashPilot: Master System Design (`system.md`)",
       "file_type": "document",
       "node_kind": "heading",
       "norm_label": "3.1 technology stack & rendering",
@@ -29178,7 +29178,7 @@
       "label": "3.2 Four-State Component Protocol",
       "_origin": "ast",
       "community": 182,
-      "community_name": "SME Finance Copilot: Master System Design (`system.md`)",
+      "community_name": "CashPilot: Master System Design (`system.md`)",
       "file_type": "document",
       "node_kind": "heading",
       "norm_label": "3.2 four-state component protocol",
@@ -29190,7 +29190,7 @@
       "label": "3.3 Real-Time Streaming & Live Alerts *(planned)*",
       "_origin": "ast",
       "community": 182,
-      "community_name": "SME Finance Copilot: Master System Design (`system.md`)",
+      "community_name": "CashPilot: Master System Design (`system.md`)",
       "file_type": "document",
       "node_kind": "heading",
       "norm_label": "3.3 real-time streaming & live alerts *(planned)*",
@@ -29202,7 +29202,7 @@
       "label": "3. Frontend Backbone Specification",
       "_origin": "ast",
       "community": 182,
-      "community_name": "SME Finance Copilot: Master System Design (`system.md`)",
+      "community_name": "CashPilot: Master System Design (`system.md`)",
       "file_type": "document",
       "node_kind": "heading",
       "norm_label": "3. frontend backbone specification",
@@ -29214,7 +29214,7 @@
       "label": "4.1 Application Server Architecture",
       "_origin": "ast",
       "community": 182,
-      "community_name": "SME Finance Copilot: Master System Design (`system.md`)",
+      "community_name": "CashPilot: Master System Design (`system.md`)",
       "file_type": "document",
       "node_kind": "heading",
       "norm_label": "4.1 application server architecture",
@@ -29226,7 +29226,7 @@
       "label": "4.2 Multi-Format Statement Ingestion",
       "_origin": "ast",
       "community": 182,
-      "community_name": "SME Finance Copilot: Master System Design (`system.md`)",
+      "community_name": "CashPilot: Master System Design (`system.md`)",
       "file_type": "document",
       "node_kind": "heading",
       "norm_label": "4.2 multi-format statement ingestion",
@@ -29238,7 +29238,7 @@
       "label": "4.3 Policy Decision Tables (ZenEngine)",
       "_origin": "ast",
       "community": 182,
-      "community_name": "SME Finance Copilot: Master System Design (`system.md`)",
+      "community_name": "CashPilot: Master System Design (`system.md`)",
       "file_type": "document",
       "node_kind": "heading",
       "norm_label": "4.3 policy decision tables (zenengine)",
@@ -29250,7 +29250,7 @@
       "label": "4.4 Data Models & Schema Contracts",
       "_origin": "ast",
       "community": 182,
-      "community_name": "SME Finance Copilot: Master System Design (`system.md`)",
+      "community_name": "CashPilot: Master System Design (`system.md`)",
       "file_type": "document",
       "node_kind": "heading",
       "norm_label": "4.4 data models & schema contracts",
@@ -29262,7 +29262,7 @@
       "label": "4.5 Verified REST API Endpoints",
       "_origin": "ast",
       "community": 182,
-      "community_name": "SME Finance Copilot: Master System Design (`system.md`)",
+      "community_name": "CashPilot: Master System Design (`system.md`)",
       "file_type": "document",
       "node_kind": "heading",
       "norm_label": "4.5 verified rest api endpoints",
@@ -29274,7 +29274,7 @@
       "label": "4. Backend Backbone Specification",
       "_origin": "ast",
       "community": 182,
-      "community_name": "SME Finance Copilot: Master System Design (`system.md`)",
+      "community_name": "CashPilot: Master System Design (`system.md`)",
       "file_type": "document",
       "node_kind": "heading",
       "norm_label": "4. backend backbone specification",
@@ -29286,7 +29286,7 @@
       "label": "5.1 Dynamic Semantic Intent Routing",
       "_origin": "ast",
       "community": 182,
-      "community_name": "SME Finance Copilot: Master System Design (`system.md`)",
+      "community_name": "CashPilot: Master System Design (`system.md`)",
       "file_type": "document",
       "node_kind": "heading",
       "norm_label": "5.1 dynamic semantic intent routing",
@@ -29298,7 +29298,7 @@
       "label": "5.2 Local SLM Inference Engine",
       "_origin": "ast",
       "community": 182,
-      "community_name": "SME Finance Copilot: Master System Design (`system.md`)",
+      "community_name": "CashPilot: Master System Design (`system.md`)",
       "file_type": "document",
       "node_kind": "heading",
       "norm_label": "5.2 local slm inference engine",
@@ -29310,7 +29310,7 @@
       "label": "5.3 Universal LLM Bridge",
       "_origin": "ast",
       "community": 182,
-      "community_name": "SME Finance Copilot: Master System Design (`system.md`)",
+      "community_name": "CashPilot: Master System Design (`system.md`)",
       "file_type": "document",
       "node_kind": "heading",
       "norm_label": "5.3 universal llm bridge",
@@ -29322,7 +29322,7 @@
       "label": "5. LLM Brain, Semantic Routing & Universal Bridge",
       "_origin": "ast",
       "community": 182,
-      "community_name": "SME Finance Copilot: Master System Design (`system.md`)",
+      "community_name": "CashPilot: Master System Design (`system.md`)",
       "file_type": "document",
       "node_kind": "heading",
       "norm_label": "5. llm brain, semantic routing & universal bridge",
@@ -29334,7 +29334,7 @@
       "label": "6.1 Smart Contract (`InvoiceRegistry.sol`)",
       "_origin": "ast",
       "community": 182,
-      "community_name": "SME Finance Copilot: Master System Design (`system.md`)",
+      "community_name": "CashPilot: Master System Design (`system.md`)",
       "file_type": "document",
       "node_kind": "heading",
       "norm_label": "6.1 smart contract (`invoiceregistry.sol`)",
@@ -29346,7 +29346,7 @@
       "label": "6.2 Canonical Hashing Algorithm",
       "_origin": "ast",
       "community": 182,
-      "community_name": "SME Finance Copilot: Master System Design (`system.md`)",
+      "community_name": "CashPilot: Master System Design (`system.md`)",
       "file_type": "document",
       "node_kind": "heading",
       "norm_label": "6.2 canonical hashing algorithm",
@@ -29358,7 +29358,7 @@
       "label": "6. Consortium Blockchain Engine (FISCO BCOS)",
       "_origin": "ast",
       "community": 182,
-      "community_name": "SME Finance Copilot: Master System Design (`system.md`)",
+      "community_name": "CashPilot: Master System Design (`system.md`)",
       "file_type": "document",
       "node_kind": "heading",
       "norm_label": "6. consortium blockchain engine (fisco bcos)",
@@ -29366,28 +29366,28 @@
       "source_location": "L270"
     },
     {
+      "id": "docs_system_cashpilot_master_system_design_system_md",
+      "label": "CashPilot: Master System Design (`system.md`)",
+      "_origin": "ast",
+      "community": 182,
+      "community_name": "CashPilot: Master System Design (`system.md`)",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "cashpilot: master system design (`system.md`)",
+      "source_file": "docs/system.md",
+      "source_location": "L1"
+    },
+    {
       "id": "docs_system_master_documentation_suite",
       "label": "Master Documentation Suite:",
       "_origin": "ast",
       "community": 182,
-      "community_name": "SME Finance Copilot: Master System Design (`system.md`)",
+      "community_name": "CashPilot: Master System Design (`system.md`)",
       "file_type": "document",
       "node_kind": "heading",
       "norm_label": "master documentation suite:",
       "source_file": "docs/system.md",
       "source_location": "L8"
-    },
-    {
-      "id": "docs_system_sme_finance_copilot_master_system_design_system_md",
-      "label": "SME Finance Copilot: Master System Design (`system.md`)",
-      "_origin": "ast",
-      "community": 182,
-      "community_name": "SME Finance Copilot: Master System Design (`system.md`)",
-      "file_type": "document",
-      "node_kind": "heading",
-      "norm_label": "sme finance copilot: master system design (`system.md`)",
-      "source_file": "docs/system.md",
-      "source_location": "L1"
     },
     {
       "id": "ipv4address",
@@ -30138,7 +30138,7 @@
       "label": "1. Macro Architecture & 6-Layer Topology",
       "_origin": "ast",
       "community": 186,
-      "community_name": "SME Finance Copilot: Master Architectural Plan (`architecture.md`)",
+      "community_name": "CashPilot: Master Architectural Plan (`architecture.md`)",
       "file_type": "document",
       "node_kind": "heading",
       "norm_label": "1. macro architecture & 6-layer topology",
@@ -30150,7 +30150,7 @@
       "label": "2. Operating Model & Multi-Agent Topology",
       "_origin": "ast",
       "community": 186,
-      "community_name": "SME Finance Copilot: Master Architectural Plan (`architecture.md`)",
+      "community_name": "CashPilot: Master Architectural Plan (`architecture.md`)",
       "file_type": "document",
       "node_kind": "heading",
       "norm_label": "2. operating model & multi-agent topology",
@@ -30162,7 +30162,7 @@
       "label": "3.1 Database Selection: PostgreSQL 16 (+ SQLite for Local Dev)",
       "_origin": "ast",
       "community": 186,
-      "community_name": "SME Finance Copilot: Master Architectural Plan (`architecture.md`)",
+      "community_name": "CashPilot: Master Architectural Plan (`architecture.md`)",
       "file_type": "document",
       "node_kind": "heading",
       "norm_label": "3.1 database selection: postgresql 16 (+ sqlite for local dev)",
@@ -30174,7 +30174,7 @@
       "label": "3.2 Agent Memory Architecture: Zero Cognitive Graph Bloat",
       "_origin": "ast",
       "community": 186,
-      "community_name": "SME Finance Copilot: Master Architectural Plan (`architecture.md`)",
+      "community_name": "CashPilot: Master Architectural Plan (`architecture.md`)",
       "file_type": "document",
       "node_kind": "heading",
       "norm_label": "3.2 agent memory architecture: zero cognitive graph bloat",
@@ -30186,7 +30186,7 @@
       "label": "3. Database & Agent Memory Architectural Decision",
       "_origin": "ast",
       "community": 186,
-      "community_name": "SME Finance Copilot: Master Architectural Plan (`architecture.md`)",
+      "community_name": "CashPilot: Master Architectural Plan (`architecture.md`)",
       "file_type": "document",
       "node_kind": "heading",
       "norm_label": "3. database & agent memory architectural decision",
@@ -30198,7 +30198,7 @@
       "label": "4. Phased Sprint Roadmap & Verified Milestones",
       "_origin": "ast",
       "community": 186,
-      "community_name": "SME Finance Copilot: Master Architectural Plan (`architecture.md`)",
+      "community_name": "CashPilot: Master Architectural Plan (`architecture.md`)",
       "file_type": "document",
       "node_kind": "heading",
       "norm_label": "4. phased sprint roadmap & verified milestones",
@@ -30206,11 +30206,23 @@
       "source_location": "L184"
     },
     {
+      "id": "docs_architecture_cashpilot_master_architectural_plan_architecture_md",
+      "label": "CashPilot: Master Architectural Plan (`architecture.md`)",
+      "_origin": "ast",
+      "community": 186,
+      "community_name": "CashPilot: Master Architectural Plan (`architecture.md`)",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "cashpilot: master architectural plan (`architecture.md`)",
+      "source_file": "docs/architecture.md",
+      "source_location": "L1"
+    },
+    {
       "id": "docs_architecture_master_documentation_suite",
       "label": "Master Documentation Suite:",
       "_origin": "ast",
       "community": 186,
-      "community_name": "SME Finance Copilot: Master Architectural Plan (`architecture.md`)",
+      "community_name": "CashPilot: Master Architectural Plan (`architecture.md`)",
       "file_type": "document",
       "node_kind": "heading",
       "norm_label": "master documentation suite:",
@@ -30222,7 +30234,7 @@
       "label": "Runtime Functional Execution Squads",
       "_origin": "ast",
       "community": 186,
-      "community_name": "SME Finance Copilot: Master Architectural Plan (`architecture.md`)",
+      "community_name": "CashPilot: Master Architectural Plan (`architecture.md`)",
       "file_type": "document",
       "node_kind": "heading",
       "norm_label": "runtime functional execution squads",
@@ -30230,23 +30242,11 @@
       "source_location": "L121"
     },
     {
-      "id": "docs_architecture_sme_finance_copilot_master_architectural_plan_architecture_md",
-      "label": "SME Finance Copilot: Master Architectural Plan (`architecture.md`)",
-      "_origin": "ast",
-      "community": 186,
-      "community_name": "SME Finance Copilot: Master Architectural Plan (`architecture.md`)",
-      "file_type": "document",
-      "node_kind": "heading",
-      "norm_label": "sme finance copilot: master architectural plan (`architecture.md`)",
-      "source_file": "docs/architecture.md",
-      "source_location": "L1"
-    },
-    {
       "id": "docs_architecture_squad_responsibilities_boundaries",
       "label": "Squad Responsibilities & Boundaries",
       "_origin": "ast",
       "community": 186,
-      "community_name": "SME Finance Copilot: Master Architectural Plan (`architecture.md`)",
+      "community_name": "CashPilot: Master Architectural Plan (`architecture.md`)",
       "file_type": "document",
       "node_kind": "heading",
       "norm_label": "squad responsibilities & boundaries",
@@ -32058,6 +32058,18 @@
       "source_location": "L166"
     },
     {
+      "id": "agents_cashpilot_ai_agents_task_routing_engine",
+      "label": "CashPilot \u2014 AI Agents & Task Routing Engine",
+      "_origin": "ast",
+      "community": 200,
+      "community_name": "2. Subagent Suites Directory (57 Specialized Subagents)",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "cashpilot \u2014 ai agents & task routing engine",
+      "source_file": "AGENTS.md",
+      "source_location": "L1"
+    },
+    {
       "id": "agents_master_documentation_operational_protocols",
       "label": "Master Documentation & Operational Protocols:",
       "_origin": "ast",
@@ -32068,18 +32080,6 @@
       "norm_label": "master documentation & operational protocols:",
       "source_file": "AGENTS.md",
       "source_location": "L5"
-    },
-    {
-      "id": "agents_sme_finance_copilot_ai_agents_task_routing_engine",
-      "label": "SME Finance Copilot \u2014 AI Agents & Task Routing Engine",
-      "_origin": "ast",
-      "community": 200,
-      "community_name": "2. Subagent Suites Directory (57 Specialized Subagents)",
-      "file_type": "document",
-      "node_kind": "heading",
-      "norm_label": "sme finance copilot \u2014 ai agents & task routing engine",
-      "source_file": "AGENTS.md",
-      "source_location": "L1"
     },
     {
       "id": "agents_suite_0_global_governance_specialists_agent_agents_0_global_specialists",
@@ -39586,11 +39586,11 @@
       "label": "docker-patterns/SKILL.md",
       "_origin": "ast",
       "community": 255,
-      "community_name": "Docker Patterns for SME Finance Copilot",
+      "community_name": "Docker Patterns for CashPilot",
       "file_type": "document",
       "frontmatter": {
         "name": "docker-patterns",
-        "description": "Containerization patterns for SME Finance Copilot. Use when authoring multi-stage Dockerfiles, docker-compose setups, container healthchecks, and production runtime environments without hardcoded hostnames or credentials."
+        "description": "Containerization patterns for CashPilot. Use when authoring multi-stage Dockerfiles, docker-compose setups, container healthchecks, and production runtime environments without hardcoded hostnames or credentials."
       },
       "node_kind": "page",
       "norm_label": "docker-patterns/skill.md",
@@ -39602,7 +39602,7 @@
       "label": "1. Multi-Stage Architecture",
       "_origin": "ast",
       "community": 255,
-      "community_name": "Docker Patterns for SME Finance Copilot",
+      "community_name": "Docker Patterns for CashPilot",
       "file_type": "document",
       "node_kind": "heading",
       "norm_label": "1. multi-stage architecture",
@@ -39614,7 +39614,7 @@
       "label": "2. Invariants & Rules",
       "_origin": "ast",
       "community": 255,
-      "community_name": "Docker Patterns for SME Finance Copilot",
+      "community_name": "Docker Patterns for CashPilot",
       "file_type": "document",
       "node_kind": "heading",
       "norm_label": "2. invariants & rules",
@@ -39622,14 +39622,14 @@
       "source_location": "L21"
     },
     {
-      "id": "agent_skills_docker_patterns_skill_docker_patterns_for_sme_finance_copilot",
-      "label": "Docker Patterns for SME Finance Copilot",
+      "id": "agent_skills_docker_patterns_skill_docker_patterns_for_cashpilot",
+      "label": "Docker Patterns for CashPilot",
       "_origin": "ast",
       "community": 255,
-      "community_name": "Docker Patterns for SME Finance Copilot",
+      "community_name": "Docker Patterns for CashPilot",
       "file_type": "document",
       "node_kind": "heading",
-      "norm_label": "docker patterns for sme finance copilot",
+      "norm_label": "docker patterns for cashpilot",
       "source_file": ".agent/skills/docker-patterns/SKILL.md",
       "source_location": "L6"
     },
@@ -39638,11 +39638,11 @@
       "label": "e2e-testing/SKILL.md",
       "_origin": "ast",
       "community": 256,
-      "community_name": "End-to-End (E2E) Testing for SME Finance Copilot",
+      "community_name": "End-to-End (E2E) Testing for CashPilot",
       "file_type": "document",
       "frontmatter": {
         "name": "e2e-testing",
-        "description": "End-to-end testing patterns and test authoring for SME Finance Copilot. Use when designing user flow tests, browser journey automation, CSV upload verification, row-level error provenance assertions, and security staging gates."
+        "description": "End-to-end testing patterns and test authoring for CashPilot. Use when designing user flow tests, browser journey automation, CSV upload verification, row-level error provenance assertions, and security staging gates."
       },
       "node_kind": "page",
       "norm_label": "e2e-testing/skill.md",
@@ -39654,7 +39654,7 @@
       "label": "1. Core User Flow Coverage",
       "_origin": "ast",
       "community": 256,
-      "community_name": "End-to-End (E2E) Testing for SME Finance Copilot",
+      "community_name": "End-to-End (E2E) Testing for CashPilot",
       "file_type": "document",
       "node_kind": "heading",
       "norm_label": "1. core user flow coverage",
@@ -39666,7 +39666,7 @@
       "label": "2. Testing Invariants",
       "_origin": "ast",
       "community": 256,
-      "community_name": "End-to-End (E2E) Testing for SME Finance Copilot",
+      "community_name": "End-to-End (E2E) Testing for CashPilot",
       "file_type": "document",
       "node_kind": "heading",
       "norm_label": "2. testing invariants",
@@ -39674,14 +39674,14 @@
       "source_location": "L26"
     },
     {
-      "id": "agent_skills_e2e_testing_skill_end_to_end_e2e_testing_for_sme_finance_copilot",
-      "label": "End-to-End (E2E) Testing for SME Finance Copilot",
+      "id": "agent_skills_e2e_testing_skill_end_to_end_e2e_testing_for_cashpilot",
+      "label": "End-to-End (E2E) Testing for CashPilot",
       "_origin": "ast",
       "community": 256,
-      "community_name": "End-to-End (E2E) Testing for SME Finance Copilot",
+      "community_name": "End-to-End (E2E) Testing for CashPilot",
       "file_type": "document",
       "node_kind": "heading",
-      "norm_label": "end-to-end (e2e) testing for sme finance copilot",
+      "norm_label": "end-to-end (e2e) testing for cashpilot",
       "source_file": ".agent/skills/e2e-testing/SKILL.md",
       "source_location": "L6"
     },
@@ -42841,6 +42841,18 @@
       "source_location": "L177"
     },
     {
+      "id": "docs_security_cashpilot_master_security_architecture_security_md",
+      "label": "CashPilot: Master Security Architecture (`security.md`)",
+      "_origin": "ast",
+      "community": 283,
+      "community_name": "tenant_token.py",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "cashpilot: master security architecture (`security.md`)",
+      "source_file": "docs/security.md",
+      "source_location": "L1"
+    },
+    {
       "id": "docs_security_master_documentation_suite",
       "label": "Master Documentation Suite:",
       "_origin": "ast",
@@ -42851,18 +42863,6 @@
       "norm_label": "master documentation suite:",
       "source_file": "docs/security.md",
       "source_location": "L8"
-    },
-    {
-      "id": "docs_security_sme_finance_copilot_master_security_architecture_security_md",
-      "label": "SME Finance Copilot: Master Security Architecture (`security.md`)",
-      "_origin": "ast",
-      "community": 283,
-      "community_name": "tenant_token.py",
-      "file_type": "document",
-      "node_kind": "heading",
-      "norm_label": "sme finance copilot: master security architecture (`security.md`)",
-      "source_file": "docs/security.md",
-      "source_location": "L1"
     },
     {
       "id": "api_dependencies_rationale_1",
@@ -43903,7 +43903,7 @@
       "label": "buffy-builder-config.md",
       "_origin": "ast",
       "community": 289,
-      "community_name": "Buffy Builder Config \u2014 SME Finance Copilot",
+      "community_name": "Buffy Builder Config \u2014 CashPilot",
       "file_type": "document",
       "frontmatter": {
         "name": "buffy-builder-config",
@@ -43919,7 +43919,7 @@
       "label": "1. Subagents (57 files in `.agent/agents/`, 8 suites)",
       "_origin": "ast",
       "community": 289,
-      "community_name": "Buffy Builder Config \u2014 SME Finance Copilot",
+      "community_name": "Buffy Builder Config \u2014 CashPilot",
       "file_type": "document",
       "node_kind": "heading",
       "norm_label": "1. subagents (57 files in `.agent/agents/`, 8 suites)",
@@ -43931,7 +43931,7 @@
       "label": "2. Skills (56 dirs in `.agent/skills/`, each with `SKILL.md`)",
       "_origin": "ast",
       "community": 289,
-      "community_name": "Buffy Builder Config \u2014 SME Finance Copilot",
+      "community_name": "Buffy Builder Config \u2014 CashPilot",
       "file_type": "document",
       "node_kind": "heading",
       "norm_label": "2. skills (56 dirs in `.agent/skills/`, each with `skill.md`)",
@@ -43943,7 +43943,7 @@
       "label": "3. Workflows (`.agent/workflows/`)",
       "_origin": "ast",
       "community": 289,
-      "community_name": "Buffy Builder Config \u2014 SME Finance Copilot",
+      "community_name": "Buffy Builder Config \u2014 CashPilot",
       "file_type": "document",
       "node_kind": "heading",
       "norm_label": "3. workflows (`.agent/workflows/`)",
@@ -43955,7 +43955,7 @@
       "label": "4. Rules (`.agent/rules/`)",
       "_origin": "ast",
       "community": 289,
-      "community_name": "Buffy Builder Config \u2014 SME Finance Copilot",
+      "community_name": "Buffy Builder Config \u2014 CashPilot",
       "file_type": "document",
       "node_kind": "heading",
       "norm_label": "4. rules (`.agent/rules/`)",
@@ -43963,14 +43963,14 @@
       "source_location": "L47"
     },
     {
-      "id": "agent_buffy_builder_config_buffy_builder_config_sme_finance_copilot",
-      "label": "Buffy Builder Config \u2014 SME Finance Copilot",
+      "id": "agent_buffy_builder_config_buffy_builder_config_cashpilot",
+      "label": "Buffy Builder Config \u2014 CashPilot",
       "_origin": "ast",
       "community": 289,
-      "community_name": "Buffy Builder Config \u2014 SME Finance Copilot",
+      "community_name": "Buffy Builder Config \u2014 CashPilot",
       "file_type": "document",
       "node_kind": "heading",
-      "norm_label": "buffy builder config \u2014 sme finance copilot",
+      "norm_label": "buffy builder config \u2014 cashpilot",
       "source_file": ".agent/buffy-builder-config.md",
       "source_location": "L6"
     },
@@ -44288,6 +44288,18 @@
       "source_location": "L27"
     },
     {
+      "id": "docs_glossary_cashpilot_ubiquitous_domain_glossary",
+      "label": "CashPilot \u2014 Ubiquitous Domain Glossary",
+      "_origin": "ast",
+      "community": 292,
+      "community_name": "1. Core SME Working Capital & Liquidity Metrics",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "cashpilot \u2014 ubiquitous domain glossary",
+      "source_file": "docs/GLOSSARY.md",
+      "source_location": "L1"
+    },
+    {
       "id": "docs_glossary_consortium_blockchain_fisco_bcos_audit_trail",
       "label": "Consortium Blockchain (FISCO BCOS) Audit Trail",
       "_origin": "ast",
@@ -44442,18 +44454,6 @@
       "norm_label": "revenue-based financing (rbf)",
       "source_file": "docs/GLOSSARY.md",
       "source_location": "L70"
-    },
-    {
-      "id": "docs_glossary_sme_finance_copilot_ubiquitous_domain_glossary",
-      "label": "SME Finance Copilot \u2014 Ubiquitous Domain Glossary",
-      "_origin": "ast",
-      "community": 292,
-      "community_name": "1. Core SME Working Capital & Liquidity Metrics",
-      "file_type": "document",
-      "node_kind": "heading",
-      "norm_label": "sme finance copilot \u2014 ubiquitous domain glossary",
-      "source_file": "docs/GLOSSARY.md",
-      "source_location": "L1"
     },
     {
       "id": "agent_workflows_sprint_workflow_1_before_editing",
@@ -128755,7 +128755,7 @@
     },
     {
       "source": "agent_buffy_builder_config",
-      "target": "agent_buffy_builder_config_buffy_builder_config_sme_finance_copilot",
+      "target": "agent_buffy_builder_config_buffy_builder_config_cashpilot",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -128765,7 +128765,7 @@
       "weight": 1.0
     },
     {
-      "source": "agent_buffy_builder_config_buffy_builder_config_sme_finance_copilot",
+      "source": "agent_buffy_builder_config_buffy_builder_config_cashpilot",
       "target": "agent_buffy_builder_config_1_subagents_57_files_in_agent_agents_8_suites",
       "relation": "contains",
       "_origin": "ast",
@@ -128776,7 +128776,7 @@
       "weight": 1.0
     },
     {
-      "source": "agent_buffy_builder_config_buffy_builder_config_sme_finance_copilot",
+      "source": "agent_buffy_builder_config_buffy_builder_config_cashpilot",
       "target": "agent_buffy_builder_config_2_skills_56_dirs_in_agent_skills_each_with_skill_md",
       "relation": "contains",
       "_origin": "ast",
@@ -128787,7 +128787,7 @@
       "weight": 1.0
     },
     {
-      "source": "agent_buffy_builder_config_buffy_builder_config_sme_finance_copilot",
+      "source": "agent_buffy_builder_config_buffy_builder_config_cashpilot",
       "target": "agent_buffy_builder_config_3_workflows_agent_workflows",
       "relation": "contains",
       "_origin": "ast",
@@ -128798,7 +128798,7 @@
       "weight": 1.0
     },
     {
-      "source": "agent_buffy_builder_config_buffy_builder_config_sme_finance_copilot",
+      "source": "agent_buffy_builder_config_buffy_builder_config_cashpilot",
       "target": "agent_buffy_builder_config_4_rules_agent_rules",
       "relation": "contains",
       "_origin": "ast",
@@ -133936,7 +133936,7 @@
     },
     {
       "source": "agent_skills_docker_patterns_skill",
-      "target": "agent_skills_docker_patterns_skill_docker_patterns_for_sme_finance_copilot",
+      "target": "agent_skills_docker_patterns_skill_docker_patterns_for_cashpilot",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -133946,7 +133946,7 @@
       "weight": 1.0
     },
     {
-      "source": "agent_skills_docker_patterns_skill_docker_patterns_for_sme_finance_copilot",
+      "source": "agent_skills_docker_patterns_skill_docker_patterns_for_cashpilot",
       "target": "agent_skills_docker_patterns_skill_1_multi_stage_architecture",
       "relation": "contains",
       "_origin": "ast",
@@ -133957,7 +133957,7 @@
       "weight": 1.0
     },
     {
-      "source": "agent_skills_docker_patterns_skill_docker_patterns_for_sme_finance_copilot",
+      "source": "agent_skills_docker_patterns_skill_docker_patterns_for_cashpilot",
       "target": "agent_skills_docker_patterns_skill_2_invariants_rules",
       "relation": "contains",
       "_origin": "ast",
@@ -134046,7 +134046,7 @@
     },
     {
       "source": "agent_skills_e2e_testing_skill",
-      "target": "agent_skills_e2e_testing_skill_end_to_end_e2e_testing_for_sme_finance_copilot",
+      "target": "agent_skills_e2e_testing_skill_end_to_end_e2e_testing_for_cashpilot",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -134056,7 +134056,7 @@
       "weight": 1.0
     },
     {
-      "source": "agent_skills_e2e_testing_skill_end_to_end_e2e_testing_for_sme_finance_copilot",
+      "source": "agent_skills_e2e_testing_skill_end_to_end_e2e_testing_for_cashpilot",
       "target": "agent_skills_e2e_testing_skill_1_core_user_flow_coverage",
       "relation": "contains",
       "_origin": "ast",
@@ -134067,7 +134067,7 @@
       "weight": 1.0
     },
     {
-      "source": "agent_skills_e2e_testing_skill_end_to_end_e2e_testing_for_sme_finance_copilot",
+      "source": "agent_skills_e2e_testing_skill_end_to_end_e2e_testing_for_cashpilot",
       "target": "agent_skills_e2e_testing_skill_2_testing_invariants",
       "relation": "contains",
       "_origin": "ast",
@@ -135069,7 +135069,7 @@
     },
     {
       "source": "agent_skills_fastapi_backend_craft_skill",
-      "target": "agent_skills_fastapi_backend_craft_skill_fastapi_backend_craft_for_sme_finance_copilot",
+      "target": "agent_skills_fastapi_backend_craft_skill_fastapi_backend_craft_for_cashpilot",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -135079,7 +135079,7 @@
       "weight": 1.0
     },
     {
-      "source": "agent_skills_fastapi_backend_craft_skill_fastapi_backend_craft_for_sme_finance_copilot",
+      "source": "agent_skills_fastapi_backend_craft_skill_fastapi_backend_craft_for_cashpilot",
       "target": "agent_skills_fastapi_backend_craft_skill_1_architecture_layering",
       "relation": "contains",
       "_origin": "ast",
@@ -135090,7 +135090,7 @@
       "weight": 1.0
     },
     {
-      "source": "agent_skills_fastapi_backend_craft_skill_fastapi_backend_craft_for_sme_finance_copilot",
+      "source": "agent_skills_fastapi_backend_craft_skill_fastapi_backend_craft_for_cashpilot",
       "target": "agent_skills_fastapi_backend_craft_skill_2_invariants_rules",
       "relation": "contains",
       "_origin": "ast",
@@ -138303,7 +138303,7 @@
     },
     {
       "source": "agents",
-      "target": "agents_sme_finance_copilot_ai_agents_task_routing_engine",
+      "target": "agents_cashpilot_ai_agents_task_routing_engine",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -138412,7 +138412,7 @@
       "weight": 1.0
     },
     {
-      "source": "agents_sme_finance_copilot_ai_agents_task_routing_engine",
+      "source": "agents_cashpilot_ai_agents_task_routing_engine",
       "target": "agents_3_dynamic_task_routing_matrix_scenario_to_squad_mapping",
       "relation": "contains",
       "_origin": "ast",
@@ -138423,7 +138423,7 @@
       "weight": 1.0
     },
     {
-      "source": "agents_sme_finance_copilot_ai_agents_task_routing_engine",
+      "source": "agents_cashpilot_ai_agents_task_routing_engine",
       "target": "agents_4_antigravity_agent_execution_protocol",
       "relation": "contains",
       "_origin": "ast",
@@ -138434,7 +138434,7 @@
       "weight": 1.0
     },
     {
-      "source": "agents_sme_finance_copilot_ai_agents_task_routing_engine",
+      "source": "agents_cashpilot_ai_agents_task_routing_engine",
       "target": "agents_1_operating_model_hierarchy_matrix",
       "relation": "contains",
       "_origin": "ast",
@@ -138445,7 +138445,7 @@
       "weight": 1.0
     },
     {
-      "source": "agents_sme_finance_copilot_ai_agents_task_routing_engine",
+      "source": "agents_cashpilot_ai_agents_task_routing_engine",
       "target": "agents_master_documentation_operational_protocols",
       "relation": "contains",
       "_origin": "ast",
@@ -138456,7 +138456,7 @@
       "weight": 1.0
     },
     {
-      "source": "agents_sme_finance_copilot_ai_agents_task_routing_engine",
+      "source": "agents_cashpilot_ai_agents_task_routing_engine",
       "target": "agents_2_subagent_suites_directory_57_specialized_subagents",
       "relation": "contains",
       "_origin": "ast",
@@ -138467,7 +138467,7 @@
       "weight": 1.0
     },
     {
-      "source": "agents_sme_finance_copilot_ai_agents_task_routing_engine",
+      "source": "agents_cashpilot_ai_agents_task_routing_engine",
       "target": "agents_0_project_truth_instruction_precedence_current_baseline",
       "relation": "contains",
       "_origin": "ast",
@@ -139260,7 +139260,7 @@
     },
     {
       "source": "claude",
-      "target": "claude_sme_finance_copilot_claude_code_operational_protocol",
+      "target": "claude_cashpilot_claude_code_operational_protocol",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -139391,6 +139391,61 @@
       "weight": 1.0
     },
     {
+      "source": "claude_cashpilot_claude_code_operational_protocol",
+      "target": "claude_1_environment_architecture_overview",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "CLAUDE.md",
+      "source_location": "L13",
+      "weight": 1.0
+    },
+    {
+      "source": "claude_cashpilot_claude_code_operational_protocol",
+      "target": "claude_4_key_terminal_commands",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "CLAUDE.md",
+      "source_location": "L168",
+      "weight": 1.0
+    },
+    {
+      "source": "claude_cashpilot_claude_code_operational_protocol",
+      "target": "claude_2_mandatory_invariants_strict_enforcement",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "CLAUDE.md",
+      "source_location": "L30",
+      "weight": 1.0
+    },
+    {
+      "source": "claude_cashpilot_claude_code_operational_protocol",
+      "target": "claude_0_project_truth_instruction_precedence",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "CLAUDE.md",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "claude_cashpilot_claude_code_operational_protocol",
+      "target": "claude_3_skill_agent_utilization_for_claude",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "CLAUDE.md",
+      "source_location": "L84",
+      "weight": 1.0
+    },
+    {
       "source": "claude_complete_57_skill_directory_by_domain",
       "target": "claude_2_compliance_underwriting_security_6_skills",
       "relation": "contains",
@@ -139465,61 +139520,6 @@
       "confidence_score": 1.0,
       "source_file": "CLAUDE.md",
       "source_location": "L89",
-      "weight": 1.0
-    },
-    {
-      "source": "claude_sme_finance_copilot_claude_code_operational_protocol",
-      "target": "claude_1_environment_architecture_overview",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "CLAUDE.md",
-      "source_location": "L13",
-      "weight": 1.0
-    },
-    {
-      "source": "claude_sme_finance_copilot_claude_code_operational_protocol",
-      "target": "claude_4_key_terminal_commands",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "CLAUDE.md",
-      "source_location": "L168",
-      "weight": 1.0
-    },
-    {
-      "source": "claude_sme_finance_copilot_claude_code_operational_protocol",
-      "target": "claude_2_mandatory_invariants_strict_enforcement",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "CLAUDE.md",
-      "source_location": "L30",
-      "weight": 1.0
-    },
-    {
-      "source": "claude_sme_finance_copilot_claude_code_operational_protocol",
-      "target": "claude_0_project_truth_instruction_precedence",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "CLAUDE.md",
-      "source_location": "L7",
-      "weight": 1.0
-    },
-    {
-      "source": "claude_sme_finance_copilot_claude_code_operational_protocol",
-      "target": "claude_3_skill_agent_utilization_for_claude",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "CLAUDE.md",
-      "source_location": "L84",
       "weight": 1.0
     },
     {
@@ -140371,7 +140371,7 @@
     },
     {
       "source": "docs_architecture",
-      "target": "docs_architecture_sme_finance_copilot_master_architectural_plan_architecture_md",
+      "target": "docs_architecture_cashpilot_master_architectural_plan_architecture_md",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -140425,7 +140425,7 @@
       "weight": 1.0
     },
     {
-      "source": "docs_architecture_sme_finance_copilot_master_architectural_plan_architecture_md",
+      "source": "docs_architecture_cashpilot_master_architectural_plan_architecture_md",
       "target": "docs_architecture_3_database_agent_memory_architectural_decision",
       "relation": "contains",
       "_origin": "ast",
@@ -140436,7 +140436,7 @@
       "weight": 1.0
     },
     {
-      "source": "docs_architecture_sme_finance_copilot_master_architectural_plan_architecture_md",
+      "source": "docs_architecture_cashpilot_master_architectural_plan_architecture_md",
       "target": "docs_architecture_1_macro_architecture_6_layer_topology",
       "relation": "contains",
       "_origin": "ast",
@@ -140447,7 +140447,7 @@
       "weight": 1.0
     },
     {
-      "source": "docs_architecture_sme_finance_copilot_master_architectural_plan_architecture_md",
+      "source": "docs_architecture_cashpilot_master_architectural_plan_architecture_md",
       "target": "docs_architecture_4_phased_sprint_roadmap_verified_milestones",
       "relation": "contains",
       "_origin": "ast",
@@ -140458,7 +140458,7 @@
       "weight": 1.0
     },
     {
-      "source": "docs_architecture_sme_finance_copilot_master_architectural_plan_architecture_md",
+      "source": "docs_architecture_cashpilot_master_architectural_plan_architecture_md",
       "target": "docs_architecture_master_documentation_suite",
       "relation": "contains",
       "_origin": "ast",
@@ -140469,7 +140469,7 @@
       "weight": 1.0
     },
     {
-      "source": "docs_architecture_sme_finance_copilot_master_architectural_plan_architecture_md",
+      "source": "docs_architecture_cashpilot_master_architectural_plan_architecture_md",
       "target": "docs_architecture_2_operating_model_multi_agent_topology",
       "relation": "contains",
       "_origin": "ast",
@@ -140481,7 +140481,7 @@
     },
     {
       "source": "docs_glossary",
-      "target": "docs_glossary_sme_finance_copilot_ubiquitous_domain_glossary",
+      "target": "docs_glossary_cashpilot_ubiquitous_domain_glossary",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -140678,7 +140678,7 @@
       "weight": 1.0
     },
     {
-      "source": "docs_glossary_sme_finance_copilot_ubiquitous_domain_glossary",
+      "source": "docs_glossary_cashpilot_ubiquitous_domain_glossary",
       "target": "docs_glossary_2_financing_instruments_truth_in_lending",
       "relation": "contains",
       "_origin": "ast",
@@ -140689,7 +140689,7 @@
       "weight": 1.0
     },
     {
-      "source": "docs_glossary_sme_finance_copilot_ubiquitous_domain_glossary",
+      "source": "docs_glossary_cashpilot_ubiquitous_domain_glossary",
       "target": "docs_glossary_1_core_sme_working_capital_liquidity_metrics",
       "relation": "contains",
       "_origin": "ast",
@@ -140700,7 +140700,7 @@
       "weight": 1.0
     },
     {
-      "source": "docs_glossary_sme_finance_copilot_ubiquitous_domain_glossary",
+      "source": "docs_glossary_cashpilot_ubiquitous_domain_glossary",
       "target": "docs_glossary_3_digital_underwriting_architecture_webank_model",
       "relation": "contains",
       "_origin": "ast",
@@ -140711,7 +140711,7 @@
       "weight": 1.0
     },
     {
-      "source": "docs_glossary_sme_finance_copilot_ubiquitous_domain_glossary",
+      "source": "docs_glossary_cashpilot_ubiquitous_domain_glossary",
       "target": "docs_glossary_4_agentic_system_governance_security",
       "relation": "contains",
       "_origin": "ast",
@@ -140723,7 +140723,7 @@
     },
     {
       "source": "docs_security",
-      "target": "docs_security_sme_finance_copilot_master_security_architecture_security_md",
+      "target": "docs_security_cashpilot_master_security_architecture_security_md",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -140733,7 +140733,7 @@
       "weight": 1.0
     },
     {
-      "source": "docs_security_sme_finance_copilot_master_security_architecture_security_md",
+      "source": "docs_security_cashpilot_master_security_architecture_security_md",
       "target": "docs_security_5_database_defense_in_depth",
       "relation": "contains",
       "_origin": "ast",
@@ -140744,7 +140744,7 @@
       "weight": 1.0
     },
     {
-      "source": "docs_security_sme_finance_copilot_master_security_architecture_security_md",
+      "source": "docs_security_cashpilot_master_security_architecture_security_md",
       "target": "docs_security_6_llm_connection_security_data_privacy",
       "relation": "contains",
       "_origin": "ast",
@@ -140755,7 +140755,7 @@
       "weight": 1.0
     },
     {
-      "source": "docs_security_sme_finance_copilot_master_security_architecture_security_md",
+      "source": "docs_security_cashpilot_master_security_architecture_security_md",
       "target": "docs_security_7_consortium_blockchain_double_financing_defense",
       "relation": "contains",
       "_origin": "ast",
@@ -140766,7 +140766,7 @@
       "weight": 1.0
     },
     {
-      "source": "docs_security_sme_finance_copilot_master_security_architecture_security_md",
+      "source": "docs_security_cashpilot_master_security_architecture_security_md",
       "target": "docs_security_8_decadal_security_blueprint_30_year_resilience",
       "relation": "contains",
       "_origin": "ast",
@@ -140777,7 +140777,7 @@
       "weight": 1.0
     },
     {
-      "source": "docs_security_sme_finance_copilot_master_security_architecture_security_md",
+      "source": "docs_security_cashpilot_master_security_architecture_security_md",
       "target": "docs_security_1_executive_security_philosophy_provable_invariants_vs_heuristic_decay",
       "relation": "contains",
       "_origin": "ast",
@@ -140788,7 +140788,7 @@
       "weight": 1.0
     },
     {
-      "source": "docs_security_sme_finance_copilot_master_security_architecture_security_md",
+      "source": "docs_security_cashpilot_master_security_architecture_security_md",
       "target": "docs_security_2_the_three_tier_security_gate",
       "relation": "contains",
       "_origin": "ast",
@@ -140799,7 +140799,7 @@
       "weight": 1.0
     },
     {
-      "source": "docs_security_sme_finance_copilot_master_security_architecture_security_md",
+      "source": "docs_security_cashpilot_master_security_architecture_security_md",
       "target": "docs_security_3_threat_modeling_offensive_tool_defense",
       "relation": "contains",
       "_origin": "ast",
@@ -140810,7 +140810,7 @@
       "weight": 1.0
     },
     {
-      "source": "docs_security_sme_finance_copilot_master_security_architecture_security_md",
+      "source": "docs_security_cashpilot_master_security_architecture_security_md",
       "target": "docs_security_master_documentation_suite",
       "relation": "contains",
       "_origin": "ast",
@@ -140821,7 +140821,7 @@
       "weight": 1.0
     },
     {
-      "source": "docs_security_sme_finance_copilot_master_security_architecture_security_md",
+      "source": "docs_security_cashpilot_master_security_architecture_security_md",
       "target": "docs_security_4_automated_self_healing_resilience_protocol",
       "relation": "contains",
       "_origin": "ast",
@@ -140833,7 +140833,7 @@
     },
     {
       "source": "docs_system",
-      "target": "docs_system_sme_finance_copilot_master_system_design_system_md",
+      "target": "docs_system_cashpilot_master_system_design_system_md",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -141162,7 +141162,7 @@
       "weight": 1.0
     },
     {
-      "source": "docs_system_sme_finance_copilot_master_system_design_system_md",
+      "source": "docs_system_cashpilot_master_system_design_system_md",
       "target": "docs_system_3_frontend_backbone_specification",
       "relation": "contains",
       "_origin": "ast",
@@ -141173,7 +141173,7 @@
       "weight": 1.0
     },
     {
-      "source": "docs_system_sme_finance_copilot_master_system_design_system_md",
+      "source": "docs_system_cashpilot_master_system_design_system_md",
       "target": "docs_system_4_backend_backbone_specification",
       "relation": "contains",
       "_origin": "ast",
@@ -141184,7 +141184,7 @@
       "weight": 1.0
     },
     {
-      "source": "docs_system_sme_finance_copilot_master_system_design_system_md",
+      "source": "docs_system_cashpilot_master_system_design_system_md",
       "target": "docs_system_1_executive_system_overview_form_factor",
       "relation": "contains",
       "_origin": "ast",
@@ -141195,7 +141195,7 @@
       "weight": 1.0
     },
     {
-      "source": "docs_system_sme_finance_copilot_master_system_design_system_md",
+      "source": "docs_system_cashpilot_master_system_design_system_md",
       "target": "docs_system_5_llm_brain_semantic_routing_universal_bridge",
       "relation": "contains",
       "_origin": "ast",
@@ -141206,7 +141206,7 @@
       "weight": 1.0
     },
     {
-      "source": "docs_system_sme_finance_copilot_master_system_design_system_md",
+      "source": "docs_system_cashpilot_master_system_design_system_md",
       "target": "docs_system_6_consortium_blockchain_engine_fisco_bcos",
       "relation": "contains",
       "_origin": "ast",
@@ -141217,7 +141217,7 @@
       "weight": 1.0
     },
     {
-      "source": "docs_system_sme_finance_copilot_master_system_design_system_md",
+      "source": "docs_system_cashpilot_master_system_design_system_md",
       "target": "docs_system_2_deterministic_fintech_engine_25_core_routines",
       "relation": "contains",
       "_origin": "ast",
@@ -141228,7 +141228,7 @@
       "weight": 1.0
     },
     {
-      "source": "docs_system_sme_finance_copilot_master_system_design_system_md",
+      "source": "docs_system_cashpilot_master_system_design_system_md",
       "target": "docs_system_master_documentation_suite",
       "relation": "contains",
       "_origin": "ast",
@@ -141240,7 +141240,7 @@
     },
     {
       "source": "gemini",
-      "target": "gemini_sme_finance_copilot_engineering_rules_operational_protocol",
+      "target": "gemini_cashpilot_engineering_rules_operational_protocol",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -141426,7 +141426,7 @@
       "weight": 1.0
     },
     {
-      "source": "gemini_sme_finance_copilot_engineering_rules_operational_protocol",
+      "source": "gemini_cashpilot_engineering_rules_operational_protocol",
       "target": "gemini_4_the_3_tier_security_matrix_hitl_governance",
       "relation": "contains",
       "_origin": "ast",
@@ -141437,7 +141437,7 @@
       "weight": 1.0
     },
     {
-      "source": "gemini_sme_finance_copilot_engineering_rules_operational_protocol",
+      "source": "gemini_cashpilot_engineering_rules_operational_protocol",
       "target": "gemini_5_blockchain_audit_trail_fisco_bcos_5_pts",
       "relation": "contains",
       "_origin": "ast",
@@ -141448,7 +141448,7 @@
       "weight": 1.0
     },
     {
-      "source": "gemini_sme_finance_copilot_engineering_rules_operational_protocol",
+      "source": "gemini_cashpilot_engineering_rules_operational_protocol",
       "target": "gemini_6_end_to_end_project_execution_workflows",
       "relation": "contains",
       "_origin": "ast",
@@ -141459,7 +141459,7 @@
       "weight": 1.0
     },
     {
-      "source": "gemini_sme_finance_copilot_engineering_rules_operational_protocol",
+      "source": "gemini_cashpilot_engineering_rules_operational_protocol",
       "target": "gemini_1_mandatory_invariants_for_every_project",
       "relation": "contains",
       "_origin": "ast",
@@ -141470,7 +141470,7 @@
       "weight": 1.0
     },
     {
-      "source": "gemini_sme_finance_copilot_engineering_rules_operational_protocol",
+      "source": "gemini_cashpilot_engineering_rules_operational_protocol",
       "target": "gemini_0_project_truth_engineering_documentation",
       "relation": "contains",
       "_origin": "ast",
@@ -141481,7 +141481,7 @@
       "weight": 1.0
     },
     {
-      "source": "gemini_sme_finance_copilot_engineering_rules_operational_protocol",
+      "source": "gemini_cashpilot_engineering_rules_operational_protocol",
       "target": "gemini_2_the_andrej_karpathy_superpowers_engineering_lifecycle",
       "relation": "contains",
       "_origin": "ast",
@@ -141492,7 +141492,7 @@
       "weight": 1.0
     },
     {
-      "source": "gemini_sme_finance_copilot_engineering_rules_operational_protocol",
+      "source": "gemini_cashpilot_engineering_rules_operational_protocol",
       "target": "gemini_3_fintech_domain_invariants",
       "relation": "contains",
       "_origin": "ast",
@@ -175322,5 +175322,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "5f2aa04985e68fd5eaaccba4d7c8ca042f18f1fc"
+  "built_at_commit": "62c6070115f72c83fcb549ee9a54bdc38533caa6"
 }
