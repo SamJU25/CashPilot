@@ -1,7 +1,7 @@
 # Graph Report - SME Finance Copilot  (2026-10-20)
 
 ## Corpus Check
-- 431 files · ~297,541 words
+- 431 files · ~297,539 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 25 file(s) not represented in the graph (top: .csv 14, (none) 6, .example 1)
 
@@ -11,7 +11,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `4f03066f`
+- Built from commit: `5f2aa049`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -187,7 +187,7 @@
 - Rule: ADHD-Friendly Output Protocol (i-have-adhd)
 - session_statement.py
 - 2. Mandatory Invariants (Strict Enforcement)
-- SME Finance Copilot
+- CashPilot
 - workflows/graphify.md
 - csv_parser.py
 - cn
@@ -1111,7 +1111,7 @@ Nodes (19): append_entry(), canonical_csv(), declared_burn_applies(), manual_sta
 Cohesion: 0.08
 Nodes (24): 0. Project Truth & Instruction Precedence, 1. Environment & Architecture Overview, 1. FinTech Engineering & Financial Valuation (12 skills), 2.10 Terminal Verification Before Completion (`verification-before-completion`), 2.1 Knowledge Graph Synchronization (`graphify`), 2.2 Internet Research Routing (`agent-reach`), 2.3 Anti-Slop & Writing Standard (`antislop` & `no-ai-slop`), 2.4 Senior Developer Ladder (`ponytail`) (+16 more)
 
-### Community 171 - "SME Finance Copilot"
+### Community 171 - "CashPilot"
 Cohesion: 0.09
 Nodes (21): 1. Backend Setup, 1. Problem Statement: The 75-Day Working Capital Gap, 2.1 Multi-Format Statement Ingestion Engine (`services/ingestion/`), 2.3 Universal Dynamic AI Bridge & Local SLM (`services/agent/`), 2.4 Three-Tier Security Gate (`services/security/`), 2.5 Consortium Blockchain Double-Pledge Defense (`contracts/`), 2.6 Next.js Executive Dashboard (`src/app/`), 2. Core Subsystems (+13 more)
 
@@ -1599,9 +1599,9 @@ Nodes (11): CAC Payback Period, Contribution Margin, Customer Acquisition Cost (
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `SME Finance Copilot` connect `SME Finance Copilot` to `AGENTS.md`?**
+- **Why does `CashPilot` connect `CashPilot` to `AGENTS.md`?**
   _High betweenness centrality (0.176) - this node is a cross-community bridge._
-- **Why does `next` connect `statements/page.tsx` to `package.json`, `SME Finance Copilot`, `useT`, `cn`, `assistant/page.tsx`, `approval.tsx`, `demo.ts`?**
+- **Why does `next` connect `statements/page.tsx` to `package.json`, `CashPilot`, `useT`, `cn`, `assistant/page.tsx`, `approval.tsx`, `demo.ts`?**
   _High betweenness centrality (0.175) - this node is a cross-community bridge._
 - **Are the 9 inferred relationships involving `DecisionRequest` (e.g. with `FallbackRuleAdapter` and `SystemOneModelAdapter`) actually correct?**
   _`DecisionRequest` has 9 INFERRED edges - model-reasoned connections that need verification._

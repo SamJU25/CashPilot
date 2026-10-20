@@ -157,7 +157,7 @@ def calculate_roa(
 
     if roa_pct >= Decimal("10.00"):
         tier = "EXCELLENT_ROA"
-        rationale = f"Excellent asset productivity (ROA: {roa_pct}%). Business generates over {format_money("0.10", currency)} of net profit per {format_money("1", currency)} of assets."
+        rationale = f"Excellent asset productivity (ROA: {roa_pct}%). Business generates over {format_money('0.10', currency)} of net profit per {format_money('1', currency)} of assets."
     elif roa_pct >= Decimal("5.00"):
         tier = "HEALTHY_ROA"
         rationale = f"Healthy asset return (ROA: {roa_pct}%). Consistent with commercial industrial benchmarks (5-10%)."

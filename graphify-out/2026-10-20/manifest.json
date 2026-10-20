@@ -978,9 +978,9 @@
     "semantic_hash": ""
   },
   "README.md": {
-    "mtime": 1792507112.6659229,
-    "seen": 1792508117.487679,
-    "ast_hash": "286d7b3788978e150d4218b5ea0e98c8",
+    "mtime": 1792508599.0167549,
+    "seen": 1792508628.4867625,
+    "ast_hash": "8b72c6a64a571e0dc05998620e37014e",
     "semantic_hash": ""
   },
   "requirements.txt": {
@@ -2631,96 +2631,6 @@
     "mtime": 1792497025.175397,
     "seen": 1792497702.212339,
     "ast_hash": "61bad7453fdcb06d8fafe0b4869b1d4a",
-    "semantic_hash": ""
-  },
-  "submission/06-execution-evidence/logs/sandbox_final_state.json": {
-    "mtime": 1792503836.0215418,
-    "seen": 1792505484.1148841,
-    "ast_hash": "1e228c89eba4fcb0ea400175a844ac23",
-    "semantic_hash": ""
-  },
-  "submission/01-technical-documentation/TECHNICAL_DOCUMENTATION.md": {
-    "mtime": 1792507112.6680312,
-    "seen": 1792508117.488982,
-    "ast_hash": "98b59601dff0f2548a1a3686281d8f66",
-    "semantic_hash": ""
-  },
-  "submission/02-presentation-deck/README.md": {
-    "mtime": 1792507939.7302544,
-    "seen": 1792508117.4889843,
-    "ast_hash": "595f1b2327961bc3c966e44948974409",
-    "semantic_hash": ""
-  },
-  "submission/03-demo-video/README.md": {
-    "mtime": 1792507966.352416,
-    "seen": 1792508117.488986,
-    "ast_hash": "5ef5f9129143c4ac33e9c280e11fd2fb",
-    "semantic_hash": ""
-  },
-  "submission/04-source-code/SOURCE_CODE.md": {
-    "mtime": 1792507978.7690165,
-    "seen": 1792508117.488988,
-    "ast_hash": "cb4d99b2f7b4657767370ba2f44b1f37",
-    "semantic_hash": ""
-  },
-  "submission/05-security-self-assessment/SECURITY_SELF_ASSESSMENT.md": {
-    "mtime": 1792507112.6696124,
-    "seen": 1792508117.4889896,
-    "ast_hash": "79b2a4edeaa4eacb688047f9fae0b045",
-    "semantic_hash": ""
-  },
-  "submission/05-security-self-assessment/evidence/npm_audit_production.txt": {
-    "mtime": 1792502722.7376833,
-    "seen": 1792505484.1414075,
-    "ast_hash": "442bd15fd38ab2d155ccb5f49af40e36",
-    "semantic_hash": ""
-  },
-  "submission/05-security-self-assessment/evidence/pip_audit_requirements.txt": {
-    "mtime": 1792502758.1400912,
-    "seen": 1792505484.1414094,
-    "ast_hash": "dfd346670b8dabc4096bf518c6325d73",
-    "semantic_hash": ""
-  },
-  "submission/06-execution-evidence/README.md": {
-    "mtime": 1792508009.8578289,
-    "seen": 1792508117.4892435,
-    "ast_hash": "691e8b9eb69b94b7e3fc83cfb2fe7e85",
-    "semantic_hash": ""
-  },
-  "submission/06-execution-evidence/logs/sandbox_operation_log.md": {
-    "mtime": 1792503836.0270996,
-    "seen": 1792505484.141412,
-    "ast_hash": "6b48ede5711b4e6b3fda9aa58338af51",
-    "semantic_hash": ""
-  },
-  "submission/README.md": {
-    "mtime": 1792508053.2294793,
-    "seen": 1792508117.489369,
-    "ast_hash": "defd10f46d43cce206d271c2c8d27bb5",
-    "semantic_hash": ""
-  },
-  "submission/01-technical-documentation/TECHNICAL_DOCUMENTATION.pdf": {
-    "mtime": 1792506819.973309,
-    "seen": 1792506875.6276817,
-    "ast_hash": "cee3fea23cb5aba60f33228908bdf7e6",
-    "semantic_hash": ""
-  },
-  "submission/02-presentation-deck/CashPilot_Presentation.pdf": {
-    "mtime": 1792506816.9434948,
-    "seen": 1792506875.6276834,
-    "ast_hash": "79ee99c116f8ab1cd9bdc7888e4a968b",
-    "semantic_hash": ""
-  },
-  "submission/05-security-self-assessment/SECURITY_SELF_ASSESSMENT.pdf": {
-    "mtime": 1792506820.4230952,
-    "seen": 1792506875.6276853,
-    "ast_hash": "8ffabb3e627436f55d7bd71c45a88b07",
-    "semantic_hash": ""
-  },
-  "submission/03-demo-video/CashPilot_Demo.mp4": {
-    "mtime": 1792506767.0287755,
-    "seen": 1792506875.628283,
-    "ast_hash": "d522fb40333693b93091e0b8ee738915",
     "semantic_hash": ""
   },
   "services/agent/name_masking.py": {
