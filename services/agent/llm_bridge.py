@@ -111,6 +111,10 @@ PROVIDER_DEFAULTS = {
         "model": "llama-3.3-70b-versatile",
         "url": "https://api.groq.com/openai/v1/chat/completions",
     },
+    "ollama": {
+        "model": "llama3.2",
+        "url": "http://localhost:11434/v1/chat/completions",
+    },
 }
 
 
@@ -118,14 +122,26 @@ def _resolve_endpoint(provider: str, base_url: Optional[str], model: Optional[st
     """Resolves target endpoint URL and model identifier for a given provider."""
     p_lower = (provider or "offline").lower()
 
-    # Caller-supplied endpoints are untrusted: validate before any outbound request.
-    if base_url and base_url.strip():
-        validate_llm_endpoint(base_url)
     defaults = PROVIDER_DEFAULTS.get(p_lower, {})
     model_name = model or defaults.get("model", "custom-model")
+    target_check = (base_url or defaults.get("url", "")).lower()
+
+    allow_loopback = None
+    if p_lower == "ollama" or ("11434" in target_check and ("localhost" in target_check or "127.0.0.1" in target_check)):
+        allow_loopback = True
+
+    # Caller-supplied endpoints are untrusted: validate before any outbound request.
+    if base_url and base_url.strip():
+        validate_llm_endpoint(base_url, allow_loopback=allow_loopback)
 
     if p_lower == "custom":
         raw_url = (base_url or "").rstrip("/")
+        if not raw_url.endswith("/chat/completions"):
+            raw_url = f"{raw_url}/chat/completions"
+        return raw_url, model_name
+
+    if p_lower == "ollama":
+        raw_url = (base_url or defaults.get("url", "http://localhost:11434/v1/chat/completions")).rstrip("/")
         if not raw_url.endswith("/chat/completions"):
             raw_url = f"{raw_url}/chat/completions"
         return raw_url, model_name
@@ -287,9 +303,12 @@ def test_llm_connection(req: TestConnectionRequest) -> TestConnectionResponse:
                     latency_ms=latency_ms,
                 )
             elif res.status_code == 404:
+                msg = f"Endpoint or model not found (HTTP 404): Check model name '{model}' or Base URL."
+                if provider == "ollama":
+                    msg = f"Model '{model}' not found in Ollama (HTTP 404). Run 'ollama pull {model}' in terminal first."
                 return TestConnectionResponse(
                     success=False,
-                    message=f"Endpoint or model not found (HTTP 404): Check model name '{model}' or Base URL.",
+                    message=msg,
                     provider=provider,
                     model_name=model,
                     latency_ms=latency_ms,
@@ -306,9 +325,12 @@ def test_llm_connection(req: TestConnectionRequest) -> TestConnectionResponse:
                 )
 
     except httpx.ConnectError:
+        msg = f"Unable to connect to host at '{endpoint}'. Verify your network or local server status."
+        if provider == "ollama":
+            msg = "Unable to reach Ollama at http://localhost:11434. Ensure the Ollama daemon is running ('ollama serve' in terminal)."
         return TestConnectionResponse(
             success=False,
-            message=f"Unable to connect to host at '{endpoint}'. Verify your network or local server status.",
+            message=msg,
             provider=provider,
             model_name=model,
         )
@@ -504,6 +526,11 @@ FALLBACK_CATALOG: dict[str, list[ModelItem]] = {
     "custom": [
         ModelItem(id="custom-model", name="Custom Model"),
     ],
+    "ollama": [
+        ModelItem(id="llama3.2", name="Llama 3.2"),
+        ModelItem(id="qwen2.5", name="Qwen 2.5"),
+        ModelItem(id="mistral", name="Mistral 7B"),
+    ],
 }
 
 
@@ -640,9 +667,13 @@ def fetch_remote_models(req: FetchModelsRequest) -> FetchModelsResponse:
             message="Base URL required to fetch custom models.",
         )
 
+    if provider == "ollama" and not base_url:
+        base_url = "http://localhost:11434/v1"
+
     if base_url:
         try:
-            validate_llm_endpoint(base_url)
+            allow_lb = True if provider == "ollama" or ("11434" in base_url and ("localhost" in base_url or "127.0.0.1" in base_url)) else None
+            validate_llm_endpoint(base_url, allow_loopback=allow_lb)
         except BlockedEndpointError as exc:
             return FetchModelsResponse(
                 success=False,
@@ -704,6 +735,8 @@ def fetch_remote_models(req: FetchModelsRequest) -> FetchModelsResponse:
                         base = "https://api.deepseek.com/v1"
                     elif provider == "groq":
                         base = "https://api.groq.com/openai/v1"
+                    elif provider == "ollama":
+                        base = "http://localhost:11434/v1"
                     else:
                         base = "https://api.openai.com/v1"
 
@@ -715,6 +748,30 @@ def fetch_remote_models(req: FetchModelsRequest) -> FetchModelsResponse:
                 if api_key:
                     headers["Authorization"] = f"Bearer {api_key}"
                 res = client.get(url, headers=headers)
+
+                # Fallback probe for native Ollama /api/tags if /models returns 404 or empty
+                if (res.status_code != 200 or not res.json().get("data")) and ("11434" in clean_base or "ollama" in clean_base or provider == "ollama"):
+                    ollama_url = f"{clean_base.removesuffix('/v1').rstrip('/')}/api/tags"
+                    try:
+                        res_ollama = client.get(ollama_url, timeout=3.0)
+                        if res_ollama.status_code == 200:
+                            tag_data = res_ollama.json()
+                            raw_models = tag_data.get("models", [])
+                            models_list = [
+                                ModelItem(id=m.get("name", m.get("model", "")), name=m.get("name", m.get("model", "")))
+                                for m in raw_models
+                                if m.get("name") or m.get("model")
+                            ]
+                            if models_list:
+                                return FetchModelsResponse(
+                                    success=True,
+                                    provider=provider,
+                                    models=models_list[:50],
+                                    message=f"Discovered {len(models_list)} live Ollama models.",
+                                )
+                    except Exception:
+                        pass
+
                 if res.status_code == 200:
                     data = res.json()
                     raw_items = data.get("data", [])

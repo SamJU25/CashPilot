@@ -261,6 +261,27 @@ export default function SettingsPage() {
   const [modelActionState, setModelActionState] = useState<'idle' | 'downloading' | 'deleting'>('idle');
   const [modelActionMsg, setModelActionMsg] = useState<{ ok: boolean; text: string } | null>(null);
 
+  const [ollamaModels, setOllamaModels] = useState<string[]>([]);
+  const [ollamaStatus, setOllamaStatus] = useState<string>('');
+
+  const refreshOllama = useCallback(async () => {
+    try {
+      const rawUrl = ws.providerUrls['ollama'] || 'http://localhost:11434';
+      const res = await api.fetchModels('ollama', undefined, rawUrl);
+      if (res.success && res.models && res.models.length > 0) {
+        const ids = res.models.map((m) => m.id);
+        setOllamaModels(ids);
+        setOllamaStatus(`Discovered ${ids.length} models installed in Ollama.`);
+      } else {
+        setOllamaModels([]);
+        setOllamaStatus('Ollama is running but has no models installed. Run "ollama pull llama3.2"');
+      }
+    } catch {
+      setOllamaModels([]);
+      setOllamaStatus('Ollama daemon not detected on http://localhost:11434. Run "ollama serve" in terminal.');
+    }
+  }, [ws.providerUrls]);
+
   const refreshModels = useCallback(async () => {
     try {
       const res = await api.fetchModels('local');
@@ -277,8 +298,10 @@ export default function SettingsPage() {
     setTest({ state: 'idle' });
     if (provider.id === 'local') {
       void refreshModels();
+    } else if (provider.id === 'ollama') {
+      void refreshOllama();
     }
-  }, [provider, refreshModels]);
+  }, [provider, refreshModels, refreshOllama]);
 
   const FALLBACK_GGUF_MODELS = useMemo(() => [
     { id: 'qwen2.5-3b-instruct', name: 'Qwen 2.5 3B Instruct (GGUF · 2.0 GB · Recommended · Tools: Native)', tool_calling: 'Native (Hermes / Function Calling)' },
@@ -446,14 +469,45 @@ export default function SettingsPage() {
         )}
 
         {provider.id === 'ollama' && (
-          <Row title={t('set.model')} description="Ollama model tag to query (e.g. llama3.2, qwen2.5, mistral). Make sure you have pulled the model using 'ollama run <model>' in your terminal.">
-            <Input
-              id="ollama-model"
-              value={ws.localModel || 'llama3.2'}
-              onChange={(e) => ws.update({ localModel: e.target.value })}
-              placeholder="llama3.2"
-              className="max-w-sm font-mono text-sm"
-            />
+          <Row title={t('set.model')} description="Ollama model tag to query (e.g. llama3.2, qwen2.5, mistral).">
+            {ollamaModels.length > 0 ? (
+              <div className="space-y-2">
+                <div className="flex items-center gap-2">
+                  <Select value={ws.localModel || ollamaModels[0]} onValueChange={(v) => ws.update({ localModel: v })}>
+                    <SelectTrigger className="max-w-sm font-mono text-sm" aria-label={t('set.model')}>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {ollamaModels.map((m) => (
+                        <SelectItem key={m} value={m} className="font-mono text-xs">
+                          {m}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <Button variant="outline" size="sm" onClick={() => void refreshOllama()} className="h-9 text-xs">
+                    Scan Ollama
+                  </Button>
+                </div>
+                <p className="text-xs text-good-text">{ollamaStatus}</p>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                <div className="flex items-center gap-2">
+                  <Input
+                    id="ollama-model"
+                    value={ws.localModel || 'llama3.2'}
+                    onChange={(e) => ws.update({ localModel: e.target.value })}
+                    placeholder="llama3.2"
+                    className="max-w-sm font-mono text-sm"
+                  />
+                  <Button variant="outline" size="sm" onClick={() => void refreshOllama()} className="h-9 text-xs">
+                    Scan Ollama
+                  </Button>
+                </div>
+                {ollamaStatus && <p className="text-xs text-muted-foreground">{ollamaStatus}</p>}
+              </div>
+            )}
           </Row>
         )}
 

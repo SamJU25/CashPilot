@@ -1314,9 +1314,9 @@
     "semantic_hash": ""
   },
   "services/agent/llm_bridge.py": {
-    "mtime": 1792520321.709282,
-    "seen": 1792520531.3777988,
-    "ast_hash": "b5e3532a31601b2ee5d640f2d18e1441",
+    "mtime": 1792522116.1930118,
+    "seen": 1792522462.8793774,
+    "ast_hash": "afef60764b7a7e028789ccd2595f6c2d",
     "semantic_hash": ""
   },
   "services/calculations/predictive_cash.py": {
@@ -2142,9 +2142,9 @@
     "semantic_hash": ""
   },
   "src/app/settings/page.tsx": {
-    "mtime": 1792521303.989768,
-    "seen": 1792521409.5675693,
-    "ast_hash": "b5078835eb3bf2b5668aa138632c9c3b",
+    "mtime": 1792522159.4119804,
+    "seen": 1792522462.8913085,
+    "ast_hash": "b1e55cceed31394461e31f79dedf4478",
     "semantic_hash": ""
   },
   "src/app/statements/page.tsx": {
@@ -2466,9 +2466,9 @@
     "semantic_hash": ""
   },
   "src/lib/api.ts": {
-    "mtime": 1792521325.84634,
-    "seen": 1792521409.5723443,
-    "ast_hash": "23684ff119b307e6710ad80750dfcfea",
+    "mtime": 1792522133.0322785,
+    "seen": 1792522462.8968546,
+    "ast_hash": "04b34126d81587712a5f772f77cfa43e",
     "semantic_hash": ""
   },
   "src/lib/currencies.ts": {
@@ -2643,6 +2643,12 @@
     "mtime": 1792507023.265397,
     "seen": 1792508117.4669127,
     "ast_hash": "dcc3a2739a9a6f408b3dbe9bfcc97a17",
+    "semantic_hash": ""
+  },
+  "tests/unit/test_ollama_bridge.py": {
+    "mtime": 1792522338.4374087,
+    "seen": 1792522462.9054286,
+    "ast_hash": "e7cc43877ae4bca66b7d14a575a3d93a",
     "semantic_hash": ""
   }
 }

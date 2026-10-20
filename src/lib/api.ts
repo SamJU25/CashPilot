@@ -209,8 +209,8 @@ export function llmConfig(provider: string, keys: Record<string, string>, urls: 
   const key = keys[provider]?.trim() || undefined;
   const url = urls[provider]?.trim() || defaultUrl || undefined;
   if (provider === 'local') return { provider: 'local', model_name: selectedModel || 'qwen2.5-3b-instruct' };
-  // Ollama speaks the OpenAI protocol under /v1.
-  if (provider === 'ollama') return { provider: 'custom', base_url: `${(url ?? 'http://localhost:11434').replace(/\/$/, '')}/v1`, model_name: selectedModel || 'llama3.2' };
+  // Ollama runs locally on :11434 with an OpenAI-compatible /v1 interface.
+  if (provider === 'ollama') return { provider: 'ollama', base_url: `${(url ?? 'http://localhost:11434').replace(/\/$/, '')}/v1`, model_name: selectedModel || 'llama3.2' };
   if (provider === 'claude') return { provider: 'anthropic', api_key: key, model_name: selectedModel };
   if (provider === 'custom') return { provider: 'custom', api_key: key, base_url: url, model_name: selectedModel };
   return { provider, api_key: key, model_name: selectedModel };
