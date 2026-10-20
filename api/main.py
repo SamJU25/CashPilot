@@ -61,7 +61,7 @@ async def lifespan(_: FastAPI):
             FastEmbedSemanticRouter.get_instance()
         except Exception:
             pass
-        # Loading Solvavion-2B takes ~10 s; doing it now spares the owner's first question that wait.
+        # Loading MiniCPM5-2B takes ~10 s; doing it now spares the owner's first question that wait.
         if os.getenv("LOCAL_PRELOAD_MODEL", "1") == "1" and "pytest" not in sys.modules:
             try:
                 from services.agent.local_transformers import LocalTransformersEngine

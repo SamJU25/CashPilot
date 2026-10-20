@@ -458,7 +458,7 @@ export default function AssistantPage() {
         detail: t('as.k0d', { topic: t(`topic.${topicOf(res.intent_detected)}` as Key) }),
         agent: 'supervisor',
         tool: 'FastEmbedSemanticRouter',
-        tech: `${res.intent_detected} · ${provider === 'local' ? 'Solvavion-2B (RTX 4050 GPU)' : provider} · ${Math.round(performance.now() - started)}ms`,
+        tech: `${res.intent_detected} · ${provider === 'local' ? 'MiniCPM5-2B (RTX 4050 GPU)' : provider} · ${Math.round(performance.now() - started)}ms`,
         duration_ms: Math.round(performance.now() - started),
       };
       setMessages((m) =>
