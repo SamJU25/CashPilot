@@ -33,6 +33,7 @@ COPY --chown=appuser:appgroup services /app/services
 COPY --chown=appuser:appgroup contracts /app/contracts
 COPY --chown=appuser:appgroup knowledge /app/knowledge
 COPY --chown=appuser:appgroup data /app/data
+COPY --chown=appuser:appgroup config /app/config
 
 # Persistence directory must exist and be writable by the runtime user, otherwise the staging
 # ledger and invoice registry fall back to memory-only and silently lose state on restart.

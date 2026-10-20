@@ -1182,9 +1182,9 @@
     "semantic_hash": ""
   },
   ".github/workflows/ci.yml": {
-    "mtime": 1792360630.5736976,
-    "seen": 1792360755.4143178,
-    "ast_hash": "6d5b9b4667f8e70dc3c4718b873a6349",
+    "mtime": 1792495351.6523125,
+    "seen": 1792495376.5564282,
+    "ast_hash": "605235a23451ef57304b3c24a9880eeb",
     "semantic_hash": ""
   },
   "api/routes/actions.py": {
@@ -1715,12 +1715,6 @@
     "ast_hash": "57a00d24cff263a560a79814ae93fda8",
     "semantic_hash": ""
   },
-  "scripts/verify_dataset_health.py": {
-    "mtime": 1792371894.1975875,
-    "seen": 1792372361.13536,
-    "ast_hash": "c21fc50149671a9aee44e13d94531376",
-    "semantic_hash": ""
-  },
   "scripts/download_model.py": {
     "mtime": 1792365426.1045432,
     "seen": 1792365530.2454345,
@@ -1883,18 +1877,6 @@
     "ast_hash": "00d9edcec4197dc36ac70fab2fd8c4a8",
     "semantic_hash": ""
   },
-  "scripts/build_eval_set.py": {
-    "mtime": 1792427872.518371,
-    "seen": 1792428423.490164,
-    "ast_hash": "3bf63aecece90c91d56f753a608bda47",
-    "semantic_hash": ""
-  },
-  "scripts/eval_model.py": {
-    "mtime": 1792427970.3494456,
-    "seen": 1792428423.4905128,
-    "ast_hash": "c98204e125d9234c31db4b9097339659",
-    "semantic_hash": ""
-  },
   "knowledge/cards/marketing_strategy.md": {
     "mtime": 1792273627.0357015,
     "seen": 1792274874.6810465,
@@ -1977,12 +1959,6 @@
     "mtime": 1792358795.4577854,
     "seen": 1792360755.3933983,
     "ast_hash": "0de52ed328d43e2bb8683ffc31fb51b8",
-    "semantic_hash": ""
-  },
-  "scripts/run_deterministic_eval.py": {
-    "mtime": 1792427634.2888713,
-    "seen": 1792428423.4908776,
-    "ast_hash": "b2d0dc64cdedab95c8090164736d2e2c",
     "semantic_hash": ""
   },
   "api/routes/auth.py": {
