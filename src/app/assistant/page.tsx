@@ -689,7 +689,7 @@ export default function AssistantPage() {
                           className="group flex flex-1 min-w-0 items-start justify-between rounded-xl border bg-card p-3 sm:p-3.5 text-left text-xs sm:text-[13px] leading-snug text-foreground shadow-xs transition-all hover:bg-muted/60 hover:border-border/80 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
                         >
                           <span className="min-w-0 flex-1">{t(key)}</span>
-                          <ArrowUpRight className="size-3.5 text-muted-foreground/60 transition-transform group-hover:text-foreground group-hover:translate-x-0.5 group-hover:-translate-y-0.5 shrink-0 ml-1.5 mt-0.5" aria-hidden />
+                          <ArrowUpRight className="size-3.5 text-muted-foreground/60 transition-transform group-hover:text-primary group-hover:translate-x-0.5 group-hover:-translate-y-0.5 shrink-0 ml-1.5 mt-0.5" aria-hidden />
                         </button>
                       ))}
                     </div>
@@ -847,7 +847,7 @@ export default function AssistantPage() {
                       type="button"
                       size="icon"
                       onClick={stopGeneration}
-                      className="size-7 sm:size-7.5 shrink-0 rounded-lg sm:rounded-xl bg-foreground text-background hover:bg-foreground/90 transition-all active:scale-95 shadow-xs"
+                      className="size-7 sm:size-7.5 shrink-0 rounded-lg sm:rounded-xl transition-all active:scale-95 shadow-xs"
                       aria-label={t('as.stop')}
                       title={`${t('as.stop')} (Esc)`}
                     >

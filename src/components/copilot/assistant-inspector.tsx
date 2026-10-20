@@ -98,7 +98,7 @@ export function AssistantInspector({
           <span
             className={cn(
               'size-1.5 rounded-full',
-              hasData ? 'bg-emerald-500 animate-pulse' : 'bg-muted-foreground'
+              hasData ? 'bg-good animate-pulse' : 'bg-muted-foreground'
             )}
             aria-hidden
           />
@@ -131,7 +131,7 @@ export function AssistantInspector({
                         Deficit Projected
                       </span>
                     ) : (
-                      <span className="text-[10px] font-medium text-emerald-500 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
+                      <span className="text-[10px] font-medium text-good-text bg-good/10 px-2 py-0.5 rounded-full border border-good/20">
                         Healthy
                       </span>
                     )
@@ -226,7 +226,7 @@ export function AssistantInspector({
 
                 {pending.length === 0 ? (
                   <div className="rounded-xl border bg-card/40 p-4 text-center space-y-2 text-xs">
-                    <ShieldCheck className="mx-auto size-6 text-emerald-500" aria-hidden />
+                    <ShieldCheck className="mx-auto size-6 text-good-text" aria-hidden />
                     <p className="font-medium text-foreground text-xs">{t('ap.emptyTitle')}</p>
                     <p className="text-muted-foreground leading-relaxed text-[11.5px]">{t('ap.emptyBody')}</p>
                   </div>
