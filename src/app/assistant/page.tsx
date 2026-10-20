@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 import Link from 'next/link';
-import { ArrowUp, ArrowUpRight, Check, Copy, FileText, MessageSquare, PanelRightOpen, Square, X } from 'lucide-react';
+import { ArrowUp, ArrowUpRight, Check, Copy, FileText, MessageSquare, PanelRightOpen, RotateCcw, Square, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ErrorState, LoadingBlock } from '@/components/common/states';
 import { RunReceipt } from '@/components/copilot/run-receipt';
@@ -329,7 +329,7 @@ function topicOf(intent: string): Topic {
 
 export default function AssistantPage() {
   const { active: activeLocal } = useActiveLocalModel();
-  const { ready, hasData, provider, localModel, providerModels, providerKeys, providerUrls, intentStatus, update, source, live: liveData, setLive: setLiveData, alertThresholdDays, homeCurrency, language } = useWorkspace();
+  const { ready, hasData, provider, localModel, providerModels, providerKeys, providerUrls, intentStatus, update, source, live: liveData, setLive: setLiveData, alertThresholdDays, homeCurrency, language, clearData } = useWorkspace();
   const { t, lang } = useT();
   const intents = useIntents();
   const drawStatus = intentStatus[DRAW_INTENT.id] ?? DRAW_INTENT.status;
@@ -343,6 +343,16 @@ export default function AssistantPage() {
   const [pondered, setPondered] = useState(false);
   const abortRef = useRef<AbortController | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
+
+  const handleExitDemo = () => {
+    stopGeneration();
+    clearData();
+    setMessages([]);
+    setDraft('');
+    try {
+      window.sessionStorage.removeItem(CHAT_KEY);
+    } catch {}
+  };
 
   const stopGeneration = () => {
     if (abortRef.current) {
@@ -609,6 +619,19 @@ export default function AssistantPage() {
         </p>
       </div>
       <div className="flex shrink-0 items-center gap-2 self-start sm:self-center">
+        {hasData && source === 'sample' && (
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={handleExitDemo}
+            className="h-8 gap-1.5 px-2.5 text-xs text-muted-foreground hover:text-foreground transition-colors"
+            title="Exit demo mode and reset to clean slate"
+          >
+            <RotateCcw className="size-3.5" aria-hidden />
+            <span>{t('as.exitDemo')}</span>
+          </Button>
+        )}
         {/* On desktop (xl+) the inspector is permanently docked; mobile/tablet gets a compact drawer trigger */}
         <Button
           type="button"

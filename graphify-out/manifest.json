@@ -2112,9 +2112,9 @@
     "semantic_hash": ""
   },
   "src/app/assistant/page.tsx": {
-    "mtime": 1792539700.3284867,
-    "seen": 1792539780.8327377,
-    "ast_hash": "c69739f0da2607a1665f90447faba697",
+    "mtime": 1792540065.4493134,
+    "seen": 1792540143.4033084,
+    "ast_hash": "7684726b4fcaecc70f1a1897633b9783",
     "semantic_hash": ""
   },
   "src/app/funding/page.tsx": {
@@ -2424,9 +2424,9 @@
     "semantic_hash": ""
   },
   "src/components/copilot/assistant-inspector.tsx": {
-    "mtime": 1792539171.374357,
-    "seen": 1792539239.0298758,
-    "ast_hash": "224971fd4f2c54772a9de9e26decfc33",
+    "mtime": 1792540076.197128,
+    "seen": 1792540143.40449,
+    "ast_hash": "628b5c497a5af35a33b8480c1d26cff7",
     "semantic_hash": ""
   },
   "src/components/copilot/briefing.tsx": {
@@ -2502,9 +2502,9 @@
     "semantic_hash": ""
   },
   "src/lib/i18n/en.ts": {
-    "mtime": 1792539625.4850752,
-    "seen": 1792539780.8387382,
-    "ast_hash": "11afe148b17905e85450523a0625a7ac",
+    "mtime": 1792540001.9993527,
+    "seen": 1792540143.4095993,
+    "ast_hash": "3703bf0a33674293941e33b56153b686",
     "semantic_hash": ""
   },
   "src/lib/i18n/es.ts": {

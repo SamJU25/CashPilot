@@ -102,7 +102,7 @@ export function AssistantInspector({
             )}
             aria-hidden
           />
-          <span>{hasData ? 'Live Ledger' : 'No Data'}</span>
+          <span>{hasData ? (source === 'sample' ? 'Demo Active' : 'Live Ledger') : 'No Data'}</span>
         </div>
       </div>
 

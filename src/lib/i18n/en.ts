@@ -645,6 +645,7 @@ export const en = {
   'as.noData': 'No statements uploaded yet. Ask general finance questions below, or add statements to analyze your business.',
   'as.noDataLink': 'Add statements',
   'as.noDataDemo': 'Try demo business',
+  'as.exitDemo': 'Exit demo',
   'as.n1': 'What is DSCR?',
   'as.n2': 'What does a factor rate really cost?',
   'as.n3': 'What is Cash Conversion Cycle?',
