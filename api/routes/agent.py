@@ -10,7 +10,7 @@ import logging
 
 import json
 from typing import Optional
-from fastapi import APIRouter, Depends, File, Header, HTTPException, UploadFile, status
+from fastapi import APIRouter, Depends, File, Header, HTTPException, Query, UploadFile, status
 from starlette.concurrency import run_in_threadpool
 
 from api.dependencies import require_tenant
@@ -30,6 +30,7 @@ from services.agent.schema import (
     DownloadModelResponse,
     FetchModelsRequest,
     FetchModelsResponse,
+    HFDownloadRequest,
     LLMConfig,
     TestConnectionRequest,
     TestConnectionResponse,
@@ -143,6 +144,52 @@ async def agent_upload_gguf(
     engine = LocalTransformersEngine.get_instance()
     res = await run_in_threadpool(engine.save_uploaded_gguf, file.filename, file.file)
     return UploadGGUFResponse(**res)
+
+
+@router.get("/hardware", summary="Live RAM and GPU memory of this machine")
+async def agent_hardware(tenant: str = Depends(require_tenant)) -> dict:
+    from services.agent.hardware import probe_hardware
+    return await run_in_threadpool(probe_hardware)
+
+
+@router.get("/hf/search", summary="Search Hugging Face for GGUF models")
+async def agent_hf_search(
+    q: str = Query(default="", max_length=100),
+    sort: str = Query(default="popular", pattern="^(popular|trending|latest|newest|liked)$"),
+    # Opaque Hub paging token from the previous page; only ever sent back to huggingface.co as a query value.
+    cursor: Optional[str] = Query(default=None, max_length=2000, pattern=r"^[A-Za-z0-9_\-=+/]*$"),
+    tenant: str = Depends(require_tenant),
+) -> dict:
+    from services.agent.hf_catalog import search_gguf_models
+    clean_cursor = cursor.strip() if cursor and cursor.strip() else None
+    return await run_in_threadpool(search_gguf_models, q, sort, clean_cursor)
+
+
+@router.get("/hf/files", summary="List GGUF quantizations in a Hugging Face repository")
+async def agent_hf_files(
+    repo_id: str = Query(..., max_length=200),
+    tenant: str = Depends(require_tenant),
+) -> dict:
+    from services.agent.hf_catalog import list_gguf_files
+    return await run_in_threadpool(list_gguf_files, repo_id)
+
+
+@router.post("/hf/download", summary="Download a GGUF file from Hugging Face into models/")
+async def agent_hf_download(request: HFDownloadRequest, tenant: str = Depends(require_tenant)) -> dict:
+    from services.agent.hf_catalog import start_download
+    return start_download(request.repo_id, request.filename)
+
+
+@router.get("/hf/downloads", summary="Progress of Hugging Face downloads")
+async def agent_hf_downloads(tenant: str = Depends(require_tenant)) -> list[dict]:
+    from services.agent.hf_catalog import list_downloads
+    return list_downloads()
+
+
+@router.post("/hf/downloads/{job_id}/cancel", summary="Cancel a Hugging Face download")
+async def agent_hf_cancel(job_id: str, tenant: str = Depends(require_tenant)) -> dict:
+    from services.agent.hf_catalog import cancel_download
+    return {"cancelled": cancel_download(job_id)}
 
 
 def _resolve_agent_tenant(

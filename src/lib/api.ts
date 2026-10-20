@@ -158,8 +158,25 @@ export const api = {
     }, CHAT_TIMEOUT_MS),
   health: () => request<{ status: string; version: string }>('/api/v1/health', {}, 5_000),
   clearSession: () => request<{ cleared: boolean }>(`/api/v1/agent/session/${encodeURIComponent(sessionId())}`, { method: 'DELETE' }),
+  hardware: () => request<Hardware>('/api/v1/agent/hardware', {}, 10_000),
+  hfSearch: (q: string, sort: string, cursor?: string | null) =>
+    request<{ success: boolean; models: HFRepo[]; next_cursor?: string | null; message?: string | null }>(
+      `/api/v1/agent/hf/search?q=${encodeURIComponent(q)}&sort=${sort}${cursor ? `&cursor=${encodeURIComponent(cursor)}` : ''}`,
+      {},
+      45_000,
+    ),
+  hfFiles: (repoId: string) =>
+    request<{ success: boolean; repo_id: string; files: HFFile[]; message?: string | null }>(`/api/v1/agent/hf/files?repo_id=${encodeURIComponent(repoId)}`, {}, 20_000),
+  hfDownload: (repoId: string, filename: string) =>
+    request<{ success: boolean; message: string; job: HFDownload | null }>('/api/v1/agent/hf/download', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ repo_id: repoId, filename }),
+    }),
+  hfDownloads: () => request<HFDownload[]>('/api/v1/agent/hf/downloads', {}, 10_000),
+  hfCancel: (jobId: string) => request<{ cancelled: boolean }>(`/api/v1/agent/hf/downloads/${encodeURIComponent(jobId)}/cancel`, { method: 'POST' }),
   fetchModels: (provider: string, apiKey?: string, baseUrl?: string) =>
-    request<{ success: boolean; provider: string; models: { id: string; name: string; tool_calling?: string; size_gb?: number; tier?: string }[]; message?: string }>('/api/v1/agent/fetch-models', {
+    request<{ success: boolean; provider: string; models: LocalModel[]; message?: string }>('/api/v1/agent/fetch-models', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ provider, api_key: apiKey, base_url: baseUrl }),
@@ -186,8 +203,61 @@ export const api = {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ file_path: filePath }),
-    }, 15_000),
+    }, 30_000),
 };
+
+/** A model from fetch-models; `installed`, `repo_id` and `quant` are set for local GGUF models only. */
+export interface LocalModel {
+  id: string;
+  name: string;
+  tool_calling?: string | null;
+  size_gb?: number | null;
+  tier?: string | null;
+  installed?: boolean | null;
+  repo_id?: string | null;
+  quant?: string | null;
+}
+
+/** Live memory of the machine running the backend; null when it cannot be read. */
+export interface Hardware {
+  ram_total_gb: number | null;
+  ram_available_gb: number | null;
+  gpu_name: string | null;
+  vram_total_gb: number | null;
+  vram_free_gb: number | null;
+}
+
+export interface HFRepo {
+  repo_id: string;
+  author: string;
+  name: string;
+  downloads: number;
+  likes: number;
+  last_modified: string | null;
+  parameters: number | null;
+  context_length: number | null;
+  architecture: string | null;
+  tool_calling: string | null;
+}
+
+export interface HFFile {
+  filename: string;
+  size_bytes: number | null;
+  quant: string | null;
+  installed: boolean;
+  recommended: boolean;
+}
+
+export interface HFDownload {
+  job_id: string;
+  repo_id: string;
+  filename: string;
+  model_id: string;
+  status: 'queued' | 'downloading' | 'completed' | 'failed' | 'cancelled';
+  downloaded_bytes: number;
+  total_bytes: number | null;
+  message: string | null;
+}
 
 export interface ChatRequest {
   message: string;
@@ -221,7 +291,8 @@ export function llmConfig(provider: string, keys: Record<string, string>, urls: 
   const key = keys[provider]?.trim() || undefined;
   const url = urls[provider]?.trim() || defaultUrl || undefined;
   const model = selectedModel?.trim() || DEFAULT_PROVIDER_MODELS[provider] || undefined;
-  if (provider === 'local') return { provider: 'local', model_name: model || 'qwen2.5-3b-instruct' };
+  // No model picked: the backend answers with how to install one instead of guessing a file.
+  if (provider === 'local') return { provider: 'local', model_name: model || undefined };
   // Ollama runs locally on :11434 with an OpenAI-compatible /v1 interface.
   if (provider === 'ollama') return { provider: 'ollama', base_url: `${(url ?? 'http://localhost:11434').replace(/\/$/, '')}/v1`, model_name: model || 'llama3.2' };
   if (provider === 'claude') return { provider: 'anthropic', api_key: key, model_name: model };

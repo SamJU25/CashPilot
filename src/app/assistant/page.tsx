@@ -13,6 +13,7 @@ import { ANALYSIS, ANCHOR, BASE, COMPARE_DAYS, DOSSIER, INTENTS, OPTIONS, RECEIV
 import { fade, spring } from '@/lib/motion';
 import { PROVIDERS, providerName } from '@/lib/providers';
 import { ModelMenu } from '@/components/copilot/model-menu';
+import { modelLabel, useActiveLocalModel } from '@/lib/local-models';
 import { ThinkingIndicator } from '@/components/copilot/thinking-block';
 import { AnswerMarkdown } from '@/components/copilot/answer-markdown';
 import { useData } from '@/lib/use-data';
@@ -313,6 +314,7 @@ function topicOf(intent: string): Topic {
 }
 
 export default function AssistantPage() {
+  const { active: activeLocal } = useActiveLocalModel();
   const { ready, provider, localModel, providerModels, providerKeys, providerUrls, intentStatus, update, source, live: liveData, setLive: setLiveData, alertThresholdDays, homeCurrency, language } = useWorkspace();
   const { t, lang } = useT();
   const intents = useIntents();
@@ -496,8 +498,8 @@ export default function AssistantPage() {
     setDraft('');
   };
 
-  const switchModel = (id: string) => {
-    update({ provider: id });
+  const switchModel = (id: string, model?: string) => {
+    update(model ? { provider: id, localModel: model } : { provider: id });
     if (messages.length > 0) setMessages((m) => appendCapped(m, { role: 'switch', text: '', model: id }));
   };
   const isLocal = PROVIDERS.find((p) => p.id === provider)?.local ?? true;
@@ -514,7 +516,9 @@ export default function AssistantPage() {
       <div className="space-y-0.5">
         <h1 className="text-xl font-semibold tracking-tight">{t('nav.assistant')}</h1>
         <p className="hidden max-w-xl text-xs leading-normal text-muted-foreground sm:block">
-          {t('as.desc', { model: (provider === 'local' && localModel) ? `Local (${localModel.replace('-instruct', '')})` : (providerName(provider, t, true) ?? t('rail.notSet')) })}
+          {provider === 'local' && !activeLocal
+            ? t('as.descNoModel')
+            : t('as.desc', { model: provider === 'local' && activeLocal ? `Local (${modelLabel(activeLocal)})` : (providerName(provider, t, true) ?? t('rail.notSet')) })}
         </p>
       </div>
       <div className="flex shrink-0 items-center gap-2 self-start sm:self-center">

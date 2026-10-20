@@ -40,7 +40,6 @@ interface Prefs {
   providerUrls: Record<string, string>;
   providerModels: Record<string, string>;
   techDetails: boolean;
-  seenRunId: string | null;
   intentDecidedAt: Record<string, string>;
 }
 
@@ -52,14 +51,14 @@ const DEFAULTS: Prefs = {
   homeCurrency: 'USD',
   alertThresholdDays: 30,
   provider: 'local',
-  localModel: 'qwen2.5-3b-instruct',
+  // Empty until a model is installed and picked in Settings.
+  localModel: '',
   intentStatus: {},
   language: 'en',
   providerKeys: {},
   providerUrls: {},
   providerModels: {},
   techDetails: false,
-  seenRunId: null,
   intentDecidedAt: {},
 };
 

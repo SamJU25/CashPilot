@@ -13,7 +13,6 @@ export const PROVIDERS = [
 export type ProviderId = (typeof PROVIDERS)[number]['id'];
 
 export const DEFAULT_PROVIDER_MODELS: Record<string, string> = {
-  local: 'qwen2.5-3b-instruct',
   ollama: 'llama3.2',
   gemini: 'gemini-2.0-flash',
   claude: 'claude-3-5-sonnet-20241022',

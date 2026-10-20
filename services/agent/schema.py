@@ -42,6 +42,9 @@ class ModelItem(BaseModel):
     tool_calling: Optional[str] = Field(default=None, description="Tool calling capability tier: Native, Supported, Basic")
     size_gb: Optional[float] = Field(default=None, description="Model size on disk in gigabytes")
     tier: Optional[str] = Field(default=None, description="Hardware recommendation tier")
+    installed: Optional[bool] = Field(default=None, description="Local models only: weights are on disk")
+    repo_id: Optional[str] = Field(default=None, description="Local models only: Hugging Face source repository")
+    quant: Optional[str] = Field(default=None, description="Local models only: GGUF quantization, e.g. Q4_K_M")
 
 
 class FetchModelsRequest(BaseModel):
@@ -86,6 +89,13 @@ class DownloadModelResponse(BaseModel):
     message: str
     downloaded_path: Optional[str] = None
     size_mb: Optional[float] = None
+
+
+class HFDownloadRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    repo_id: str = Field(..., max_length=200, description="Hugging Face repository, e.g. bartowski/Llama-3.2-3B-Instruct-GGUF")
+    filename: str = Field(..., max_length=200, description="Single GGUF file in the repository root")
 
 
 class DeleteModelRequest(BaseModel):

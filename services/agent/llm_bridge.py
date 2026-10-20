@@ -12,6 +12,7 @@ Supports:
 
 from __future__ import annotations
 
+import os
 import re
 import time
 from typing import Any, Dict, List, Optional, Tuple
@@ -199,39 +200,20 @@ def test_llm_connection(req: TestConnectionRequest) -> TestConnectionResponse:
         engine = LocalTransformersEngine.get_instance()
         target_model = resolve_canonical_model_name(req.model_name or get_default_model_id())
 
+        def local_result(success: bool, message: str) -> TestConnectionResponse:
+            return TestConnectionResponse(success=success, message=message, provider=provider, model_name=target_model, latency_ms=0)
+
         if engine.is_available(target_model):
-            return TestConnectionResponse(
-                success=True,
-                message=f"Local AI model ready: '{target_model}' is installed and ready for offline inference (100% GGUF/llama.cpp runtime, 0 external daemons).",
-                provider=provider,
-                model_name=target_model,
-                latency_ms=0,
-            )
+            # A file on disk is not enough: without the runtime every reply falls back to templates.
+            if not llama_cpp_installed():
+                return local_result(False, "The model is installed, but the llama.cpp runtime is not. Run 'pip install llama-cpp-python', then restart the backend.")
+            return local_result(True, f"Local AI model ready: '{target_model}' is installed and runs offline with llama.cpp.")
 
         from services.agent.local_transformers import SUPPORTED_LOCAL_MODELS
-        any_installed = any(engine.is_available(m) for m in SUPPORTED_LOCAL_MODELS.keys())
-        if not any_installed:
-            return TestConnectionResponse(
-                success=False,
-                message=(
-                    f"Model '{target_model}' is not installed locally on disk. No local AI models are currently installed. "
-                    f"Please click 'Download Model' below in Settings to install a model."
-                ),
-                provider=provider,
-                model_name=target_model,
-                latency_ms=0,
-            )
-
-        return TestConnectionResponse(
-            success=False,
-            message=(
-                f"Model '{target_model}' is not installed locally on disk. "
-                f"Please click 'Download Model' below in Settings to install this model."
-            ),
-            provider=provider,
-            model_name=target_model,
-            latency_ms=0,
-        )
+        # Hidden entries are legacy transformers weights in the HF cache that llama.cpp cannot load.
+        if not any(engine.is_available(m) for m, meta in SUPPORTED_LOCAL_MODELS.items() if not meta.get("hidden")):
+            return local_result(False, "No local model is installed yet. Use Browse models to download one from Hugging Face, or import a .gguf file.")
+        return local_result(False, f"'{target_model}' is not in the models folder. Select one of the installed models above, or download it with Browse models.")
 
     api_key = (req.api_key or "").strip()
     base_url = (req.base_url or "").strip()
@@ -566,51 +548,23 @@ FALLBACK_CATALOG: dict[str, list[ModelItem]] = {
 
 
 def get_system_specs() -> dict:
-    """Probes host hardware capabilities (RAM, GPU, VRAM) safely across platforms."""
-    ram_gb = 8.0
-    try:
-        import psutil
-        ram_gb = round(psutil.virtual_memory().total / (1024**3), 1)
-    except Exception:
-        try:
-            import ctypes
-            class MEMORYSTATUSEX(ctypes.Structure):
-                _fields_ = [
-                    ("dwLength", ctypes.c_ulong),
-                    ("dwMemoryLoad", ctypes.c_ulong),
-                    ("ullTotalPhys", ctypes.c_ulonglong),
-                    ("ullAvailPhys", ctypes.c_ulonglong),
-                    ("ullTotalPageFile", ctypes.c_ulonglong),
-                    ("ullAvailPageFile", ctypes.c_ulonglong),
-                    ("ullTotalVirtual", ctypes.c_ulonglong),
-                    ("ullAvailVirtual", ctypes.c_ulonglong),
-                    ("ullAvailExtendedVirtual", ctypes.c_ulonglong),
-                ]
-            stat = MEMORYSTATUSEX()
-            stat.dwLength = ctypes.sizeof(MEMORYSTATUSEX)
-            ctypes.windll.kernel32.GlobalMemoryStatusEx(ctypes.byref(stat))
-            ram_gb = round(stat.ullTotalPhys / (1024**3), 1)
-        except Exception:
-            pass
+    """Host RAM and GPU for the hardware tier labels; see services.agent.hardware for the live probe."""
+    from services.agent.hardware import probe_hardware
 
-    has_cuda = False
-    gpu_name = ""
-    vram_gb = 0.0
-    try:
-        import torch
-        if torch.cuda.is_available():
-            has_cuda = True
-            gpu_name = torch.cuda.get_device_name(0)
-            vram_gb = round(torch.cuda.get_device_properties(0).total_memory / (1024**3), 1)
-    except Exception:
-        pass
-
+    hw = probe_hardware()
     return {
-        "ram_gb": ram_gb,
-        "has_cuda": has_cuda,
-        "gpu_name": gpu_name,
-        "vram_gb": vram_gb,
+        # The tier labels need a number; 8 GB is the common laptop floor when RAM cannot be read.
+        "ram_gb": hw["ram_total_gb"] or 8.0,
+        "has_cuda": hw["vram_total_gb"] is not None,
+        "gpu_name": hw["gpu_name"] or "",
+        "vram_gb": hw["vram_total_gb"] or 0.0,
     }
+
+
+def llama_cpp_installed() -> bool:
+    import importlib.util
+
+    return importlib.util.find_spec("llama_cpp") is not None
 
 
 def get_fallback_catalog(provider: str) -> list[ModelItem]:
@@ -636,41 +590,41 @@ def fetch_remote_models(req: FetchModelsRequest) -> FetchModelsResponse:
         engine = LocalTransformersEngine.get_instance()
         specs = get_system_specs()
         models = []
+        seen_paths: set[str] = set()
         for m_id, m_meta in SUPPORTED_LOCAL_MODELS.items():
             if m_meta.get("hidden"):
                 continue
             installed = engine.is_available(m_id)
-            tag = "Ready" if installed else "Not Downloaded"
+            if installed:
+                # A manifest entry and the scanned file can name the same weights; list them once.
+                path = os.path.normcase(os.path.abspath(str(engine.get_model_path(m_id) or m_id)))
+                if path in seen_paths:
+                    continue
+                seen_paths.add(path)
             size_gb = m_meta.get("size_gb")
-            size_str = f"{size_gb} GB" if size_gb else ""
-
             if size_gb and size_gb <= 1.0:
                 tier = "Fast / Low RAM"
             elif specs["has_cuda"] or specs["ram_gb"] >= 8.0:
                 tier = "Recommended"
             else:
                 tier = "Requires 4GB+ Free RAM"
-
-            tool_calling = m_meta.get("tool_calling") or "Supported"
-            extra = f" ({size_str} · {tier} · Tools: {tool_calling})" if size_str else ""
-            display_name = f"{m_meta['name']}{extra} [{tag}]"
-
             models.append(
                 ModelItem(
                     id=m_id,
-                    name=display_name,
-                    tool_calling=tool_calling,
+                    name=m_meta["name"],
+                    tool_calling=m_meta.get("tool_calling"),
                     size_gb=size_gb,
                     tier=tier,
+                    installed=installed,
+                    repo_id=m_meta.get("repo_id"),
+                    quant=m_meta.get("quant"),
                 )
             )
-        ready_count = sum(1 for m in models if "[Ready]" in m.name)
+        ready_count = sum(1 for m in models if m.installed)
         hw_desc = f"{specs['ram_gb']} GB RAM" + (f", {specs['gpu_name']}" if specs["has_cuda"] else "")
-        msg = (
-            f"No local AI models found on disk. Click the 'Download Model' button below to install a model ({hw_desc})."
-            if ready_count == 0
-            else f"Device: {hw_desc}. {ready_count} of {len(models)} local models installed on disk."
-        )
+        msg = f"Device: {hw_desc}. {ready_count} of {len(models)} local models installed on disk."
+        if ready_count == 0:
+            msg += " Use Browse models in Settings to download one."
         return FetchModelsResponse(
             success=True,
             provider=provider,

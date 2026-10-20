@@ -292,10 +292,17 @@ def scan_models_directory(root_dir: str = MODELS_ROOT) -> dict[str, dict]:
             m_id = os.path.splitext(entry)[0].lower()
             clean_title = m_id.replace("-", " ").replace("_", " ").title()
             sz_gb = round(os.path.getsize(item_path) / (1024**3), 1)
+            # Written by hf_catalog after a Hugging Face download.
+            sidecar: dict = {}
+            try:
+                with open(os.path.splitext(item_path)[0] + ".json", "r", encoding="utf-8") as f:
+                    sidecar = json.load(f)
+            except (OSError, ValueError):
+                pass
             discovered[m_id] = {
                 "id": m_id,
                 "name": f"{clean_title} (GGUF)",
-                "repo_id": entry,
+                "repo_id": sidecar.get("repo_id") or entry,
                 "filename": entry,
                 "local_dir": root_dir,
                 "base_dir": root_dir,
@@ -304,6 +311,8 @@ def scan_models_directory(root_dir: str = MODELS_ROOT) -> dict[str, dict]:
                 "is_gguf": True,
                 "is_lora": False,
                 "device_preferred": "cuda/cpu",
+                "tool_calling": sidecar.get("tool_calling"),
+                "quant": sidecar.get("quant"),
                 "aliases": [m_id.replace("-", ""), m_id.replace("_", "-")],
             }
             continue
@@ -566,17 +575,18 @@ class DynamicModelCatalog(dict):
         self.refresh()
         return super().__contains__(key)
 
+    # Snapshots, not live views: lookups inside a loop (or another request) re-scan and mutate the dict.
     def items(self):
         self.refresh()
-        return super().items()
+        return list(super().items())
 
     def keys(self):
         self.refresh()
-        return super().keys()
+        return list(super().keys())
 
     def values(self):
         self.refresh()
-        return super().values()
+        return list(super().values())
 
 
 SUPPORTED_LOCAL_MODELS = DynamicModelCatalog()
@@ -672,8 +682,10 @@ class LocalTransformersEngine:
                         if os.path.isfile(fp) and os.path.getsize(fp) > 1024 * 1024:
                             return True
 
+            # Any .gguf in a model's own folder counts; in the shared roots it belongs to another model.
+            shared_roots = {os.path.abspath(MODELS_ROOT), os.path.abspath(BASE_MODELS_ROOT)}
             for d in search_dirs:
-                if d and os.path.isdir(d):
+                if d and os.path.isdir(d) and os.path.abspath(d) not in shared_roots:
                     try:
                         for f in os.listdir(d):
                             if f.endswith(".gguf"):
@@ -727,8 +739,10 @@ class LocalTransformersEngine:
                         if os.path.isfile(fp):
                             return os.path.abspath(fp)
 
+            # Any .gguf in a model's own folder counts; in the shared roots it belongs to another model.
+            shared_roots = {os.path.abspath(MODELS_ROOT), os.path.abspath(BASE_MODELS_ROOT)}
             for d in search_dirs:
-                if d and os.path.isdir(d):
+                if d and os.path.isdir(d) and os.path.abspath(d) not in shared_roots:
                     try:
                         for f in os.listdir(d):
                             if f.endswith(".gguf"):
@@ -771,7 +785,7 @@ class LocalTransformersEngine:
                 logger.warning(
                     "Local GGUF model weights for '%s' not found on disk. "
                     "Automatic downloads are strictly disabled. "
-                    "Run 'python scripts/download_model.py --model %s' or use the Download Model endpoint to fetch weights.",
+                    "Run 'python scripts/download_model.py --model %s' or use Browse models in Settings to fetch weights.",
                     c_name,
                     c_name,
                 )
@@ -1004,8 +1018,10 @@ class LocalTransformersEngine:
 
             total_bytes = 0
             deleted_paths = []
+            # A file dropped straight into models/ has models/ as its base_dir; removing that tree would wipe every model.
+            shared_roots = {os.path.abspath(MODELS_ROOT), os.path.abspath(BASE_MODELS_ROOT)}
             for d in candidates:
-                if d and os.path.abspath(d) in protected_adapter_dirs:
+                if d and (os.path.abspath(d) in protected_adapter_dirs or os.path.abspath(d) in shared_roots):
                     continue
                 if d and os.path.exists(d):
                     for root, _, files in os.walk(d):
@@ -1030,6 +1046,9 @@ class LocalTransformersEngine:
                             os.remove(s_file)
                         except Exception:
                             pass
+                        sidecar = os.path.splitext(s_file)[0] + ".json"
+                        if filename.lower().endswith(".gguf") and os.path.isfile(sidecar):
+                            os.remove(sidecar)
 
             freed_mb = round(total_bytes / (1024 * 1024), 2)
 

@@ -135,8 +135,8 @@ def test_test_connection_missing_model_handling():
     with patch.object(engine, "is_available", return_value=False):
         resp = run_test_llm_connection(TestConnectionRequest(provider="offline", model_name="sme-finance-lora"))
         assert resp.success is False
-        assert "not installed locally on disk" in resp.message
-        assert "Download Model" in resp.message
+        assert "No local model is installed" in resp.message
+        assert "Browse models" in resp.message
 
 
 def test_fetch_remote_models_message_when_none_installed():
@@ -145,7 +145,7 @@ def test_fetch_remote_models_message_when_none_installed():
     with patch.object(engine, "is_available", return_value=False):
         resp = fetch_remote_models(FetchModelsRequest(provider="offline"))
         assert resp.success is True
-        assert "Download Model" in resp.message
+        assert "Browse models" in resp.message
 
 
 def test_supervisor_asks_to_download_model_when_none_installed():
@@ -167,7 +167,7 @@ def test_supervisor_asks_to_download_model_when_none_installed():
             resp = run_copilot_supervisor(req, llm_config=req.llm_config)
             assert ("CashPilot" in resp.reply or "Autonomous SME Finance Copilot" in resp.reply)
             assert "Please download a model first" in resp.reply
-            assert "Download Model" in resp.reply
+            assert "Browse models" in resp.reply
     finally:
         if old_test_env is not None:
             os.environ["PYTEST_CURRENT_TEST"] = old_test_env
@@ -374,9 +374,9 @@ def test_fetch_remote_models_annotates_device_capability():
     resp = fetch_remote_models(FetchModelsRequest(provider="offline"))
     assert resp.success is True
     assert len(resp.models) >= 4
-    names = [m.name for m in resp.models]
-    assert any("Recommended" in n for n in names)
-    assert any("Low RAM" in n for n in names)
+    tiers = [m.tier for m in resp.models]
+    assert "Recommended" in tiers
+    assert "Fast / Low RAM" in tiers
 
 
 def test_auto_discovery_of_dropped_gguf_file(tmp_path):
@@ -394,8 +394,10 @@ def test_auto_discovery_of_dropped_gguf_file(tmp_path):
     assert meta["filename"] == "custom-finance-7b.gguf"
 
 
-def test_register_gguf_endpoint(client, tmp_path):
+def test_register_gguf_endpoint(client, tmp_path, monkeypatch):
     """Verifies POST /api/v1/agent/register-gguf registers a local .gguf file path."""
+    # Writing into the real models/ left fake models in the app's model list.
+    monkeypatch.setattr("services.agent.local_transformers.MODELS_ROOT", str(tmp_path / "models"))
     sample_gguf = tmp_path / "offline-analyst.gguf"
     sample_gguf.write_bytes(b"GGUF" + b"\x00" * 1024 * 1024)
 
@@ -411,8 +413,9 @@ def test_register_gguf_endpoint(client, tmp_path):
     assert "registered successfully" in data["message"]
 
 
-def test_upload_gguf_endpoint(client):
+def test_upload_gguf_endpoint(client, tmp_path, monkeypatch):
     """Verifies POST /api/v1/agent/upload-gguf streams and stores a .gguf file."""
+    monkeypatch.setattr("services.agent.local_transformers.MODELS_ROOT", str(tmp_path / "models"))
     fake_content = b"GGUF" + b"\x00" * 1024 * 100
     files = {"file": ("uploaded-cfo.gguf", fake_content, "application/octet-stream")}
 
@@ -427,3 +430,22 @@ def test_upload_gguf_endpoint(client):
     assert data["model_id"] == "uploaded-cfo"
     assert "loaded successfully" in data["message"]
 
+
+
+def test_test_connection_reports_missing_llama_cpp_runtime():
+    """An installed file without llama-cpp-python would answer only with templates; the check says so."""
+    engine = LocalTransformersEngine.get_instance()
+    with patch.object(engine, "is_available", return_value=True), patch("services.agent.llm_bridge.llama_cpp_installed", return_value=False):
+        resp = run_test_llm_connection(TestConnectionRequest(provider="offline", model_name="sme-finance-lora"))
+    assert resp.success is False
+    assert "pip install llama-cpp-python" in resp.message
+
+
+def test_test_connection_points_to_installed_models_when_selection_is_missing():
+    engine = LocalTransformersEngine.get_instance()
+    target = resolve_canonical_model_name("qwen2.5-1.5b-instruct")
+    with patch.object(engine, "is_available", side_effect=lambda m=None: m != target):
+        resp = run_test_llm_connection(TestConnectionRequest(provider="offline", model_name=target))
+    assert resp.success is False
+    assert "not in the models folder" in resp.message
+    assert "Select one of the installed models" in resp.message

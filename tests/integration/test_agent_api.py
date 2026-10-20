@@ -212,7 +212,9 @@ def test_agent_prompt_injection_defense():
 
 def test_agent_test_connection_offline():
     """Verify offline provider connection probe succeeds immediately with 0ms latency."""
-    with patch("services.agent.local_transformers.LocalTransformersEngine.is_available", return_value=True):
+    with patch("services.agent.local_transformers.LocalTransformersEngine.is_available", return_value=True), patch(
+        "services.agent.llm_bridge.llama_cpp_installed", return_value=True
+    ):
         response = client.post(
             "/api/v1/agent/test-connection",
             headers=tenant_headers(client, "SME-TOOLING-01"),
@@ -537,7 +539,9 @@ def test_agent_chat_sub_intent_deficit_warning():
 
 def test_agent_offline_lora_connection_and_discovery():
     """Verify local fine-tuned LoRA model is detected and test-connection succeeds."""
-    with patch("services.agent.local_transformers.LocalTransformersEngine.is_available", return_value=True):
+    with patch("services.agent.local_transformers.LocalTransformersEngine.is_available", return_value=True), patch(
+        "services.agent.llm_bridge.llama_cpp_installed", return_value=True
+    ):
         res_test = client.post(
             "/api/v1/agent/test-connection",
             headers=tenant_headers(client, "SME-TOOLING-01"),

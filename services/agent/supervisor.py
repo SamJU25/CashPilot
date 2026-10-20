@@ -495,12 +495,12 @@ def run_copilot_supervisor(
 
         if is_explicit_local and "PYTEST_CURRENT_TEST" not in os.environ:
             from services.agent.local_transformers import SUPPORTED_LOCAL_MODELS
-            any_local = any(trans_engine.is_available(m) for m in SUPPORTED_LOCAL_MODELS.keys()) or slm_engine.is_available()
+            any_local = any(trans_engine.is_available(m) for m, meta in SUPPORTED_LOCAL_MODELS.items() if not meta.get("hidden")) or slm_engine.is_available()
             if not any_local:
                 return (
                     f"{fallback}\n\n"
                     f"> ℹ️ *Strategic CFO recommendations require an on-device AI model. No local AI model was detected on disk. "
-                    f"Please download a model first using the **Download Model** button below or in AI Provider Settings.*"
+                    f"Open **Settings** and use **Browse models** to download one.*"
                 )
         return fallback
 
@@ -1044,20 +1044,20 @@ def run_copilot_supervisor(
     # If running in local/offline mode and no local model weights are found on disk, professionally guide user
     if is_local and "PYTEST_CURRENT_TEST" not in os.environ:
         from services.agent.local_transformers import SUPPORTED_LOCAL_MODELS
-        any_local = any(trans_engine.is_available(m) for m in SUPPORTED_LOCAL_MODELS.keys()) or slm_engine.is_available()
+        any_local = any(trans_engine.is_available(m) for m, meta in SUPPORTED_LOCAL_MODELS.items() if not meta.get("hidden")) or slm_engine.is_available()
         if not any_local:
             if effective_csv:
                 general_reply += (
                     "\n\n> ℹ️ **Notice**: No local AI model was detected on disk. "
                     "Deterministic financial diagnostics and cash calculations are operational. "
-                    "To enable AI strategic commentary and conversational dialogue, please download a model first using the **Download Model** button below or in AI Provider Settings."
+                    "To enable AI commentary and conversation, open **Settings** and use **Browse models** to download one."
                 )
             else:
                 general_reply = (
                     "Hello! I am CashPilot.\n\n"
                     "No local AI model was detected on disk. "
                     "Please download a model first to enable offline conversational dialogue and strategic recommendations:\n"
-                    "Click the **Download Model** button below, or open **AI Provider Settings** (gear icon) to manage local models.\n\n"
+                    "Open **Settings** and use **Browse models** to download one from Hugging Face, or import a .gguf file.\n\n"
                     "You can also upload a bank statement CSV to analyze your cash runway, burn rate, and borrowing capacity with deterministic financial rules."
                 )
 
