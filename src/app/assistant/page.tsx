@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 import Link from 'next/link';
-import { ArrowUp, ArrowUpRight, Check, Copy, FileText, MessageSquare, PanelRightClose, PanelRightOpen } from 'lucide-react';
+import { ArrowUp, ArrowUpRight, Check, Copy, FileText, MessageSquare, PanelRightOpen, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ErrorState, LoadingBlock } from '@/components/common/states';
 import { RunReceipt } from '@/components/copilot/run-receipt';
@@ -389,9 +389,8 @@ export default function AssistantPage() {
   const [live, setLive] = useState(0);
   const [pondered, setPondered] = useState(false);
   const pendingCount = intents.filter((i) => (intentStatus[i.id] ?? i.status) === 'STAGED_PENDING_HITL').length;
-  // Docked beside the chat on wide screens; below xl it overlays the chat, so it starts closed there.
-  const [inspectorOpen, setInspectorOpen] = useState(false);
-  useEffect(() => setInspectorOpen(window.matchMedia('(min-width: 1280px)').matches), []);
+  // Permanently docked on desktop (xl+); on mobile/tablet it opens via overlay drawer.
+  const [mobileInspectorOpen, setMobileInspectorOpen] = useState(false);
   const [inspectorTab, setInspectorTab] = useState<'activity' | 'approvals'>('activity');
   useEffect(() => {
     if (pendingCount > 0) setInspectorTab('approvals');
@@ -488,7 +487,7 @@ export default function AssistantPage() {
         const drafted = thisTurn.some((i) => i.id === intent.id) ? thisTurn : [...thisTurn, intent];
         setLiveData({ intents: [...liveData.intents.filter((i) => !drafted.some((d) => d.id === i.id)), ...drafted] });
         setInspectorTab('approvals');
-        setInspectorOpen(true);
+        setMobileInspectorOpen(true);
       }
       const route: RunStep = {
         label: t('as.k0'),
@@ -557,22 +556,22 @@ export default function AssistantPage() {
         </p>
       </div>
       <div className="flex shrink-0 items-center gap-2 self-start sm:self-center">
+        {/* On desktop (xl+) the inspector is permanently docked; mobile/tablet gets a compact drawer trigger */}
         <Button
           type="button"
-          variant="ghost"
-          size="icon"
+          variant="outline"
+          size="sm"
           className={cn(
-            'relative size-8 text-muted-foreground hover:text-foreground hover:bg-muted/70 rounded-md transition-colors',
-            inspectorOpen && 'bg-muted/70 text-foreground'
+            'xl:hidden relative h-8 gap-1.5 px-2.5 text-xs text-muted-foreground hover:text-foreground transition-colors',
+            mobileInspectorOpen && 'bg-muted text-foreground'
           )}
-          onClick={() => setInspectorOpen(!inspectorOpen)}
+          onClick={() => setMobileInspectorOpen(!mobileInspectorOpen)}
           aria-label={`${t('nav.activity')} & ${t('nav.approvals')}`}
-          aria-expanded={inspectorOpen}
-          title={`${t('nav.activity')} & ${t('nav.approvals')}`}
         >
-          {inspectorOpen ? <PanelRightClose className="size-4" aria-hidden /> : <PanelRightOpen className="size-4" aria-hidden />}
+          <PanelRightOpen className="size-3.5" aria-hidden />
+          <span>{t('nav.activity')}</span>
           {pendingCount > 0 && (
-            <span className="absolute -top-1 -right-1 flex size-3.5 items-center justify-center rounded-full bg-primary text-[9px] font-semibold text-primary-foreground shadow-xs">
+            <span className="flex size-4 items-center justify-center rounded-full bg-primary text-[10px] font-semibold text-primary-foreground">
               {pendingCount}
             </span>
           )}
@@ -604,14 +603,7 @@ export default function AssistantPage() {
       {assistantHeader}
 
       <div className="relative flex flex-1 min-h-0 gap-4 xl:gap-6 pt-2">
-        <motion.div
-          layout
-          transition={spring.smooth}
-          className={cn(
-            'flex flex-1 min-w-0 flex-col max-w-3xl xl:max-w-4xl',
-            !inspectorOpen && 'mx-auto'
-          )}
-        >
+        <div className="flex flex-1 min-w-0 flex-col max-w-3xl xl:max-w-none">
           <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden px-1 py-1 space-y-4 flex flex-col">
             <AnimatePresence>
               {messages.length === 0 && !waiting && !busy && (
@@ -642,7 +634,7 @@ export default function AssistantPage() {
                       onAsk={send}
                       onReview={() => {
                         setInspectorTab('approvals');
-                        setInspectorOpen(true);
+                        setMobileInspectorOpen(true);
                       }}
                     />
                   )}
@@ -827,26 +819,60 @@ export default function AssistantPage() {
               {isLocal ? t('set.localNote') : t('as.mask')}
             </p>
           </form>
-        </motion.div>
+        </div>
 
-        {/* Dedicated Separate Inspector Side Pane with Switchable Tabs & Motion Animation */}
-        <AnimatePresence initial={false}>
-          {inspectorOpen && (
-            <motion.aside
-              key="assistant-inspector-pane"
-              initial={{ opacity: 0, x: 16 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: 16 }}
-              transition={spring.smooth}
-              className="min-h-0 w-[min(380px,calc(100vw-2rem))] shrink-0 max-xl:absolute max-xl:inset-y-0 max-xl:right-0 max-xl:z-20 max-xl:rounded-l-xl max-xl:bg-background max-xl:shadow-xl"
-            >
-              <div className="flex h-full min-h-0 w-full flex-col border-l pl-4 max-xl:pr-3 max-xl:pt-2 xl:pl-6">
-                <AssistantInspector
-                  activeTab={inspectorTab}
-                  onTabChange={setInspectorTab}
-                />
-              </div>
-            </motion.aside>
+        {/* Permanently Docked Desktop Inspector Pane */}
+        <aside
+          className="hidden xl:flex min-h-0 w-[360px] 2xl:w-[400px] shrink-0 flex-col border-l pl-5 2xl:pl-6"
+          aria-label={`${t('nav.activity')} & ${t('nav.approvals')}`}
+        >
+          <AssistantInspector
+            activeTab={inspectorTab}
+            onTabChange={setInspectorTab}
+          />
+        </aside>
+
+        {/* Mobile/Tablet Overlay Drawer */}
+        <AnimatePresence>
+          {mobileInspectorOpen && (
+            <div className="xl:hidden fixed inset-0 z-40 flex justify-end">
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={() => setMobileInspectorOpen(false)}
+                className="fixed inset-0 bg-background/80 backdrop-blur-xs"
+              />
+              <motion.aside
+                initial={{ x: '100%' }}
+                animate={{ x: 0 }}
+                exit={{ x: '100%' }}
+                transition={spring.smooth}
+                className="relative z-50 flex h-full w-[min(380px,calc(100vw-2rem))] flex-col border-l bg-background p-4 shadow-xl"
+              >
+                <div className="flex items-center justify-between pb-2 mb-2 border-b">
+                  <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                    {t('nav.activity')} & {t('nav.approvals')}
+                  </span>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="size-7 rounded-md text-muted-foreground hover:text-foreground"
+                    onClick={() => setMobileInspectorOpen(false)}
+                    aria-label="Close"
+                  >
+                    <X className="size-4" />
+                  </Button>
+                </div>
+                <div className="flex-1 min-h-0">
+                  <AssistantInspector
+                    activeTab={inspectorTab}
+                    onTabChange={setInspectorTab}
+                  />
+                </div>
+              </motion.aside>
+            </div>
           )}
         </AnimatePresence>
       </div>
