@@ -2887,7 +2887,7 @@
       "file_type": "code",
       "norm_label": "key",
       "source_file": "src/lib/i18n/en.ts",
-      "source_location": "L799"
+      "source_location": "L794"
     },
     {
       "id": "src_lib_i18n_index_vars",
@@ -57571,6 +57571,18 @@
       "type": "external"
     },
     {
+      "id": "src_components_ui_tabs_tabs",
+      "label": "src_components_ui_tabs_tabs",
+      "_origin": "semantic",
+      "community": 251,
+      "community_name": "useT",
+      "external": true,
+      "file_type": "concept",
+      "norm_label": "src_components_ui_tabs_tabs",
+      "source_file": "",
+      "type": "external"
+    },
+    {
       "id": "src_lib_i18n_index_lang",
       "label": "src_lib_i18n_index_lang",
       "_origin": "semantic",
@@ -59091,17 +59103,6 @@
       "external": true,
       "file_type": "concept",
       "norm_label": "src_lib_i18n_index_key",
-      "source_file": "",
-      "type": "external"
-    },
-    {
-      "id": "src_components_ui_tabs_tabs",
-      "label": "src_components_ui_tabs_tabs",
-      "community": 251,
-      "community_name": "useT",
-      "external": true,
-      "file_type": "concept",
-      "norm_label": "src_components_ui_tabs_tabs",
       "source_file": "",
       "type": "external"
     }
@@ -77536,7 +77537,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/settings/local-models.tsx",
-      "source_location": "L529",
+      "source_location": "L527",
       "weight": 1.0
     },
     {
@@ -77548,7 +77549,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/settings/local-models.tsx",
-      "source_location": "L541",
+      "source_location": "L539",
       "weight": 1.0
     },
     {
@@ -77560,7 +77561,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/settings/local-models.tsx",
-      "source_location": "L582",
+      "source_location": "L580",
       "weight": 1.0
     },
     {
@@ -77572,7 +77573,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/settings/local-models.tsx",
-      "source_location": "L590",
+      "source_location": "L588",
       "weight": 1.0
     },
     {
@@ -77584,7 +77585,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/settings/local-models.tsx",
-      "source_location": "L608",
+      "source_location": "L606",
       "weight": 1.0
     },
     {
@@ -77596,7 +77597,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/settings/local-models.tsx",
-      "source_location": "L626",
+      "source_location": "L624",
       "weight": 1.0
     },
     {
@@ -77608,7 +77609,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/settings/local-models.tsx",
-      "source_location": "L648",
+      "source_location": "L643",
       "weight": 1.0
     },
     {
@@ -77620,7 +77621,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/settings/local-models.tsx",
-      "source_location": "L651",
+      "source_location": "L646",
       "weight": 1.0
     },
     {
@@ -77632,7 +77633,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/settings/local-models.tsx",
-      "source_location": "L654",
+      "source_location": "L649",
       "weight": 1.0
     },
     {
@@ -77644,7 +77645,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/settings/local-models.tsx",
-      "source_location": "L655",
+      "source_location": "L650",
       "weight": 1.0
     },
     {
@@ -77656,43 +77657,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/settings/local-models.tsx",
-      "source_location": "L656",
-      "weight": 1.0
-    },
-    {
-      "source": "src_components_settings_local_models_localmodelmanager",
-      "target": "src_components_ui_dialog_dialogdescription",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "src/components/settings/local-models.tsx",
-      "source_location": "L657",
-      "weight": 1.0
-    },
-    {
-      "source": "src_components_settings_local_models_localmodelmanager",
-      "target": "src_components_ui_input_input",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "src/components/settings/local-models.tsx",
-      "source_location": "L660",
-      "weight": 1.0
-    },
-    {
-      "source": "src_components_settings_local_models_localmodelmanager",
-      "target": "src_components_ui_dialog_dialogfooter",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "src/components/settings/local-models.tsx",
-      "source_location": "L668",
+      "source_location": "L651",
       "weight": 1.0
     },
     {
@@ -77704,7 +77669,31 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/settings/local-models.tsx",
-      "source_location": "L691",
+      "source_location": "L651",
+      "weight": 1.0
+    },
+    {
+      "source": "src_components_settings_local_models_localmodelmanager",
+      "target": "src_components_ui_dialog_dialogdescription",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/components/settings/local-models.tsx",
+      "source_location": "L652",
+      "weight": 1.0
+    },
+    {
+      "source": "src_components_settings_local_models_localmodelmanager",
+      "target": "src_components_ui_dialog_dialogfooter",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/components/settings/local-models.tsx",
+      "source_location": "L656",
       "weight": 1.0
     },
     {
@@ -157260,7 +157249,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/i18n/en.ts",
-      "source_location": "L799",
+      "source_location": "L794",
       "weight": 1.0
     },
     {
@@ -183017,5 +183006,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "fa6f614d1bee15dce897d5d43a6cdb393c4ea44d"
+  "built_at_commit": "94cd5251bafc54c14a9866a05601a462a41ad854"
 }

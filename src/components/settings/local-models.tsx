@@ -513,8 +513,6 @@ export function LocalModelManager({ hw, onHardwareChange }: { hw: Hardware | nul
   const [busy, setBusy] = useState(false);
   const [notice, setNotice] = useState<{ ok: boolean; text: string } | null>(null);
   const [toDelete, setToDelete] = useState<LocalModel | null>(null);
-  const [linkOpen, setLinkOpen] = useState(false);
-  const [linkPath, setLinkPath] = useState('');
   const fileRef = useRef<HTMLInputElement>(null);
 
   const models = state.status === 'ready' ? state.models : [];
@@ -637,9 +635,6 @@ export function LocalModelManager({ hw, onHardwareChange }: { hw: Hardware | nul
         <Button variant="outline" onClick={() => fileRef.current?.click()} disabled={busy}>
           {t('lm.import')}
         </Button>
-        <Button variant="outline" onClick={() => setLinkOpen(true)} disabled={busy}>
-          {t('lm.linkPath')}
-        </Button>
       </div>
       {failed.map((j) => (
         <p key={j.job_id} role="alert" className="text-xs text-critical-text">{j.filename}: {j.message}</p>
@@ -649,41 +644,6 @@ export function LocalModelManager({ hw, onHardwareChange }: { hw: Hardware | nul
       )}
 
       <HuggingFaceBrowser open={browserOpen} onOpenChange={setBrowserOpen} jobs={jobs} hw={hw} onDownload={startDownload} />
-
-      <Dialog open={linkOpen} onOpenChange={setLinkOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>{t('lm.linkPathTitle')}</DialogTitle>
-            <DialogDescription>{t('lm.linkPathDesc')}</DialogDescription>
-          </DialogHeader>
-          <div className="py-2">
-            <Input
-              value={linkPath}
-              onChange={(e) => setLinkPath(e.target.value)}
-              placeholder={t('lm.linkPathPh')}
-              className="font-mono text-xs"
-              autoFocus
-            />
-          </div>
-          <DialogFooter>
-            <DialogClose asChild>
-              <Button variant="outline">{t('lm.cancel')}</Button>
-            </DialogClose>
-            <Button
-              disabled={busy || !linkPath.trim()}
-              onClick={async () => {
-                const path = linkPath.trim();
-                if (!path) return;
-                setLinkOpen(false);
-                setLinkPath('');
-                await run(() => api.registerGGUF(path));
-              }}
-            >
-              {t('lm.linkPathBtn')}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
 
       <Dialog open={toDelete !== null} onOpenChange={(v) => !v && setToDelete(null)}>
         <DialogContent>
