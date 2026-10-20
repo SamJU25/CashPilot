@@ -2112,9 +2112,9 @@
     "semantic_hash": ""
   },
   "src/app/assistant/page.tsx": {
-    "mtime": 1792536362.3936994,
-    "seen": 1792536447.0923126,
-    "ast_hash": "e97539288df0c55bd6dd500aace929b1",
+    "mtime": 1792536986.7605164,
+    "seen": 1792537117.5469997,
+    "ast_hash": "52e6c30b1c90bd844ac8b7977e925d39",
     "semantic_hash": ""
   },
   "src/app/funding/page.tsx": {
@@ -2424,9 +2424,9 @@
     "semantic_hash": ""
   },
   "src/components/copilot/assistant-inspector.tsx": {
-    "mtime": 1792456534.669844,
-    "seen": 1792456921.727964,
-    "ast_hash": "6c946fc7d690e61d9e400ac490dbebc5",
+    "mtime": 1792536854.2652328,
+    "seen": 1792537117.5481782,
+    "ast_hash": "7e43cf2e09f2eeb671f990fbf69fe9f4",
     "semantic_hash": ""
   },
   "src/components/copilot/briefing.tsx": {

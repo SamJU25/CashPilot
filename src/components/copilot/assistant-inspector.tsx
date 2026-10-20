@@ -3,11 +3,11 @@
 import { useState } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 import Link from 'next/link';
-import { Activity, ArrowRight, FileText, ListChecks, Shield, ShieldCheck } from 'lucide-react';
+import { ArrowRight, FileText, LineChart, ListChecks, ShieldCheck } from 'lucide-react';
 import { ApprovalCard, StatusPill, ViewRequestButton } from '@/components/copilot/approval';
 import { FeedRow, useFeed } from '@/components/shell/activity-panel';
-import { Button } from '@/components/ui/button';
 import { useT, type Key } from '@/lib/i18n';
+import { ANALYSIS, BASE } from '@/lib/mock/demo';
 import { useIntents, useWorkspace } from '@/lib/workspace';
 import { centsToString, formatDateTime, formatMoney } from '@/lib/format';
 import { fade, spring } from '@/lib/motion';
@@ -23,7 +23,7 @@ export function AssistantInspector({
 }) {
   const { t } = useT();
   const intents = useIntents();
-  const { intentStatus } = useWorkspace();
+  const { hasData, source, live, intentStatus } = useWorkspace();
   const feed = useFeed();
 
   const allIntents = intents.map((i) => ({ ...i, status: intentStatus[i.id] ?? i.status }));
@@ -35,6 +35,9 @@ export function AssistantInspector({
 
   const activeTab = controlledTab ?? internalTab;
   const setTab = onTabChange ?? setInternalTab;
+
+  const analysis = !hasData ? null : (source === 'sample' ? ANALYSIS : live.analysis);
+  const forecast = !hasData ? null : (source === 'sample' ? BASE.forecast : live.analysis?.forecast);
 
   return (
     <div className="flex h-full min-h-0 flex-col bg-transparent">
@@ -93,8 +96,14 @@ export function AssistantInspector({
         </div>
 
         <div className="flex items-center gap-1.5 text-[11px] font-medium text-muted-foreground pr-1">
-          <span className="size-1.5 rounded-full bg-emerald-500 animate-pulse" aria-hidden />
-          <span>Live Monitor</span>
+          <span
+            className={cn(
+              'size-1.5 rounded-full',
+              hasData ? 'bg-emerald-500 animate-pulse' : 'bg-muted-foreground'
+            )}
+            aria-hidden
+          />
+          <span>{hasData ? 'Live Ledger' : 'No Data'}</span>
         </div>
       </div>
 
@@ -108,78 +117,93 @@ export function AssistantInspector({
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -3 }}
               transition={fade}
-              className="space-y-3.5"
+              className="space-y-4"
             >
-              {/* 3-Tier Security Posture Card */}
+              {/* Executive Financial Telemetry Card (Real Data / No Dummy Numbers) */}
               <div className="rounded-xl border bg-card/60 p-3.5 space-y-2.5 text-xs shadow-xs">
                 <div className="flex items-center justify-between">
                   <span className="font-semibold text-foreground text-xs flex items-center gap-1.5">
-                    <Shield className="size-3.5 text-primary" aria-hidden />
-                    3-Tier Security Gate
+                    <LineChart className="size-3.5 text-primary" aria-hidden />
+                    Financial Telemetry
                   </span>
-                  <span className="text-[10px] font-medium text-emerald-500 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
-                    Enforced
-                  </span>
+                  {hasData ? (
+                    forecast?.has_projected_deficit ? (
+                      <span className="text-[10px] font-medium text-critical-text bg-critical/10 px-2 py-0.5 rounded-full border border-critical/20">
+                        Deficit Projected
+                      </span>
+                    ) : (
+                      <span className="text-[10px] font-medium text-emerald-500 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
+                        Healthy
+                      </span>
+                    )
+                  ) : (
+                    <span className="text-[10px] font-medium text-muted-foreground bg-muted px-2 py-0.5 rounded-full">
+                      Unlinked
+                    </span>
+                  )}
                 </div>
-                <div className="space-y-1.5 text-[11px] border-t border-border/40 pt-2">
-                  <div className="flex items-center justify-between text-muted-foreground">
-                    <span>Tier 1 (Read-Only)</span>
-                    <span className="text-foreground font-mono text-[10.5px]">Autonomous</span>
+
+                <div className="grid grid-cols-2 gap-2 pt-1 border-t border-border/40">
+                  <div className="rounded-lg border bg-background/50 p-2 space-y-0.5">
+                    <p className="text-[10.5px] font-medium text-muted-foreground">Cash Balance</p>
+                    <p className="font-mono text-xs sm:text-[13px] font-semibold text-foreground truncate">
+                      {hasData && analysis ? formatMoney(analysis.current_balance) : '—'}
+                    </p>
                   </div>
-                  <div className="flex items-center justify-between text-muted-foreground">
-                    <span>Tier 2 (Staging Queue)</span>
-                    <span className="text-foreground font-mono text-[10.5px]">Drafts Only</span>
+                  <div className="rounded-lg border bg-background/50 p-2 space-y-0.5">
+                    <p className="text-[10.5px] font-medium text-muted-foreground">Cash Runway</p>
+                    <p className="font-mono text-xs sm:text-[13px] font-semibold text-foreground truncate">
+                      {hasData && analysis?.runway_days != null
+                        ? `${analysis.runway_days}d (${(analysis.runway_days / 30).toFixed(1)} mo)`
+                        : '—'}
+                    </p>
                   </div>
-                  <div className="flex items-center justify-between text-muted-foreground">
-                    <span>Tier 3 (Execution)</span>
-                    <span className="text-amber-500 font-mono text-[10.5px]">Owner-Sent</span>
+                  <div className="rounded-lg border bg-background/50 p-2 space-y-0.5">
+                    <p className="text-[10.5px] font-medium text-muted-foreground">Daily Burn</p>
+                    <p className="font-mono text-xs sm:text-[13px] font-semibold text-foreground truncate">
+                      {hasData && analysis ? `${formatMoney(analysis.average_daily_burn)}/d` : '—'}
+                    </p>
+                  </div>
+                  <div className="rounded-lg border bg-background/50 p-2 space-y-0.5">
+                    <p className="text-[10.5px] font-medium text-muted-foreground">Period Change</p>
+                    <p className="font-mono text-xs sm:text-[13px] font-semibold text-foreground truncate">
+                      {hasData && analysis?.net_period_change ? formatMoney(analysis.net_period_change) : '—'}
+                    </p>
                   </div>
                 </div>
+
+                {!hasData && (
+                  <Link
+                    href="/statements"
+                    className="flex items-center justify-between pt-1.5 text-[11px] text-primary hover:underline font-medium"
+                  >
+                    <span className="flex items-center gap-1.5">
+                      <FileText className="size-3 text-primary" aria-hidden />
+                      Link bank statement to populate
+                    </span>
+                    <ArrowRight className="size-3" aria-hidden />
+                  </Link>
+                )}
               </div>
 
-              {feed.length === 0 ? (
-                <div className="space-y-3">
-                  <div className="rounded-xl border bg-card/40 p-3.5 space-y-3 text-xs">
-                    <div className="flex items-center gap-2">
-                      <div className="flex size-6 items-center justify-center rounded-md bg-primary/10 text-primary">
-                        <Activity className="size-3.5" aria-hidden />
-                      </div>
-                      <p className="font-medium text-foreground text-xs">{t('act.emptyTitle')}</p>
-                    </div>
-                    <p className="text-muted-foreground leading-relaxed text-[11.5px]">
-                      {t('act.desc')}
-                    </p>
-                    <div className="space-y-2 border-t border-border/40 pt-2.5 text-[11px]">
-                      <div className="flex items-start gap-2">
-                        <span className="flex size-4 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary font-mono text-[9px] font-semibold">1</span>
-                        <p className="text-muted-foreground"><strong className="text-foreground font-medium">Ingestion:</strong> Line-item PDF/CSV parsing with row balance tie-out.</p>
-                      </div>
-                      <div className="flex items-start gap-2">
-                        <span className="flex size-4 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary font-mono text-[9px] font-semibold">2</span>
-                        <p className="text-muted-foreground"><strong className="text-foreground font-medium">Deterministic Math:</strong> Daily Average Balance carry-forward, runway, and DSCR.</p>
-                      </div>
-                      <div className="flex items-start gap-2">
-                        <span className="flex size-4 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary font-mono text-[9px] font-semibold">3</span>
-                        <p className="text-muted-foreground"><strong className="text-foreground font-medium">Early Warning:</strong> Overdraft pinpointing across 30/60/90-day horizons.</p>
-                      </div>
-                    </div>
-                  </div>
-
-                  <Button asChild size="sm" variant="outline" className="w-full text-xs font-medium justify-between h-8">
-                    <Link href="/statements">
-                      <span className="flex items-center gap-1.5">
-                        <FileText className="size-3.5 text-muted-foreground" aria-hidden />
-                        {t('as.noDataLink')}
-                      </span>
-                      <ArrowRight className="size-3 text-muted-foreground" aria-hidden />
-                    </Link>
-                  </Button>
-                </div>
-              ) : (
-                <div className="space-y-2">
-                  <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground px-0.5">
-                    {t('nav.activity')}
+              {/* Activity Feed Section */}
+              <div className="space-y-2">
+                <div className="flex items-center justify-between px-0.5">
+                  <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                    Recent Activity
                   </p>
+                  {feed.length > 0 && (
+                    <span className="figures text-[11px] text-muted-foreground">
+                      {feed.length}
+                    </span>
+                  )}
+                </div>
+
+                {feed.length === 0 ? (
+                  <p className="text-center py-6 text-xs text-muted-foreground border border-dashed rounded-xl p-4">
+                    No recent activity. Ingested statements and autonomous runs stream here.
+                  </p>
+                ) : (
                   <ol className="space-y-3">
                     {feed.map((item) => (
                       <li key={item.id}>
@@ -187,8 +211,8 @@ export function AssistantInspector({
                       </li>
                     ))}
                   </ol>
-                </div>
-              )}
+                )}
+              </div>
             </motion.div>
           ) : (
             <motion.div
