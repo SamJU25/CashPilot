@@ -1,4 +1,4 @@
-"""Standalone CLI utility to download and verify local SLM/LoRA models for SME Finance Copilot.
+"""Standalone CLI utility to download and verify local SLM/LoRA models for CashPilot.
 
 Enforces zero-silent-download architecture: models are only downloaded when
 explicitly requested by the user via CLI or UI.
