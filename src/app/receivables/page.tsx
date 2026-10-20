@@ -17,6 +17,8 @@ import { useWorkspace } from '@/lib/workspace';
 import type { Debtor } from '@/lib/types';
 import { useT, type Key } from '@/lib/i18n';
 import { ReminderDialog } from '@/components/receivables/reminder-dialog';
+import { BlockchainVerifyDialog } from '@/components/receivables/blockchain-verify-dialog';
+import { ShieldCheck } from 'lucide-react';
 
 // Ordinal ramp (dataviz sequential blue, steps 250 to 650); "not yet due" stays neutral.
 const BUCKET_COLORS: Record<string, string> = {
@@ -86,6 +88,7 @@ export default function ReceivablesPage() {
     (live) => live.receivables,
   );
   const [drafting, setDrafting] = useState<Debtor | null>(null);
+  const [verifying, setVerifying] = useState<Debtor | null>(null);
   const { source } = useWorkspace();
   const { t } = useT();
   const sample = source === 'sample';
@@ -194,11 +197,22 @@ export default function ReceivablesPage() {
                     <dd className={`figures ${d.max_days_overdue > 45 ? 'text-critical-text' : ''}`}>{d.max_days_overdue || '–'}</dd>
                   </div>
                 </dl>
-                {late && (
-                  <Button variant="outline" className="w-full" onClick={() => setDrafting(d)}>
-                    {t('rec.draft')}
+                <div className="flex gap-2">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setVerifying(d)}
+                    className="flex-1 justify-center gap-1.5 text-xs text-muted-foreground border hover:text-foreground"
+                  >
+                    <ShieldCheck className="size-3.5 text-good" aria-hidden />
+                    <span className="font-mono text-[11px]">{t('rec.verifiedBadge')}</span>
                   </Button>
-                )}
+                  {late && (
+                    <Button variant="outline" size="sm" className="flex-1" onClick={() => setDrafting(d)}>
+                      {t('rec.draft')}
+                    </Button>
+                  )}
+                </div>
               </li>
             );
           })}
@@ -212,6 +226,7 @@ export default function ReceivablesPage() {
                 <TableHead className="text-right">{t('col.overdue')}</TableHead>
                 <TableHead className="text-right">{t('col.mostLate')}</TableHead>
                 <TableHead className="text-right">{t('col.share')}</TableHead>
+                <TableHead>{t('rec.blockchainAudit')}</TableHead>
                 <TableHead className="w-0" />
               </TableRow>
             </TableHeader>
@@ -227,6 +242,17 @@ export default function ReceivablesPage() {
                   </TableCell>
                   <TableCell className={`figures text-right ${d.max_days_overdue > 45 ? 'text-critical-text' : ''}`}>{d.max_days_overdue || '–'}</TableCell>
                   <TableCell className="figures text-right">{d.share_of_total_ar}%</TableCell>
+                  <TableCell>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setVerifying(d)}
+                      className="h-8 gap-1.5 px-2 text-xs font-normal text-muted-foreground hover:text-foreground"
+                    >
+                      <ShieldCheck className="size-3.5 text-good" aria-hidden />
+                      <span className="font-mono text-[11px]">{t('rec.verifiedBadge')}</span>
+                    </Button>
+                  </TableCell>
                   <TableCell>
                     {Number(d.overdue_amount) > 0 && (
                       <Button variant="outline" size="sm" onClick={() => setDrafting(d)}>
@@ -257,6 +283,7 @@ export default function ReceivablesPage() {
       </section>
 
       <ReminderDialog debtor={drafting} onClose={() => setDrafting(null)} />
+      <BlockchainVerifyDialog debtor={verifying} onClose={() => setVerifying(null)} />
     </div>
   );
 }

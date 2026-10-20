@@ -8,6 +8,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { ErrorState } from '@/components/common/states';
 import { Money, SectionTitle, SeverityBadge } from '@/components/common/bits';
 import { KeyFigures } from '@/components/overview/key-figures';
+import { WorkingCapitalCard } from '@/components/overview/working-capital-card';
 import { RunwayChart, type ChartHistory } from '@/components/overview/runway-chart';
 import { ApiError } from '@/lib/api';
 import { addDaysIso, liveHistory, liveProjection, runScenario, todayIso } from '@/lib/live-forecast';
@@ -169,6 +170,7 @@ function LiveOverview({ analysis: a }: { analysis: CashAnalysis }) {
 
       <section aria-label={t('ov.figuresAria')}>
         <KeyFigures analysis={a} />
+        <WorkingCapitalCard analysis={a} />
       </section>
     </div>
   );
@@ -291,6 +293,7 @@ export default function OverviewPage() {
 
       <section aria-label={t('ov.figuresAria')}>
         <KeyFigures analysis={analysis} />
+        <WorkingCapitalCard analysis={analysis} />
       </section>
 
       <section className="grid gap-10 border-t pt-10 lg:grid-cols-2">

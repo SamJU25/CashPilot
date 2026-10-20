@@ -5,6 +5,7 @@ import { motion } from 'motion/react';
 import { AlertOctagon, ShieldCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Money, PageHeader, SectionTitle } from '@/components/common/bits';
+import { UnderwritingDossierDialog } from '@/components/funding/underwriting-dossier-dialog';
 import { EmptyState, ErrorState, LoadingBlock } from '@/components/common/states';
 import { centsToString, formatDate, formatMoney, stringToCents } from '@/lib/format';
 import { BASE, COMPARE_DAYS, DOSSIER, OPTIONS, costToBorrow } from '@/lib/mock/demo';
@@ -94,7 +95,21 @@ export default function FundingPage() {
   const { source, live } = useWorkspace();
   const intents = useIntents();
   const { t } = useT();
-  const header = <PageHeader title={t('nav.funding')} description={t('fund.desc')} />;
+  const header = (
+    <PageHeader
+      title={t('nav.funding')}
+      description={t('fund.desc')}
+      actions={
+        state.status === 'ready' ? (
+          <UnderwritingDossierDialog
+            dossier={state.data.dossier}
+            options={state.data.options}
+            forecast={state.data.forecast}
+          />
+        ) : null
+      }
+    />
+  );
 
   if (state.status === 'loading') return <>{header}<LoadingBlock rows={4} /></>;
   if (state.status === 'error') return <>{header}<ErrorState message={state.message} retry={state.retry} /></>;
