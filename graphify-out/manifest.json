@@ -2424,9 +2424,9 @@
     "semantic_hash": ""
   },
   "src/components/copilot/assistant-inspector.tsx": {
-    "mtime": 1792537517.5435722,
-    "seen": 1792537613.500234,
-    "ast_hash": "ebabbd13232e7cf7e59344bbe67dec16",
+    "mtime": 1792537755.5994725,
+    "seen": 1792537857.4064608,
+    "ast_hash": "404ee2ac0f8360fb7a181ab62ea4a7b6",
     "semantic_hash": ""
   },
   "src/components/copilot/briefing.tsx": {

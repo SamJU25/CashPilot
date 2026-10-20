@@ -2,8 +2,7 @@
 
 import { useState } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
-import Link from 'next/link';
-import { ArrowRight, FileText, LineChart, ListChecks, ShieldCheck } from 'lucide-react';
+import { LineChart, ListChecks, ShieldCheck } from 'lucide-react';
 import { ApprovalCard, StatusPill, ViewRequestButton } from '@/components/copilot/approval';
 import { FeedRow, useFeed } from '@/components/shell/activity-panel';
 import { useT, type Key } from '@/lib/i18n';
@@ -172,18 +171,7 @@ export function AssistantInspector({
                   </div>
                 </div>
 
-                {!hasData && (
-                  <Link
-                    href="/statements"
-                    className="flex items-center justify-between pt-1.5 text-[11px] text-primary hover:underline font-medium"
-                  >
-                    <span className="flex items-center gap-1.5">
-                      <FileText className="size-3 text-primary" aria-hidden />
-                      Link bank statement to populate
-                    </span>
-                    <ArrowRight className="size-3" aria-hidden />
-                  </Link>
-                )}
+
               </div>
 
               {/* Activity Feed Section */}

@@ -6933,7 +6933,7 @@
       "file_type": "code",
       "norm_label": "assistantinspector()",
       "source_file": "src/components/copilot/assistant-inspector.tsx",
-      "source_location": "L17"
+      "source_location": "L16"
     },
     {
       "id": "src_components_shell_activity_panel_feedrow",
@@ -75581,7 +75581,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/copilot/assistant-inspector.tsx",
-      "source_location": "L150",
+      "source_location": "L149",
       "weight": 1.0
     },
     {
@@ -75593,7 +75593,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/copilot/assistant-inspector.tsx",
-      "source_location": "L210",
+      "source_location": "L198",
       "weight": 1.0
     },
     {
@@ -75605,19 +75605,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/copilot/assistant-inspector.tsx",
-      "source_location": "L24",
-      "weight": 1.0
-    },
-    {
-      "source": "src_components_copilot_assistant_inspector_assistantinspector",
-      "target": "src_lib_workspace_useintents",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "src/components/copilot/assistant-inspector.tsx",
-      "source_location": "L25",
+      "source_location": "L23",
       "weight": 1.0
     },
     {
@@ -75629,7 +75617,19 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/copilot/assistant-inspector.tsx",
-      "source_location": "L251",
+      "source_location": "L239",
+      "weight": 1.0
+    },
+    {
+      "source": "src_components_copilot_assistant_inspector_assistantinspector",
+      "target": "src_lib_workspace_useintents",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/components/copilot/assistant-inspector.tsx",
+      "source_location": "L24",
       "weight": 1.0
     },
     {
@@ -75641,7 +75641,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/copilot/assistant-inspector.tsx",
-      "source_location": "L26",
+      "source_location": "L25",
       "weight": 1.0
     },
     {
@@ -75653,7 +75653,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/copilot/assistant-inspector.tsx",
-      "source_location": "L27",
+      "source_location": "L26",
       "weight": 1.0
     },
     {
@@ -75665,7 +75665,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/copilot/assistant-inspector.tsx",
-      "source_location": "L273",
+      "source_location": "L261",
       "weight": 1.0
     },
     {
@@ -75677,7 +75677,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/copilot/assistant-inspector.tsx",
-      "source_location": "L276",
+      "source_location": "L264",
       "weight": 1.0
     },
     {
@@ -75689,7 +75689,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/copilot/assistant-inspector.tsx",
-      "source_location": "L281",
+      "source_location": "L269",
       "weight": 1.0
     },
     {
@@ -75701,7 +75701,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/copilot/assistant-inspector.tsx",
-      "source_location": "L286",
+      "source_location": "L274",
       "weight": 1.0
     },
     {
@@ -75713,7 +75713,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/copilot/assistant-inspector.tsx",
-      "source_location": "L52",
+      "source_location": "L51",
       "weight": 1.0
     },
     {
@@ -107086,30 +107086,6 @@
     },
     {
       "source": "src_components_copilot_assistant_inspector",
-      "target": "src_lib_mock_demo_analysis",
-      "relation": "imports",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "import",
-      "source_file": "src/components/copilot/assistant-inspector.tsx",
-      "source_location": "L10",
-      "weight": 1.0
-    },
-    {
-      "source": "src_components_copilot_assistant_inspector",
-      "target": "src_lib_mock_demo_base",
-      "relation": "imports",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "import",
-      "source_file": "src/components/copilot/assistant-inspector.tsx",
-      "source_location": "L10",
-      "weight": 1.0
-    },
-    {
-      "source": "src_components_copilot_assistant_inspector",
       "target": "src_lib_workspace_useintents",
       "relation": "imports",
       "_origin": "ast",
@@ -107117,7 +107093,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/copilot/assistant-inspector.tsx",
-      "source_location": "L11",
+      "source_location": "L10",
       "weight": 1.0
     },
     {
@@ -107129,7 +107105,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/copilot/assistant-inspector.tsx",
-      "source_location": "L11",
+      "source_location": "L10",
       "weight": 1.0
     },
     {
@@ -107141,7 +107117,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/copilot/assistant-inspector.tsx",
-      "source_location": "L12",
+      "source_location": "L11",
       "weight": 1.0
     },
     {
@@ -107153,7 +107129,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/copilot/assistant-inspector.tsx",
-      "source_location": "L12",
+      "source_location": "L11",
       "weight": 1.0
     },
     {
@@ -107165,7 +107141,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/copilot/assistant-inspector.tsx",
-      "source_location": "L12",
+      "source_location": "L11",
       "weight": 1.0
     },
     {
@@ -107177,7 +107153,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/copilot/assistant-inspector.tsx",
-      "source_location": "L13",
+      "source_location": "L12",
       "weight": 1.0
     },
     {
@@ -107189,7 +107165,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/copilot/assistant-inspector.tsx",
-      "source_location": "L13",
+      "source_location": "L12",
       "weight": 1.0
     },
     {
@@ -107201,7 +107177,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/copilot/assistant-inspector.tsx",
-      "source_location": "L14",
+      "source_location": "L13",
       "weight": 1.0
     },
     {
@@ -107213,7 +107189,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/copilot/assistant-inspector.tsx",
-      "source_location": "L15",
+      "source_location": "L14",
       "weight": 1.0
     },
     {
@@ -107225,7 +107201,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/copilot/assistant-inspector.tsx",
-      "source_location": "L7",
+      "source_location": "L6",
       "weight": 1.0
     },
     {
@@ -107237,7 +107213,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/copilot/assistant-inspector.tsx",
-      "source_location": "L7",
+      "source_location": "L6",
       "weight": 1.0
     },
     {
@@ -107249,7 +107225,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/copilot/assistant-inspector.tsx",
-      "source_location": "L7",
+      "source_location": "L6",
       "weight": 1.0
     },
     {
@@ -107261,7 +107237,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/copilot/assistant-inspector.tsx",
-      "source_location": "L8",
+      "source_location": "L7",
       "weight": 1.0
     },
     {
@@ -107273,7 +107249,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/copilot/assistant-inspector.tsx",
-      "source_location": "L8",
+      "source_location": "L7",
       "weight": 1.0
     },
     {
@@ -107285,7 +107261,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/copilot/assistant-inspector.tsx",
-      "source_location": "L9",
+      "source_location": "L8",
       "weight": 1.0
     },
     {
@@ -107297,12 +107273,36 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/copilot/assistant-inspector.tsx",
-      "source_location": "L9",
+      "source_location": "L8",
       "weight": 1.0
     },
     {
       "source": "src_components_copilot_assistant_inspector",
       "target": "src_lib_i18n_index_uset",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/components/copilot/assistant-inspector.tsx",
+      "source_location": "L8",
+      "weight": 1.0
+    },
+    {
+      "source": "src_components_copilot_assistant_inspector",
+      "target": "src_lib_mock_demo_analysis",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/components/copilot/assistant-inspector.tsx",
+      "source_location": "L9",
+      "weight": 1.0
+    },
+    {
+      "source": "src_components_copilot_assistant_inspector",
+      "target": "src_lib_mock_demo_base",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -123174,7 +123174,7 @@
     },
     {
       "source": "src_components_copilot_assistant_inspector",
-      "target": "src_lib_mock_demo",
+      "target": "src_lib_workspace",
       "relation": "imports_from",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -123186,7 +123186,7 @@
     },
     {
       "source": "src_components_copilot_assistant_inspector",
-      "target": "src_lib_workspace",
+      "target": "src_lib_format",
       "relation": "imports_from",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -123198,7 +123198,7 @@
     },
     {
       "source": "src_components_copilot_assistant_inspector",
-      "target": "src_lib_format",
+      "target": "src_lib_motion",
       "relation": "imports_from",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -123210,7 +123210,7 @@
     },
     {
       "source": "src_components_copilot_assistant_inspector",
-      "target": "src_lib_motion",
+      "target": "src_lib_utils",
       "relation": "imports_from",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -123222,18 +123222,6 @@
     },
     {
       "source": "src_components_copilot_assistant_inspector",
-      "target": "src_lib_utils",
-      "relation": "imports_from",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "import",
-      "source_file": "src/components/copilot/assistant-inspector.tsx",
-      "source_location": "L14",
-      "weight": 1.0
-    },
-    {
-      "source": "src_components_copilot_assistant_inspector",
       "target": "src_lib_types",
       "relation": "imports_from",
       "_origin": "ast",
@@ -123241,7 +123229,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/copilot/assistant-inspector.tsx",
-      "source_location": "L15",
+      "source_location": "L14",
       "type_only": true,
       "weight": 1.0
     },
@@ -123271,7 +123259,7 @@
     },
     {
       "source": "src_components_copilot_assistant_inspector",
-      "target": "ref_next",
+      "target": "ref_lucide_react",
       "relation": "imports_from",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -123283,7 +123271,7 @@
     },
     {
       "source": "src_components_copilot_assistant_inspector",
-      "target": "ref_lucide_react",
+      "target": "src_components_copilot_approval",
       "relation": "imports_from",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -123295,7 +123283,7 @@
     },
     {
       "source": "src_components_copilot_assistant_inspector",
-      "target": "src_components_copilot_approval",
+      "target": "src_components_shell_activity_panel",
       "relation": "imports_from",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -123307,7 +123295,7 @@
     },
     {
       "source": "src_components_copilot_assistant_inspector",
-      "target": "src_components_shell_activity_panel",
+      "target": "src_lib_i18n_index",
       "relation": "imports_from",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -123319,7 +123307,7 @@
     },
     {
       "source": "src_components_copilot_assistant_inspector",
-      "target": "src_lib_i18n_index",
+      "target": "src_lib_mock_demo",
       "relation": "imports_from",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -155375,7 +155363,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/components/copilot/assistant-inspector.tsx",
-      "source_location": "L17",
+      "source_location": "L16",
       "weight": 1.0
     },
     {
@@ -183101,5 +183089,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "94f585311cacafbc6dac766094d27c3c35f99a8f"
+  "built_at_commit": "b8e276e0bed7f4e8a8a3958287d5394890fdcd64"
 }
