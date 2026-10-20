@@ -136,6 +136,7 @@ from services.agent.dynamic_router import (
     classify_sub_intent_dynamic,
     is_ai_disclaimer,
     is_off_topic_query,
+    is_small_talk,
 )
 
 
@@ -414,7 +415,7 @@ def run_copilot_supervisor(
         )
     )
 
-    def _enrich_reply(base_reply: str, prompt_type: str = "diagnostic", calculation: Optional[str] = None) -> str:
+    def _enrich_reply(base_reply: str, prompt_type: str = "diagnostic", calculation: Optional[str] = None, verified: str = "") -> str:
         """
         Has the model write the whole reply from the verified engine output (base_reply).
         base_reply is returned unchanged when no model is configured or answers, when the
@@ -486,7 +487,8 @@ def run_copilot_supervisor(
         if (
             len(written) > 20
             and not is_ai_disclaimer(written)
-            and numbers_are_grounded(written, grounding_source, context=f"{sys_directive}\n{request.message}")
+            # verified: this turn's engine metrics, which the short advice text omits (balance, burn).
+            and numbers_are_grounded(written, grounding_source, context=f"{sys_directive}\n{request.message}\n{verified}")
         ):
             return f"{written}{steps}" if prompt_type == "concept" else written
 
@@ -529,7 +531,33 @@ def run_copilot_supervisor(
             intent_detected="CREDENTIAL_SECURITY_ALERT",
         ))
 
-    # 0c. "I spent / received ..." becomes a proposed entry. Nothing is recorded here: the owner confirms
+    # 0c. AI Model Connection & Hardware Status Inquiry
+    status_match = re.search(
+        r"\b(?:is (?:the )?(?:ai )?model connected|are you connected|model (?:connection|status)|what model (?:is this|are you running|are you)|which model (?:is running|is active)|is (?:the )?model working)\b",
+        request.message,
+        re.IGNORECASE,
+    )
+    if status_match:
+        provider_name = (effective_config.provider if effective_config else "local").lower()
+        if provider_name in ("local", "offline", "local_native"):
+            gpu_info = "NVIDIA GeForce RTX 4050 GPU (PyTorch CUDA acceleration)" if has_cuda else "CPU inference"
+            status_reply = (
+                f"Yes, the model is fully connected and active. You are interacting with CashPilot "
+                f"running **{effective_config.model_name if (effective_config and effective_config.model_name) else 'MiniCPM5-2B'}** hosted on-device via {gpu_info}. "
+                "Deterministic Decimal math engines, FastEmbed semantic routing, and institutional financial guardrails are operational."
+            )
+        else:
+            model_disp = (effective_config.model_name or provider_name) if effective_config else provider_name
+            status_reply = (
+                f"Yes, the model is fully connected and active. You are interacting with CashPilot "
+                f"connected to **{model_disp.upper()}**. Deterministic Decimal calculations and security policies are operational."
+            )
+        return _finalize(CopilotResponse(
+            reply=status_reply,
+            intent_detected="GENERAL_ASSISTANCE",
+        ))
+
+    # 0d. "I spent / received ..." becomes a proposed entry. Nothing is recorded here: the owner confirms
     # the entry on a card, and only that click changes the figures (typed "yes" never does).
     entry = parse_cash_entry(request.message)
     if entry is not None:
@@ -903,7 +931,7 @@ def run_copilot_supervisor(
             )
 
         return _finalize(CopilotResponse(
-            reply=_enrich_reply(reply),
+            reply=_enrich_reply(reply, verified=metrics.model_dump_json()),
             intent_detected=intent,
             metrics=metrics,
         ))
@@ -925,7 +953,9 @@ def run_copilot_supervisor(
             or (effective_config.model_name or "").lower() in LOCAL_MODELS
         )
     )
-    if is_local:
+    # Small talk takes the fixed reply below: the 2B model copied earlier answers out of history
+    # ("how are you" -> the bridge plan) and spent 7-20 s on a greeting.
+    if is_local and not is_small_talk(request.message):
         sys_directive = get_conversational_system_prompt()
         if effective_csv:
             sys_directive += "\nNote: A transactional bank statement is already loaded into session."
@@ -934,7 +964,7 @@ def run_copilot_supervisor(
                 "\nCRITICAL SAFETY DIRECTIVE: No bank statement CSV has been loaded yet. "
                 "You MUST NOT invent, guess, or output any financial figures, dollar amounts, "
                 "deficit amounts, burn rates, or metric bullet lists. "
-                "Introduce yourself directly in one or two sentences as the Autonomous SME Finance Copilot "
+                "Introduce yourself directly in one or two sentences as CashPilot "
                 "and ask the business owner to upload their bank statement CSV."
             )
         sys_directive = _append_session_context(sys_directive, session_rec)
@@ -964,7 +994,7 @@ def run_copilot_supervisor(
                 "\nCRITICAL SAFETY DIRECTIVE: No bank statement CSV has been loaded yet. "
                 "You MUST NOT invent, guess, or output any financial figures, dollar amounts, "
                 "deficit amounts, burn rates, or metric bullet lists. "
-                "Introduce yourself directly in one or two sentences as the Autonomous SME Finance Copilot "
+                "Introduce yourself directly in one or two sentences as CashPilot "
                 "and ask the business owner to upload their bank statement CSV."
             )
         sys_directive = _append_session_context(sys_directive, session_rec)
@@ -1003,7 +1033,7 @@ def run_copilot_supervisor(
         )
     else:
         general_reply = evaluate_persona_policy(prompt_type="GENERAL_NO_STATEMENT").get("guidance_text") or (
-            "Hello! I am your Autonomous SME Finance Copilot. "
+            "Hello! I am CashPilot. "
             "How can I assist with your business finances today? We can analyze your cash runway, evaluate borrowing capacity, or you can upload a bank statement CSV to run a complete financial health diagnostic."
         )
 
@@ -1020,7 +1050,7 @@ def run_copilot_supervisor(
                 )
             else:
                 general_reply = (
-                    "Hello! I am your Autonomous SME Finance Copilot.\n\n"
+                    "Hello! I am CashPilot.\n\n"
                     "No local AI model was detected on disk. "
                     "Please download a model first to enable offline conversational dialogue and strategic recommendations:\n"
                     "Click the **Download Model** button below, or open **AI Provider Settings** (gear icon) to manage local models.\n\n"

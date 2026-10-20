@@ -165,7 +165,8 @@ export interface ChatRequest {
   alert_threshold_days: number;
   currency?: string;
   language?: string;
-  llm_config?: { provider: string; api_key?: string; base_url?: string };
+  csv_content?: string;
+  llm_config?: { provider: string; api_key?: string; base_url?: string; model_name?: string };
 }
 
 export interface ChatResponse {
@@ -189,7 +190,7 @@ export interface ProposedEntry {
 export function llmConfig(provider: string, keys: Record<string, string>, urls: Record<string, string>, defaultUrl: string): ChatRequest['llm_config'] {
   const key = keys[provider]?.trim() || undefined;
   const url = urls[provider]?.trim() || defaultUrl || undefined;
-  if (provider === 'local') return { provider: 'local' };
+  if (provider === 'local') return { provider: 'local', model_name: 'minicpm5-2b' };
   // Ollama speaks the OpenAI protocol under /v1.
   if (provider === 'ollama') return { provider: 'custom', base_url: `${(url ?? 'http://localhost:11434').replace(/\/$/, '')}/v1` };
   if (provider === 'claude') return { provider: 'anthropic', api_key: key };

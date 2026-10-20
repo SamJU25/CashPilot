@@ -36,7 +36,7 @@ def test_agent_general_assistance():
     assert response.status_code == 200
     data = response.json()
     assert data["intent_detected"] == "GENERAL_ASSISTANCE"
-    assert "Autonomous SME Finance Copilot" in data["reply"]
+    assert ("CashPilot" in data["reply"] or "Autonomous SME Finance Copilot" in data["reply"])
     assert data["metrics"] is None
     assert data["staged_action"] is None
 
@@ -51,7 +51,7 @@ def test_agent_greeting_zero_hallucination():
         assert response.status_code == 200
         data = response.json()
         assert data["intent_detected"] == "GENERAL_ASSISTANCE"
-        assert "Autonomous SME Finance Copilot" in data["reply"]
+        assert ("CashPilot" in data["reply"] or "Autonomous SME Finance Copilot" in data["reply"])
         assert "$" not in data["reply"]
         assert "Deficit" not in data["reply"]
         assert "Burn Velocity" not in data["reply"]
@@ -263,7 +263,7 @@ def test_agent_chat_with_header_llm_config():
     assert response.status_code == 200
     data = response.json()
     assert data["intent_detected"] == "GENERAL_ASSISTANCE"
-    assert "Autonomous SME Finance Copilot" in data["reply"]
+    assert ("CashPilot" in data["reply"] or "Autonomous SME Finance Copilot" in data["reply"])
 
 
 def test_pii_masking_defense():

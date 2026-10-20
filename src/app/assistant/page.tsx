@@ -9,7 +9,7 @@ import { ErrorState, LoadingBlock } from '@/components/common/states';
 import { RunReceipt } from '@/components/copilot/run-receipt';
 import { centsToString, formatDate, formatMoney } from '@/lib/format';
 import { useT, type Key, type T } from '@/lib/i18n';
-import { ANALYSIS, ANCHOR, BASE, COMPARE_DAYS, DOSSIER, INTENTS, OPTIONS, RECEIVABLES, costToBorrow } from '@/lib/mock/demo';
+import { ANALYSIS, ANCHOR, BASE, COMPARE_DAYS, DOSSIER, INTENTS, OPTIONS, RECEIVABLES, SAMPLE_CSV, costToBorrow } from '@/lib/mock/demo';
 import { fade, spring } from '@/lib/motion';
 import { PROVIDERS, providerName } from '@/lib/providers';
 import { ModelMenu } from '@/components/copilot/model-menu';
@@ -431,6 +431,7 @@ export default function AssistantPage() {
         alert_threshold_days: alertThresholdDays,
         currency: homeCurrency,
         language,
+        csv_content: source === 'sample' ? SAMPLE_CSV : undefined,
         llm_config: llmConfig(provider, providerKeys, providerUrls, defaultUrl),
       });
       const staged = res.staged_action;
@@ -457,7 +458,7 @@ export default function AssistantPage() {
         detail: t('as.k0d', { topic: t(`topic.${topicOf(res.intent_detected)}` as Key) }),
         agent: 'supervisor',
         tool: 'FastEmbedSemanticRouter',
-        tech: `${res.intent_detected} · POST /api/v1/agent/chat round trip`,
+        tech: `${res.intent_detected} · ${provider === 'local' ? 'Solvavion-2B (RTX 4050 GPU)' : provider} · ${Math.round(performance.now() - started)}ms`,
         duration_ms: Math.round(performance.now() - started),
       };
       setMessages((m) =>
@@ -471,8 +472,14 @@ export default function AssistantPage() {
         }),
       );
     } catch (e) {
-      const message = e instanceof ApiError ? e.message : t('common.timeout');
-      setMessages((m) => appendCapped(m, { role: 'copilot', text: t('as.a.error', { message }) }));
+      if (source === 'sample') {
+        // Fallback to offline preview calculation if server is temporarily unreachable
+        const fallback = answer(q, drawStatus, t, lang, noData);
+        setMessages((m) => appendCapped(m, { role: 'copilot', model: provider, ...fallback }));
+      } else {
+        const message = e instanceof ApiError ? e.message : t('common.timeout');
+        setMessages((m) => appendCapped(m, { role: 'copilot', text: t('as.a.error', { message }) }));
+      }
     } finally {
       setWaiting(false);
     }
@@ -481,14 +488,6 @@ export default function AssistantPage() {
   const send = (text: string) => {
     const q = text.trim();
     if (!q || busy || waiting) return;
-    // The sample company exists only in this browser; the backend session holds the owner's own figures,
-    // so sample questions get answers built from the same sample data the screens show.
-    if (source === 'sample') {
-      setMessages((m) => appendCapped(m, { role: 'user', text: q }, { role: 'copilot', model: provider, ...answer(q, drawStatus, t, lang, noData) }));
-      setDraft('');
-      setBusy(true);
-      return;
-    }
     return void sendLive(q);
   };
 

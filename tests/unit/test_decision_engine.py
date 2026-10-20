@@ -908,7 +908,7 @@ def test_agent_persona_base_parity():
             input_state={"prompt_type": "BASE"},
         ))
         assert res.selected_choice == "AUTONOMOUS_CFO"
-        assert "Autonomous SME Finance Copilot" in res.output_payload["prompt_template"]
+        assert ("CashPilot" in res.output_payload["prompt_template"] or "Autonomous SME Finance Copilot" in res.output_payload["prompt_template"])
         assert "Executive Persona & Tone Standards:" in res.output_payload["prompt_template"]
 
 
@@ -1065,7 +1065,7 @@ def test_prompts_module_dynamic_behavior():
 
     # Dynamic base persona proxy
     assert isinstance(COPILOT_PERSONA_BASE, str)
-    assert "Autonomous SME Finance Copilot" in COPILOT_PERSONA_BASE
+    assert ("CashPilot" in COPILOT_PERSONA_BASE or "Autonomous SME Finance Copilot" in COPILOT_PERSONA_BASE)
     assert len(str(COPILOT_PERSONA_BASE)) > 100
 
     # Get prompts

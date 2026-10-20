@@ -99,6 +99,18 @@ function generateTransactions(): Tx[] {
 
 const TXS = generateTransactions();
 
+export const SAMPLE_CSV = `transaction_id,posted_on,amount,currency,description,closing_balance
+tx_0001,2026-08-01,-6500.00,USD,Rent Harbor Properties,97600.00
+tx_0002,2026-08-01,1700.00,USD,Square settlement,99300.00
+tx_0003,2026-08-02,1950.00,USD,Square settlement,101250.00
+tx_0004,2026-08-03,-1450.00,USD,Coffee bean import,99800.00
+tx_0005,2026-08-15,-1200.00,USD,SBA loan payment,98600.00
+tx_0006,2026-08-28,-18400.00,USD,Gusto payroll,80200.00
+tx_0007,2026-09-01,-6500.00,USD,Rent Harbor Properties,73700.00
+tx_0008,2026-09-15,-1200.00,USD,SBA loan payment,72500.00
+tx_0009,2026-09-28,-18400.00,USD,Gusto payroll,54100.00
+tx_0010,2026-09-30,-24177.92,USD,Sysco food supply,29922.08`;
+
 function covered(accountId: string, date: string) {
   return FILES.some((f) => f.account_id === accountId && date >= f.start && date <= f.end);
 }

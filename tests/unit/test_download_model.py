@@ -165,7 +165,7 @@ def test_supervisor_asks_to_download_model_when_none_installed():
                 llm_config=LLMConfig(provider="offline", model_name="sme-finance-lora"),
             )
             resp = run_copilot_supervisor(req, llm_config=req.llm_config)
-            assert "Autonomous SME Finance Copilot" in resp.reply
+            assert ("CashPilot" in resp.reply or "Autonomous SME Finance Copilot" in resp.reply)
             assert "Please download a model first" in resp.reply
             assert "Download Model" in resp.reply
     finally:

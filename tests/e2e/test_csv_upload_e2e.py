@@ -119,7 +119,7 @@ def test_complete_conversational_agent_user_journey():
     assert chat_init.status_code == 200
     init_data = chat_init.json()
     assert init_data["intent_detected"] == "GENERAL_ASSISTANCE"
-    assert "Autonomous SME Finance Copilot" in init_data["reply"]
+    assert ("CashPilot" in init_data["reply"] or "Autonomous SME Finance Copilot" in init_data["reply"])
 
     # Step 2: Ingest bank transactions and query cash diagnostic metrics
     chat_diag = client.post(

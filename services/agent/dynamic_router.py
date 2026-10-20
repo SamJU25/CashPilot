@@ -18,7 +18,7 @@ from services.agent.schema import LLMConfig
 logger = logging.getLogger(__name__)
 
 INTENT_SYSTEM_PROMPT = (
-    "You are the intent classification intelligence for an Autonomous SME Finance Copilot.\n"
+    "You are the intent classification intelligence for CashPilot.\n"
     "Categorize the user's message into exactly one of these categories:\n\n"
     "- GENERAL_ASSISTANCE: greetings, introductions, capabilities, how to get started, or non-financial/off-topic questions.\n"
     "- CASH_DIAGNOSTIC: inquiries about cash runway, balance, burn rate, overdrafts, cash deficits, or financial health.\n"
@@ -44,6 +44,18 @@ from services.decision.policy_loader import load_semantic_prototypes
 # Widest prototype-score gap still routed to CASH_SCENARIO when the extractor finds a complete what-if.
 SCENARIO_MARGIN = 0.10
 IN_DOMAIN_CARD_SIMILARITY = 0.64
+# Whole message only: "hi, what is my runway?" is a question and must reach the finance router.
+_CONVERSATIONAL_GREETING = re.compile(
+    r"^\s*(?:hi|hello|hey|greetings|howdy|good\s+(?:morning|afternoon|evening|day)|how\s+are\s+you(?:\s+doing)?|how\s+(?:is\s+it|are\s+things)\s+going|what(?:'s|\s+is)\s+up|who\s+are\s+you|what\s+can\s+you\s+do|thank(?:s|\s+you)|ok(?:ay)?|cool|great|awesome|got\s+it|bye|goodbye)"
+    r"(?:[\s,!.?]+(?:there|cashpilot|copilot|again|so\s+much|a\s+lot|very\s+much))*[\s,!.?]*$",
+    re.IGNORECASE,
+)
+
+
+def is_small_talk(text: str) -> bool:
+    """Greeting, thanks or sign-off with nothing else in it."""
+    return bool(_CONVERSATIONAL_GREETING.match(text))
+
 WHAT_IF = re.compile(r"\s*what\s+(?:if|happens\s+if)\b", re.IGNORECASE)
 _FOLLOW_UP_OPENER = re.compile(r"\s*(?:and|what\s+about|how\s+about|instead|same\s+but|also|now|then|ok(?:ay)?,?\s+(?:and|what\s+about))\b", re.IGNORECASE)
 
@@ -109,6 +121,9 @@ class FastEmbedSemanticRouter:
         if not m:
             if has_csv:
                 return "CASH_DIAGNOSTIC", "GENERAL", False
+            return "GENERAL_ASSISTANCE", "GENERAL", False
+
+        if is_small_talk(m):
             return "GENERAL_ASSISTANCE", "GENERAL", False
 
         if not self._ready:

@@ -218,7 +218,21 @@ def test_finance_acronym_is_answered_not_refused(csv):
 
 def test_greeting_still_gets_the_introduction():
     resp = run_copilot_supervisor(AgentChatRequest(message="Hello Copilot, how can you assist our coffee roastery with cash management?"))
-    assert "Autonomous SME Finance Copilot" in resp.reply
+    assert "CashPilot" in resp.reply or "Autonomous SME Finance Copilot" in resp.reply
+
+
+@pytest.mark.parametrize("text", ["hi", "Hello there!", "how are you doing?", "thank you so much", "bye"])
+def test_pure_small_talk_is_recognised(text):
+    from services.agent.dynamic_router import is_small_talk
+
+    assert is_small_talk(text)
+
+
+@pytest.mark.parametrize("text", ["hi, what is my runway?", "ok so how much can I borrow", "thank you, now show lenders"])
+def test_greeting_led_question_reaches_the_finance_router(text):
+    from services.agent.dynamic_router import is_small_talk
+
+    assert not is_small_talk(text)
 
 
 def test_ltv_given_directly_is_used():

@@ -1,5 +1,5 @@
 {
-  "default_model": "solvavion-2b",
+  "default_model": "minicpm5-2b",
   "base_model_id": "openbmb/MiniCPM5-2B",
   "models": {
     "solvavion-2b": {
