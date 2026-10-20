@@ -321,7 +321,20 @@ npm ci
 npm run dev -- --hostname 127.0.0.1 --port 3000
 ```
 
-Open <http://127.0.0.1:3000> in your browser. Download sample bank statement [`data/samples/synthetic-statement.csv`](data/samples/synthetic-statement.csv) and upload it to analyze cash flows, view predictive cash crunches, and test AI CFO interactions.
+#### 3. AI Engine Configuration (Choose Cloud, Local, or Deterministic)
+
+CashPilot operates in three flexible modes depending on user preference:
+
+- **Mode 1: Cloud AI (Fastest — Zero Local Storage)**  
+  Open **Settings** (`/settings`) in the dashboard or set your API key in `.env` (`GEMINI_API_KEY`, `ANTHROPIC_API_KEY`, `OPENAI_API_KEY`, `DEEPSEEK_API_KEY`, or `GROQ_API_KEY`). No local weights required.
+- **Mode 2: Local SLM (100% Offline Inference)**  
+  To run fully offline on your own GPU/CPU without external API calls, download the 2.5B base foundation model:
+  ```bash
+  python scripts/download_model.py --model minicpm5-2b
+  ```
+  *(Check downloaded status anytime with `python scripts/download_model.py --list`)*.
+- **Mode 3: Pure Deterministic (Zero Configuration)**  
+  If no AI model is configured, CashPilot still functions completely: all 25+ financial ratio calculations, balance tie-outs, runway forecasts, and loan matching execute in pure Python `decimal.Decimal`. The assistant provides structured deterministic calculation reports.
 
 ---
 
