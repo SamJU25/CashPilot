@@ -1721,30 +1721,6 @@
     "ast_hash": "fe639da33cfc61e45c724c37e167f4cf",
     "semantic_hash": ""
   },
-  "scripts/generate_finetune_dataset.py": {
-    "mtime": 1792435305.470671,
-    "seen": 1792435406.2522204,
-    "ast_hash": "ab5bb57596f688e818f2ac756f36c6a1",
-    "semantic_hash": ""
-  },
-  "scripts/train_local_model.py": {
-    "mtime": 1792369253.897765,
-    "seen": 1792371051.9440975,
-    "ast_hash": "24cefc1bd5836ea131fac19812d6f4d6",
-    "semantic_hash": ""
-  },
-  "scripts/merge_model.py": {
-    "mtime": 1792366631.8971076,
-    "seen": 1792366781.5422406,
-    "ast_hash": "000cb3d1d26954e3cd57ab7d40d8a3b9",
-    "semantic_hash": ""
-  },
-  "scripts/run_gpu_training.ps1": {
-    "mtime": 1792290738.075694,
-    "seen": 1792291231.5384035,
-    "ast_hash": "0aae1e5a32bf06f60a72864f7a1a5e5d",
-    "semantic_hash": ""
-  },
   "scripts/verify_local_inference.py": {
     "mtime": 1792366647.8138194,
     "seen": 1792366781.5426493,
@@ -1752,9 +1728,9 @@
     "semantic_hash": ""
   },
   "services/agent/local_transformers.py": {
-    "mtime": 1792434613.7013292,
-    "seen": 1792434743.7023478,
-    "ast_hash": "0796aa57fd51392950f259e854ef18df",
+    "mtime": 1792492679.9992335,
+    "seen": 1792492720.827533,
+    "ast_hash": "b86920d16ccd043144c23012a43bfd3f",
     "semantic_hash": ""
   },
   "services/calculations/currency.py": {
@@ -2027,12 +2003,6 @@
     "ast_hash": "34794cd292a10e7f3e20a108d547ea6e",
     "semantic_hash": ""
   },
-  "kaggle/README_KAGGLE.md": {
-    "mtime": 1792372749.7502344,
-    "seen": 1792372896.9266887,
-    "ast_hash": "b2dcb61bb1dc3b71a7167c1663363acc",
-    "semantic_hash": ""
-  },
   "docs/SME_Finance_Copilot_Deep_Dive_Report.pdf": {
     "mtime": 1791824635.3478448,
     "seen": 1792341382.0734282,
@@ -2183,18 +2153,6 @@
     "ast_hash": "e062fefd332df9dd5493682ce1c3cb7a",
     "semantic_hash": ""
   },
-  "docs/superpowers/specs/2026-10-19-frontend-design.md": {
-    "mtime": 1792428027.0569022,
-    "seen": 1792428423.576267,
-    "ast_hash": "c57a639b00a41dd1d922556e72c7ebc5",
-    "semantic_hash": ""
-  },
-  "kaggle/kaggle_train_cashpilot.py": {
-    "mtime": 1792440435.5742273,
-    "seen": 1792440977.9333043,
-    "ast_hash": "cf77df49fb9ded713f50c67d1495e637",
-    "semantic_hash": ""
-  },
   "public/brand/blueprint-wordmark-dark.png": {
     "mtime": 1792373849.6399338,
     "seen": 1792374438.5722582,
@@ -2217,24 +2175,6 @@
     "mtime": 1792373884.8653398,
     "seen": 1792374438.5722687,
     "ast_hash": "d3d7fc215bfb589f6358bc17795e139e",
-    "semantic_hash": ""
-  },
-  "docs/superpowers/specs/2026-10-19-wiring-gap.md": {
-    "mtime": 1792428027.0559015,
-    "seen": 1792428423.5762765,
-    "ast_hash": "abf7e0c37f52f9f44a3e06444282feab",
-    "semantic_hash": ""
-  },
-  "docs/superpowers/specs/2026-10-19-thinking-eval.md": {
-    "mtime": 1792427984.7377527,
-    "seen": 1792428423.5762718,
-    "ast_hash": "dd7e657de124e0be726019e53e3ce14a",
-    "semantic_hash": ""
-  },
-  "docs/superpowers/specs/2026-10-19-handoff.md": {
-    "mtime": 1792438570.8651056,
-    "seen": 1792440349.7126536,
-    "ast_hash": "2c79157798121f4e69991dc9962160c6",
     "semantic_hash": ""
   },
   "src/app/api/session/route.ts": {

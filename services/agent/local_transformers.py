@@ -975,7 +975,7 @@ class LocalTransformersEngine:
             messages.append({"role": "user", "content": prompt})
 
             # Off by default: on the 100-case eval set thinking scored 40% vs 39% with more invented figures
-            # (14 vs 10) at 28 s vs 15 s per reply (docs/superpowers/specs/2026-10-19-thinking-eval.md).
+            # (14 vs 10) at 28 s vs 15 s per reply.
             # LOCAL_ENABLE_THINKING=1 turns it back on.
             prompt_text = self._tokenizer.apply_chat_template(
                 messages,

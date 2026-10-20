@@ -68438,7 +68438,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/agent/supervisor.py",
-      "source_location": "L490",
+      "source_location": "L491",
       "weight": 1.0
     },
     {
@@ -68450,7 +68450,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/agent/supervisor.py",
-      "source_location": "L507",
+      "source_location": "L508",
       "weight": 1.0
     },
     {
@@ -68462,7 +68462,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/agent/supervisor.py",
-      "source_location": "L561",
+      "source_location": "L562",
       "weight": 1.0
     },
     {
@@ -68474,7 +68474,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/agent/supervisor.py",
-      "source_location": "L571",
+      "source_location": "L572",
       "weight": 1.0
     },
     {
@@ -68486,7 +68486,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/agent/supervisor.py",
-      "source_location": "L582",
+      "source_location": "L583",
       "weight": 1.0
     },
     {
@@ -68498,7 +68498,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/agent/supervisor.py",
-      "source_location": "L597",
+      "source_location": "L598",
       "weight": 1.0
     },
     {
@@ -68510,7 +68510,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/agent/supervisor.py",
-      "source_location": "L602",
+      "source_location": "L603",
       "weight": 1.0
     },
     {
@@ -68522,7 +68522,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/agent/supervisor.py",
-      "source_location": "L607",
+      "source_location": "L608",
       "weight": 1.0
     },
     {
@@ -68534,7 +68534,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/agent/supervisor.py",
-      "source_location": "L625",
+      "source_location": "L626",
       "weight": 1.0
     },
     {
@@ -68546,7 +68546,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/agent/supervisor.py",
-      "source_location": "L632",
+      "source_location": "L633",
       "weight": 1.0
     },
     {
@@ -68558,7 +68558,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/agent/supervisor.py",
-      "source_location": "L642",
+      "source_location": "L643",
       "weight": 1.0
     },
     {
@@ -68570,7 +68570,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/agent/supervisor.py",
-      "source_location": "L654",
+      "source_location": "L655",
       "weight": 1.0
     },
     {
@@ -68582,7 +68582,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/agent/supervisor.py",
-      "source_location": "L679",
+      "source_location": "L680",
       "weight": 1.0
     },
     {
@@ -68594,7 +68594,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/agent/supervisor.py",
-      "source_location": "L680",
+      "source_location": "L681",
       "weight": 1.0
     },
     {
@@ -68606,7 +68606,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/agent/supervisor.py",
-      "source_location": "L681",
+      "source_location": "L682",
       "weight": 1.0
     },
     {
@@ -68618,7 +68618,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/agent/supervisor.py",
-      "source_location": "L710",
+      "source_location": "L711",
       "weight": 1.0
     },
     {
@@ -68630,7 +68630,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/agent/supervisor.py",
-      "source_location": "L714",
+      "source_location": "L715",
       "weight": 1.0
     },
     {
@@ -68642,7 +68642,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/agent/supervisor.py",
-      "source_location": "L792",
+      "source_location": "L793",
       "weight": 1.0
     },
     {
@@ -68654,7 +68654,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/agent/supervisor.py",
-      "source_location": "L813",
+      "source_location": "L814",
       "weight": 1.0
     },
     {
@@ -68666,7 +68666,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/agent/supervisor.py",
-      "source_location": "L843",
+      "source_location": "L844",
       "weight": 1.0
     },
     {
@@ -68678,7 +68678,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/agent/supervisor.py",
-      "source_location": "L876",
+      "source_location": "L877",
       "weight": 1.0
     },
     {
@@ -68690,7 +68690,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/agent/supervisor.py",
-      "source_location": "L940",
+      "source_location": "L941",
       "weight": 1.0
     },
     {
@@ -68702,7 +68702,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/agent/supervisor.py",
-      "source_location": "L942",
+      "source_location": "L943",
       "weight": 1.0
     },
     {
@@ -68714,7 +68714,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/agent/supervisor.py",
-      "source_location": "L957",
+      "source_location": "L958",
       "weight": 1.0
     },
     {
@@ -68726,7 +68726,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/agent/supervisor.py",
-      "source_location": "L958",
+      "source_location": "L959",
       "weight": 1.0
     },
     {
@@ -68906,7 +68906,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/agent/supervisor.py",
-      "source_location": "L490",
+      "source_location": "L491",
       "weight": 1.0
     },
     {
@@ -181042,7 +181042,7 @@
       "confidence_score": 0.85,
       "context": "argument",
       "source_file": "services/agent/supervisor.py",
-      "source_location": "L659",
+      "source_location": "L660",
       "weight": 1.0
     },
     {
@@ -183069,7 +183069,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.95,
       "source_file": "services/agent/supervisor.py",
-      "source_location": "L806",
+      "source_location": "L807",
       "weight": 0.8
     },
     {
@@ -183080,7 +183080,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.95,
       "source_file": "services/agent/supervisor.py",
-      "source_location": "L843",
+      "source_location": "L844",
       "weight": 0.8
     },
     {

@@ -1,7 +1,7 @@
 # Graph Report - SME Finance Copilot  (2026-10-20)
 
 ## Corpus Check
-- 450 files · ~340,365 words
+- 450 files · ~340,384 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 27 file(s) not represented in the graph (top: .csv 14, (none) 6, .example 1)
 
