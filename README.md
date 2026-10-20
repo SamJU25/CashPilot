@@ -25,9 +25,9 @@ Read [`AGENTS.md`](AGENTS.md) for instruction precedence and verified baseline s
 | 📘 [System Design Specification](docs/system.md) | Concrete implementation mechanics, mathematical formulas, JSON schemas & smart contracts |
 | 🏛️ [Architectural Plan & Roadmap](docs/architecture.md) | 6-layer topology, local SLM inference, dynamic vector routing & multi-agent suites |
 | 🛡️ [Security Architecture](docs/security.md) | 5 Invariants, threat modeling, Three-Tier Gate (owner-sent Tier 3) & decadal defense |
-| 📜 [Architecture Decision Records (ADRs)](docs/adr/) | 7 formal Architecture Decision Records (ADR-001 through ADR-007) |
+
 | 📖 [Ubiquitous Domain Glossary](GLOSSARY.md) | Standardized fintech, underwriting, and treasury terminology (CCC, DAB, DSCR, APR) |
-| 📄 [Technical Deep Dive Report](docs/SME_Finance_Copilot_Deep_Dive_Report.pdf) | Comprehensive architectural evaluation and benchmark report (PDF) |
+
 | ⚡ [Sprint Workflow](.agent/workflows/sprint-workflow.md) | Contract-first engineering lifecycle and red-green-refactor loop |
 
 ---

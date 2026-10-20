@@ -15,7 +15,7 @@ Scope: All software development, research, financial engineering, and testing in
   - [`docs/system.md`](docs/system.md): Concrete implementation mechanics, math models, schemas & contracts.
   - [`docs/architecture.md`](docs/architecture.md): Macro topology, dual SLM inference & multi-agent suites.
   - [`docs/security.md`](docs/security.md): 5 Invariants, threat defense, self-healing & decadal security.
-  - [`docs/adr/`](docs/adr/): 7 formal Architecture Decision Records.
+
   - [`.agent/workflows/sprint-workflow.md`](.agent/workflows/sprint-workflow.md): Sprint workflow and TDD loop.
 - **Project Structure**:
   - [`.agent/agents/`](.agent/agents): 57 specialized subagents across 8 squads (Suites 0 through 7).

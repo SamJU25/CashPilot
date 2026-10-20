@@ -12,7 +12,7 @@ Start with [`AGENTS.md`](AGENTS.md) and the user's explicit task. `AGENTS.md` de
 - [`docs/system.md`](docs/system.md): System design blueprint & technical specifications.
 - [`docs/architecture.md`](docs/architecture.md): Architecture blueprint & system topology.
 - [`docs/security.md`](docs/security.md): Security design blueprint & defense-in-depth.
-- [`docs/adr/`](docs/adr/): Accepted decisions, when applicable.
+
 - [`.agent/workflows/sprint-workflow.md`](.agent/workflows/sprint-workflow.md): Sprint workflow and engineering lifecycle.
 - [`GLOSSARY.md`](GLOSSARY.md): Ubiquitous domain glossary.
 
@@ -51,7 +51,7 @@ Every contributor (human developer or AI coding agent) working in this workspace
 
 ### 1.5 Domain Alignment & ADR Protocol (`domain-alignment`)
 - Enforce ubiquitous domain vocabulary in all code, data models, and API routes.
-- Record non-trivial architectural decisions in Architecture Decision Records (`docs/adr/ADR-xxx.md`).
+- Maintain architectural integrity and specifications in `docs/`.
 - Maintain domain definitions in [`GLOSSARY.md`](GLOSSARY.md).
 
 ### 1.6 Frontend Design Engineering (`frontend-craft`)

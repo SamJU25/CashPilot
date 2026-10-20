@@ -924,15 +924,15 @@
     "semantic_hash": ""
   },
   "AGENTS.md": {
-    "mtime": 1792428389.6503348,
-    "seen": 1792428423.5742385,
-    "ast_hash": "6a468bb2bc0c745f07f2f4832c3d4d0f",
+    "mtime": 1792493487.8301096,
+    "seen": 1792493546.0544295,
+    "ast_hash": "7726aa43221cf0f7c318ba3f54d0b522",
     "semantic_hash": ""
   },
   "GEMINI.md": {
-    "mtime": 1792427582.0886204,
-    "seen": 1792428423.5742478,
-    "ast_hash": "f1e2914ccccfb0f270d715b9707b8680",
+    "mtime": 1792493528.0172472,
+    "seen": 1792493546.0544348,
+    "ast_hash": "189eb25236e2c0cfff52cb93c3da8044",
     "semantic_hash": ""
   },
   "GLOSSARY.md": {
@@ -978,15 +978,15 @@
     "semantic_hash": ""
   },
   "CLAUDE.md": {
-    "mtime": 1792427582.0875566,
-    "seen": 1792428423.574244,
-    "ast_hash": "b899e70fb70cb21c68e2710bcefb715f",
+    "mtime": 1792493505.1010058,
+    "seen": 1792493546.0544326,
+    "ast_hash": "f64e04b7991cd4488731d87afa33d005",
     "semantic_hash": ""
   },
   "README.md": {
-    "mtime": 1792428396.3456383,
-    "seen": 1792428423.5745466,
-    "ast_hash": "bf3e833ecbc1219b9becce08a27c0a84",
+    "mtime": 1792493482.2134447,
+    "seen": 1792493546.054553,
+    "ast_hash": "39cea5bf1335a887fd6e6d9d4d33627c",
     "semantic_hash": ""
   },
   "requirements.txt": {
@@ -1001,64 +1001,22 @@
     "ast_hash": "a831cf3669f1e6ab85d8a80ebe655f99",
     "semantic_hash": ""
   },
-  "docs/adr/ADR-001-multi-agent-topology.md": {
-    "mtime": 1791929929.5821488,
-    "seen": 1791929936.1805222,
-    "ast_hash": "a0a7eb025bdeed73dedde53a83ec4997",
-    "semantic_hash": ""
-  },
-  "docs/adr/ADR-002-zero-trust-threat-defense.md": {
-    "mtime": 1792427582.0929208,
-    "seen": 1792428423.5749545,
-    "ast_hash": "9bc94baa2ffc12aefdeea7bcfde2d38f",
-    "semantic_hash": ""
-  },
-  "docs/adr/ADR-003-self-healing-and-resilience.md": {
-    "mtime": 1791930066.101047,
-    "seen": 1791930073.6460686,
-    "ast_hash": "58eb9356f74de207c1cc8b7e9fb777a5",
-    "semantic_hash": ""
-  },
-  "docs/adr/ADR-004-llm-gateway-and-structured-reasoning.md": {
-    "mtime": 1792427582.0929208,
-    "seen": 1792428423.5752506,
-    "ast_hash": "3905ca7794961bae5e225d8cdfb22145",
-    "semantic_hash": ""
-  },
-  "docs/adr/ADR-005-llm-connection-security-and-privacy.md": {
-    "mtime": 1791931105.6383703,
-    "seen": 1791931187.6397831,
-    "ast_hash": "4987371be18eb05e7c3d35542abf6cff",
-    "semantic_hash": ""
-  },
-  "docs/adr/ADR-006-secret-hygiene-and-key-blast-radius.md": {
-    "mtime": 1791931170.5316732,
-    "seen": 1791931187.6397853,
-    "ast_hash": "2993d9fb91821fa70c983cc0e7ba7aeb",
-    "semantic_hash": ""
-  },
-  "docs/adr/ADR-007-backend-defense-in-depth.md": {
-    "mtime": 1791931334.667971,
-    "seen": 1791931342.3408978,
-    "ast_hash": "9091987f084f2d945648234c70c5b7a1",
-    "semantic_hash": ""
-  },
   "docs/architecture.md": {
-    "mtime": 1792427604.6240535,
-    "seen": 1792428423.5762587,
-    "ast_hash": "3bf585adb7b30b9cbff0a098a9e2b04a",
+    "mtime": 1792493450.971294,
+    "seen": 1792493546.0546696,
+    "ast_hash": "4dca504da7a06bad0c4f2e9666d17c53",
     "semantic_hash": ""
   },
   "docs/security.md": {
-    "mtime": 1792427582.0912807,
-    "seen": 1792428423.576263,
-    "ast_hash": "c01f9b9661f9f410ea97bf3c7b14afc2",
+    "mtime": 1792493457.6219518,
+    "seen": 1792493546.0546715,
+    "ast_hash": "f5bc24a95057e53cadd4585a07a61c87",
     "semantic_hash": ""
   },
   "docs/system.md": {
-    "mtime": 1792427582.0902145,
-    "seen": 1792428423.5762806,
-    "ast_hash": "1e4f67ad6ef9373ecbaa44d36f921431",
+    "mtime": 1792493464.1363516,
+    "seen": 1792493546.0546734,
+    "ast_hash": "bb74da7222184db11ce9766ddfa4681f",
     "semantic_hash": ""
   },
   ".agent/workflows/sprint-workflow.md": {
@@ -2001,12 +1959,6 @@
     "mtime": 1792426732.4717398,
     "seen": 1792428423.5072908,
     "ast_hash": "34794cd292a10e7f3e20a108d547ea6e",
-    "semantic_hash": ""
-  },
-  "docs/SME_Finance_Copilot_Deep_Dive_Report.pdf": {
-    "mtime": 1791824635.3478448,
-    "seen": 1792341382.0734282,
-    "ast_hash": "e258c21f723bf4e8c5e4b3483cabfc15",
     "semantic_hash": ""
   },
   "postcss.config.js": {

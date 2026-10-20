@@ -4,7 +4,7 @@ This workspace is engineered specifically for building the **Autonomous AI Agent
 
 ### Master Documentation & Operational Protocols:
 - 📘 [System Design Specification](docs/system.md) | 🏛️ [Architectural Plan](docs/architecture.md) | 🛡️ [Security Architecture](docs/security.md)
-- ⚡ [Sprint Workflow](.agent/workflows/sprint-workflow.md) | 📜 [ADRs](docs/adr/) | 📖 [Glossary](GLOSSARY.md)
+- ⚡ [Sprint Workflow](.agent/workflows/sprint-workflow.md) | 📖 [Glossary](GLOSSARY.md)
 
 ## 0. Project Truth, Instruction Precedence & Current Baseline
 

@@ -10,7 +10,7 @@
 - 🏛️ [Architecture Plan (`docs/architecture.md`)](architecture.md) — 6-layer topology, dual SLM inference & multi-agent suites
 - 🛡️ [Security Architecture (`docs/security.md`)](security.md) — 5 Invariants, threat modeling & Three-Tier Security Gate
 - ⚡ [Engineering Lifecycle (`.agent/workflows/sprint-workflow.md`)](../.agent/workflows/sprint-workflow.md) — Contract-first TDD and verification protocol
-- 📜 [Architecture Decision Records (`docs/adr/`)](adr/) — ADR-001 to ADR-007
+
 - 📖 [Ubiquitous Domain Glossary (`GLOSSARY.md`)](../GLOSSARY.md) — Standardized fintech and underwriting terminology
 
 ---
