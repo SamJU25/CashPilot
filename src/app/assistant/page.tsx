@@ -55,8 +55,8 @@ function appendCapped(list: Message[], ...items: Omit<Message, 'id'>[]): Message
 // shortcut: a fixed pause stands in for model latency; the backend's streamed reply ends it.
 const THINK_MS = 1200;
 
-const NO_DATA_SUGGESTIONS: Key[] = ['as.n1', 'as.n2', 'as.s4'];
-const BRIEFED_SUGGESTIONS: Key[] = ['as.s2', 'as.s4'];
+const NO_DATA_SUGGESTIONS: Key[] = ['as.n2', 'as.n3', 'as.s4', 'as.n1'];
+const BRIEFED_SUGGESTIONS: Key[] = ['as.s1', 'as.s2', 'as.s3', 'as.s4'];
 
 // KaTeX text labels: drop characters that would break out of \text{…}.
 const texLabel = (s: string) => s.replace(/[{}\\$%&#^_~]/g, '');
@@ -144,6 +144,7 @@ const DRAFT_RE = /(draft|cover the shortfall|cover it|draw|bridge|起草|草擬|
 const DRAW_INTENT = INTENTS.find((i) => i.action_type === 'DRAW_CREDIT_LINE')!;
 const DSCR_RE = /(dscr|debt service|偿债|償債|cobertura|डेट सर्विस|ডেট সার্ভিস)/;
 const FACTOR_RE = /(factor|系数|係數|फ़ैक्टर|ফ্যাক্টর)/;
+const CCC_RE = /(ccc|conversion cycle|working capital cycle|周转期|週轉期|ciclo de conversión|कन्वर्ज़न साइकिल|কনভার্সন সাইকেল)/;
 const CASH_RE = /(short|run out|runway|cash|forecast|payroll|现金|現金|缺口|不足|预测|預測|工资|工資|余额|餘額|efectivo|caja|falta|pronóstico|nómina|saldo|नकद|कमी|पूर्वानुमान|वेतन|बैलेंस|নগদ|ঘাটতি|পূর্বাভাস|বেতন|ব্যালেন্স)/;
 const LENDER_RE = /(lender|loan|borrow|cheap|apr|fund|credit|资金方|資金方|贷款|貸款|借|便宜|利率|融资|融資|授信|prestamista|préstamo|barato|tasa|financ|crédito|ऋण|लोन|सस्ता|ब्याज|फंडिंग|ঋণ|সস্তা|সুদ|অর্থায়ন)/;
 const RECV_RE = /(owe|chase|customer|invoice|receivable|late|欠|催|客户|客戶|发票|發票|应收|應收|逾期|deb|cobr|cliente|factura|atras|बकाया|ग्राहक|इनवॉइस|वसूली|পাওনা|গ্রাহক|ইনভয়েস|বকেয়া)/;
@@ -194,6 +195,18 @@ function factorAnswer(t: T): Answer {
   };
 }
 
+function cccAnswer(t: T): Answer {
+  const [dso, dio, dpo] = [t('as.ccc.dso'), t('as.ccc.dio'), t('as.ccc.dpo')].map(texLabel);
+  return {
+    text: [
+      t('as.ccc.lead'),
+      `$$\n\\text{CCC} = \\text{${dso}} + \\text{${dio}} - \\text{${dpo}}\n$$`,
+      [t('as.ccc.b1'), t('as.ccc.b2'), t('as.ccc.b3')].map((b) => `- ${b}`).join('\n'),
+    ].join('\n\n'),
+    steps: [routeStep(t, 'knowledge', 'GENERAL_ASSISTANCE/WORKING_CAPITAL', '0.86'), cardStep(t, 'ccc', '0.93')],
+  };
+}
+
 function lenderTable(t: T) {
   const needCents = Number(BASE.forecast.recommended_bridge_amount.replace('.', ''));
   const sorted = [...OPTIONS].sort((a, b) => Number(a.is_predatory) - Number(b.is_predatory) || b.suitability_score - a.suitability_score);
@@ -240,6 +253,7 @@ function answer(q: string, drawStatus: IntentStatus, t: T, lang: string, noData:
       actionId: DRAW_INTENT.id,
     };
   }
+  if (CCC_RE.test(s)) return cccAnswer(t);
   if (FORMULA_RE.test(s)) return formulaAnswer(t, lang, noData);
   if (DSCR_RE.test(s)) return dscrAnswer(t);
   if (FACTOR_RE.test(s)) return factorAnswer(t);
@@ -655,16 +669,27 @@ export default function AssistantPage() {
                   className="my-auto flex flex-col items-center justify-center w-full max-w-2xl mx-auto py-8 space-y-6"
                 >
                   {noData && (
-                    <div className="w-full flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 rounded-lg border bg-muted/30 px-3.5 py-2.5 text-xs text-muted-foreground shadow-xs">
+                    <div className="w-full max-w-xl mx-auto flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 rounded-xl border bg-card/60 p-3.5 text-xs text-muted-foreground shadow-xs">
                       <div className="flex items-center gap-2.5 min-w-0 flex-1">
-                        <FileText className="size-4 shrink-0 text-muted-foreground" aria-hidden />
-                        <span className="leading-relaxed">{t('as.noData')}</span>
+                        <FileText className="size-4 shrink-0 text-primary" aria-hidden />
+                        <span className="leading-relaxed text-foreground/90">{t('as.noData')}</span>
                       </div>
-                      <Button asChild size="sm" className="shrink-0">
-                        <Link href="/statements">
-                          {t('as.noDataLink')}
-                        </Link>
-                      </Button>
+                      <div className="flex items-center gap-2 shrink-0">
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant="outline"
+                          onClick={() => update({ hasData: true, source: 'sample' })}
+                          className="text-xs font-medium"
+                        >
+                          {t('as.noDataDemo')}
+                        </Button>
+                        <Button asChild size="sm">
+                          <Link href="/statements">
+                            {t('as.noDataLink')}
+                          </Link>
+                        </Button>
+                      </div>
                     </div>
                   )}
 
@@ -678,18 +703,18 @@ export default function AssistantPage() {
                     />
                   )}
 
-                  <div className="w-full space-y-3">
-                    <p className="text-center text-xs sm:text-sm font-medium text-muted-foreground">{t('as.try')}</p>
-                    <div className="flex flex-col sm:flex-row items-stretch justify-center gap-2.5 w-full">
+                  <div className="w-full max-w-xl mx-auto space-y-2.5">
+                    <p className="text-center text-xs font-medium text-muted-foreground">{t('as.try')}</p>
+                    <div className="flex flex-col gap-2 w-full">
                       {suggestions.map((key) => (
                         <button
                           key={key}
                           type="button"
                           onClick={() => send(t(key))}
-                          className="group flex flex-1 min-w-0 items-start justify-between rounded-xl border bg-card p-3 sm:p-3.5 text-left text-xs sm:text-[13px] leading-snug text-foreground shadow-xs transition-all hover:bg-muted/60 hover:border-border/80 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                          className="group flex w-full items-center justify-between rounded-xl border bg-card/80 hover:bg-muted/60 px-4 py-3 text-left text-xs sm:text-[13px] font-medium leading-snug text-foreground shadow-xs transition-all hover:border-border/80 hover:translate-x-0.5 active:scale-[0.99] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
                         >
                           <span className="min-w-0 flex-1">{t(key)}</span>
-                          <ArrowUpRight className="size-3.5 text-muted-foreground/60 transition-transform group-hover:text-primary group-hover:translate-x-0.5 group-hover:-translate-y-0.5 shrink-0 ml-1.5 mt-0.5" aria-hidden />
+                          <ArrowUpRight className="size-4 text-muted-foreground/50 transition-transform group-hover:text-primary group-hover:translate-x-0.5 group-hover:-translate-y-0.5 shrink-0 ml-3" aria-hidden />
                         </button>
                       ))}
                     </div>

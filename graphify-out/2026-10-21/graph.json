@@ -963,7 +963,7 @@
       "file_type": "code",
       "norm_label": "analyzeresponse",
       "source_file": "src/lib/api.ts",
-      "source_location": "L88"
+      "source_location": "L106"
     },
     {
       "id": "src_lib_api_chatrequest",
@@ -976,7 +976,7 @@
       "file_type": "code",
       "norm_label": "chatrequest",
       "source_file": "src/lib/api.ts",
-      "source_location": "L262"
+      "source_location": "L280"
     },
     {
       "id": "src_lib_api_chatresponse",
@@ -989,7 +989,7 @@
       "file_type": "code",
       "norm_label": "chatresponse",
       "source_file": "src/lib/api.ts",
-      "source_location": "L273"
+      "source_location": "L291"
     },
     {
       "id": "src_lib_api_hffile",
@@ -1002,7 +1002,7 @@
       "file_type": "code",
       "norm_label": "hffile",
       "source_file": "src/lib/api.ts",
-      "source_location": "L243"
+      "source_location": "L261"
     },
     {
       "id": "src_lib_api_hfrepo",
@@ -1015,7 +1015,7 @@
       "file_type": "code",
       "norm_label": "hfrepo",
       "source_file": "src/lib/api.ts",
-      "source_location": "L230"
+      "source_location": "L248"
     },
     {
       "id": "src_lib_i18n_languages_lang",
@@ -2835,7 +2835,7 @@
       "file_type": "code",
       "norm_label": "hardware",
       "source_file": "src/lib/api.ts",
-      "source_location": "L222"
+      "source_location": "L240"
     },
     {
       "id": "src_lib_api_hfdownload",
@@ -2848,7 +2848,7 @@
       "file_type": "code",
       "norm_label": "hfdownload",
       "source_file": "src/lib/api.ts",
-      "source_location": "L251"
+      "source_location": "L269"
     },
     {
       "id": "src_lib_api_localmodel",
@@ -2861,7 +2861,7 @@
       "file_type": "code",
       "norm_label": "localmodel",
       "source_file": "src/lib/api.ts",
-      "source_location": "L210"
+      "source_location": "L228"
     },
     {
       "id": "src_lib_local_models_fit",
@@ -3082,7 +3082,7 @@
       "file_type": "code",
       "norm_label": "key",
       "source_file": "src/lib/i18n/en.ts",
-      "source_location": "L794"
+      "source_location": "L795"
     },
     {
       "id": "src_lib_i18n_index_vars",
@@ -3485,7 +3485,7 @@
       "file_type": "code",
       "norm_label": "proposedentry",
       "source_file": "src/lib/api.ts",
-      "source_location": "L282"
+      "source_location": "L300"
     },
     {
       "id": "src_lib_i18n_index_t",
@@ -10233,7 +10233,7 @@
       "file_type": "code",
       "norm_label": "form()",
       "source_file": "src/lib/api.ts",
-      "source_location": "L79"
+      "source_location": "L97"
     },
     {
       "id": "src_lib_api_request",
@@ -20301,7 +20301,7 @@
       "file_type": "code",
       "norm_label": "llmconfig()",
       "source_file": "src/lib/api.ts",
-      "source_location": "L291"
+      "source_location": "L309"
     },
     {
       "id": "src_lib_mock_demo_costtoborrow",
@@ -35517,7 +35517,7 @@
       "file_type": "code",
       "norm_label": "api",
       "source_file": "src/lib/api.ts",
-      "source_location": "L90"
+      "source_location": "L108"
     },
     {
       "id": "src_lib_api_api_url",
@@ -35539,7 +35539,7 @@
       "file_type": "code",
       "norm_label": "bucket_keys",
       "source_file": "src/lib/api.ts",
-      "source_location": "L86"
+      "source_location": "L104"
     },
     {
       "id": "src_lib_i18n_languages",
@@ -71897,7 +71897,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/assistant/page.tsx",
-      "source_location": "L405",
+      "source_location": "L434",
       "weight": 1.0
     },
     {
@@ -71909,7 +71909,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/assistant/page.tsx",
-      "source_location": "L407",
+      "source_location": "L436",
       "weight": 1.0
     },
     {
@@ -71921,7 +71921,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/assistant/page.tsx",
-      "source_location": "L408",
+      "source_location": "L437",
       "weight": 1.0
     },
     {
@@ -71933,7 +71933,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/assistant/page.tsx",
-      "source_location": "L471",
+      "source_location": "L503",
       "weight": 1.0
     },
     {
@@ -71945,7 +71945,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/assistant/page.tsx",
-      "source_location": "L494",
+      "source_location": "L528",
       "weight": 1.0
     },
     {
@@ -71957,7 +71957,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/assistant/page.tsx",
-      "source_location": "L555",
+      "source_location": "L594",
       "weight": 1.0
     },
     {
@@ -71969,7 +71969,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/assistant/page.tsx",
-      "source_location": "L555",
+      "source_location": "L594",
       "weight": 1.0
     },
     {
@@ -71981,7 +71981,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/assistant/page.tsx",
-      "source_location": "L560",
+      "source_location": "L599",
       "weight": 1.0
     },
     {
@@ -71993,7 +71993,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/assistant/page.tsx",
-      "source_location": "L564",
+      "source_location": "L603",
       "weight": 1.0
     },
     {
@@ -72005,7 +72005,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/assistant/page.tsx",
-      "source_location": "L587",
+      "source_location": "L626",
       "weight": 1.0
     },
     {
@@ -72017,7 +72017,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/assistant/page.tsx",
-      "source_location": "L596",
+      "source_location": "L635",
       "weight": 1.0
     },
     {
@@ -72029,7 +72029,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/assistant/page.tsx",
-      "source_location": "L633",
+      "source_location": "L672",
       "weight": 1.0
     },
     {
@@ -72041,7 +72041,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/assistant/page.tsx",
-      "source_location": "L714",
+      "source_location": "L753",
       "weight": 1.0
     },
     {
@@ -72053,7 +72053,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/assistant/page.tsx",
-      "source_location": "L715",
+      "source_location": "L754",
       "weight": 1.0
     },
     {
@@ -72065,7 +72065,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/assistant/page.tsx",
-      "source_location": "L718",
+      "source_location": "L757",
       "weight": 1.0
     },
     {
@@ -72077,7 +72077,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/assistant/page.tsx",
-      "source_location": "L721",
+      "source_location": "L760",
       "weight": 1.0
     },
     {
@@ -72089,7 +72089,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/assistant/page.tsx",
-      "source_location": "L800",
+      "source_location": "L839",
       "weight": 1.0
     },
     {
@@ -72101,7 +72101,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/assistant/page.tsx",
-      "source_location": "L829",
+      "source_location": "L881",
       "weight": 1.0
     },
     {
@@ -79337,7 +79337,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/api.ts",
-      "source_location": "L64",
+      "source_location": "L82",
       "weight": 1.0
     },
     {
@@ -156897,6 +156897,39 @@
     },
     {
       "source": "src_lib_api",
+      "target": "src_lib_api_bucket_keys",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/lib/api.ts",
+      "source_location": "L104",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_api",
+      "target": "src_lib_api_analyzeresponse",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/lib/api.ts",
+      "source_location": "L106",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_api",
+      "target": "src_lib_api_api",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/lib/api.ts",
+      "source_location": "L108",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_api",
       "target": "src_lib_api_sessionid",
       "relation": "contains",
       "_origin": "ast",
@@ -156914,7 +156947,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/api.ts",
-      "source_location": "L210",
+      "source_location": "L228",
       "weight": 1.0
     },
     {
@@ -156925,7 +156958,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/api.ts",
-      "source_location": "L222",
+      "source_location": "L240",
       "weight": 1.0
     },
     {
@@ -156936,7 +156969,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/api.ts",
-      "source_location": "L230",
+      "source_location": "L248",
       "weight": 1.0
     },
     {
@@ -156947,7 +156980,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/api.ts",
-      "source_location": "L243",
+      "source_location": "L261",
       "weight": 1.0
     },
     {
@@ -156958,7 +156991,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/api.ts",
-      "source_location": "L251",
+      "source_location": "L269",
       "weight": 1.0
     },
     {
@@ -156969,7 +157002,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/api.ts",
-      "source_location": "L262",
+      "source_location": "L280",
       "weight": 1.0
     },
     {
@@ -156980,7 +157013,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/api.ts",
-      "source_location": "L273",
+      "source_location": "L291",
       "weight": 1.0
     },
     {
@@ -156991,7 +157024,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/api.ts",
-      "source_location": "L282",
+      "source_location": "L300",
       "weight": 1.0
     },
     {
@@ -157002,7 +157035,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/api.ts",
-      "source_location": "L291",
+      "source_location": "L309",
       "weight": 1.0
     },
     {
@@ -157057,40 +157090,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/api.ts",
-      "source_location": "L79",
-      "weight": 1.0
-    },
-    {
-      "source": "src_lib_api",
-      "target": "src_lib_api_bucket_keys",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/lib/api.ts",
-      "source_location": "L86",
-      "weight": 1.0
-    },
-    {
-      "source": "src_lib_api",
-      "target": "src_lib_api_analyzeresponse",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/lib/api.ts",
-      "source_location": "L88",
-      "weight": 1.0
-    },
-    {
-      "source": "src_lib_api",
-      "target": "src_lib_api_api",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/lib/api.ts",
-      "source_location": "L90",
+      "source_location": "L97",
       "weight": 1.0
     },
     {
@@ -157321,7 +157321,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/i18n/en.ts",
-      "source_location": "L794",
+      "source_location": "L795",
       "weight": 1.0
     },
     {
@@ -183089,5 +183089,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "b8e276e0bed7f4e8a8a3958287d5394890fdcd64"
+  "built_at_commit": "da552ad7d39243159607ea337d55d6f6ab57936e"
 }

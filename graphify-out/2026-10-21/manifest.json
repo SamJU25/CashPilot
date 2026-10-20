@@ -2112,9 +2112,9 @@
     "semantic_hash": ""
   },
   "src/app/assistant/page.tsx": {
-    "mtime": 1792536986.7605164,
-    "seen": 1792537117.5469997,
-    "ast_hash": "52e6c30b1c90bd844ac8b7977e925d39",
+    "mtime": 1792539146.6140885,
+    "seen": 1792539239.028785,
+    "ast_hash": "353be515b9d35da133e215609f21f4ed",
     "semantic_hash": ""
   },
   "src/app/funding/page.tsx": {
@@ -2424,9 +2424,9 @@
     "semantic_hash": ""
   },
   "src/components/copilot/assistant-inspector.tsx": {
-    "mtime": 1792537755.5994725,
-    "seen": 1792537857.4064608,
-    "ast_hash": "404ee2ac0f8360fb7a181ab62ea4a7b6",
+    "mtime": 1792539171.374357,
+    "seen": 1792539239.0298758,
+    "ast_hash": "224971fd4f2c54772a9de9e26decfc33",
     "semantic_hash": ""
   },
   "src/components/copilot/briefing.tsx": {
@@ -2466,9 +2466,9 @@
     "semantic_hash": ""
   },
   "src/lib/api.ts": {
-    "mtime": 1792533660.4294305,
-    "seen": 1792533900.5660064,
-    "ast_hash": "8346b1f7e2eed37c56138ba2c9230466",
+    "mtime": 1792538436.5365438,
+    "seen": 1792538850.7089424,
+    "ast_hash": "0dad328798b144b0a766f86a842b3836",
     "semantic_hash": ""
   },
   "src/lib/currencies.ts": {
@@ -2502,9 +2502,9 @@
     "semantic_hash": ""
   },
   "src/lib/i18n/en.ts": {
-    "mtime": 1792533158.0689206,
-    "seen": 1792533291.6255126,
-    "ast_hash": "f0b016d79683f909b00a70f315b7be8d",
+    "mtime": 1792538308.240461,
+    "seen": 1792538850.7095187,
+    "ast_hash": "7a29b8681043d803beb474eae2007d35",
     "semantic_hash": ""
   },
   "src/lib/i18n/es.ts": {
