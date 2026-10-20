@@ -72,6 +72,7 @@ checkpoint-*/
 *.pt
 *.pth
 *.onnx
+*.gguf
 
 # Local Session Store & Persistent Ledger Cache
 .sessions/

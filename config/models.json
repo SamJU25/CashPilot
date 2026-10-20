@@ -1,14 +1,80 @@
 {
-  "default_model": "minicpm5-2b",
-  "base_model_id": "openbmb/MiniCPM5-2B",
+  "default_model": "qwen2.5-3b-instruct",
+  "base_model_id": "Qwen/Qwen2.5-3B-Instruct-GGUF",
   "models": {
+    "qwen2.5-3b-instruct": {
+      "id": "qwen2.5-3b-instruct",
+      "name": "Qwen 2.5 3B Instruct (GGUF)",
+      "repo_id": "Qwen/Qwen2.5-3B-Instruct-GGUF",
+      "filename": "qwen2.5-3b-instruct-q4_k_m.gguf",
+      "size_gb": 2.0,
+      "description": "Recommended text model. High-precision reasoning, financial math, and instruction following in 2.0 GB.",
+      "is_gguf": true,
+      "is_lora": false,
+      "device_preferred": "cuda/cpu",
+      "aliases": [
+        "qwen-3b",
+        "qwen2.5-3b",
+        "qwen",
+        "default"
+      ]
+    },
+    "qwen2.5-1.5b-instruct": {
+      "id": "qwen2.5-1.5b-instruct",
+      "name": "Qwen 2.5 1.5B Instruct (GGUF)",
+      "repo_id": "Qwen/Qwen2.5-1.5B-Instruct-GGUF",
+      "filename": "qwen2.5-1.5b-instruct-q4_k_m.gguf",
+      "size_gb": 1.0,
+      "description": "Ultra-lightweight text model for fast CPU inference and low memory devices.",
+      "is_gguf": true,
+      "is_lora": false,
+      "device_preferred": "cpu",
+      "aliases": [
+        "qwen-1.5b",
+        "qwen2.5-1.5b",
+        "qwen-fast"
+      ]
+    },
+    "llama-3.2-3b-instruct": {
+      "id": "llama-3.2-3b-instruct",
+      "name": "Llama 3.2 3B Instruct (GGUF)",
+      "repo_id": "bartowski/Llama-3.2-3B-Instruct-GGUF",
+      "filename": "Llama-3.2-3B-Instruct-Q4_K_M.gguf",
+      "size_gb": 2.0,
+      "description": "Meta Llama 3.2 3B instruct text model with 128k context support.",
+      "is_gguf": true,
+      "is_lora": false,
+      "device_preferred": "cuda/cpu",
+      "aliases": [
+        "llama-3.2-3b",
+        "llama3-3b",
+        "llama-3b"
+      ]
+    },
+    "llama-3.2-1b-instruct": {
+      "id": "llama-3.2-1b-instruct",
+      "name": "Llama 3.2 1B Instruct (GGUF)",
+      "repo_id": "bartowski/Llama-3.2-1B-Instruct-GGUF",
+      "filename": "Llama-3.2-1B-Instruct-Q4_K_M.gguf",
+      "size_gb": 0.8,
+      "description": "Meta minimal footprint 1B model, runs on almost any machine with <1GB RAM.",
+      "is_gguf": true,
+      "is_lora": false,
+      "device_preferred": "cpu",
+      "aliases": [
+        "llama-3.2-1b",
+        "llama-1b"
+      ]
+    },
     "minicpm5-2b": {
       "id": "minicpm5-2b",
-      "name": "MiniCPM5-2B",
+      "name": "MiniCPM5-2B (Legacy)",
       "repo_id": "openbmb/MiniCPM5-2B",
-      "description": "MiniCPM5 2.5B base foundation model with 131k context, advanced reasoning, and function calling.",
+      "description": "Legacy 2.5B base foundation model.",
+      "is_gguf": false,
       "is_lora": false,
       "device_preferred": "cuda",
+      "hidden": true,
       "aliases": [
         "minicpm5",
         "minicpm-2b",
@@ -22,6 +88,7 @@
       "name": "Base Foundation Model",
       "repo_id": "openbmb/MiniCPM5-2B",
       "description": "Un-finetuned base model for baseline comparison.",
+      "is_gguf": false,
       "is_lora": false,
       "device_preferred": "cuda",
       "hidden": true,
@@ -32,10 +99,11 @@
       ]
     },
     "sme-finance-lora": {
-      "id": "minicpm5-2b",
-      "name": "MiniCPM5-2B",
+      "id": "sme-finance-lora",
+      "name": "SME Finance LoRA (Legacy)",
       "repo_id": "openbmb/MiniCPM5-2B",
-      "description": "MiniCPM5 2.5B base foundation model.",
+      "description": "Legacy fine-tuned adapter entry.",
+      "is_gguf": false,
       "is_lora": false,
       "device_preferred": "cuda",
       "hidden": true,

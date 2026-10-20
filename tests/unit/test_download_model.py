@@ -344,3 +344,51 @@ def test_auto_discovery_of_dropped_causal_lm(tmp_path):
     assert "Minicpm" in meta["name"]
 
 
+
+
+def test_gguf_canonical_resolution():
+    """Verifies modern text-based GGUF model identifiers and aliases resolve."""
+    assert resolve_canonical_model_name("qwen2.5-3b-instruct") == "qwen2.5-3b-instruct"
+    assert resolve_canonical_model_name("qwen-3b") == "qwen2.5-3b-instruct"
+    assert resolve_canonical_model_name("qwen2.5-3b") == "qwen2.5-3b-instruct"
+    assert resolve_canonical_model_name("qwen-1.5b") == "qwen2.5-1.5b-instruct"
+    assert resolve_canonical_model_name("llama-3.2-3b") == "llama-3.2-3b-instruct"
+    assert resolve_canonical_model_name("llama-1b") == "llama-3.2-1b-instruct"
+
+
+def test_download_model_gguf_uses_hf_hub_download():
+    """Verifies GGUF downloads route to hf_hub_download with exact filename."""
+    engine = LocalTransformersEngine.get_instance()
+    with patch("huggingface_hub.hf_hub_download") as mock_hf_download:
+        mock_hf_download.return_value = "/mock/path/models/base/Qwen2.5-3B-Instruct-GGUF/qwen2.5-3b-instruct-q4_k_m.gguf"
+        res = engine.download_model("qwen2.5-3b-instruct")
+        assert res["success"] is True
+        mock_hf_download.assert_called_once()
+        _, kwargs = mock_hf_download.call_args
+        assert kwargs["filename"] == "qwen2.5-3b-instruct-q4_k_m.gguf"
+        assert kwargs["repo_id"] == "Qwen/Qwen2.5-3B-Instruct-GGUF"
+
+
+def test_fetch_remote_models_annotates_device_capability():
+    """Verifies fetch-models returns dynamic capability-annotated models list."""
+    resp = fetch_remote_models(FetchModelsRequest(provider="offline"))
+    assert resp.success is True
+    assert len(resp.models) >= 4
+    names = [m.name for m in resp.models]
+    assert any("Recommended" in n for n in names)
+    assert any("Low RAM" in n for n in names)
+
+
+def test_auto_discovery_of_dropped_gguf_file(tmp_path):
+    """Verifies placing any .gguf file into models/ dynamically detects it without config."""
+    from services.agent.local_transformers import scan_models_directory
+    models_dir = tmp_path / "models"
+    models_dir.mkdir(parents=True)
+    custom_gguf = models_dir / "custom-finance-7b.gguf"
+    custom_gguf.write_bytes(b"GGUF" + b"\x00" * 1024)
+
+    discovered = scan_models_directory(str(models_dir))
+    assert "custom-finance-7b" in discovered
+    meta = discovered["custom-finance-7b"]
+    assert meta["is_gguf"] is True
+    assert meta["filename"] == "custom-finance-7b.gguf"

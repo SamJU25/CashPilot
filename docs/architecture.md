@@ -50,7 +50,7 @@ The architecture decouples **Untrusted Conversational Reasoning** from **Determi
 │ LAYER 3: AGENTIC SUPERVISOR & UNIVERSAL LLM BRIDGE                     │
 │ • Dynamic Semantic Routing: FastEmbed ONNX (BAAI/bge-small-en-v1.5)    │
 │ • Local SLM Inference Engine: LocalTransformersEngine                  │
-│   - Foundation 2B (openbmb/MiniCPM5-2B with PyTorch CUDA)              │
+│   - Text GGUF Models (Qwen 2.5 / Llama 3.2 via llama.cpp)              │
 │ • Universal LLM Bridge (services/agent/llm_bridge.py):                 │
 │   - Gemini 2.0 Flash, Claude 3.5 Sonnet, GPT-4o, DeepSeek, Groq, Ollama│
 │ • Dynamic Model Discovery (POST /api/v1/agent/fetch-models)            │

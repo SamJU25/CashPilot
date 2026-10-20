@@ -169,7 +169,7 @@ def test_llm_connection(req: TestConnectionRequest) -> TestConnectionResponse:
         if engine.is_available(target_model):
             return TestConnectionResponse(
                 success=True,
-                message=f"Local AI model ready: '{target_model}' is installed and ready for offline inference (100% PyTorch/Transformers, 0 external daemons).",
+                message=f"Local AI model ready: '{target_model}' is installed and ready for offline inference (100% GGUF/llama.cpp runtime, 0 external daemons).",
                 provider=provider,
                 model_name=target_model,
                 latency_ms=0,
@@ -350,6 +350,7 @@ def query_external_llm(
             history=history,
             max_new_tokens=800,
             temperature=0.1,
+            model_name=config.model_name,
         )
 
     # Text is about to leave the machine: names become [PARTY_n] and come back in the reply.
@@ -506,6 +507,54 @@ FALLBACK_CATALOG: dict[str, list[ModelItem]] = {
 }
 
 
+def get_system_specs() -> dict:
+    """Probes host hardware capabilities (RAM, GPU, VRAM) safely across platforms."""
+    ram_gb = 8.0
+    try:
+        import psutil
+        ram_gb = round(psutil.virtual_memory().total / (1024**3), 1)
+    except Exception:
+        try:
+            import ctypes
+            class MEMORYSTATUSEX(ctypes.Structure):
+                _fields_ = [
+                    ("dwLength", ctypes.c_ulong),
+                    ("dwMemoryLoad", ctypes.c_ulong),
+                    ("ullTotalPhys", ctypes.c_ulonglong),
+                    ("ullAvailPhys", ctypes.c_ulonglong),
+                    ("ullTotalPageFile", ctypes.c_ulonglong),
+                    ("ullAvailPageFile", ctypes.c_ulonglong),
+                    ("ullTotalVirtual", ctypes.c_ulonglong),
+                    ("ullAvailVirtual", ctypes.c_ulonglong),
+                    ("ullAvailExtendedVirtual", ctypes.c_ulonglong),
+                ]
+            stat = MEMORYSTATUSEX()
+            stat.dwLength = ctypes.sizeof(MEMORYSTATUSEX)
+            ctypes.windll.kernel32.GlobalMemoryStatusEx(ctypes.byref(stat))
+            ram_gb = round(stat.ullTotalPhys / (1024**3), 1)
+        except Exception:
+            pass
+
+    has_cuda = False
+    gpu_name = ""
+    vram_gb = 0.0
+    try:
+        import torch
+        if torch.cuda.is_available():
+            has_cuda = True
+            gpu_name = torch.cuda.get_device_name(0)
+            vram_gb = round(torch.cuda.get_device_properties(0).total_memory / (1024**3), 1)
+    except Exception:
+        pass
+
+    return {
+        "ram_gb": ram_gb,
+        "has_cuda": has_cuda,
+        "gpu_name": gpu_name,
+        "vram_gb": vram_gb,
+    }
+
+
 def get_fallback_catalog(provider: str) -> list[ModelItem]:
     """Returns fallback model catalog with dynamically resolved local model metadata."""
     p = (provider or "").lower()
@@ -527,23 +576,38 @@ def fetch_remote_models(req: FetchModelsRequest) -> FetchModelsResponse:
     if provider in ["local", "local_native", "offline"]:
         from services.agent.local_transformers import LocalTransformersEngine, SUPPORTED_LOCAL_MODELS
         engine = LocalTransformersEngine.get_instance()
+        specs = get_system_specs()
         models = []
         for m_id, m_meta in SUPPORTED_LOCAL_MODELS.items():
             if m_meta.get("hidden"):
                 continue
             installed = engine.is_available(m_id)
             tag = "Ready" if installed else "Not Downloaded"
+            size_gb = m_meta.get("size_gb")
+            size_str = f"{size_gb} GB" if size_gb else ""
+
+            if size_gb and size_gb <= 1.0:
+                tier = "Fast / Low RAM"
+            elif specs["has_cuda"] or specs["ram_gb"] >= 8.0:
+                tier = "Recommended"
+            else:
+                tier = "Requires 4GB+ Free RAM"
+
+            extra = f" ({size_str} · {tier})" if size_str else ""
+            display_name = f"{m_meta['name']}{extra} [{tag}]"
+
             models.append(
                 ModelItem(
                     id=m_id,
-                    name=f"{m_meta['name']} [{tag}]",
+                    name=display_name,
                 )
             )
         ready_count = sum(1 for m in models if "[Ready]" in m.name)
+        hw_desc = f"{specs['ram_gb']} GB RAM" + (f", {specs['gpu_name']}" if specs["has_cuda"] else "")
         msg = (
-            "No local AI models found on disk. Click the 'Download Model' button below to install a model."
+            f"No local AI models found on disk. Click the 'Download Model' button below to install a model ({hw_desc})."
             if ready_count == 0
-            else f"{ready_count} of {len(models)} local models installed on disk."
+            else f"Device: {hw_desc}. {ready_count} of {len(models)} local models installed on disk."
         )
         return FetchModelsResponse(
             success=True,

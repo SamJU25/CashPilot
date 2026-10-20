@@ -237,7 +237,7 @@ Intent classification uses FastEmbed ONNX (`BAAI/bge-small-en-v1.5`) vector embe
 
 ### 5.2 Local SLM Inference Engine
 `LocalTransformersEngine` (`services/agent/local_transformers.py`) provides local, air-gapped inference via PyTorch CUDA:
-- **Foundation Model**: `openbmb/MiniCPM5-2B` (`minicpm5-2b` under `models/base/`) for on-device, air-gapped financial reasoning and structured tool-calling. Resolves dynamic financial numbers through deterministic calculations rather than static neural weights. Requires the optional stack in `requirements-local.txt` and base weights on disk under `models/base/`.
+- **Foundation Models (GGUF)**: Quantized text-based GGUF models (`qwen2.5-3b-instruct` default, `qwen2.5-1.5b-instruct`, `llama-3.2-3b-instruct`, `llama-3.2-1b-instruct`) powered by `llama-cpp-python` for on-device, air-gapped financial reasoning with dynamic device hardware capability matching (CPU / GPU). Resolves dynamic financial numbers through deterministic calculations rather than static neural weights. Requires the optional stack in `requirements-local.txt` and base weights on disk under `models/base/`.
 
 ### 5.3 Universal LLM Bridge
 `services/agent/llm_bridge.py` routes prompts to cloud or local providers:
@@ -256,7 +256,7 @@ Intent classification uses FastEmbed ONNX (`BAAI/bge-small-en-v1.5`) vector embe
                    [ Universal LLM Bridge ]
       ┌────────────────────────┼────────────────────────┐
       ▼                        ▼                        ▼
-[ Local MiniCPM5-2B ]     [ Gemini 2.0 Flash ]     [ Claude / GPT-4o / DeepSeek ]
+[ Local GGUF (llama.cpp) ]     [ Gemini 2.0 Flash ]     [ Claude / GPT-4o / DeepSeek ]
       │                        │                        │
       └────────────────────────┬────────────────────────┘
                                │

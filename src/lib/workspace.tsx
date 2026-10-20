@@ -32,6 +32,7 @@ interface Prefs {
   homeCurrency: string;
   alertThresholdDays: number;
   provider: string;
+  localModel: string;
   intentStatus: Record<string, IntentStatus>;
   language: Lang;
   // shortcut: keys sit in this browser's storage (as Settings tells the user); move to a backend vault for hosted use.
@@ -50,6 +51,7 @@ const DEFAULTS: Prefs = {
   homeCurrency: 'USD',
   alertThresholdDays: 30,
   provider: 'local',
+  localModel: 'qwen2.5-3b-instruct',
   intentStatus: {},
   language: 'en',
   providerKeys: {},

@@ -157,6 +157,24 @@ export const api = {
     }, CHAT_TIMEOUT_MS),
   health: () => request<{ status: string; version: string }>('/api/v1/health', {}, 5_000),
   clearSession: () => request<{ cleared: boolean }>(`/api/v1/agent/session/${encodeURIComponent(sessionId())}`, { method: 'DELETE' }),
+  fetchModels: (provider: string, apiKey?: string, baseUrl?: string) =>
+    request<{ success: boolean; provider: string; models: { id: string; name: string }[]; message?: string }>('/api/v1/agent/fetch-models', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ provider, api_key: apiKey, base_url: baseUrl }),
+    }, 15_000),
+  downloadModel: (modelName: string) =>
+    request<{ success: boolean; model_name: string; message: string; downloaded_path?: string | null; size_mb?: number | null }>('/api/v1/agent/download-model', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ model_name: modelName }),
+    }, CHAT_TIMEOUT_MS),
+  deleteModel: (modelName: string) =>
+    request<{ success: boolean; model_name: string; message: string; freed_mb?: number }>('/api/v1/agent/delete-model', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ model_name: modelName }),
+    }, 30_000),
 };
 
 export interface ChatRequest {
@@ -187,10 +205,10 @@ export interface ProposedEntry {
 }
 
 /** Frontend provider ids to services/agent/llm_bridge.py ids. */
-export function llmConfig(provider: string, keys: Record<string, string>, urls: Record<string, string>, defaultUrl: string): ChatRequest['llm_config'] {
+export function llmConfig(provider: string, keys: Record<string, string>, urls: Record<string, string>, defaultUrl: string, selectedModel?: string): ChatRequest['llm_config'] {
   const key = keys[provider]?.trim() || undefined;
   const url = urls[provider]?.trim() || defaultUrl || undefined;
-  if (provider === 'local') return { provider: 'local', model_name: 'minicpm5-2b' };
+  if (provider === 'local') return { provider: 'local', model_name: selectedModel || 'qwen2.5-3b-instruct' };
   // Ollama speaks the OpenAI protocol under /v1.
   if (provider === 'ollama') return { provider: 'custom', base_url: `${(url ?? 'http://localhost:11434').replace(/\/$/, '')}/v1` };
   if (provider === 'claude') return { provider: 'anthropic', api_key: key };

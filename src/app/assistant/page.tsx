@@ -313,7 +313,7 @@ function topicOf(intent: string): Topic {
 }
 
 export default function AssistantPage() {
-  const { ready, provider, providerKeys, providerUrls, intentStatus, update, source, live: liveData, setLive: setLiveData, alertThresholdDays, homeCurrency, language } = useWorkspace();
+  const { ready, provider, localModel, providerKeys, providerUrls, intentStatus, update, source, live: liveData, setLive: setLiveData, alertThresholdDays, homeCurrency, language } = useWorkspace();
   const { t, lang } = useT();
   const intents = useIntents();
   const drawStatus = intentStatus[DRAW_INTENT.id] ?? DRAW_INTENT.status;
@@ -432,7 +432,7 @@ export default function AssistantPage() {
         currency: homeCurrency,
         language,
         csv_content: source === 'sample' ? SAMPLE_CSV : undefined,
-        llm_config: llmConfig(provider, providerKeys, providerUrls, defaultUrl),
+        llm_config: llmConfig(provider, providerKeys, providerUrls, defaultUrl, localModel),
       });
       const staged = res.staged_action;
       if (staged) {
@@ -458,7 +458,7 @@ export default function AssistantPage() {
         detail: t('as.k0d', { topic: t(`topic.${topicOf(res.intent_detected)}` as Key) }),
         agent: 'supervisor',
         tool: 'FastEmbedSemanticRouter',
-        tech: `${res.intent_detected} · ${provider === 'local' ? 'MiniCPM5-2B (RTX 4050 GPU)' : provider} · ${Math.round(performance.now() - started)}ms`,
+        tech: `${res.intent_detected} · ${provider === 'local' ? (localModel ? `Local GGUF (${localModel})` : 'Local GGUF') : provider} · ${Math.round(performance.now() - started)}ms`,
         duration_ms: Math.round(performance.now() - started),
       };
       setMessages((m) =>

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { motion } from 'motion/react';
 import { AlertTriangle, Check, ChevronsUpDown, Globe, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -256,18 +256,90 @@ export default function SettingsPage() {
   const setBaseUrl = (v: string) => ws.update({ providerUrls: { ...ws.providerUrls, [provider.id]: v } });
   const setApiKey = (v: string) => ws.update({ providerKeys: { ...ws.providerKeys, [provider.id]: v } });
   const [test, setTest] = useState<{ state: 'idle' | 'checking' } | { state: 'result'; ok: boolean; message: string }>({ state: 'idle' });
+  const [localModels, setLocalModels] = useState<Array<{ id: string; name: string }>>([]);
+  const [deviceMsg, setDeviceMsg] = useState<string>('');
+  const [modelActionState, setModelActionState] = useState<'idle' | 'downloading' | 'deleting'>('idle');
+  const [modelActionMsg, setModelActionMsg] = useState<{ ok: boolean; text: string } | null>(null);
+
+  const refreshModels = useCallback(async () => {
+    try {
+      const res = await api.fetchModels('local');
+      if (res.success && res.models) {
+        setLocalModels(res.models);
+        if (res.message) setDeviceMsg(res.message);
+      }
+    } catch {
+      // Offline fallback
+    }
+  }, []);
 
   useEffect(() => {
     setTest({ state: 'idle' });
-  }, [provider]);
+    if (provider.local) {
+      void refreshModels();
+    }
+  }, [provider, refreshModels]);
+
+  const FALLBACK_GGUF_MODELS = useMemo(() => [
+    { id: 'qwen2.5-3b-instruct', name: 'Qwen 2.5 3B Instruct (GGUF · 2.0 GB · Recommended)' },
+    { id: 'qwen2.5-1.5b-instruct', name: 'Qwen 2.5 1.5B Instruct (GGUF · 1.0 GB · Fast / Low RAM)' },
+    { id: 'llama-3.2-3b-instruct', name: 'Llama 3.2 3B Instruct (GGUF · 2.0 GB · Meta 128k)' },
+    { id: 'llama-3.2-1b-instruct', name: 'Llama 3.2 1B Instruct (GGUF · 0.8 GB · Minimal RAM)' },
+  ], []);
+
+  const displayModels = localModels.length > 0 ? localModels : FALLBACK_GGUF_MODELS;
+  const activeModelId = ws.localModel || 'qwen2.5-3b-instruct';
+  const activeMeta = displayModels.find((m) => m.id === activeModelId);
+  const isModelDownloaded = activeMeta ? activeMeta.name.includes('[Ready]') : false;
+
+  const downloadSelectedModel = async () => {
+    setModelActionState('downloading');
+    setModelActionMsg(null);
+    try {
+      const res = await api.downloadModel(activeModelId);
+      if (res.success) {
+        setModelActionMsg({ ok: true, text: res.message });
+        await refreshModels();
+      } else {
+        setModelActionMsg({ ok: false, text: res.message });
+      }
+    } catch (e) {
+      setModelActionMsg({
+        ok: false,
+        text: e instanceof ApiError ? e.message : 'Download failed.',
+      });
+    } finally {
+      setModelActionState('idle');
+    }
+  };
+
+  const deleteSelectedModel = async () => {
+    setModelActionState('deleting');
+    setModelActionMsg(null);
+    try {
+      const res = await api.deleteModel(activeModelId);
+      if (res.success) {
+        setModelActionMsg({ ok: true, text: res.message });
+        await refreshModels();
+      } else {
+        setModelActionMsg({ ok: false, text: res.message });
+      }
+    } catch (e) {
+      setModelActionMsg({
+        ok: false,
+        text: e instanceof ApiError ? e.message : 'Delete failed.',
+      });
+    } finally {
+      setModelActionState('idle');
+    }
+  };
 
   // Asks the backend to reach the chosen model with these settings; the key is sent only for this check.
   const runTest = async () => {
     setTest({ state: 'checking' });
     try {
-      const r = await api.testConnection(llmConfig(provider.id, ws.providerKeys, ws.providerUrls, provider.baseUrl)!);
-      // The local model is checked on disk without generating, so it has no round-trip time to show.
-      const model = provider.local ? (providerName(provider.id, t, true) ?? '') : (r.model_name ?? providerName(provider.id, t, true) ?? '');
+      const r = await api.testConnection(llmConfig(provider.id, ws.providerKeys, ws.providerUrls, provider.baseUrl, ws.localModel)!);
+      const model = provider.local ? (activeMeta?.name.split(' [')[0] ?? ws.localModel ?? 'Local GGUF') : (r.model_name ?? providerName(provider.id, t, true) ?? '');
       const message = !r.success ? r.message : r.latency_ms ? t('set.testOk', { ms: r.latency_ms, model }) : t('set.testReady', { model });
       setTest({ state: 'result', ok: r.success, message });
     } catch (e) {
@@ -296,6 +368,120 @@ export default function SettingsPage() {
           <p className="mt-2 text-sm text-muted-foreground">{provider.local ? t('set.localNote') : t('set.cloudNote')}</p>
           {!provider.needsKey && <p className="mt-1 text-sm text-muted-foreground">{t('set.keyHint')}</p>}
         </Row>
+
+        {provider.local && (
+          <Row title={t('set.model')} description={t('set.modelDesc')}>
+            <Select value={activeModelId} onValueChange={(v) => { ws.update({ localModel: v }); setModelActionMsg(null); }}>
+              <SelectTrigger className="max-w-md" aria-label={t('set.model')}>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {displayModels.map((m) => (
+                  <SelectItem key={m.id} value={m.id}>
+                    {m.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {deviceMsg && <p className="mt-2 text-xs text-muted-foreground">{deviceMsg}</p>}
+            <div className="mt-3 flex flex-wrap items-center gap-3">
+              {isModelDownloaded ? (
+                <>
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-good/10 px-2.5 py-0.5 text-xs font-medium text-good-text">
+                    <span className="size-1.5 rounded-full bg-good" aria-hidden />
+                    {t('set.modelReady')}
+                  </span>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={deleteSelectedModel}
+                    disabled={modelActionState !== 'idle'}
+                    className="h-7 text-xs text-critical-text hover:bg-critical/10"
+                  >
+                    {modelActionState === 'deleting' ? t('set.deleting') : t('set.deleteModel')}
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-muted px-2.5 py-0.5 text-xs font-medium text-muted-foreground">
+                    {t('set.modelNotDownloaded')}
+                  </span>
+                  <Button
+                    variant="default"
+                    size="sm"
+                    onClick={downloadSelectedModel}
+                    disabled={modelActionState !== 'idle'}
+                    className="h-7 text-xs"
+                  >
+                    {modelActionState === 'downloading' ? t('set.downloading') : t('set.downloadModel')}
+                  </Button>
+                </>
+              )}
+              {modelActionMsg && (
+                <span className={cn('text-xs', modelActionMsg.ok ? 'text-good-text' : 'text-critical-text')}>
+                  {modelActionMsg.text}
+                </span>
+              )}
+            </div>
+          </Row>
+        )}
+
+        {provider.local && (
+          <Row title={t('set.model')} description={t('set.modelDesc')}>
+            <Select value={activeModelId} onValueChange={(v) => { ws.update({ localModel: v }); setModelActionMsg(null); }}>
+              <SelectTrigger className="max-w-md" aria-label={t('set.model')}>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {displayModels.map((m) => (
+                  <SelectItem key={m.id} value={m.id}>
+                    {m.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {deviceMsg && <p className="mt-2 text-xs text-muted-foreground">{deviceMsg}</p>}
+            <div className="mt-3 flex flex-wrap items-center gap-3">
+              {isModelDownloaded ? (
+                <>
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-good/10 px-2.5 py-0.5 text-xs font-medium text-good-text">
+                    <span className="size-1.5 rounded-full bg-good" aria-hidden />
+                    {t('set.modelReady')}
+                  </span>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={deleteSelectedModel}
+                    disabled={modelActionState !== 'idle'}
+                    className="h-7 text-xs text-critical-text hover:bg-critical/10"
+                  >
+                    {modelActionState === 'deleting' ? t('set.deleting') : t('set.deleteModel')}
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-muted px-2.5 py-0.5 text-xs font-medium text-muted-foreground">
+                    {t('set.modelNotDownloaded')}
+                  </span>
+                  <Button
+                    variant="default"
+                    size="sm"
+                    onClick={downloadSelectedModel}
+                    disabled={modelActionState !== 'idle'}
+                    className="h-7 text-xs"
+                  >
+                    {modelActionState === 'downloading' ? t('set.downloading') : t('set.downloadModel')}
+                  </Button>
+                </>
+              )}
+              {modelActionMsg && (
+                <span className={cn('text-xs', modelActionMsg.ok ? 'text-good-text' : 'text-critical-text')}>
+                  {modelActionMsg.text}
+                </span>
+              )}
+            </div>
+          </Row>
+        )}
 
         {(provider.id === 'custom' || provider.id === 'ollama') && (
           <Row title={t('set.endpoint')} description={t('set.endpointDesc')}>

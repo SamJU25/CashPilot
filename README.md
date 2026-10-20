@@ -12,7 +12,7 @@
 [![Solidity 0.8.20](https://img.shields.io/badge/Solidity-0.8.20-363636.svg)](contracts/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-**Audited Technical Baseline (2026-10-20)**: **970 automated tests passing (1 POSIX-only skip)** across multi-format statement ingestion (CSV and PDF), 25+ deterministic financial calculation routines in pure Python `decimal.Decimal`, dynamic semantic intent routing (FastEmbed ONNX), on-device local SLM inference (foundation `openbmb/MiniCPM5-2B`), Universal Cloud LLM Bridge with live dynamic model discovery across 7 providers, Three-Tier Security Gate with owner-sent Tier 3 requests (no execution route), and a Next.js 14 executive dashboard with 7 functional workspaces.
+**Audited Technical Baseline (2026-10-20)**: **974 automated tests passing (1 POSIX-only skip)** across multi-format statement ingestion (CSV and PDF), 25+ deterministic financial calculation routines in pure Python `decimal.Decimal`, dynamic semantic intent routing (FastEmbed ONNX), on-device local GGUF inference (Qwen 2.5 / Llama 3.2 text models via llama.cpp), Universal Cloud LLM Bridge with live dynamic model discovery across 7 providers, Three-Tier Security Gate with owner-sent Tier 3 requests (no execution route), and a Next.js 14 executive dashboard with 7 functional workspaces.
 
 ---
 
@@ -82,7 +82,7 @@ flowchart TD
     subgraph Routing ["4. Dynamic Vector Intent & AI Bridge"]
         UserMsg[User Query / Staging Request] --> FastEmbed[FastEmbed ONNX Vector Router]
         FastEmbed --> Bridge[services/agent/llm_bridge.py]
-        Bridge --> LocalSLM[Local MiniCPM5-2B SLM]
+        Bridge --> LocalSLM[Local GGUF via llama.cpp]
         Bridge --> CloudLLM[7 Cloud Providers: Gemini, Claude, GPT-4o, DeepSeek, Groq]
     end
 
@@ -126,7 +126,7 @@ All monetary calculations execute in pure Python `decimal.Decimal` with `ROUND_H
 
 ### 2.3 Universal Dynamic AI Bridge & Local SLM (`services/agent/`)
 - **Dual Inference Engine**:
-  - **Local SLM Engine**: On-device inference via foundation `openbmb/MiniCPM5-2B` (`models/base/minicpm5-2b`) on PyTorch CUDA with automatic fallback to Ollama or deterministic responses.
+  - **Local SLM Engine**: On-device text generation via quantized GGUF models (`qwen2.5-3b-instruct` default, `qwen2.5-1.5b-instruct`, `llama-3.2-3b-instruct`, `llama-3.2-1b-instruct`) powered by `llama-cpp-python` with dynamic device hardware capability matching (CPU/CUDA) and live model discovery.
   - **Universal Cloud LLM Bridge** (`llm_bridge.py`): Native support for Google Gemini 2.0 Flash, Anthropic Claude 3.5 Sonnet, OpenAI GPT-4o, DeepSeek, Groq, Local Ollama, and Custom OpenAI-compatible endpoints.
 - **Dynamic Live Model Discovery**: `POST /api/v1/agent/fetch-models` queries upstream provider endpoints dynamically to retrieve real-time model catalogs.
 - **Dynamic Connection Verification**: `POST /api/v1/agent/test-connection` verifies provider credentials and endpoint reachability with detailed round-trip latency metrics.
@@ -213,10 +213,9 @@ All backend dependencies are pinned or constrained with tested minimum versions:
 | [`pytest`](https://pypi.org/project/pytest/) | `>=8.2.0` | Testing | Automated unit, integration, security, and e2e financial assertion framework |
 
 #### Optional Local Machine Learning Dependencies
-For running the local SLM (`models/base/minicpm5-2b`) directly on GPU rather than cloud providers:
-- `torch>=2.2.0`: PyTorch CUDA runtime
-- `transformers>=4.40.0`: Hugging Face model loader and tokenizer
-- `peft>=0.10.0`: Parameter-Efficient Fine-Tuning adapter merging
+For running local GGUF models on-device without cloud providers:
+- `llama-cpp-python>=0.2.85`: Fast C/C++ GGUF inference runtime with CUDA / Metal GPU offloading and CPU fallback
+- `huggingface-hub>=0.24.0`: Single-file GGUF download with resume support and SHA verification
 
 ---
 
@@ -330,7 +329,7 @@ CashPilot operates in three flexible modes depending on user preference:
 - **Mode 2: Local SLM (100% Offline Inference)**  
   To run fully offline on your own GPU/CPU without external API calls, download the 2.5B base foundation model:
   ```bash
-  python scripts/download_model.py --model minicpm5-2b
+  python scripts/download_model.py --model qwen2.5-3b-instruct
   ```
   *(Check downloaded status anytime with `python scripts/download_model.py --list`)*.
 - **Mode 3: Pure Deterministic (Zero Configuration)**  
@@ -390,7 +389,7 @@ tests/e2e/               2 passed            (Full Statement Ingestion to Prepar
 |---|---|---|
 | **Task Completion** | **40%** | Full transactional bank statement ingestion (CSV and PDF), 25+ pure Decimal financial calculation routines, 30/60/90-day predictive cash deficit forecasting, and automated credit facility matching. |
 | **Defensive Security & Governance** | **30%** | Three-Tier Security Gate isolating autonomous analysis from money movement (Tier 3 is owner-sent, with no payment credentials stored in the system), pre-flight regex PII redaction, Fernet data sealing at rest, and strict Pydantic v2 schemas. |
-| **Technical Innovation** | **30%** | Transaction-stream digital underwriting (WeBank model), on-device local SLM inference (MiniCPM5-2B), dynamic live model discovery across 7 LLM providers, FastEmbed semantic vector intent routing, and consortium blockchain invoice double-pledging defense (FISCO BCOS). |
+| **Technical Innovation** | **30%** | Transaction-stream digital underwriting (WeBank model), on-device local GGUF inference (Qwen 2.5 / Llama 3.2 via llama.cpp), dynamic live model discovery across 7 LLM providers, FastEmbed semantic vector intent routing, and consortium blockchain invoice double-pledging defense (FISCO BCOS). |
 
 ---
 

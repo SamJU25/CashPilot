@@ -1,16 +1,17 @@
-# Optional dependencies for on-device SLM inference (services/agent/local_transformers.py).
-# Install on top of requirements.txt only when you want local MiniCPM5-2B inference:
-#   python -m pip install -r requirements-local.txt
-# Check the GPU is used: python -c "import torch; print(torch.cuda.is_available())" should print True.
-# You also need the base model on disk (models/base/MiniCPM5-2B). `scripts/download_model.py` fetches the base weights.
-
-# PyPI's Windows torch wheel is CPU-only, so the CUDA index is listed too. pip ranks 2.14.1+cu132 above
-# the plain 2.14.1, which picks the GPU build wherever one exists (Windows, Linux); macOS falls back to PyPI.
-# cu132 needs an NVIDIA driver with CUDA 13.2 or newer (nvidia-smi, "CUDA Version"); swap in cu130 for older ones.
---extra-index-url https://download.pytorch.org/whl/cu132
-torch>=2.4.0
-transformers>=4.44.0
-peft>=0.12.0
-accelerate>=0.33.0
-bitsandbytes>=0.43.0; platform_system != "Darwin"
-sentencepiece>=0.2.0
+# Optional dependencies for on-device GGUF SLM inference via llama.cpp (services/agent/local_transformers.py).
+# Install on top of requirements.txt only when you want on-device GGUF model inference:
+#
+# Standard CPU installation:
+#   pip install llama-cpp-python>=0.2.85
+#
+# CUDA GPU acceleration (pre-built wheels):
+#   Windows / Linux with CUDA 12.4+:
+#   pip install llama-cpp-python --extra-index-url https://abetlen.github.io/llama-cpp-python/whl/cu124
+#   Or with CUDA 12.1+:
+#   pip install llama-cpp-python --extra-index-url https://abetlen.github.io/llama-cpp-python/whl/cu121
+#
+# Metal GPU acceleration (macOS Apple Silicon):
+#   CMAKE_ARGS="-DGGML_METAL=on" pip install llama-cpp-python
+#
+llama-cpp-python>=0.2.85
+huggingface-hub>=0.24.0

@@ -1,7 +1,7 @@
 # Graph Report - SME Finance Copilot  (2026-10-20)
 
 ## Corpus Check
-- 431 files · ~297,539 words
+- 431 files · ~297,497 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 25 file(s) not represented in the graph (top: .csv 14, (none) 6, .example 1)
 
@@ -11,7 +11,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `5f2aa049`
+- Built from commit: `62c60701`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -151,7 +151,7 @@
 - Section 7: Workflow & Practical Tips
 - Section 5: Choosing the Right Metrics (Decision Framework)
 - Domain Modeling
-- FastAPI Backend Craft for SME Finance Copilot
+- FastAPI Backend Craft for CashPilot
 - graphify reference: add a URL and watch a folder
 - graphify reference: commit hook and native CLAUDE.md integration
 - graphify reference: incremental update and cluster-only
@@ -198,11 +198,11 @@
 - test_receivables_ageing.py
 - get_default_model_id
 - SessionStore
-- SME Finance Copilot: Master System Design (`system.md`)
+- CashPilot: Master System Design (`system.md`)
 - test_url_guard.py
 - sub_intent_prototypes
 - Model Validation and Audit
-- SME Finance Copilot: Master Architectural Plan (`architecture.md`)
+- CashPilot: Master Architectural Plan (`architecture.md`)
 - FastEmbedSemanticRouter
 - ref_path
 - FallbackRuleAdapter
@@ -268,8 +268,8 @@
 - param_extractor.py
 - first-principles-thinking (Suite: 6-product-pitch)
 - DynamicModelCatalog
-- Docker Patterns for SME Finance Copilot
-- End-to-End (E2E) Testing for SME Finance Copilot
+- Docker Patterns for CashPilot
+- End-to-End (E2E) Testing for CashPilot
 - agent/__init__.py
 - Phase 1: Earnings Data Collection (30-60 minutes)
 - generate_local_reply
@@ -300,7 +300,7 @@
 - Cash & Liquidity
 - Citation Examples for Specific Content
 - package.json
-- Buffy Builder Config — SME Finance Copilot
+- Buffy Builder Config — CashPilot
 - mask_pii
 - 小红书 / XiaoHongShu（多后端）
 - 1. Core SME Working Capital & Liquidity Metrics
@@ -1003,9 +1003,9 @@ Nodes (4): Industry-Specific Metric Selection, Section 5: Choosing the Right Met
 Cohesion: 0.50
 Nodes (3): 1. Glossary (`docs/GLOSSARY.md`), 2. Architecture Decision Records (`docs/adr/`), Domain Modeling
 
-### Community 135 - "FastAPI Backend Craft for SME Finance Copilot"
+### Community 135 - "FastAPI Backend Craft for CashPilot"
 Cohesion: 0.50
-Nodes (3): 1. Architecture & Layering, 2. Invariants & Rules, FastAPI Backend Craft for SME Finance Copilot
+Nodes (3): 1. Architecture & Layering, 2. Invariants & Rules, FastAPI Backend Craft for CashPilot
 
 ### Community 136 - "graphify reference: add a URL and watch a folder"
 Cohesion: 0.50
@@ -1151,7 +1151,7 @@ Nodes (14): download_single_model(), list_models(), main(), Standalone CLI utili
 Cohesion: 0.07
 Nodes (36): Any, BaseModel, Saves session state to disk for cross-restart recovery., Retrieves an existing session record or initializes a new one. A session…, Drops expired sessions, then the oldest ones beyond MAX_IN_MEMORY_SESSIONS.…, The session only if it belongs to this tenant; API reads and deletes go through…, Stores statement CSV and cached calculation metrics in the session., Clears statement CSV, cached dossier, and statement-derived facts from the… (+28 more)
 
-### Community 182 - "SME Finance Copilot: Master System Design (`system.md`)"
+### Community 182 - "CashPilot: Master System Design (`system.md`)"
 Cohesion: 0.09
 Nodes (22): 1.1 Project Form Factor: Responsive Web Application with PWA, 1.2 Form Factor Decision & Trade-Off Matrix, 1. Executive System Overview & Form Factor, 3.1 Technology Stack & Rendering, 3.2 Four-State Component Protocol, 3.3 Real-Time Streaming & Live Alerts *(planned)*, 3. Frontend Backbone Specification, 4.1 Application Server Architecture (+14 more)
 
@@ -1167,9 +1167,9 @@ Nodes (50): sub_intent_prototypes, ADVICE, ALTMAN_Z_SCORE, AMORTIZATION, ATTRITI
 Cohesion: 0.29
 Nodes (7): Check Categories, Circular Reference Handling, Core Linkages (Must Always Hold), Master Check Formula, Model Validation and Audit, Quick Debug Workflow, Sign Convention Reference
 
-### Community 186 - "SME Finance Copilot: Master Architectural Plan (`architecture.md`)"
+### Community 186 - "CashPilot: Master Architectural Plan (`architecture.md`)"
 Cohesion: 0.20
-Nodes (10): 1. Macro Architecture & 6-Layer Topology, 2. Operating Model & Multi-Agent Topology, 3.1 Database Selection: PostgreSQL 16 (+ SQLite for Local Dev), 3.2 Agent Memory Architecture: Zero Cognitive Graph Bloat, 3. Database & Agent Memory Architectural Decision, 4. Phased Sprint Roadmap & Verified Milestones, Master Documentation Suite:, Runtime Functional Execution Squads (+2 more)
+Nodes (10): 1. Macro Architecture & 6-Layer Topology, 2. Operating Model & Multi-Agent Topology, 3.1 Database Selection: PostgreSQL 16 (+ SQLite for Local Dev), 3.2 Agent Memory Architecture: Zero Cognitive Graph Bloat, 3. Database & Agent Memory Architectural Decision, 4. Phased Sprint Roadmap & Verified Milestones, CashPilot: Master Architectural Plan (`architecture.md`), Master Documentation Suite: (+2 more)
 
 ### Community 187 - "FastEmbedSemanticRouter"
 Cohesion: 0.11
@@ -1217,7 +1217,7 @@ Nodes (8): katex, react-markdown, rehype-katex, remark-gfm, remark-math, compone
 
 ### Community 200 - "2. Subagent Suites Directory (57 Specialized Subagents)"
 Cohesion: 0.12
-Nodes (16): 0. Project Truth, Instruction Precedence & Current Baseline, 1. Operating Model & Hierarchy Matrix, 2. Subagent Suites Directory (57 Specialized Subagents), 3. Dynamic Task Routing Matrix (Scenario-to-Squad Mapping), 4. Antigravity Agent Execution Protocol, Master Documentation & Operational Protocols:, SME Finance Copilot — AI Agents & Task Routing Engine, Suite 0: Global Governance Specialists (`.agent/agents/0-global-specialists/`) (+8 more)
+Nodes (16): 0. Project Truth, Instruction Precedence & Current Baseline, 1. Operating Model & Hierarchy Matrix, 2. Subagent Suites Directory (57 Specialized Subagents), 3. Dynamic Task Routing Matrix (Scenario-to-Squad Mapping), 4. Antigravity Agent Execution Protocol, CashPilot — AI Agents & Task Routing Engine, Master Documentation & Operational Protocols:, Suite 0: Global Governance Specialists (`.agent/agents/0-global-specialists/`) (+8 more)
 
 ### Community 201 - "DCF Model Builder"
 Cohesion: 0.18
@@ -1387,13 +1387,13 @@ Nodes (5): Connected Skills & Squad Handoffs, Enforced Invariants & Guidelines, 
 Cohesion: 0.20
 Nodes (5): dict, DynamicModelCatalog, Any, Dictionary that dynamically re-scans models/ on every access. Ensures that the…, Generates contextual response using native local PyTorch model.
 
-### Community 255 - "Docker Patterns for SME Finance Copilot"
+### Community 255 - "Docker Patterns for CashPilot"
 Cohesion: 0.50
-Nodes (3): 1. Multi-Stage Architecture, 2. Invariants & Rules, Docker Patterns for SME Finance Copilot
+Nodes (3): 1. Multi-Stage Architecture, 2. Invariants & Rules, Docker Patterns for CashPilot
 
-### Community 256 - "End-to-End (E2E) Testing for SME Finance Copilot"
+### Community 256 - "End-to-End (E2E) Testing for CashPilot"
 Cohesion: 0.50
-Nodes (3): 1. Core User Flow Coverage, 2. Testing Invariants, End-to-End (E2E) Testing for SME Finance Copilot
+Nodes (3): 1. Core User Flow Coverage, 2. Testing Invariants, End-to-End (E2E) Testing for CashPilot
 
 ### Community 258 - "Phase 1: Earnings Data Collection (30-60 minutes)"
 Cohesion: 0.40
@@ -1483,9 +1483,9 @@ Nodes (4): Citation Examples for Specific Content, For Beat/Miss Analysis:, For 
 Cohesion: 0.07
 Nodes (26): description, name, private, version, autoprefixer, clsx, postcss, @radix-ui/react-dropdown-menu (+18 more)
 
-### Community 289 - "Buffy Builder Config — SME Finance Copilot"
+### Community 289 - "Buffy Builder Config — CashPilot"
 Cohesion: 0.33
-Nodes (5): 1. Subagents (57 files in `.agent/agents/`, 8 suites), 2. Skills (56 dirs in `.agent/skills/`, each with `SKILL.md`), 3. Workflows (`.agent/workflows/`), 4. Rules (`.agent/rules/`), Buffy Builder Config — SME Finance Copilot
+Nodes (5): 1. Subagents (57 files in `.agent/agents/`, 8 suites), 2. Skills (56 dirs in `.agent/skills/`, each with `SKILL.md`), 3. Workflows (`.agent/workflows/`), 4. Rules (`.agent/rules/`), Buffy Builder Config — CashPilot
 
 ### Community 290 - "mask_pii"
 Cohesion: 0.29

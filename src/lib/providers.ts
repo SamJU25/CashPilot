@@ -1,6 +1,6 @@
 // Providers supported by services/agent/llm_bridge.py.
 export const PROVIDERS = [
-  { id: 'local', label: 'MiniCPM5-2B (local model)', short: 'MiniCPM5-2B', local: true, needsKey: false, baseUrl: '' },
+  { id: 'local', label: 'Local GGUF (llama.cpp)', short: 'Local GGUF', local: true, needsKey: false, baseUrl: '' },
   { id: 'ollama', label: 'Ollama', short: 'Ollama', local: true, needsKey: false, baseUrl: 'http://localhost:11434' },
   { id: 'gemini', label: 'Google Gemini', short: 'Gemini', local: false, needsKey: true, baseUrl: 'https://generativelanguage.googleapis.com' },
   { id: 'claude', label: 'Anthropic Claude', short: 'Claude', local: false, needsKey: true, baseUrl: 'https://api.anthropic.com' },
