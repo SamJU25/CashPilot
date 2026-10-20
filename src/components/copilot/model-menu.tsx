@@ -23,7 +23,17 @@ import { cn } from '@/lib/utils';
  * Compact model chip for the chat input. Lists only models that can answer right now: GGUF files on
  * disk, and providers with their key, address or (Ollama) a fetched model. Setup stays in Settings.
  */
-export function ModelMenu({ onSwitch, disabled }: { onSwitch: (id: string, localModel?: string) => void; disabled?: boolean }) {
+export function ModelMenu({
+  onSwitch,
+  disabled,
+  compact = false,
+  className,
+}: {
+  onSwitch: (id: string, localModel?: string) => void;
+  disabled?: boolean;
+  compact?: boolean;
+  className?: string;
+}) {
   const { provider, localModel, providerKeys, providerUrls, providerModels } = useWorkspace();
   const { t } = useT();
   const [open, setOpen] = useState(false);
@@ -46,11 +56,23 @@ export function ModelMenu({ onSwitch, disabled }: { onSwitch: (id: string, local
   return (
     <DropdownMenu open={open} onOpenChange={setOpen}>
       <DropdownMenuTrigger asChild>
-        <Button type="button" variant="ghost" size="sm" disabled={disabled} className="h-8 gap-1.5 rounded-full px-2.5 text-xs text-ink-2" aria-label={`${t('as.model')}: ${currentLabel}`}>
-          <span className={cn('size-1.5 rounded-full', missingLocal ? 'bg-muted-foreground' : current.local ? 'bg-good' : 'bg-series-1')} aria-hidden />
-          {currentLabel}
-          {!missingLocal && <span className="text-muted-foreground">{current.local ? t('as.modelLocal') : t('as.modelCloud')}</span>}
-          <ChevronDown className="size-3.5 text-muted-foreground" aria-hidden />
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          disabled={disabled}
+          className={cn(
+            compact
+              ? "h-6.5 gap-1.5 rounded-md px-2 text-[11px] sm:text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted/60 transition-colors border border-border/40 bg-muted/20"
+              : "h-8 gap-1.5 rounded-full px-2.5 text-xs text-ink-2",
+            className
+          )}
+          aria-label={`${t('as.model')}: ${currentLabel}`}
+        >
+          <span className={cn('size-1.5 rounded-full shrink-0', missingLocal ? 'bg-muted-foreground' : current.local ? 'bg-good' : 'bg-series-1')} aria-hidden />
+          <span className={cn('truncate', compact && 'max-w-[130px] sm:max-w-[180px]')}>{currentLabel}</span>
+          {!compact && !missingLocal && <span className="text-muted-foreground">{current.local ? t('as.modelLocal') : t('as.modelCloud')}</span>}
+          <ChevronDown className="size-3 text-muted-foreground/70 shrink-0" aria-hidden />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start" side="top" className="w-80">

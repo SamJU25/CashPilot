@@ -71897,7 +71897,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/assistant/page.tsx",
-      "source_location": "L372",
+      "source_location": "L381",
       "weight": 1.0
     },
     {
@@ -71909,7 +71909,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/assistant/page.tsx",
-      "source_location": "L374",
+      "source_location": "L383",
       "weight": 1.0
     },
     {
@@ -71921,7 +71921,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/assistant/page.tsx",
-      "source_location": "L375",
+      "source_location": "L384",
       "weight": 1.0
     },
     {
@@ -71933,7 +71933,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/assistant/page.tsx",
-      "source_location": "L438",
+      "source_location": "L447",
       "weight": 1.0
     },
     {
@@ -71945,7 +71945,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/assistant/page.tsx",
-      "source_location": "L461",
+      "source_location": "L470",
       "weight": 1.0
     },
     {
@@ -71957,7 +71957,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/assistant/page.tsx",
-      "source_location": "L522",
+      "source_location": "L531",
       "weight": 1.0
     },
     {
@@ -71969,7 +71969,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/assistant/page.tsx",
-      "source_location": "L522",
+      "source_location": "L531",
       "weight": 1.0
     },
     {
@@ -71981,7 +71981,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/assistant/page.tsx",
-      "source_location": "L526",
+      "source_location": "L535",
       "weight": 1.0
     },
     {
@@ -71993,7 +71993,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/assistant/page.tsx",
-      "source_location": "L528",
+      "source_location": "L537",
       "weight": 1.0
     },
     {
@@ -72005,7 +72005,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/assistant/page.tsx",
-      "source_location": "L544",
+      "source_location": "L553",
       "weight": 1.0
     },
     {
@@ -72017,7 +72017,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/assistant/page.tsx",
-      "source_location": "L568",
+      "source_location": "L577",
       "weight": 1.0
     },
     {
@@ -72029,7 +72029,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/assistant/page.tsx",
-      "source_location": "L577",
+      "source_location": "L586",
       "weight": 1.0
     },
     {
@@ -72041,7 +72041,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/assistant/page.tsx",
-      "source_location": "L621",
+      "source_location": "L630",
       "weight": 1.0
     },
     {
@@ -72053,7 +72053,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/assistant/page.tsx",
-      "source_location": "L702",
+      "source_location": "L711",
       "weight": 1.0
     },
     {
@@ -72065,7 +72065,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/assistant/page.tsx",
-      "source_location": "L703",
+      "source_location": "L712",
       "weight": 1.0
     },
     {
@@ -72077,7 +72077,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/assistant/page.tsx",
-      "source_location": "L706",
+      "source_location": "L715",
       "weight": 1.0
     },
     {
@@ -72089,7 +72089,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/assistant/page.tsx",
-      "source_location": "L709",
+      "source_location": "L718",
       "weight": 1.0
     },
     {
@@ -72101,7 +72101,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/assistant/page.tsx",
-      "source_location": "L812",
+      "source_location": "L833",
       "weight": 1.0
     },
     {
@@ -75958,6 +75958,18 @@
     },
     {
       "source": "src_components_copilot_model_menu_modelmenu",
+      "target": "src_components_ui_dropdown_menu_dropdownmenuseparator",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/components/copilot/model-menu.tsx",
+      "source_location": "L110",
+      "weight": 1.0
+    },
+    {
+      "source": "src_components_copilot_model_menu_modelmenu",
       "target": "src_lib_workspace_useworkspace",
       "relation": "calls",
       "_origin": "ast",
@@ -75965,7 +75977,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/copilot/model-menu.tsx",
-      "source_location": "L27",
+      "source_location": "L37",
       "weight": 1.0
     },
     {
@@ -75977,7 +75989,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/copilot/model-menu.tsx",
-      "source_location": "L28",
+      "source_location": "L38",
       "weight": 1.0
     },
     {
@@ -75989,7 +76001,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/copilot/model-menu.tsx",
-      "source_location": "L30",
+      "source_location": "L40",
       "weight": 1.0
     },
     {
@@ -76001,7 +76013,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/copilot/model-menu.tsx",
-      "source_location": "L38",
+      "source_location": "L48",
       "weight": 1.0
     },
     {
@@ -76013,7 +76025,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/copilot/model-menu.tsx",
-      "source_location": "L38",
+      "source_location": "L48",
       "weight": 1.0
     },
     {
@@ -76025,7 +76037,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/copilot/model-menu.tsx",
-      "source_location": "L41",
+      "source_location": "L51",
       "weight": 1.0
     },
     {
@@ -76037,7 +76049,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/copilot/model-menu.tsx",
-      "source_location": "L49",
+      "source_location": "L59",
       "weight": 1.0
     },
     {
@@ -76049,7 +76061,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/copilot/model-menu.tsx",
-      "source_location": "L50",
+      "source_location": "L64",
       "weight": 1.0
     },
     {
@@ -76061,7 +76073,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/copilot/model-menu.tsx",
-      "source_location": "L56",
+      "source_location": "L78",
       "weight": 1.0
     },
     {
@@ -76073,7 +76085,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/copilot/model-menu.tsx",
-      "source_location": "L59",
+      "source_location": "L81",
       "weight": 1.0
     },
     {
@@ -76085,7 +76097,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/copilot/model-menu.tsx",
-      "source_location": "L66",
+      "source_location": "L88",
       "weight": 1.0
     },
     {
@@ -76097,19 +76109,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/copilot/model-menu.tsx",
-      "source_location": "L70",
-      "weight": 1.0
-    },
-    {
-      "source": "src_components_copilot_model_menu_modelmenu",
-      "target": "src_components_ui_dropdown_menu_dropdownmenuseparator",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "src/components/copilot/model-menu.tsx",
-      "source_location": "L88",
+      "source_location": "L92",
       "weight": 1.0
     },
     {
@@ -183053,5 +183053,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "a645b531e69709db7181440f26fe95b618783af9"
+  "built_at_commit": "f896eb42325fcfb3f310a4f705f54d686195d3a9"
 }

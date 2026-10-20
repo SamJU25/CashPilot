@@ -351,6 +351,15 @@ export default function AssistantPage() {
     }
   }, [messages, restored, source]);
   const [draft, setDraft] = useState('');
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  useEffect(() => {
+    const el = textareaRef.current;
+    if (!el) return;
+    el.style.height = 'auto';
+    const scrollH = el.scrollHeight;
+    el.style.height = `${Math.min(Math.max(scrollH, 40), 220)}px`;
+  }, [draft]);
   const [busy, setBusy] = useState(false);
   const [live, setLive] = useState(0);
   const [pondered, setPondered] = useState(false);
@@ -763,11 +772,12 @@ export default function AssistantPage() {
               send(draft);
             }}
           >
-            <div className="relative flex items-end gap-2 rounded-2xl border bg-card/60 backdrop-blur-xs p-2 shadow-xs focus-within:ring-2 focus-within:ring-ring/30 focus-within:border-primary/50 transition-all">
+            <div className="relative flex flex-col rounded-2xl border bg-card/75 dark:bg-card/40 backdrop-blur-md shadow-xs focus-within:ring-2 focus-within:ring-primary/25 focus-within:border-primary/50 transition-all p-2.5 gap-1.5">
               <label htmlFor="ask" className="sr-only">
                 {t('as.ask')}
               </label>
               <textarea
+                ref={textareaRef}
                 id="ask"
                 rows={1}
                 value={draft}
@@ -779,17 +789,28 @@ export default function AssistantPage() {
                   }
                 }}
                 placeholder={t('as.placeholder')}
-                className="max-h-36 min-h-[40px] flex-1 resize-none bg-transparent px-3 py-2 text-sm outline-none placeholder:text-muted-foreground"
+                className="w-full min-h-[40px] max-h-[220px] resize-none bg-transparent px-2 py-1 text-xs sm:text-[13.5px] leading-relaxed outline-none placeholder:text-muted-foreground/60 overflow-y-auto"
               />
-              <Button
-                type="submit"
-                size="icon"
-                className="size-8 shrink-0 rounded-xl transition-transform active:scale-95"
-                disabled={!draft.trim() || busy || waiting}
-                aria-label={t('as.send')}
-              >
-                <ArrowUp className="size-4" />
-              </Button>
+
+              <div className="flex items-center justify-between pt-1 border-t border-border/40 px-0.5">
+                <div className="flex items-center gap-1.5 min-w-0">
+                  <ModelMenu onSwitch={switchModel} disabled={busy || waiting} compact />
+                </div>
+                <div className="flex items-center gap-2 shrink-0">
+                  <span className="hidden sm:inline-block text-[10.5px] text-muted-foreground/50 select-none">
+                    Shift + Enter for new line
+                  </span>
+                  <Button
+                    type="submit"
+                    size="icon"
+                    className="size-7 sm:size-7.5 shrink-0 rounded-lg sm:rounded-xl transition-all active:scale-95 disabled:opacity-40"
+                    disabled={!draft.trim() || busy || waiting}
+                    aria-label={t('as.send')}
+                  >
+                    <ArrowUp className="size-3.5 sm:size-4" />
+                  </Button>
+                </div>
+              </div>
             </div>
             <p className="mt-1.5 text-center text-[11px] text-muted-foreground tracking-tight">
               {isLocal ? t('set.localNote') : t('as.mask')}
