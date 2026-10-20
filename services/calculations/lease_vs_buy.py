@@ -11,6 +11,7 @@ from __future__ import annotations
 
 from decimal import Decimal, ROUND_HALF_UP
 from typing import Any, Dict, Optional
+from services.calculations.currency_registry import format_money
 
 
 def calculate_lease_vs_buy(
@@ -21,6 +22,7 @@ def calculate_lease_vs_buy(
     corporate_tax_rate_pct: Decimal = Decimal("21.0"),
     estimated_salvage_value: Decimal = Decimal("0.00"),
     annual_maintenance_if_bought: Decimal = Decimal("0.00"),
+    currency: str = "USD",
 ) -> Dict[str, Any]:
     """Calculate Net Present Value trade-off between leasing vs purchasing commercial equipment.
 
@@ -99,8 +101,8 @@ def calculate_lease_vs_buy(
             Decimal("0.01"), rounding=ROUND_HALF_UP
         )
         recommendation = (
-            f"Recommend purchasing equipment outright. Present value cost of buying (${pv_buy_quant:,.2f}) "
-            f"is ${savings_dollars:,.2f} cheaper than leasing (${pv_lease_quant:,.2f}) due to depreciation tax shields and salvage equity."
+            f"Recommend purchasing equipment outright. Present value cost of buying ({format_money(pv_buy_quant, currency)}) "
+            f"is {format_money(savings_dollars, currency)} cheaper than leasing ({format_money(pv_lease_quant, currency)}) due to depreciation tax shields and salvage equity."
         )
     else:
         recommended_action = "LEASE"
@@ -108,8 +110,8 @@ def calculate_lease_vs_buy(
             Decimal("0.01"), rounding=ROUND_HALF_UP
         )
         recommendation = (
-            f"Recommend operating lease. Present value cost of leasing (${pv_lease_quant:,.2f}) "
-            f"is ${savings_dollars:,.2f} cheaper than buying (${pv_buy_quant:,.2f}) while preserving upfront working capital liquidity."
+            f"Recommend operating lease. Present value cost of leasing ({format_money(pv_lease_quant, currency)}) "
+            f"is {format_money(savings_dollars, currency)} cheaper than buying ({format_money(pv_buy_quant, currency)}) while preserving upfront working capital liquidity."
         )
 
     # 4. Evaluate via GoRules JDM Debt Covenant Policy

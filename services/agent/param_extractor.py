@@ -6,6 +6,21 @@ import re
 from decimal import Decimal
 from typing import Any, Dict, List, Optional, Tuple
 
+from services.calculations.currency_registry import SYMBOL_MAP, WORLD_CURRENCIES
+
+_SYMBOLS = sorted(set(SYMBOL_MAP) | {c.symbol for c in WORLD_CURRENCIES.values()}, key=len, reverse=True)
+_AMOUNT = r"[0-9][0-9,]*(?:\.\d+)?[km]?"
+# "€3,000", "৳ 50k", "Rs 900" or "3,000 EUR". Case-sensitive and not mid-word, so "for 3000" is not rand.
+_CURRENCY_AMOUNT = re.compile(
+    r"(?<![A-Za-z])(?:" + "|".join(map(re.escape, _SYMBOLS)) + r")\s?(" + _AMOUNT + r")\b"
+    r"|\b(" + _AMOUNT + r")\s?(?:" + "|".join(WORLD_CURRENCIES) + r")\b"
+)
+
+
+def currency_amounts(text: str) -> List[str]:
+    """Number tokens written with a currency symbol or ISO code, in order of appearance."""
+    return [m.group(1) or m.group(2) for m in _CURRENCY_AMOUNT.finditer(text)]
+
 
 def parse_numeric_token(token: str) -> Optional[Decimal]:
     """Converts numeric string with commas, k/m suffix to Decimal."""
@@ -97,10 +112,10 @@ def extract_amortization_params(text: str, history: Optional[List[Any]] = None) 
                 term_months = val
                 break
 
-    # Principal: look for dollar sign first e.g. "$100k", "$50,000"
-    dollar_match = re.search(r"\$\s*([0-9]{1,3}(?:,[0-9]{3})*(?:\.[0-9]{2})?|\d+(?:\.\d+)?[km]?)\b", text, re.IGNORECASE)
-    if dollar_match:
-        val = parse_numeric_token(dollar_match.group(1))
+    # Principal: an amount carrying a currency marker first, e.g. "$100k", "€50,000"
+    marked = currency_amounts(text)
+    if marked:
+        val = parse_numeric_token(marked[0])
         if val and val >= Decimal("100"):
             principal = val
 
@@ -633,9 +648,9 @@ def extract_invoice_hash_params(text: str) -> Dict[str, Any]:
     if inv_m:
         invoice_num = inv_m.group(1)
 
-    amt_m = re.search(r"\$([0-9]{1,3}(?:,[0-9]{3})*(?:\.[0-9]{2})?|\d+[km]?)", text)
-    if amt_m:
-        val = parse_numeric_token(amt_m.group(1))
+    marked = currency_amounts(text)
+    if marked:
+        val = parse_numeric_token(marked[0])
         if val:
             amount_cents = int(val * 100)
 
@@ -807,7 +822,7 @@ def extract_trade_credit_params(text: str, history: Optional[List[Any]] = None) 
         if m_nd:
             net_days = int(m_nd.group(1))
 
-    dollars = re.findall(r"\$([0-9]{1,3}(?:,[0-9]{3})*(?:\.[0-9]{2})?|\d+[km]?)", clean_text)
+    dollars = currency_amounts(clean_text)
     if dollars:
         inv_amt = parse_numeric_token(dollars[0])
     elif not inv_amt:
@@ -1832,7 +1847,6 @@ def extract_fx_exposure_params(text: str, history: Optional[List[Any]] = None) -
 
 
 
-_SCENARIO_MONEY = re.compile(r"\$\s?([0-9][0-9,]*(?:\.\d+)?[km]?)\b", re.IGNORECASE)
 _SCENARIO_PERCENT = re.compile(r"(\d+(?:\.\d+)?)\s*(?:%|percent)", re.IGNORECASE)
 _SCENARIO_DAYS = re.compile(r"(\d+)[\s-]*days?\b", re.IGNORECASE)
 _INVOICE_DELAY = re.compile(r"\b(?:delay|delays|delayed|late|slip|slips|push(?:es)?\s+back)\b", re.IGNORECASE)
@@ -1846,8 +1860,8 @@ def extract_cash_scenario_params(text: str, history: Optional[List[Any]] = None)
 
     History is not backfilled: a figure from an earlier, different what-if must not leak into this one.
     """
-    money = _SCENARIO_MONEY.search(text)
-    amount = parse_numeric_token(money.group(1)) if money else None
+    marked = currency_amounts(text)
+    amount = parse_numeric_token(marked[0]) if marked else None
     pct = _SCENARIO_PERCENT.search(text)
     days = _SCENARIO_DAYS.search(text)
 

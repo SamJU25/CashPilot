@@ -10,6 +10,7 @@ try:
 except ImportError:
     zen = None
 
+from services.calculations.currency_registry import format_money
 from services.decision.base import AbstractDecisionEngine
 from services.decision.types import DecisionDomain, DecisionRequest, DecisionResult
 
@@ -355,7 +356,7 @@ class ZenRulesAdapter(AbstractDecisionEngine):
                 if burn_val > 0.0 or share_val >= 25.0:
                     selected_choice = "CRITICAL"
                     rec = (
-                        f"Loss of client creates an immediate annual operating deficit of ${burn_val:,.2f} "
+                        f"Loss of client creates an immediate annual operating deficit of {format_money(burn_val, request.input_state.get('currency'))} "
                         f"({share_val}% revenue loss). Secure bridge working capital or cut overhead immediately."
                     )
                 elif share_val >= 15.0:

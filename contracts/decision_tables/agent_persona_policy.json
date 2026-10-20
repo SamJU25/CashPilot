@@ -159,7 +159,7 @@
             "out_target": "\"Supervisor\"",
             "out_tone": "\"URGENT_LIQUIDITY_ACTION\"",
             "out_template": "\"\"",
-            "out_guidance": "\"Financial Health Assessment: Your cash status is {cash_status} with {runway_desc} of runway. A cash shortfall of ${shortfall} is projected on {date} due to {trigger}. Recommended action: Stage a working capital bridge facility of {bridge} to protect operating continuity.\""
+            "out_guidance": "\"Financial Health Assessment: Your cash status is {cash_status} with {runway_desc} of runway. A cash shortfall of {shortfall} is projected on {date} due to {trigger}. Recommended action: Stage a working capital bridge facility of {bridge} to protect operating continuity.\""
           },
           {
             "_id": "rule_advice_watch",
@@ -170,7 +170,7 @@
             "out_target": "\"Supervisor\"",
             "out_tone": "\"BOARDROOM_CAUTION\"",
             "out_template": "\"\"",
-            "out_guidance": "\"Financial Health Assessment: Your cash status is WATCH with {runway_desc} of runway. While current cash of ${balance} covers near-term needs, net daily outflows of ${burn}/day will deplete liquidity in approximately {runway_days} days. Recommended action: Accelerate invoice collections and evaluate a pre-qualified working capital credit line.\""
+            "out_guidance": "\"Financial Health Assessment: Your cash status is WATCH with {runway_desc} of runway. While current cash of {balance} covers near-term needs, net daily outflows of {burn}/day will deplete liquidity in approximately {runway_days} days. Recommended action: Accelerate invoice collections and evaluate a pre-qualified working capital credit line.\""
           },
           {
             "_id": "rule_advice_healthy",
@@ -181,7 +181,7 @@
             "out_target": "\"Supervisor\"",
             "out_tone": "\"AFFIRMATIVE_STABILITY\"",
             "out_template": "\"\"",
-            "out_guidance": "\"Financial Health Assessment: Your cash status is HEALTHY with {runway_desc} of runway. Current balance of ${balance} provides strong operational buffer against daily burn.\""
+            "out_guidance": "\"Financial Health Assessment: Your cash status is HEALTHY with {runway_desc} of runway. Current balance of {balance} provides strong operational buffer against daily burn.\""
           },
           {
             "_id": "rule_deficit_early_warning",
@@ -192,7 +192,7 @@
             "out_target": "\"Supervisor\"",
             "out_tone": "\"RISK_ALERT\"",
             "out_template": "\"\"",
-            "out_guidance": "\"Deficit Early-Warning: Projected shortfall of ${shortfall} in {days} days ({date}). Severity is {severity}. Primary driver: {trigger}.\""
+            "out_guidance": "\"Deficit Early-Warning: Projected shortfall of {shortfall} in {days} days ({date}). Severity is {severity}. Primary driver: {trigger}.\""
           },
           {
             "_id": "rule_deficit_safe",

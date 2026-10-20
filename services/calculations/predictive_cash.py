@@ -16,6 +16,7 @@ import re
 from typing import Optional, Sequence
 
 from services.ingestion.csv_parser import DemoTransaction
+from services.calculations.currency_registry import format_money
 
 
 MAX_FORECAST_HORIZON_DAYS = 365
@@ -203,6 +204,7 @@ def calculate_predictive_cash(
     target_horizon_days: Optional[int] = None,
     obligations: Optional[Sequence[DetectedObligation]] = None,
     scenario: Optional[CashScenario] = None,
+    currency: str = "USD",
 ) -> PredictiveDeficitResult:
     """Calculates forward cash trajectory and flags predictive shortfall events."""
     if projection_days <= 0:
@@ -310,9 +312,9 @@ def calculate_predictive_cash(
             "has_deficit": has_prelim_deficit,
             "projected_date": projected_date,
             "primary_deficit_trigger": primary_deficit_trigger,
-            "shortfall": f"{shortfall:,.2f}",
-            "recommended_bridge": f"{recommended_bridge:,.2f}",
-            "d90": f"{d90:,.2f}",
+            "shortfall": format_money(shortfall, currency),
+            "recommended_bridge": format_money(recommended_bridge, currency),
+            "d90": format_money(d90, currency),
         },
         execution_mode="DETERMINISTIC_ONLY",
     )
@@ -322,7 +324,7 @@ def calculate_predictive_cash(
     explanation = decision_res.output_payload.get("explanation") or decision_res.rationale or ""
 
     if effective_target_days is not None and target_balance is not None:
-        explanation += f" Target {effective_target_days}-day forecast ({target_date}) [{confidence_tier} CONFIDENCE]: projected balance ${target_balance:,.2f}."
+        explanation += f" Target {effective_target_days}-day forecast ({target_date}) [{confidence_tier} CONFIDENCE]: projected balance {format_money(target_balance, currency)}."
         if advisory_note:
             explanation += f" Note: {advisory_note}"
 

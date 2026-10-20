@@ -318,7 +318,7 @@
             "in_value": "> 5000",
             "out_status": "'EXCESSIVE_CASH_DRAG'",
             "out_risk": "true",
-            "out_rationale": "'Excessive cash drag (annual yield loss: ${value}). Sweep surplus balances beyond operational reserve into institutional money market yield.'"
+            "out_rationale": "'Excessive cash drag (annual yield loss: {value}). Sweep surplus balances beyond operational reserve into institutional money market yield.'"
           },
           {
             "_id": "rule_cash_drag_moderate",
@@ -327,7 +327,7 @@
             "in_value": "> 1000",
             "out_status": "'MODERATE_CASH_DRAG'",
             "out_risk": "false",
-            "out_rationale": "'Moderate cash drag (annual yield loss: ${value}). Treasury yield optimization would generate meaningful risk-free interest.'"
+            "out_rationale": "'Moderate cash drag (annual yield loss: {value}). Treasury yield optimization would generate meaningful risk-free interest.'"
           },
           {
             "_id": "rule_cash_drag_optimal",

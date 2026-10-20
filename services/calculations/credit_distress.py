@@ -40,6 +40,7 @@ from __future__ import annotations
 
 from decimal import Decimal, ROUND_HALF_UP
 from typing import Any, Dict
+from services.calculations.currency_registry import format_money
 
 
 def calculate_altman_z_score(
@@ -158,6 +159,7 @@ def calculate_net_debt_to_ebitda(
     total_debt: Decimal,
     cash_and_equivalents: Decimal,
     ebitda: Decimal,
+    currency: str = "USD",
 ) -> Dict[str, Any]:
     """Calculate Net Debt to EBITDA commercial leverage covenant ratio.
 
@@ -181,15 +183,15 @@ def calculate_net_debt_to_ebitda(
         ratio = Decimal("0.00")
         tier = "NET_CASH_POSITIVE"
         rationale = (
-            f"Net cash positive: Liquid cash reserves (${cash_and_equivalents:,.2f}) exceed total debt obligations "
-            f"(${total_debt:,.2f}) by ${abs(net_debt):,.2f}. Zero net financial debt risk."
+            f"Net cash positive: Liquid cash reserves ({format_money(cash_and_equivalents, currency)}) exceed total debt obligations "
+            f"({format_money(total_debt, currency)}) by {format_money(abs(net_debt), currency)}. Zero net financial debt risk."
         )
     elif ebitda <= Decimal("0.00"):
         # Positive debt but non-positive EBITDA
         ratio = Decimal("999.00")
         tier = "HIGH_RISK_LEVERAGE"
         rationale = (
-            f"Negative or zero operating EBITDA (${ebitda:,.2f}) against ${net_debt:,.2f} net debt. "
+            f"Negative or zero operating EBITDA ({format_money(ebitda, currency)}) against {format_money(net_debt, currency)} net debt. "
             "Company cannot service interest-bearing liabilities from current operating cash generation."
         )
     else:

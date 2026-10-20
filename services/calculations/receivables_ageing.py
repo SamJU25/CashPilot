@@ -19,6 +19,7 @@ from decimal import Decimal, ROUND_HALF_UP
 from typing import Dict, List, Optional, Sequence, Union
 
 from services.ingestion.invoice_parser import InvoiceRecord
+from services.calculations.currency_registry import format_money
 
 
 @dataclass(frozen=True)
@@ -61,6 +62,7 @@ class ReceivablesAgeingResult:
 def calculate_receivables_ageing(
     invoices: Sequence[Union[InvoiceRecord, dict]],
     as_of_date: Optional[Union[date, str]] = None,
+    currency: str = "USD",
 ) -> ReceivablesAgeingResult:
     """Calculates deterministic AR aging schedule and debtor risk analysis.
 
@@ -240,7 +242,7 @@ def calculate_receivables_ageing(
     if overdue_ratio_pct > Decimal("50.00") or over_90_pct > Decimal("25.00"):
         risk_tier = "CRITICAL"
         summary_advisory = (
-            f"CRITICAL COLLECTION DELAYS: {overdue_ratio_pct}% of total AR (${total_overdue:,.2f}) is past due, "
+            f"CRITICAL COLLECTION DELAYS: {overdue_ratio_pct}% of total AR ({format_money(total_overdue, currency)}) is past due, "
             f"with {over_90_pct}% severely delinquent (>90 days). Immediate escalation required."
         )
     elif overdue_ratio_pct > Decimal("30.00") or over_90_pct > Decimal("10.00"):
@@ -267,14 +269,14 @@ def calculate_receivables_ageing(
     if top_debtors and top_debtors[0].overdue_amount > Decimal("0.00"):
         lead_debtor = top_debtors[0]
         actions.append(
-            f"Prioritize collection on {lead_debtor.customer_name}: ${lead_debtor.overdue_amount:,.2f} overdue "
+            f"Prioritize collection on {lead_debtor.customer_name}: {format_money(lead_debtor.overdue_amount, currency)} overdue "
             f"({lead_debtor.max_days_overdue}d past due, oldest invoice {lead_debtor.oldest_unpaid_invoice})."
         )
 
     if over_90_pct > Decimal("0.00"):
         actions.append(
             f"Issue formal demand letters and place credit holds on accounts in the 90+ days bucket "
-            f"(${bucket_amounts['OVER_90']:,.2f} at default risk)."
+            f"({format_money(bucket_amounts['OVER_90'], currency)} at default risk)."
         )
 
     if top_1_concentration > Decimal("35.00") and largest_debtor:
@@ -285,7 +287,7 @@ def calculate_receivables_ageing(
 
     if current_amount > Decimal("10000.00") and overdue_ratio_pct > Decimal("20.00"):
         actions.append(
-            f"Consider receivables factoring or asset-based advance on current AR (${current_amount:,.2f}) "
+            f"Consider receivables factoring or asset-based advance on current AR ({format_money(current_amount, currency)}) "
             f"to bridge cash shortfall without waiting on overdue debtors."
         )
 

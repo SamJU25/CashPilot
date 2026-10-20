@@ -12,6 +12,7 @@ from decimal import Decimal, ROUND_HALF_UP
 from typing import Any, Dict, Optional, Sequence, Union
 
 from services.calculations.cash_analysis import calculate_cash_analysis
+from services.calculations.currency_registry import format_money
 from services.calculations.cash_scenario import calculate_cash_scenario as calc_cash_scenario
 from services.calculations.outflow_breakdown import calculate_outflow_breakdown
 from services.calculations.predictive_cash import calculate_predictive_cash
@@ -166,6 +167,7 @@ def tool_analyze_cash_flow(
         declared_daily_burn=declared_burn_applies(meta, ingestion.accepted_rows),
     )
     prediction = calculate_predictive_cash(
+        currency=result.currency,
         current_balance=result.current_balance,
         average_daily_burn=result.average_daily_burn,
         rows=ingestion.accepted_rows,
@@ -248,6 +250,7 @@ def tool_run_cash_scenario(
     ingestion = parse_bank_csv(_normalize_statement_bytes(csv_content))
     base = calculate_cash_analysis(ingestion.accepted_rows, ingestion.rejected_rows, alert_threshold_days=30)
     res = calc_cash_scenario(
+        currency=ingestion.currency,
         current_balance=base.current_balance,
         net_period_change=base.net_period_change,
         gross_inflows=base.gross_inflows,
@@ -336,8 +339,11 @@ def tool_analyze_receivables_ageing(
         parsed_records = ingest_res.accepted_invoices
     else:
         parsed_records = list(raw_invoices)
+        ingest_res = None
 
-    res = calculate_receivables_ageing(parsed_records, as_of_date=as_of_date)
+    res = calculate_receivables_ageing(
+        parsed_records, as_of_date=as_of_date, currency=ingest_res.currency if ingest_res else "USD"
+    )
 
     return {
         "as_of_date": res.as_of_date.isoformat(),
@@ -645,6 +651,7 @@ def tool_calculate_prudent_debt_capacity(
     term_years: int = 2,
     existing_annual_debt_service: Any = "0.00",
     ebitda: Optional[Any] = None,
+    currency: str = "USD",
 ) -> Dict[str, Any]:
     """Calculate maximum prudent borrowing limit without violating DSCR and leverage covenants."""
     noi = _to_decimal(net_operating_income)
@@ -670,7 +677,7 @@ def tool_calculate_prudent_debt_capacity(
         "existing_annual_debt_service": _format_money(service),
         "ebitda": _format_money(eb) if eb is not None else None,
         "maximum_prudent_debt_capacity": _format_money(cap),
-        "advisory_summary": f"Maximum prudent borrowing capacity capped at ${_format_money(cap)} to preserve a {dscr_val}x DSCR covenant.",
+        "advisory_summary": f"Maximum prudent borrowing capacity capped at {format_money(cap, currency)} to preserve a {dscr_val}x DSCR covenant.",
     }
 
 
@@ -679,6 +686,7 @@ def tool_calculate_wcr(
     inventory: Any,
     accounts_payable: Any,
     annual_revenue: Optional[Any] = None,
+    currency: str = "USD",
 ) -> Dict[str, Any]:
     """Calculate Working Capital Requirement (WCR = AR + Inventory - AP)."""
     ar = _to_decimal(accounts_receivable)
@@ -686,7 +694,7 @@ def tool_calculate_wcr(
     ap = _to_decimal(accounts_payable)
     rev = _to_decimal(annual_revenue) if annual_revenue is not None else None
     wcr, days, status = calc_wcr(ar, inv, ap, annual_revenue=rev)
-    rationale = f"Net working capital requirement is ${_format_money(wcr)} ({status})."
+    rationale = f"Net working capital requirement is {format_money(wcr, currency)} ({status})."
     return {
         "accounts_receivable": _format_money(ar),
         "inventory": _format_money(inv),
@@ -719,6 +727,7 @@ def tool_calculate_break_even_units(
     fixed_costs: Any,
     unit_selling_price: Any,
     unit_variable_cost: Any,
+    currency: str = "USD",
 ) -> Dict[str, Any]:
     """Calculate Break-Even Volume in physical units and unit contribution margin."""
     fc = _to_decimal(fixed_costs)
@@ -726,7 +735,7 @@ def tool_calculate_break_even_units(
     vc = _to_decimal(unit_variable_cost)
     be_units = calc_be_units(fc, p, vc)
     unit_cm = p - vc
-    assessment = f"Must sell {int(be_units):,} units at ${_format_money(p)} to fully cover ${_format_money(fc)} fixed overhead."
+    assessment = f"Must sell {int(be_units):,} units at {format_money(p, currency)} to fully cover {format_money(fc, currency)} fixed overhead."
     return {
         "fixed_costs": _format_money(fc),
         "unit_selling_price": _format_money(p),
@@ -741,12 +750,13 @@ def tool_calculate_revenue_attrition_impact(
     current_annual_revenue: Any,
     current_annual_burn: Any,
     lost_client_annual_revenue: Any,
+    currency: str = "USD",
 ) -> Dict[str, Any]:
     """Assess cash flow and burn expansion impact if a major customer churns."""
     rev = _to_decimal(current_annual_revenue)
     burn = _to_decimal(current_annual_burn)
     lost = _to_decimal(lost_client_annual_revenue)
-    res = calc_client_churn(rev, burn, lost)
+    res = calc_client_churn(rev, burn, lost, currency=currency)
     return {
         "current_annual_revenue": _format_money(rev),
         "current_annual_burn": _format_money(burn),
@@ -829,6 +839,7 @@ def tool_calculate_predictive_cash(
     """Projects cash balance and identifies deficit points over custom horizons."""
     cf = tool_analyze_cash_flow(csv_content, target_horizon_days=forecast_horizon_days)
     return {
+        "currency": cf["currency"],
         "severity": cf.get("deficit_severity", "SAFE"),
         "projected_shortfall": cf.get("projected_shortfall_amount", "0.00"),
         "shortfall_date": cf.get("projected_deficit_date"),
@@ -942,6 +953,7 @@ def tool_calculate_cash_drag(
     benchmark_annual_yield_pct: Any = "4.50",
     target_reserve_months: Any = "2.0",
     explicit_reserve_target: Optional[Any] = None,
+    currency: str = "USD",
 ) -> Dict[str, Any]:
     """Calculate Treasury Cash Drag opportunity cost and idle cash yield loss against money market benchmarks."""
     cb = _to_decimal(current_balance)
@@ -955,6 +967,7 @@ def tool_calculate_cash_drag(
         benchmark_annual_yield_pct=yield_pct,
         target_reserve_months=reserve_months,
         explicit_reserve_target=explicit_res,
+        currency=currency,
     )
 
 
@@ -985,6 +998,7 @@ def tool_calculate_lease_vs_buy(
     corporate_tax_rate_pct: Any = "21.0",
     estimated_salvage_value: Any = "0.00",
     annual_maintenance_if_bought: Any = "0.00",
+    currency: str = "USD",
 ) -> Dict[str, Any]:
     """Evaluate equipment Lease vs. Buy Net Present Value (NPV) comparing after-tax cash flows and depreciation tax shields."""
     price = _to_decimal(purchase_price)
@@ -1001,6 +1015,7 @@ def tool_calculate_lease_vs_buy(
         corporate_tax_rate_pct=tax_rate,
         estimated_salvage_value=salvage,
         annual_maintenance_if_bought=maint,
+        currency=currency,
     )
 
 
@@ -1029,12 +1044,14 @@ def tool_calculate_net_debt_to_ebitda(
     total_debt: Any,
     cash_and_equivalents: Any,
     ebitda: Any,
+    currency: str = "USD",
 ) -> Dict[str, Any]:
     """Calculate Net Debt to EBITDA leverage ratio and benchmark credit risk."""
     return calc_net_debt_to_ebitda(
         total_debt=_to_decimal(total_debt),
         cash_and_equivalents=_to_decimal(cash_and_equivalents),
         ebitda=_to_decimal(ebitda),
+        currency=currency,
     )
 
 
@@ -1070,11 +1087,13 @@ def tool_calculate_roic(
 def tool_calculate_roa(
     net_income: Any,
     total_assets: Any,
+    currency: str = "USD",
 ) -> Dict[str, Any]:
     """Calculate Return on Assets (ROA) evaluating net earnings efficiency per balance sheet asset dollar."""
     return calc_roa(
         net_income=_to_decimal(net_income),
         total_assets=_to_decimal(total_assets),
+        currency=currency,
     )
 
 
@@ -1084,6 +1103,7 @@ def tool_calculate_eva(
     wacc_pct: Any = "9.00",
     tax_rate_pct: Any = "21.00",
     nopat: Optional[Any] = None,
+    currency: str = "USD",
 ) -> Dict[str, Any]:
     """Calculate Economic Value Added (EVA) measuring surplus economic profit generated above cost of capital."""
     return calc_eva(
@@ -1091,6 +1111,7 @@ def tool_calculate_eva(
         invested_capital=_to_decimal(invested_capital),
         wacc_pct=_to_decimal(wacc_pct) if wacc_pct is not None else Decimal("9.00"),
         corporate_tax_rate_pct=_to_decimal(tax_rate_pct) if tax_rate_pct is not None else Decimal("21.00"),
+        currency=currency,
     )
 
 
@@ -1100,6 +1121,7 @@ def tool_calculate_free_cash_flow(
     interest_expense: Any = "0.00",
     tax_rate_pct: Any = "21.00",
     net_debt_issued: Any = "0.00",
+    currency: str = "USD",
 ) -> Dict[str, Any]:
     """Calculate Free Cash Flow to Firm (FCFF) and Free Cash Flow to Equity (FCFE)."""
     return calc_free_cash_flow(
@@ -1108,6 +1130,7 @@ def tool_calculate_free_cash_flow(
         interest_expense=_to_decimal(interest_expense) if interest_expense is not None else Decimal("0.00"),
         corporate_tax_rate_pct=_to_decimal(tax_rate_pct) if tax_rate_pct is not None else Decimal("21.00"),
         net_debt_issued=_to_decimal(net_debt_issued) if net_debt_issued is not None else Decimal("0.00"),
+        currency=currency,
     )
 
 
@@ -1134,6 +1157,7 @@ def tool_calculate_enterprise_value(
     cash_and_equivalents: Any,
     ebitda: Optional[Any] = None,
     revenue: Optional[Any] = None,
+    currency: str = "USD",
 ) -> Dict[str, Any]:
     """Calculate Enterprise Value (EV) and valuation multiples (EV/EBITDA, EV/Revenue)."""
     return calc_ev_multiples(
@@ -1142,6 +1166,7 @@ def tool_calculate_enterprise_value(
         cash_and_equivalents=_to_decimal(cash_and_equivalents),
         ebitda=_to_decimal(ebitda) if ebitda is not None else None,
         revenue=_to_decimal(revenue) if revenue is not None else None,
+        currency=currency,
     )
 
 
@@ -1151,6 +1176,7 @@ def tool_calculate_dcf_valuation(
     perpetual_growth_rate_pct: Any = "2.50",
     total_debt: Any = "0.00",
     cash_and_equivalents: Any = "0.00",
+    currency: str = "USD",
 ) -> Dict[str, Any]:
     """Perform Discounted Cash Flow (DCF) enterprise valuation with Gordon Growth perpetual terminal value."""
     flows = [_to_decimal(f) for f in projected_cash_flows]
@@ -1160,6 +1186,7 @@ def tool_calculate_dcf_valuation(
         terminal_growth_rate_pct=_to_decimal(perpetual_growth_rate_pct) if perpetual_growth_rate_pct is not None else Decimal("2.50"),
         total_debt=_to_decimal(total_debt) if total_debt is not None else Decimal("0.00"),
         cash_and_equivalents=_to_decimal(cash_and_equivalents) if cash_and_equivalents is not None else Decimal("0.00"),
+        currency=currency,
     )
 
 
@@ -1170,10 +1197,11 @@ def tool_calculate_ltv_cac(
     cac: Any = None,
     period: str = "ANNUAL",
     ltv: Any = None,
+    currency: str = "USD",
 ) -> Dict[str, Any]:
     """Calculate Customer Lifetime Value (LTV) and LTV to CAC Ratio for subscription and recurring SME business models."""
     if ltv is not None:
-        return calc_ltv_cac(cac=_to_decimal(cac), lifetime_value=_to_decimal(ltv))
+        return calc_ltv_cac(cac=_to_decimal(cac), lifetime_value=_to_decimal(ltv), currency=currency)
     arpu_dec = _to_decimal(arpu)
     if period.upper() == "MONTHLY":
         annual_arpu = arpu_dec * Decimal("12")
@@ -1184,6 +1212,7 @@ def tool_calculate_ltv_cac(
         gross_margin_pct=_to_decimal(gross_margin_pct),
         annual_churn_rate_pct=_to_decimal(churn_rate_pct),
         cac=_to_decimal(cac),
+        currency=currency,
     )
 
 
@@ -1206,6 +1235,7 @@ def tool_calculate_nrr(
     contraction_mrr: Any = "0.00",
     churn_mrr: Any = "0.00",
     period: str = "ANNUAL",
+    currency: str = "USD",
 ) -> Dict[str, Any]:
     """Calculate Net Revenue Retention (NRR) and Gross Revenue Retention (GRR) cohorts."""
     return calc_nrr(
@@ -1213,6 +1243,7 @@ def tool_calculate_nrr(
         expansion_arr=_to_decimal(expansion_mrr) if expansion_mrr is not None else Decimal("0.00"),
         contraction_arr=_to_decimal(contraction_mrr) if contraction_mrr is not None else Decimal("0.00"),
         churn_arr=_to_decimal(churn_mrr) if churn_mrr is not None else Decimal("0.00"),
+        currency=currency,
     )
 
 
