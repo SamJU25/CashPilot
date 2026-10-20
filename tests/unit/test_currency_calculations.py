@@ -256,8 +256,7 @@ def test_eur_statement_subagent_figures_quote_euros():
 @pytest.mark.parametrize("message", [
     "Should I worry about a cash deficit?",
     "What financial advice do you have for my business?",
-    # shortcut: the scenario extractor only reads "$" amounts, so a "€" amount here is asked for again.
-    "What if Apex Logistics delays their $3,000 invoice by 21 days?",
+    "What if Apex Logistics delays their €3,000 invoice by 21 days?",
 ])
 def test_eur_statement_rationale_and_policy_text_quote_euros(message):
     from services.agent.supervisor import run_copilot_supervisor
@@ -285,3 +284,18 @@ def test_format_money_uses_decimal_and_currency_symbol():
     assert format_money(Decimal("-0.125"), "USD") == "$-0.12"
     assert format_money("7", "CHF") == "CHF 7.00"
     assert format_money("100", None) == "$100.00"
+
+
+@pytest.mark.parametrize("text, expected", [
+    ("delays their €3,000 invoice", ["3,000"]),
+    ("a 3,000 EUR invoice", ["3,000"]),
+    ("৳ 50k new cost and ₹1,20,000 loan", ["50k", "1,20,000"]),
+    ("$2k monthly", ["2k"]),
+    ("for 3000 days", []),
+])
+def test_currency_amounts_reads_any_symbol_or_iso_code(text, expected):
+    from services.agent.param_extractor import currency_amounts, parse_numeric_token
+
+    assert currency_amounts(text) == expected
+    if expected:
+        assert parse_numeric_token(expected[-1]) > 0
