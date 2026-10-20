@@ -133,7 +133,7 @@ class RiskManagerSubagent:
             vc = p_dict["unit_variable_cost"]
 
             if fc is not None and price is not None and vc is not None:
-                res = tool_calculate_break_even_units(fixed_costs=fc, unit_selling_price=price, unit_variable_cost=vc)
+                res = tool_calculate_break_even_units(fixed_costs=fc, unit_selling_price=price, unit_variable_cost=vc, currency=currency)
                 base_reply = (
                     f"### Break-Even Unit Volume Analysis\n\n"
                     f"- **Fixed Operating Overhead**: {format_money(res['fixed_costs'], currency)}\n"
@@ -219,6 +219,7 @@ class RiskManagerSubagent:
                     current_annual_revenue=rev,
                     current_annual_burn=burn,
                     lost_client_annual_revenue=lost,
+                    currency=currency,
                 )
                 base_reply = (
                     f"### Client Revenue Attrition & Cash Flow Stress Test\n\n"
@@ -341,6 +342,7 @@ class RiskManagerSubagent:
                 res = tool_calculate_roa(
                     net_income=ni,
                     total_assets=assets,
+                    currency=currency,
                 )
                 roa_val = res.get("roa_pct") or res.get("roa_percent") or "0.00"
                 tier_val = res.get("tier") or "UNKNOWN"
@@ -381,6 +383,7 @@ class RiskManagerSubagent:
                     wacc_pct=wacc,
                     tax_rate_pct=tax_rate,
                     nopat=nopat,
+                    currency=currency,
                 )
                 eva_val = res.get("eva_dollars") or res.get("economic_value_added") or "0.00"
                 rec_val = res.get("recommendation") or res.get("interpretation") or ""
@@ -418,7 +421,7 @@ class RiskManagerSubagent:
             ltv = p_dict.get("ltv")
 
             if ltv is not None and cac is not None:
-                res = tool_calculate_ltv_cac(ltv=ltv, cac=cac)
+                res = tool_calculate_ltv_cac(ltv=ltv, cac=cac, currency=currency)
                 base_reply = (
                     f"### LTV to CAC Audit\n\n"
                     f"- **Customer Lifetime Value (LTV)**: {format_money(res['lifetime_value'], currency)}\n"
@@ -440,6 +443,7 @@ class RiskManagerSubagent:
                     churn_rate_pct=churn,
                     cac=cac,
                     period=period,
+                    currency=currency,
                 )
                 arpu_val = res.get("annual_arpu") or res.get("arpu") or "0.00"
                 ltv_val = res.get("lifetime_value") or res.get("customer_lifetime_value") or "0.00"
@@ -527,6 +531,7 @@ class RiskManagerSubagent:
                     contraction_mrr=con_rev,
                     churn_mrr=churn_rev,
                     period=period,
+                    currency=currency,
                 )
                 start_val = res.get("starting_arr") or res.get("starting_revenue") or "0.00"
                 exp_val = res.get("expansion_arr") or res.get("expansion_revenue") or "0.00"

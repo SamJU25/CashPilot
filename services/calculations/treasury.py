@@ -10,6 +10,7 @@ from __future__ import annotations
 
 from decimal import Decimal, ROUND_HALF_UP
 from typing import Any, Dict, Optional
+from services.calculations.currency_registry import format_money
 
 
 def calculate_cash_drag(
@@ -18,6 +19,7 @@ def calculate_cash_drag(
     benchmark_annual_yield_pct: Decimal = Decimal("4.50"),
     target_reserve_months: Decimal = Decimal("2.0"),
     explicit_reserve_target: Optional[Decimal] = None,
+    currency: str = "USD",
 ) -> Dict[str, Any]:
     """Calculate idle cash and annualized yield loss from uninvested commercial checking reserves.
 
@@ -83,16 +85,16 @@ def calculate_cash_drag(
     decision_res = DecisionEngineRegistry.get_instance().evaluate(decision_req)
     status = decision_res.selected_choice
     raw_rationale = decision_res.output_payload.get("rationale") or decision_res.rationale or (
-        f"Annual cash drag of ${annual_yield_loss:,.2f} evaluated under treasury liquidity policy."
+        f"Annual cash drag of {format_money(annual_yield_loss, currency)} evaluated under treasury liquidity policy."
     )
     if "{value}" in raw_rationale:
-        raw_rationale = raw_rationale.replace("{value}", f"{annual_yield_loss:,.2f}")
+        raw_rationale = raw_rationale.replace("{value}", format_money(annual_yield_loss, currency))
 
     cfo_recommendation = raw_rationale
     if idle_cash > Decimal("0.00"):
         cfo_recommendation += (
-            f" Sweeping ${idle_cash:,.2f} in excess idle liquidity into a {benchmark_annual_yield_pct}% APY government "
-            f"money market sweep generates ${monthly_yield_loss:,.2f}/month in risk-free yield while retaining next-day operational liquidity."
+            f" Sweeping {format_money(idle_cash, currency)} in excess idle liquidity into a {benchmark_annual_yield_pct}% APY government "
+            f"money market sweep generates {format_money(monthly_yield_loss, currency)}/month in risk-free yield while retaining next-day operational liquidity."
         )
 
     return {

@@ -135,6 +135,7 @@ def calculate_client_churn_impact(
     current_annual_revenue: Decimal,
     current_annual_burn: Decimal,
     lost_client_annual_revenue: Decimal,
+    currency: str = "USD",
 ) -> Dict[str, Any]:
     """Assess cash flow and burn expansion impact if a major customer churns.
 
@@ -173,6 +174,7 @@ def calculate_client_churn_impact(
             "eval_churn": True,
             "lost_share": float(lost_share),
             "projected_annual_burn": float(projected_annual_burn),
+            "currency": currency,
         },
         execution_mode="DETERMINISTIC_ONLY",
     )

@@ -2,6 +2,7 @@ from decimal import Decimal
 import re
 from typing import Any, Dict, List, Optional
 
+from services.calculations.currency_registry import format_money
 from services.decision.base import AbstractDecisionEngine
 from services.decision.types import DecisionDomain, DecisionRequest, DecisionResult
 
@@ -292,15 +293,15 @@ class FallbackRuleAdapter(AbstractDecisionEngine):
         if days is None:
             severity = "SAFE"
             has_deficit = False
-            tpl = "HEALTHY LIQUIDITY: Operations solvent across all 90-day forecast windows. Projected 90-day reserve: ${d90}."
+            tpl = "HEALTHY LIQUIDITY: Operations solvent across all 90-day forecast windows. Projected 90-day reserve: {d90}."
         elif days <= 30:
             severity = "CRITICAL"
             has_deficit = True
-            tpl = "CRITICAL EARLY WARNING: Projected cash deficit in {days} days ({date}){trigger}. Estimated shortfall is ${shortfall}. Pre-emptive working capital draw of ${bridge} is recommended to prevent operational stoppage."
+            tpl = "CRITICAL EARLY WARNING: Projected cash deficit in {days} days ({date}){trigger}. Estimated shortfall is {shortfall}. Pre-emptive working capital draw of {bridge} is recommended to prevent operational stoppage."
         elif days <= 60:
             severity = "WARNING"
             has_deficit = True
-            tpl = "ELEVATED DEFICIT RISK: Cash burn trajectory indicates a shortfall in {days} days ({date}){trigger}. Projected deficit of ${shortfall} requires liquidity action within 30 days."
+            tpl = "ELEVATED DEFICIT RISK: Cash burn trajectory indicates a shortfall in {days} days ({date}){trigger}. Projected deficit of {shortfall} requires liquidity action within 30 days."
         else:
             severity = "WATCH"
             has_deficit = True
@@ -716,12 +717,12 @@ class FallbackRuleAdapter(AbstractDecisionEngine):
                 status = "EXCESSIVE_CASH_DRAG"
                 is_risk = True
                 rule_id = "fallback_cash_drag_high"
-                rationale = f"Excessive cash drag (annual yield loss: ${val}). Sweep surplus balances beyond operational reserve into institutional money market yield."
+                rationale = "Excessive cash drag (annual yield loss: {value}). Sweep surplus balances beyond operational reserve into institutional money market yield."
             elif val > Decimal("1000.0"):
                 status = "MODERATE_CASH_DRAG"
                 is_risk = False
                 rule_id = "fallback_cash_drag_moderate"
-                rationale = f"Moderate cash drag (annual yield loss: ${val}). Treasury yield optimization would generate meaningful risk-free interest."
+                rationale = "Moderate cash drag (annual yield loss: {value}). Treasury yield optimization would generate meaningful risk-free interest."
             else:
                 status = "OPTIMAL_TREASURY_ALLOCATION"
                 is_risk = False
@@ -979,7 +980,7 @@ class FallbackRuleAdapter(AbstractDecisionEngine):
             if burn_val > Decimal("0.00") or share_val >= Decimal("25.00"):
                 sev = "CRITICAL"
                 rec = (
-                    f"Loss of client creates an immediate annual operating deficit of ${burn_val:,.2f} "
+                    f"Loss of client creates an immediate annual operating deficit of {format_money(burn_val, state.get('currency'))} "
                     f"({share_val}% revenue loss). Secure bridge working capital or cut overhead immediately."
                 )
             elif share_val >= Decimal("15.00"):
@@ -1580,7 +1581,7 @@ class FallbackRuleAdapter(AbstractDecisionEngine):
             role = "AUTONOMOUS_CFO"
             target_subagent = "Supervisor"
             tone = "URGENT_LIQUIDITY_ACTION"
-            guidance = "Financial Health Assessment: Your cash status is {cash_status} with {runway_desc} of runway. A cash shortfall of ${shortfall} is projected on {date} due to {trigger}. Recommended action: Stage a working capital bridge facility of {bridge} to protect operating continuity."
+            guidance = "Financial Health Assessment: Your cash status is {cash_status} with {runway_desc} of runway. A cash shortfall of {shortfall} is projected on {date} due to {trigger}. Recommended action: Stage a working capital bridge facility of {bridge} to protect operating continuity."
             selected_choice = role
 
         elif pt == "ADVICE_WATCH":
@@ -1588,7 +1589,7 @@ class FallbackRuleAdapter(AbstractDecisionEngine):
             role = "AUTONOMOUS_CFO"
             target_subagent = "Supervisor"
             tone = "BOARDROOM_CAUTION"
-            guidance = "Financial Health Assessment: Your cash status is WATCH with {runway_desc} of runway. While current cash of ${balance} covers near-term needs, net daily outflows of ${burn}/day will deplete liquidity in approximately {runway_days} days. Recommended action: Accelerate invoice collections and evaluate a pre-qualified working capital credit line."
+            guidance = "Financial Health Assessment: Your cash status is WATCH with {runway_desc} of runway. While current cash of {balance} covers near-term needs, net daily outflows of {burn}/day will deplete liquidity in approximately {runway_days} days. Recommended action: Accelerate invoice collections and evaluate a pre-qualified working capital credit line."
             selected_choice = role
 
         elif pt == "ADVICE_HEALTHY":
@@ -1596,7 +1597,7 @@ class FallbackRuleAdapter(AbstractDecisionEngine):
             role = "AUTONOMOUS_CFO"
             target_subagent = "Supervisor"
             tone = "AFFIRMATIVE_STABILITY"
-            guidance = "Financial Health Assessment: Your cash status is HEALTHY with {runway_desc} of runway. Current balance of ${balance} provides strong operational buffer against daily burn."
+            guidance = "Financial Health Assessment: Your cash status is HEALTHY with {runway_desc} of runway. Current balance of {balance} provides strong operational buffer against daily burn."
             selected_choice = role
 
         elif pt == "DEFICIT_EARLY_WARNING":
@@ -1604,7 +1605,7 @@ class FallbackRuleAdapter(AbstractDecisionEngine):
             role = "AUTONOMOUS_CFO"
             target_subagent = "Supervisor"
             tone = "RISK_ALERT"
-            guidance = "Deficit Early-Warning: Projected shortfall of ${shortfall} in {days} days ({date}). Severity is {severity}. Primary driver: {trigger}."
+            guidance = "Deficit Early-Warning: Projected shortfall of {shortfall} in {days} days ({date}). Severity is {severity}. Primary driver: {trigger}."
             selected_choice = role
 
         elif pt == "DEFICIT_SAFE":

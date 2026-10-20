@@ -15,7 +15,7 @@ import re
 from decimal import Decimal, InvalidOperation
 from typing import Any, Dict, Optional
 
-from services.calculations.currency_registry import format_amount, format_money
+from services.calculations.currency_registry import format_money
 from services.agent.llm_bridge import mask_pii, query_external_llm
 from services.agent.local_slm import LocalSLMEngine, generate_local_reply
 from services.agent.local_transformers import LocalTransformersEngine
@@ -793,7 +793,7 @@ def run_copilot_supervisor(
                 headline = tmpl.format(
                     cash_status=cash_result["cash_status"],
                     runway_desc=runway_desc,
-                    shortfall=cash_result.get("projected_shortfall_amount", "0.00"),
+                    shortfall=format_money(cash_result.get("projected_shortfall_amount") or "0.00", currency),
                     date=cash_result.get("projected_deficit_date", "upcoming dates"),
                     trigger=cash_result.get("primary_deficit_trigger", "recurring commitments"),
                     bridge=bridge_text,
@@ -803,8 +803,8 @@ def run_copilot_supervisor(
                 headline = tmpl.format(
                     cash_status="WATCH",
                     runway_desc=runway_desc,
-                    balance=f"{format_amount(cash_result['current_balance'])}",
-                    burn=f"{format_amount(cash_result['average_daily_burn'])}",
+                    balance=format_money(cash_result['current_balance'], currency),
+                    burn=format_money(cash_result['average_daily_burn'], currency),
                     runway_days=cash_result["runway_days"],
                 )
             else:
@@ -812,14 +812,14 @@ def run_copilot_supervisor(
                 headline = tmpl.format(
                     cash_status="HEALTHY",
                     runway_desc=runway_desc,
-                    balance=f"{format_amount(cash_result['current_balance'])}",
+                    balance=format_money(cash_result['current_balance'], currency),
                 )
             reply = f"{headline}{pred_snippet}{target_snippet}{wc_snippet}"
         elif sub_intent == "DEFICIT":
             if cash_result.get("has_projected_deficit"):
                 tmpl = evaluate_persona_policy(prompt_type="DEFICIT_EARLY_WARNING").get("guidance_text", "")
                 headline = tmpl.format(
-                    shortfall=cash_result.get("projected_shortfall_amount", "0.00"),
+                    shortfall=format_money(cash_result.get("projected_shortfall_amount") or "0.00", currency),
                     days=cash_result.get("days_until_deficit", "N/A"),
                     date=cash_result.get("projected_deficit_date", "N/A"),
                     severity=cash_result.get("deficit_severity", "WARNING"),

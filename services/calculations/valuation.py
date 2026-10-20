@@ -36,6 +36,7 @@ from __future__ import annotations
 
 from decimal import Decimal, ROUND_HALF_UP
 from typing import Any, Dict, List, Optional
+from services.calculations.currency_registry import format_money
 
 
 def calculate_free_cash_flow(
@@ -44,6 +45,7 @@ def calculate_free_cash_flow(
     interest_expense: Decimal = Decimal("0.00"),
     net_debt_issued: Decimal = Decimal("0.00"),
     corporate_tax_rate_pct: Decimal = Decimal("21.00"),
+    currency: str = "USD",
 ) -> Dict[str, Any]:
     """Calculate Free Cash Flow to Firm (FCFF) and Free Cash Flow to Equity (FCFE).
 
@@ -81,19 +83,19 @@ def calculate_free_cash_flow(
     if fcff > Decimal("0.00") and fcfe > Decimal("0.00"):
         status = "STRONG_SELF_FUNDING"
         rationale = (
-            f"Strong self-funding profile. Operations generate ${fcff:,.2f} FCFF after CapEx and ${fcfe:,.2f} FCFE "
+            f"Strong self-funding profile. Operations generate {format_money(fcff, currency)} FCFF after CapEx and {format_money(fcfe, currency)} FCFE "
             "available for equity distributions or strategic acquisitions."
         )
     elif fcff > Decimal("0.00") and fcfe <= Decimal("0.00"):
         status = "DEBT_SERVICING_PRESSURE"
         rationale = (
-            f"Debt service pressure. While operations generate positive FCFF (${fcff:,.2f}), scheduled debt interest "
-            f"and repayments absorb all surplus, leaving zero or negative equity cash flow (${fcfe:,.2f})."
+            f"Debt service pressure. While operations generate positive FCFF ({format_money(fcff, currency)}), scheduled debt interest "
+            f"and repayments absorb all surplus, leaving zero or negative equity cash flow ({format_money(fcfe, currency)})."
         )
     else:
         status = "EXTERNAL_FINANCING_DEPENDENT"
         rationale = (
-            f"Cash deficit. Operating cash flow fails to cover capital investments (FCFF: ${fcff:,.2f}). "
+            f"Cash deficit. Operating cash flow fails to cover capital investments (FCFF: {format_money(fcff, currency)}). "
             "The business requires external credit lines or equity infusions to sustain ongoing operations."
         )
 
@@ -189,6 +191,7 @@ def calculate_enterprise_value_multiples(
     cash_and_equivalents: Decimal,
     ebitda: Optional[Decimal] = None,
     revenue: Optional[Decimal] = None,
+    currency: str = "USD",
 ) -> Dict[str, Any]:
     """Calculate Enterprise Value (EV) and valuation multiples (EV/EBITDA, EV/Revenue).
 
@@ -225,7 +228,7 @@ def calculate_enterprise_value_multiples(
         ev_rev_str = str(rev_multiple)
 
     rationale = (
-        f"Enterprise Value of ${ev:,.2f} (Net Debt: ${net_debt:,.2f}). "
+        f"Enterprise Value of {format_money(ev, currency)} (Net Debt: {format_money(net_debt, currency)}). "
         f"Valuation multiple: {ev_ebitda_str}x EBITDA ({tier}) and {ev_rev_str}x Revenue."
     )
 
@@ -248,6 +251,7 @@ def calculate_dcf_valuation(
     terminal_growth_rate_pct: Decimal = Decimal("2.50"),
     total_debt: Decimal = Decimal("0.00"),
     cash_and_equivalents: Decimal = Decimal("0.00"),
+    currency: str = "USD",
 ) -> Dict[str, Any]:
     """Calculate Discounted Cash Flow (DCF) enterprise and equity valuation with Gordon Growth Terminal Value.
 
@@ -305,9 +309,9 @@ def calculate_dcf_valuation(
     )
 
     rationale = (
-        f"DCF Fair Value: Implied Enterprise Value of ${enterprise_value:,.2f} "
-        f"(PV of {n}-yr cash flows: ${pv_fcfs:,.2f}, PV of Terminal Value: ${pv_terminal_value:,.2f}). "
-        f"After deducting net debt (${total_debt - cash_and_equivalents:,.2f}), implied Equity Value is ${equity_value:,.2f}."
+        f"DCF Fair Value: Implied Enterprise Value of {format_money(enterprise_value, currency)} "
+        f"(PV of {n}-yr cash flows: {format_money(pv_fcfs, currency)}, PV of Terminal Value: {format_money(pv_terminal_value, currency)}). "
+        f"After deducting net debt ({format_money(total_debt - cash_and_equivalents, currency)}), implied Equity Value is {format_money(equity_value, currency)}."
     )
 
     return {

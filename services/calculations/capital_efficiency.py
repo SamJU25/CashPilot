@@ -35,6 +35,7 @@ from __future__ import annotations
 
 from decimal import Decimal, ROUND_HALF_UP
 from typing import Any, Dict
+from services.calculations.currency_registry import format_money
 
 
 def calculate_roic(
@@ -136,6 +137,7 @@ def calculate_roic(
 def calculate_roa(
     net_income: Decimal,
     total_assets: Decimal,
+    currency: str = "USD",
 ) -> Dict[str, Any]:
     """Calculate Return on Assets (ROA = Net Income / Total Assets).
 
@@ -155,7 +157,7 @@ def calculate_roa(
 
     if roa_pct >= Decimal("10.00"):
         tier = "EXCELLENT_ROA"
-        rationale = f"Excellent asset productivity (ROA: {roa_pct}%). Business generates over $0.10 of net profit per dollar of assets."
+        rationale = f"Excellent asset productivity (ROA: {roa_pct}%). Business generates over {format_money("0.10", currency)} of net profit per {format_money("1", currency)} of assets."
     elif roa_pct >= Decimal("5.00"):
         tier = "HEALTHY_ROA"
         rationale = f"Healthy asset return (ROA: {roa_pct}%). Consistent with commercial industrial benchmarks (5-10%)."
@@ -192,6 +194,7 @@ def calculate_eva(
     invested_capital: Decimal,
     wacc_pct: Decimal = Decimal("9.00"),
     corporate_tax_rate_pct: Decimal = Decimal("21.00"),
+    currency: str = "USD",
 ) -> Dict[str, Any]:
     """Calculate Economic Value Added (EVA = NOPAT - (Invested Capital * WACC)).
 
@@ -221,17 +224,17 @@ def calculate_eva(
     if eva > Decimal("0.00"):
         status = "POSITIVE_EVA"
         rationale = (
-            f"Positive Economic Value Added (${eva:,.2f}). Operations generate a surplus after fully "
+            f"Positive Economic Value Added ({format_money(eva, currency)}). Operations generate a surplus after fully "
             f"compensating both debt holders and equity capital at a {wacc_pct}% hurdle rate."
         )
     elif eva == Decimal("0.00"):
         status = "BREAK_EVEN_EVA"
-        rationale = f"Break-even Economic Value Added ($0.00). Operations exactly meet the {wacc_pct}% cost of capital."
+        rationale = f"Break-even Economic Value Added ({format_money(0, currency)}). Operations exactly meet the {wacc_pct}% cost of capital."
     else:
         status = "NEGATIVE_EVA"
         rationale = (
-            f"Negative Economic Value Added (${abs(eva):,.2f} deficit). The business generated ${nopat:,.2f} NOPAT, "
-            f"failing to cover the ${capital_charge:,.2f} required capital charge at {wacc_pct}% WACC."
+            f"Negative Economic Value Added ({format_money(abs(eva), currency)} deficit). The business generated {format_money(nopat, currency)} NOPAT, "
+            f"failing to cover the {format_money(capital_charge, currency)} required capital charge at {wacc_pct}% WACC."
         )
 
     # GoRules JDM Decision Table Integration

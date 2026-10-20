@@ -406,7 +406,7 @@ async def analyze_invoices_csv(
             content={"error": {"code": "NO_VALID_INVOICES", "message": "No valid invoice rows found in CSV."}},
         )
 
-    res = calculate_receivables_ageing(ingestion.accepted_invoices, as_of_date=as_of_date)
+    res = calculate_receivables_ageing(ingestion.accepted_invoices, as_of_date=as_of_date, currency=ingestion.currency)
 
     if x_session_id:
         try:

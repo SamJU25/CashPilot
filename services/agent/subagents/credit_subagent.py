@@ -153,6 +153,7 @@ class CreditSubagent:
                     target_dscr=p_dict["max_dscr"],
                     annual_interest_rate_pct=p_dict["annual_interest_rate_pct"],
                     term_years=2,
+                    currency=currency,
                 )
                 base_reply = (
                     f"### Prudent Debt Capacity & Borrowing Limit\n\n"
@@ -413,6 +414,7 @@ class CreditSubagent:
                     corporate_tax_rate_pct=tax_rate,
                     estimated_salvage_value=salvage,
                     annual_maintenance_if_bought=maint,
+                    currency=currency,
                 )
                 base_reply = (
                     f"### Equipment Lease vs. Buy Net Present Value (NPV) Analysis\n\n"
@@ -500,6 +502,7 @@ class CreditSubagent:
                     total_debt=debt,
                     cash_and_equivalents=cash if cash is not None else Decimal("0.00"),
                     ebitda=ebitda,
+                    currency=currency,
                 )
                 ratio_val = res.get("net_debt_to_ebitda_ratio") or res.get("net_debt_to_ebitda") or "0.00"
                 tier_val = res.get("leverage_tier") or res.get("tier") or "UNKNOWN"
@@ -632,6 +635,7 @@ class CreditSubagent:
                     cash_and_equivalents=cash,
                     ebitda=ebitda,
                     revenue=rev,
+                    currency=currency,
                 )
                 multiples_lines = ""
                 if res.get("ev_to_ebitda") and res.get("ev_to_ebitda") != "N/A":
@@ -674,6 +678,7 @@ class CreditSubagent:
                     projected_cash_flows=flows,
                     wacc_discount_rate_pct=wacc,
                     perpetual_growth_rate_pct=g_rate,
+                    currency=currency,
                 )
                 flows_str = ", ".join(f"{format_money(f, currency, 0)}" for f in flows)
                 wacc_val = res.get("wacc_pct") or res.get("wacc_discount_rate_pct")

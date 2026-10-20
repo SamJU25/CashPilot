@@ -249,9 +249,33 @@ def test_eur_statement_subagent_figures_quote_euros():
 
     msg = "Calculate working capital requirement with accounts receivable 50000, inventory 20000 and accounts payable 30000"
     resp = run_copilot_supervisor(AgentChatRequest(message=msg, csv_content=EUR_STATEMENT))
-    # The calculator's own rationale sentence still says "$"; only the agent-formatted lines are checked.
-    assert "- **Inventory**: €20,000.00" in resp.reply
     assert "- **Net Working Capital Requirement**: €40,000.00" in resp.reply
+    assert "$" not in resp.reply
+
+
+@pytest.mark.parametrize("message", [
+    "Should I worry about a cash deficit?",
+    "What financial advice do you have for my business?",
+    # shortcut: the scenario extractor only reads "$" amounts, so a "€" amount here is asked for again.
+    "What if Apex Logistics delays their $3,000 invoice by 21 days?",
+])
+def test_eur_statement_rationale_and_policy_text_quote_euros(message):
+    from services.agent.supervisor import run_copilot_supervisor
+    from services.agent.schema import AgentChatRequest
+
+    resp = run_copilot_supervisor(AgentChatRequest(message=message, csv_content=EUR_STATEMENT))
+    assert "€" in resp.reply
+    assert "$" not in resp.reply
+
+
+def test_calculator_rationales_take_currency():
+    from services.calculations.treasury import calculate_cash_drag
+    from services.calculations.concentration_risk import calculate_client_churn_impact
+
+    drag = calculate_cash_drag(Decimal("900000"), monthly_burn=Decimal("20000"), currency="EUR")
+    churn = calculate_client_churn_impact(Decimal("300000"), Decimal("250000"), Decimal("80000"), currency="EUR")
+    for text in (drag["recommendation"], churn["recommendation"]):
+        assert "€" in text and "$" not in text
 
 
 def test_format_money_uses_decimal_and_currency_symbol():

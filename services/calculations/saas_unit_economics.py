@@ -36,6 +36,7 @@ from __future__ import annotations
 
 from decimal import Decimal, ROUND_HALF_UP
 from typing import Any, Dict, Optional
+from services.calculations.currency_registry import format_money
 
 
 def calculate_ltv_cac(
@@ -44,6 +45,7 @@ def calculate_ltv_cac(
     annual_churn_rate_pct: Optional[Decimal] = None,
     cac: Decimal = Decimal("0.00"),
     lifetime_value: Optional[Decimal] = None,
+    currency: str = "USD",
 ) -> Dict[str, Any]:
     """Calculate Customer Lifetime Value (LTV) and LTV/CAC ratio.
 
@@ -85,7 +87,7 @@ def calculate_ltv_cac(
     if ltv_cac_ratio >= Decimal("4.00"):
         tier = "CAPITAL_EFFICIENT_EXPANSION"
         rationale = (
-            f"Exceptional unit economics ({ltv_cac_ratio}x LTV/CAC). LTV of ${ltv:,.2f} versus ${cac:,.2f} CAC "
+            f"Exceptional unit economics ({ltv_cac_ratio}x LTV/CAC). LTV of {format_money(ltv, currency)} versus {format_money(cac, currency)} CAC "
             "justifies aggressive expansion of marketing and sales investment."
         )
     elif ltv_cac_ratio >= Decimal("3.00"):
@@ -104,7 +106,7 @@ def calculate_ltv_cac(
         tier = "UNSUSTAINABLE_CAC"
         rationale = (
             f"Unsustainable acquisition spend ({ltv_cac_ratio}x LTV/CAC < 1.5x minimum). "
-            f"Acquisition cost of ${cac:,.2f} absorbs nearly all ${ltv:,.2f} lifetime value. Refine sales channels or raise pricing."
+            f"Acquisition cost of {format_money(cac, currency)} absorbs nearly all {format_money(ltv, currency)} lifetime value. Refine sales channels or raise pricing."
         )
 
     # GoRules JDM Decision Table Integration
@@ -212,6 +214,7 @@ def calculate_net_revenue_retention(
     expansion_arr: Decimal,
     contraction_arr: Decimal,
     churn_arr: Decimal,
+    currency: str = "USD",
 ) -> Dict[str, Any]:
     """Calculate Net Revenue Retention (NRR) and Gross Revenue Retention (GRR).
 
@@ -247,8 +250,8 @@ def calculate_net_revenue_retention(
     if nrr_pct >= Decimal("120.00"):
         tier = "BEST_IN_CLASS_EXPANSION"
         rationale = (
-            f"Best-in-class Net Revenue Retention ({nrr_pct}% NRR). Account expansion (+${expansion_arr:,.2f}) "
-            "massively outpaces churn (-${churn_arr:,.2f}), driving compounding cohort revenue growth."
+            f"Best-in-class Net Revenue Retention ({nrr_pct}% NRR). Account expansion (+{format_money(expansion_arr, currency)}) "
+            f"massively outpaces churn (-{format_money(churn_arr, currency)}), driving compounding cohort revenue growth."
         )
     elif nrr_pct >= Decimal("105.00"):
         tier = "STRONG_NET_EXPANSION"

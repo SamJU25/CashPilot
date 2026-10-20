@@ -14,6 +14,7 @@ from typing import Optional, Sequence
 from services.calculations.cash_analysis import runway_days_for
 from services.calculations.predictive_cash import PredictiveDeficitResult, calculate_predictive_cash
 from services.ingestion.csv_parser import DemoTransaction
+from services.calculations.currency_registry import format_money
 
 SCENARIOS = ("INVOICE_DELAY", "COST_CUT", "NEW_EXPENSE", "REVENUE_DROP")
 # Same 30-day month the predictive engine uses for recurring obligations.
@@ -62,6 +63,7 @@ def calculate_cash_scenario(
     amount: Optional[Decimal] = None,
     percent: Optional[Decimal] = None,
     delay_days: Optional[int] = None,
+    currency: str = "USD",
 ) -> CashScenarioResult:
     """Reruns runway and deficit for one what-if change against the statement baseline.
 
@@ -74,7 +76,7 @@ def calculate_cash_scenario(
     net_daily = net_period_change / Decimal(period_days)
     baseline_burn = _burn(net_daily)
     baseline_runway = runway_days_for(current_balance, baseline_burn)
-    baseline_deficit = calculate_predictive_cash(current_balance, baseline_burn, rows)
+    baseline_deficit = calculate_predictive_cash(current_balance, baseline_burn, rows, currency=currency)
 
     balance_during_delay: Optional[Decimal] = None
     if scenario == "INVOICE_DELAY":
@@ -84,24 +86,24 @@ def calculate_cash_scenario(
         balance_during_delay = (current_balance - amount).quantize(CENT, rounding=ROUND_HALF_UP)
         runway_during = runway_days_for(balance_during_delay, scenario_burn)
         scenario_runway = runway_during if runway_during is not None and runway_during < delay_days else baseline_runway
-        scenario_deficit = calculate_predictive_cash(balance_during_delay, scenario_burn, rows, projection_days=delay_days)
+        scenario_deficit = calculate_predictive_cash(balance_during_delay, scenario_burn, rows, projection_days=delay_days, currency=currency)
         assumption = (
-            f"Assumes the ${amount:,.2f} invoice was due now and arrives {delay_days} days late, "
+            f"Assumes the {format_money(amount, currency)} invoice was due now and arrives {delay_days} days late, "
             "with all other cash flows following the statement average."
         )
     else:
         if scenario == "COST_CUT":
             net_daily += amount / DAYS_PER_MONTH
-            assumption = f"Assumes monthly outflows fall by ${amount:,.2f} from today."
+            assumption = f"Assumes monthly outflows fall by {format_money(amount, currency)} from today."
         elif scenario == "NEW_EXPENSE":
             net_daily -= amount / DAYS_PER_MONTH
-            assumption = f"Assumes a new ${amount:,.2f} monthly cost starts today."
+            assumption = f"Assumes a new {format_money(amount, currency)} monthly cost starts today."
         else:
             net_daily -= gross_inflows * percent / Decimal("100") / Decimal(period_days)
             assumption = f"Assumes customer inflows run {percent}% below the statement average while costs stay the same."
         scenario_burn = _burn(net_daily)
         scenario_runway = runway_days_for(current_balance, scenario_burn)
-        scenario_deficit = calculate_predictive_cash(current_balance, scenario_burn, rows)
+        scenario_deficit = calculate_predictive_cash(current_balance, scenario_burn, rows, currency=currency)
 
     change = None
     if baseline_runway is not None and scenario_runway is not None:

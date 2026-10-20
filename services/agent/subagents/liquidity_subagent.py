@@ -95,7 +95,7 @@ class LiquiditySubagent:
             ap = p_dict["accounts_payable"]
 
             if ar is not None and inv is not None and ap is not None:
-                res = tool_calculate_wcr(accounts_receivable=ar, inventory=inv, accounts_payable=ap)
+                res = tool_calculate_wcr(accounts_receivable=ar, inventory=inv, accounts_payable=ap, currency=currency)
                 base_reply = (
                     f"### Working Capital Requirement (WCR) Audit\n\n"
                     f"- **Accounts Receivable (AR)**: {format_money(res['accounts_receivable'], currency)}\n"
@@ -377,6 +377,7 @@ class LiquiditySubagent:
                     benchmark_annual_yield_pct=yield_pct,
                     target_reserve_months=reserve_mo,
                     explicit_reserve_target=explicit_res,
+                    currency=currency,
                 )
                 base_reply = (
                     f"### Treasury Cash Drag & Idle Liquidity Yield Audit\n\n"
@@ -428,6 +429,7 @@ class LiquiditySubagent:
                     interest_expense=interest,
                     tax_rate_pct=tax_rate,
                     net_debt_issued=net_debt,
+                    currency=currency,
                 )
                 capex_val = res.get("capex") or res.get("capital_expenditures") or "0.00"
                 fcff_val = res.get("fcff") or res.get("free_cash_flow_to_firm") or "0.00"
@@ -562,7 +564,7 @@ class LiquiditySubagent:
             stage = allow_staging and not is_question(request.message)
             res = tool_build_bridge_plan(effective_csv, invoices_csv=invoices_csv, stage=stage, tenant_id=request.tenant_id)
             if not res["has_shortfall"]:
-                base_reply = "### Bridge Financing Plan\n\n- **Projected Shortfall**: None within the forecast horizon\n- **Bridge Target**: $0.00"
+                base_reply = f"### Bridge Financing Plan\n\n- **Projected Shortfall**: None within the forecast horizon\n- **Bridge Target**: {format_money(0, currency)}"
                 return CopilotResponse(reply=enrich_fn(base_reply, prompt_type="diagnostic"), intent_detected="CASH_DIAGNOSTIC")
 
             leg_lines = "".join(
