@@ -79,8 +79,8 @@ checkpoint-*/
 
 # Local Assistant Caches & Training Datasets
 .claude/
-dataset/*
-!dataset/eval_set.jsonl
+dataset/
+
 
 
 
