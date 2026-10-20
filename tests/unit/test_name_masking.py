@@ -27,6 +27,12 @@ def test_all_caps_bank_description_keeps_transaction_words():
     assert out == "ACH PAYMENT [PARTY_1] 2026-10-02 4500.00"
 
 
+def test_accented_latin_names_and_ampersands_are_masked():
+    out, masker = _masked("Wire from José Müller to Smith & Sons; Café Lumière paid.")
+    assert "Müller" not in out and "Smith" not in out and "Lumière" not in out
+    assert masker.unmask(out) == "Wire from José Müller to Smith & Sons; Café Lumière paid."
+
+
 def test_same_name_in_other_casing_gets_the_same_placeholder():
     masker = NameMasker()
     masker.collect("Invoice from Northwind Foods")

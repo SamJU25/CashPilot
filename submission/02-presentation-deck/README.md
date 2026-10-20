@@ -50,7 +50,7 @@ We did not just design this; we attacked it. Our sandbox replay runs 34 operatio
 
 ### Slide 10 — Verified, not claimed
 
-Everything here is reproducible. 969 tests pass. The demo video drives the real UI against the live backend and the local model. When we upload a 94-transaction statement, the backend parses, scores and forecasts it in about a tenth of a second. Every claim in our documents points to a test, a log line or a file. (45 s)
+Everything here is reproducible. 970 tests pass. The demo video drives the real UI against the live backend and the local model. When we upload a 94-transaction statement, the backend parses, scores and forecasts it in about a tenth of a second. Every claim in our documents points to a test, a log line or a file. (45 s)
 
 ### Slide 11 — What is built today, and what comes next
 

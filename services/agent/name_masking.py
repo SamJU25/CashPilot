@@ -1,13 +1,15 @@
 """Reversible masking of counterparty and person names in text sent to cloud LLM providers.
 
-A name is a run of two or more capitalised words (Title Case or ALL CAPS, as bank descriptions use) that contains
+A name is a run of two or more capitalised words in any Latin-script alphabet (Title Case or ALL CAPS, as bank
+descriptions use; "José Müller" counts) that contains
 at least one word CashPilot itself never uses. CashPilot's vocabulary is harvested from its own prompt code,
 engine code, decision tables and knowledge cards, so prompt headings ("Executive Persona", "HEALTHY LIQUIDITY")
 and finance terms ("Daily Average Balance") stay readable while "Northwind Foods" or "JOHN SMITH" do not leave
 the machine. Each name becomes [PARTY_n] in every outgoing text; unmask() puts the real names back into the reply.
 
-shortcut: a lone capitalised word ("Sarah") and names built only from CashPilot's own words ("Capital Partners")
-are not masked; upgrade to an NER model if statements commonly carry those.
+shortcut: a lone capitalised word ("Sarah"), names built only from CashPilot's own words ("Capital Partners") and names
+in scripts without letter case (Chinese, Bengali, Devanagari) are not masked; upgrade to a multilingual NER model
+if statements commonly carry those.
 """
 
 from __future__ import annotations
@@ -32,8 +34,8 @@ _EXTRA_GENERIC = {
     "mon", "tue", "wed", "thu", "fri", "sat", "sun",
 }
 
-_WORD = r"(?:[A-Z][a-z]+(?:['\-][A-Za-z]+)*|[A-Z]{2,}(?:['\-][A-Z]+)*)"
-_RUN = re.compile(rf"\b{_WORD}(?:(?:\s+|\s*&\s*){_WORD}|\s+(?:Inc|Ltd|Co|LLC|LLP|PLC|GmbH|Corp)\.?)+\b")
+_TOKEN = re.compile(r"[^\W\d_]+(?:['’\-][^\W\d_]+)*\.?")
+_JOINER = re.compile(r"\s+|\s*&\s*")
 _PLACEHOLDER = re.compile(r"\[?PARTY_(\d+)\]?")
 
 
@@ -54,21 +56,40 @@ def generic_words() -> frozenset[str]:
     return frozenset(words - _EXAMPLE_NAMES)
 
 
-def _name_core(span: str) -> str | None:
+def _capitalised_runs(text: str) -> list[list[re.Match]]:
+    """Runs of two or more capitalised tokens (any Latin-script letters, e.g. "José Müller") joined by spaces or "&"."""
+    runs: list[list[re.Match]] = []
+    current: list[re.Match] = []
+    for tok in _TOKEN.finditer(text):
+        word = tok.group(0).rstrip(".")
+        capitalised = len(word) >= 2 and word[0].isupper()
+        joined = bool(current) and _JOINER.fullmatch(text[current[-1].end():tok.start()]) is not None
+        if capitalised and (joined or not current):
+            current.append(tok)
+            continue
+        if len(current) >= 2:
+            runs.append(current)
+        current = [tok] if capitalised else []
+    if len(current) >= 2:
+        runs.append(current)
+    return runs
+
+
+def _name_core(run: list[re.Match], text: str) -> str | None:
     # Only leading words are trimmed ("Is Acme Corp", "ACH PAYMENT NORTHWIND FOODS"); trailing words stay so a
     # name ending in a common word ("Northwind Foods") is masked whole.
-    tokens = span.split()
-    while tokens and _is_generic(tokens[0]):
+    tokens = list(run)
+    while tokens and _is_generic(tokens[0].group(0)):
         tokens.pop(0)
-    if all(_is_generic(t) for t in tokens):
+    if not tokens or all(_is_generic(t.group(0)) for t in tokens):
         return None
-    return " ".join(tokens)
+    return text[tokens[0].start():tokens[-1].end()].rstrip(".")
 
 
 def _is_generic(token: str) -> bool:
     # "&" and hyphenated words ("Anti-Slop") count as generic when every letter run is CashPilot vocabulary.
     generic = generic_words()
-    return all(part.lower() in generic for part in re.findall(r"[A-Za-z]+", token))
+    return all(part.lower() in generic for part in re.findall(r"[^\W\d_]+", token))
 
 
 class NameMasker:
@@ -78,8 +99,9 @@ class NameMasker:
         self.names: dict[str, str] = {}
 
     def collect(self, text: str | None) -> None:
-        for match in _RUN.finditer(text or ""):
-            name = _name_core(match.group(0))
+        text = text or ""
+        for run in _capitalised_runs(text):
+            name = _name_core(run, text)
             if name and name.lower() not in {n.lower() for n in self.names}:
                 self.names[name] = f"[PARTY_{len(self.names) + 1}]"
 

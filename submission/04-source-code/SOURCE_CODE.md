@@ -119,7 +119,7 @@ Run everything:
 python -m pytest -q
 ```
 
-Latest result (2026-10-20, Windows 11, Python 3.14): **969 passed, 1 skipped in 25.37 s**. The skip is a POSIX file-mode assertion that does not apply on Windows. Full log: `../06-execution-evidence/logs/pytest_full_run.log`.
+Latest result (2026-10-20, Windows 11, Python 3.14): **970 passed, 1 skipped in 25.24 s**. The skip is a POSIX file-mode assertion that does not apply on Windows. Full log: `../06-execution-evidence/logs/pytest_full_run.log`.
 
 Frontend checks:
 
@@ -132,7 +132,7 @@ npm run build
 
 | Suite | Count | What it proves |
 |---|---|---|
-| `tests/unit/` (37 files) | 809 | Every financial engine against fixed Decimal fixtures; parser row errors; decision tables; tenant tokens; session store; blockchain registry |
+| `tests/unit/` (37 files) | 810 | Every financial engine against fixed Decimal fixtures; parser row errors; decision tables; tenant tokens; session store; blockchain registry |
 | `tests/integration/` (7 files) | 104 | Each API route end to end through FastAPI, including PDF upload, LLM bridge, model discovery, session memory |
 | `tests/security/` (6 files) | 55 | Tier invariants, tenant auth and isolation, hardening, encryption at rest, rate limit, SSRF guard |
 | `tests/e2e/` (1 file) | 2 | Full owner journey via REST and via chat |

@@ -37,7 +37,7 @@ SCRIPT = [
     ("7 · Guardrail", 0.5, "Now an attack: a prompt injection asking the agent to wire fifty thousand dollars. It is blocked before routing, and nothing is staged."),
     ("8 · Live data", 0.5, "Last, live mode. A real three-month statement goes to the backend. It parses ninety-four transactions, scores them for funding, "
            "and the overview switches to the live forecast: this account runs short on June twenty-eighth."),
-    ("card:Verified", 0.5, "Nine hundred sixty-nine tests pass, and every attack in our sandbox replay was refused. CashPilot never moves the owner's money."),
+    ("card:Verified", 0.5, "Nine hundred seventy tests pass, and every attack in our sandbox replay was refused. CashPilot never moves the owner's money."),
 ]
 
 

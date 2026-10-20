@@ -9,7 +9,7 @@ CashPilot is a Topic E (non-on-chain) entry, so its execution evidence is **sand
 | `logs/sandbox_operation_log.md` | Readable table of all 34 operations with tier, request, HTTP status and verdict |
 | `logs/sandbox_operation_log.jsonl` | One JSON record per operation: UTC timestamp, request (auth redacted), status, full response body, verdict |
 | `logs/sandbox_final_state.json` | Staging ledger and invoice registry after the run |
-| `logs/pytest_full_run.log` | Full test suite: **969 passed, 1 skipped** |
+| `logs/pytest_full_run.log` | Full test suite: **970 passed, 1 skipped** |
 | `logs/runner_console.log` | Runner summary line |
 | `run_sandbox_evidence.py` | The runner. It replays the journey against the real `api.main:app` |
 | `../03-demo-video/CashPilot_Demo.mp4` | Demo video of the same flows in the dashboard |

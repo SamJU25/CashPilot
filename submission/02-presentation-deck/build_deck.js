@@ -221,7 +221,7 @@ s.addNotes("We did not just design this; we attacked it. Our sandbox replay runs
 // 10 · Evidence -----------------------------------------------------------------
 pres.addSection({ title: "Evidence" });
 s = content("Verified, not claimed", "Evidence");
-const stats = [["969", "automated tests passing", "unit 809 · integration 104 · security 54 (+1 skip) · e2e 2"], ["25", "Decimal finance engines", "money never touches float or the LLM"], ["15", "JSON policy tables", "credit, usury, covenants, security gate"], ["2:04", "demo video", "narrated · real UI, live backend, local model"]];
+const stats = [["970", "automated tests passing", "unit 810 · integration 104 · security 54 (+1 skip) · e2e 2"], ["25", "Decimal finance engines", "money never touches float or the LLM"], ["15", "JSON policy tables", "credit, usury, covenants, security gate"], ["2:04", "demo video", "narrated · real UI, live backend, local model"]];
 stats.forEach(([big, head, sub], i) => {
   const x = 0.6 + i * 3.07;
   card(s, x, 1.55, 2.87, 2.5);
@@ -236,7 +236,7 @@ T(s, [
   { text: "Sandbox logs record every request and response with UTC timestamps; tokens and keys are redacted", options: { bullet: true, breakLine: true } },
   { text: "Docker compose, CI container smoke test, MIT licence, one-command reproduction scripts", options: { bullet: true } },
 ], { x: 4.85, y: 4.9, w: 7.8, h: 1.9, fontSize: 15, color: SOFT, paraSpaceAfter: 8, valign: "top" });
-s.addNotes("Everything here is reproducible. 969 tests pass. The demo video drives the real UI against the live backend and the local model. When we upload a 94-transaction statement, the backend parses, scores and forecasts it in about a tenth of a second. Every claim in our documents points to a test, a log line or a file. (45 s)");
+s.addNotes("Everything here is reproducible. 970 tests pass. The demo video drives the real UI against the live backend and the local model. When we upload a 94-transaction statement, the backend parses, scores and forecasts it in about a tenth of a second. Every claim in our documents points to a test, a log line or a file. (45 s)");
 
 // 11 · Roadmap ------------------------------------------------------------------
 s = content("What is built today, and what comes next", "Evidence");

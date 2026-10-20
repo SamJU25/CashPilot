@@ -1,7 +1,7 @@
 # SME Finance Copilot: Master Security Architecture (`security.md`)
 
 - **Document Role**: Threat Modeling, Defense-in-Depth, Self-Healing & Decadal Security
-- **Status**: Active Security Architecture & Technical Contract (Verified Baseline: 969 Passed Tests, 1 Skipped)
+- **Status**: Active Security Architecture & Technical Contract (Verified Baseline: 970 Passed Tests, 1 Skipped)
 - **Date**: 2026-10-17
 - **Competition Target**: FinTechathon 2026 Track E (Tsinghua University PBCSF & WeBank)
 
@@ -158,7 +158,7 @@ When anomalies or process crashes occur, recovery executes across four automated
 
 ## 6. LLM Connection Security & Data Privacy
 
-1. **Pre-Flight PII Redaction**: `mask_pii` (`services/agent/llm_bridge.py`) replaces account numbers, IBANs, tax IDs, emails, phone numbers and API-key patterns with tags such as `[REDACTED_ACCOUNT]` and `[REDACTED_IBAN]` before text reaches a cloud model. `services/agent/name_masking.py` then replaces multi-word company and person names with `[PARTY_n]` in the system instruction, prompt and history, and restores them in the reply. Its stoplist is harvested from CashPilot's own prompts, engines, policy tables and knowledge cards, so prompt headings stay readable. One-word names are not detected; the default local model keeps all text on the machine.
+1. **Pre-Flight PII Redaction**: `mask_pii` (`services/agent/llm_bridge.py`) replaces account numbers, IBANs, tax IDs, emails, phone numbers and API-key patterns with tags such as `[REDACTED_ACCOUNT]` and `[REDACTED_IBAN]` before text reaches a cloud model. `services/agent/name_masking.py` then replaces multi-word company and person names with `[PARTY_n]` in the system instruction, prompt and history, and restores them in the reply. Its stoplist is harvested from CashPilot's own prompts, engines, policy tables and knowledge cards, so prompt headings stay readable. One-word names and names in scripts without letter case (Chinese, Bengali, Devanagari) are not detected; the default local model keeps all text on the machine.
 2. **Air-Gapped Local Inference Engine**: In local mode, `LocalTransformersEngine` runs foundation 2B (`openbmb/MiniCPM5-2B` under `models/base/`) directly via PyTorch CUDA, or connects to Ollama on `127.0.0.1:11434`. Zero internet packets leave the machine.
 3. **Cloud Provider Transport**: Cloud calls use each provider's HTTPS API. Data retention follows the provider's own policy; CashPilot does not set a no-retention flag, so owners who need zero retention should use the local model.
 4. **Encrypted Client Key Storage**: When custom API keys are used in the dashboard, they reside in client `localStorage` and are passed per-session via authenticated headers; they are never committed to disk on shared servers.

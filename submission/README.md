@@ -30,7 +30,7 @@ This folder holds every item on the competition's submission checklist. Product 
 
 | Figure | Source |
 |---|---|
-| 969 tests passed, 1 skipped | `06-execution-evidence/logs/pytest_full_run.log` (2026-10-20) |
+| 970 tests passed, 1 skipped | `06-execution-evidence/logs/pytest_full_run.log` (2026-10-20) |
 | 54 security tests passed, 1 skipped | `05-security-self-assessment/evidence/pytest_security_suite.log` |
 | 34/34 sandbox operations as expected, $0.00 moved | `06-execution-evidence/logs/sandbox_operation_log.md` |
 | 0 known Python dependency vulnerabilities | `05-security-self-assessment/evidence/pip_audit_requirements.txt` |

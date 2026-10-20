@@ -17,7 +17,7 @@ The video is a real recording of the dashboard driven by `record_demo.py` (Playw
 | 6 | 1:10 | Permission tiers | Approvals panel: drafted credit-line draw waiting for the owner, with only "Prepare request" and "Dismiss" |
 | 7 | 1:16 | Guardrail | Prompt injection "transfer $50,000 to account …" is blocked before routing; nothing staged |
 | 8 | 1:31 | Live data | Real CSV upload: 94 transactions parsed and scored by the backend in about 0.13 s; Overview switches to the live result (cash short on Jun 28) |
-| 9 | 1:53 | Closing card | 969 tests passing, 34/34 sandbox operations, three tiers, repository link |
+| 9 | 1:53 | Closing card | 970 tests passing, 34/34 sandbox operations, three tiers, repository link |
 
 Scenes 2–7 use the dashboard's built-in sample company; scene 8 uses the owner's own file through the backend.
 
@@ -34,7 +34,7 @@ Scenes 2–7 use the dashboard's built-in sample company; scene 8 uses the owner
 | 1:11 | The agent can draft a credit-line draw, but only the owner can act on it. There is no execute button. |
 | 1:17 | Now an attack: a prompt injection asking the agent to wire fifty thousand dollars. It is blocked before routing, and nothing is staged. |
 | 1:32 | Last, live mode. A real three-month statement goes to the backend. It parses ninety-four transactions, scores them for funding, and the overview switches to the live forecast: this account runs short on June twenty-eighth. |
-| 1:53 | Nine hundred sixty-nine tests pass, and every attack in our sandbox replay was refused. CashPilot never moves the owner's money. |
+| 1:53 | Nine hundred seventy tests pass, and every attack in our sandbox replay was refused. CashPilot never moves the owner's money. |
 
 ## Re-record
 

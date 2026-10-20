@@ -4,7 +4,7 @@
 **Theme:** AI as a Financial Participant  
 **Team:** Sampad Chakma ([@SamJU25](https://github.com/SamJU25)) · Purno Dewan ([@coderx86](https://github.com/coderx86)) · Binoy Kumar Chakma ([@binoy-kumar-changmha](https://github.com/binoy-kumar-changmha)) · Parban Chakma ([@Parban1527](https://github.com/Parban1527))  
 **Repository:** https://github.com/SamJU25/F-SME-Finance-Copilot  
-**Document version:** 1.0 (2026-10-20) · Verified against the submitted `main` branch and a fresh `pytest -q` run (969 passed, 1 skipped)  
+**Document version:** 1.0 (2026-10-20) · Verified against the submitted `main` branch and a fresh `pytest -q` run (970 passed, 1 skipped)  
 
 ---
 
@@ -251,7 +251,7 @@ Which action types are Tier 3 is itself a decision table (`security_gate_policy.
 
 - Pydantic v2 models with `extra="forbid"`: smuggled fields such as `execute_now` return 422; amounts must be positive integers of cents.
 - Upload size and PDF page limits before parsing.
-- PII masking before any text reaches a cloud LLM: account numbers, IBANs, tax IDs, emails, phone numbers and API keys are replaced with `[REDACTED_*]` tags (`mask_pii`), and multi-word company and person names with reversible `[PARTY_n]` placeholders (`services/agent/name_masking.py`). The names are restored in the reply, so the owner reads real names while the provider never receives them.
+- PII masking before any text reaches a cloud LLM: account numbers, IBANs, tax IDs, emails, phone numbers and API keys are replaced with `[REDACTED_*]` tags (`mask_pii`), and multi-word Latin-script company and person names with reversible `[PARTY_n]` placeholders (`services/agent/name_masking.py`). The names are restored in the reply, so the owner reads real names while the provider never receives them. One-word names and names in scripts without letter case are not detected yet.
 - SSRF guard on user-supplied LLM base URLs: blocks non-HTTP schemes, embedded credentials, loopback, private ranges and cloud metadata hosts.
 
 ### 5.4 Data at rest
@@ -333,12 +333,12 @@ CI (`.github/workflows/ci.yml`) runs the test suite, builds both container image
 
 | Suite | Tests | Covers |
 |---|---|---|
-| `tests/unit/` | 809 | Ingestion, Decimal math, underwriting, decision tables, session store |
+| `tests/unit/` | 810 | Ingestion, Decimal math, underwriting, decision tables, session store |
 | `tests/integration/` | 104 | API endpoints, LLM bridge, model discovery, action ledger, session memory |
 | `tests/security/` | 55 (1 POSIX-only skip on Windows) | Tier invariants, tenant auth, PII masking, tampering, hardening, encryption, rate limit, SSRF guard |
 | `tests/e2e/` | 2 | Statement upload → underwriting → staging → owner prepare, via REST and via chat |
 
-Latest run (2026-10-20, Windows 11, Python 3.14): **969 passed, 1 skipped in 25.37 s**. Log: `submission/06-execution-evidence/logs/pytest_full_run.log`.
+Latest run (2026-10-20, Windows 11, Python 3.14): **970 passed, 1 skipped in 25.24 s**. Log: `submission/06-execution-evidence/logs/pytest_full_run.log`.
 
 Sandbox evidence run: `python submission/06-execution-evidence/run_sandbox_evidence.py` replays the full operator journey (analysis, underwriting, chat, staging, cross-tenant probes, injection attempts, owner decisions, double pledge) against the real app and writes timestamped logs.
 
