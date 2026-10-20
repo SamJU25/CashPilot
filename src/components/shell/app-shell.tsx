@@ -19,11 +19,7 @@ import { Button } from '@/components/ui/button';
 import { spring } from '@/lib/motion';
 import { useIntents, useWorkspace } from '@/lib/workspace';
 import { cn } from '@/lib/utils';
-import { api } from '@/lib/api';
-import { providerName } from '@/lib/providers';
 import { useT, type Key } from '@/lib/i18n';
-import { LanguageMenu } from '@/components/shell/language-menu';
-import { ThemeSwitch } from '@/components/shell/theme-switch';
 import { CashPilotMark, Wordmark } from '@/components/shell/brand';
 
 
@@ -102,34 +98,11 @@ function NavLinks({ onNavigate, id = 'desktop' }: { onNavigate?: () => void; id?
 }
 
 function RailFooter() {
-  const { isLocal, provider, hasData, source } = useWorkspace();
   const { t } = useT();
   const pathname = usePathname();
-  const providerLabel = providerName(provider, t, true) ?? t('rail.notSet');
-  const [server, setServer] = useState<'checking' | 'online' | 'offline'>('checking');
-
-  // Rechecked every 30 s, so the owner sees the backend go down before an upload or a question fails.
-  useEffect(() => {
-    let alive = true;
-    const check = () =>
-      api
-        .health()
-        .then(() => alive && setServer('online'))
-        .catch(() => alive && setServer('offline'));
-    check();
-    const timer = window.setInterval(check, 30_000);
-    return () => {
-      alive = false;
-      window.clearInterval(timer);
-    };
-  }, []);
 
   return (
-    <div className="space-y-3 border-t pt-4">
-      <div className="flex items-center gap-1">
-        <LanguageMenu className="h-9 min-w-0 flex-1 rounded-md" />
-        <ThemeSwitch className="size-9 shrink-0" />
-      </div>
+    <div className="border-t pt-3">
       <Link
         href="/settings"
         prefetch={true}
@@ -141,30 +114,6 @@ function RailFooter() {
         <Settings2 className="size-4" aria-hidden />
         {t('nav.settings')}
       </Link>
-      <dl className="space-y-1.5 px-3 text-xs">
-        <div className="flex items-center justify-between gap-2">
-          <dt className="text-muted-foreground">{t('rail.running')}</dt>
-          <dd className="flex items-center gap-1.5">
-            <span className={cn('size-1.5 rounded-full', isLocal ? 'bg-good' : 'bg-series-1')} aria-hidden />
-            {isLocal ? t('rail.local') : t('rail.hosted')}
-          </dd>
-        </div>
-        <div className="flex items-center justify-between gap-2">
-          <dt className="text-muted-foreground">{t('rail.server')}</dt>
-          <dd className="flex items-center gap-1.5">
-            <span className={cn('size-1.5 rounded-full', server === 'online' ? 'bg-good' : server === 'offline' ? 'bg-critical' : 'bg-muted-foreground')} aria-hidden />
-            {t(`rail.${server}` as Key)}
-          </dd>
-        </div>
-        <div className="flex items-center justify-between gap-2">
-          <dt className="text-muted-foreground">{t('rail.model')}</dt>
-          <dd>{providerLabel}</dd>
-        </div>
-        <div className="flex items-center justify-between gap-2">
-          <dt className="text-muted-foreground">{t('rail.data')}</dt>
-          <dd>{!hasData ? t('rail.none') : source === 'live' ? t('rail.yours') : t('rail.sample')}</dd>
-        </div>
-      </dl>
     </div>
   );
 }
