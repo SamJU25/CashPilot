@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import logging
+from services.agent import trace
 from typing import Any, Dict, List, Optional, Tuple
 
 from services.decision.base import AbstractDecisionEngine
@@ -111,6 +112,26 @@ class DecisionEngineRegistry:
         Main entry point for consumers. Evaluates the request by reference,
         applying confidence thresholds and safe fallback chains.
         """
+        if not trace.active():
+            return self._evaluate(request)
+        start = trace.now_ms()
+        result = self._evaluate(request)
+        # Outcome only: the request's input_state can hold message text and statement figures.
+        trace.record(
+            "decision",
+            request.domain.value,
+            start,
+            trace.now_ms() - start,
+            engine=result.engine_id,
+            choice=result.selected_choice,
+            confidence=f"{result.confidence_score:.2f}",
+            threshold=f"{request.confidence_threshold:.2f}",
+            rule=result.matched_rule_id,
+            fallback=str(result.engine_id == self._fallback_adapter.engine_id).lower(),
+        )
+        return result
+
+    def _evaluate(self, request: DecisionRequest) -> DecisionResult:
         adapter = self.resolve_adapter(request)
 
         try:

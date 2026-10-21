@@ -68,11 +68,12 @@ export function RunwayGauge({ days, windowDays }: { days: number | null; windowD
 }
 
 /** Four headline figures, each with the small chart that shows how it got there. */
-export function KpiCards({ analysis: a, history }: { analysis: CashAnalysis; history: DailyPoint[] }) {
+export function KpiCards({ analysis: a, history, recorded }: { analysis: CashAnalysis; history: DailyPoint[]; recorded?: { inCents: number; outCents: number } | null }) {
   const { t } = useT();
   const weeks = weeklyNet(history).slice(-9);
-  const inCents = stringToCents(a.operational_inflows ?? a.gross_inflows ?? '0');
-  const outCents = stringToCents(a.operational_outflows ?? a.gross_outflows ?? '0');
+  // Typed-in figures carry only the latest entry's flows, so their totals come from the entries themselves.
+  const inCents = recorded?.inCents ?? stringToCents(a.operational_inflows ?? a.gross_inflows ?? '0');
+  const outCents = recorded?.outCents ?? stringToCents(a.operational_outflows ?? a.gross_outflows ?? '0');
   const transfers = formatMoney(a.internal_transfers_excluded ?? '0');
   const accounts = a.accounts_breakdown ? new Set(a.accounts_breakdown.map((x) => x.account_id)).size : 1;
   const net = inCents - outCents;
@@ -122,7 +123,7 @@ export function KpiCards({ analysis: a, history }: { analysis: CashAnalysis; his
         <div>
           {head(t('dash.inOut'), t('fig.inHow', { from: formatDate(a.start_date ?? a.end_date ?? ''), to: formatDate(a.end_date ?? '') }), t('fig.inFormula', { amount: transfers }))}
           <Money value={centsToString(net)} signed className={cn('mt-1 block font-display text-3xl font-semibold tracking-tight', net < 0 && 'text-critical-text')} />
-          <p className="text-xs text-muted-foreground">{t('fig.ownNote')}</p>
+          <p className="text-xs text-muted-foreground">{t(recorded ? 'dash.recordedNote' : 'fig.ownNote')}</p>
         </div>
         <CompareBars
           rows={[

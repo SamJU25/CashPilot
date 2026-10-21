@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from typing import Literal, List, Optional
+from services.agent.trace import TraceEvent
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 
@@ -267,3 +268,5 @@ class CopilotResponse(BaseModel):
     staged_action: Optional[AgentActionProposal] = None
     proposed_entry: Optional[ProposedEntry] = None
     session_id: Optional[str] = None
+    # What ran to produce this answer, for the workstation page; names, outcomes and timings only.
+    trace: List[TraceEvent] = Field(default_factory=list)

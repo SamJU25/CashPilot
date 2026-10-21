@@ -124,6 +124,27 @@
     to { background-position: -100% 0; }
   }
 
+  /* Workstation: a connector draws in, then a short burst of signal runs along it once. */
+  .wk-draw {
+    stroke-dasharray: 1;
+    animation: wk-draw ease-out forwards;
+  }
+  @keyframes wk-draw {
+    from { stroke-dashoffset: 1; }
+    to { stroke-dashoffset: 0; }
+  }
+  .wk-pulse {
+    opacity: 0;
+    offset-rotate: 0deg;
+    animation: wk-pulse cubic-bezier(0.45, 0, 0.25, 1) forwards;
+  }
+  @keyframes wk-pulse {
+    0% { offset-distance: 0%; opacity: 0; }
+    12% { opacity: 1; }
+    88% { opacity: 1; }
+    100% { offset-distance: 100%; opacity: 0; }
+  }
+
   .figures {
     font-variant-numeric: tabular-nums lining-nums;
   }

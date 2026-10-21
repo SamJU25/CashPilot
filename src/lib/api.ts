@@ -1,3 +1,4 @@
+import type { TraceEvent } from '@/lib/runs';
 import { DEFAULT_PROVIDER_MODELS } from '@/lib/providers';
 // Client for the FastAPI backend (api/routes/*). Every call carries this tab's session id, so uploads,
 // chat and drafted actions stay in one backend session. Money stays a decimal string end to end.
@@ -296,6 +297,8 @@ export interface ChatResponse {
   staged_action?: { intent_id: string; action_type: string; amount_cents: number; target_identifier: string; status: string } | null;
   proposed_entry?: ProposedEntry | null;
   session_id?: string | null;
+  /** What ran to produce the answer; drawn on the workstation page. */
+  trace?: TraceEvent[];
 }
 
 /** A cash entry the backend read from a chat message; recorded only when the owner confirms the card. */

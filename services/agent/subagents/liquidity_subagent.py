@@ -35,6 +35,7 @@ from services.agent.schema import (
     AgentMetricsSummary,
     CopilotResponse,
 )
+from services.agent.trace import traced_agent
 from services.agent.tools import (
     tool_analyze_cash_flow,
     tool_analyze_outflow_breakdown,
@@ -66,6 +67,7 @@ def _ratio_display(ratio: str) -> str:
     return "Not meaningful (no current liabilities)" if str(ratio) == "999.00" else f"{ratio}x"
 
 
+@traced_agent("liquidity")
 class LiquiditySubagent:
     """Specialist subagent for working capital, operational cash flows, and liquidity diagnostics."""
 

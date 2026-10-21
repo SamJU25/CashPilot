@@ -1434,3 +1434,11 @@ def tool_build_bridge_plan(
         "uncovered": _format_money(plan.uncovered),
         "staged": staged,
     }
+
+
+# Every tool_* call is recorded for the run trace; subagents import these names after this runs.
+from services.agent.trace import traced_tool as _traced_tool  # noqa: E402
+
+for _name, _fn in list(globals().items()):
+    if _name.startswith("tool_") and callable(_fn) and not getattr(_fn, "__traced__", False):
+        globals()[_name] = _traced_tool(_fn)

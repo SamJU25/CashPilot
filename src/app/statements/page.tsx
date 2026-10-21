@@ -61,6 +61,7 @@ import { useT, type Key } from "@/lib/i18n";
 import { ApiError, api } from "@/lib/api";
 
 import { QuickCashDialog } from "@/components/overview/quick-cash-dialog";
+import { EntriesLedger } from "@/components/overview/entries-ledger";
 
 import { ANALYSIS, FILES, SERIES, SPENDING, buildRuns } from "@/lib/mock/demo";
 
@@ -498,7 +499,7 @@ function LiveAnalyzing({
       for (const a of analysis.accounts_breakdown ?? [])
         names[a.account_id] ??= guessName(a.file_name);
 
-      setLive({ analysis, underwrite, receivables: undefined, intents: [] });
+      setLive({ analysis, underwrite, receivables: undefined, intents: [], entries: [] });
 
       update({
         hasData: true,
@@ -578,51 +579,20 @@ function LiveAnalyzing({
   );
 }
 
-const REASON_THEMES: Record<string, { bar: string }> = {
-  INVALID_DATE: { bar: "bg-warning" },
-  DUPLICATE_TRANSACTION_ID: { bar: "bg-series-4" },
-  INVALID_AMOUNT: { bar: "bg-critical" },
-  INVALID_ROW_SHAPE: { bar: "bg-serious" },
-  OUT_OF_ORDER_DATE: { bar: "bg-series-1" },
-};
-
-function contiguousSpans(files: FileSpan[]) {
-  if (!files.length) return [];
-
-  const sorted = [...files].sort((a, b) => a.start.localeCompare(b.start));
-
-  const merged: { start: string; end: string; files: string[] }[] = [];
-
-  for (const f of sorted) {
-    const last = merged[merged.length - 1];
-
-    if (last && shiftDay(last.end, 1) >= f.start) {
-      if (f.end > last.end) last.end = f.end;
-
-      last.files.push(f.file_name);
-    } else {
-      merged.push({ start: f.start, end: f.end, files: [f.file_name] });
-    }
-  }
-
-  return merged;
-}
-
 function AccountRow({
   id,
   files: allFiles,
-  range,
   analysis,
   history,
 }: {
   id: string;
   files: FileSpan[];
-  range: Range;
   analysis: CashAnalysis;
-  history: number[];
+  history: { date: string; cents: number }[];
 }) {
   const { accountNames, renameAccount } = useWorkspace();
   const { t, lang } = useT();
+  const manual = analysis.document_format === "MANUAL";
   const files = [...allFiles.filter((f) => f.account_id === id)].sort((a, b) =>
     (a.start || "").localeCompare(b.start || ""),
   );
@@ -630,15 +600,6 @@ function AccountRow({
     (a) => a.account_id === id,
   );
   const latest = summaries[summaries.length - 1];
-  const pct = (iso: string) => {
-    if (!iso || !range.days || isNaN(range.start)) return 0;
-    const parsed = Date.parse(iso);
-    if (isNaN(parsed)) return 0;
-    return Math.max(
-      0,
-      Math.min(100, ((parsed - range.start) / 86_400_000 / range.days) * 100),
-    );
-  };
 
   const missingGaps: { from: string; to: string; label: string }[] = [];
   for (let i = 0; i < files.length - 1; i++) {
@@ -669,19 +630,12 @@ function AccountRow({
   });
 
   const closing = latest?.closing_balance ?? analysis.current_balance;
-  // Month starts inside the statement range, as labels under the coverage bar.
-  const months: { iso: string; left: number }[] = [];
-  if (range.days > 0 && !isNaN(range.start)) {
-    const m = new Date(range.start);
-    m.setUTCDate(1);
-    for (let guard = 0; guard < 24; guard++) {
-      const left = pct(m.toISOString().slice(0, 10));
-      // A label starting in the last sliver would run off the card.
-      if (m.getTime() >= range.start && left < 92) months.push({ iso: m.toISOString().slice(0, 10), left });
-      m.setUTCMonth(m.getUTCMonth() + 1);
-      if (m.getTime() > range.start + range.days * 86_400_000) break;
-    }
-  }
+  // First point of each month, placed on the same index scale the chart draws with.
+  const months = history.flatMap((p, k) =>
+    k === 0 || p.date.slice(0, 7) !== history[k - 1].date.slice(0, 7)
+      ? [{ iso: p.date, left: (k / Math.max(1, history.length - 1)) * 100 }]
+      : [],
+  ).filter((m) => m.left < 92);
   const monthFmt = new Intl.DateTimeFormat(lang, { month: "short", timeZone: "UTC" });
 
   return (
@@ -705,7 +659,7 @@ function AccountRow({
             <Pencil className="pointer-events-none absolute right-2 size-3.5 text-muted-foreground/70 opacity-0 transition-opacity group-hover:opacity-100 group-focus-within:opacity-100" aria-hidden />
           </div>
           <p className="text-xs text-muted-foreground">
-            {t("count.files", { n: files.length })}, {t("count.tx", { n: txCount })}, {analysis.currency}
+            {manual ? t("st.enteredByYou") : `${t("count.files", { n: files.length })}, ${t("count.tx", { n: txCount })}`}, {analysis.currency}
           </p>
         </div>
         <div className="shrink-0 text-right">
@@ -714,93 +668,22 @@ function AccountRow({
         </div>
       </div>
 
-      {history.length > 1 && <MiniArea values={history} className="mt-4 h-14" label={t("st.balanceTrend", { name })} />}
-
-      <div className="mt-5">
-          <div
-            className="relative h-6 rounded bg-muted overflow-hidden"
-            aria-hidden
-          >
-            {contiguousSpans(files).map((span) => (
-              <div
-                key={span.start + span.end}
-
-                className="absolute inset-y-1 rounded-sm bg-primary/70 transition-all duration-300"
-
-                style={{
-                  left: `${pct(span.start)}%`,
-                  width: `${pct(span.end) - pct(span.start) + 100 / range.days}%`,
-                }}
-
-                title={`${span.files.join(", ")}: ${formatDate(span.start)} to ${formatDate(span.end)}`}
-              />
+      {history.length > 1 && (
+        <div className="mt-4">
+          <MiniArea values={history.map((p) => p.cents)} className="h-16" label={t("st.balanceTrend", { name })} />
+          <div className="relative mt-1.5 h-4 text-[11px] text-muted-foreground" aria-hidden>
+            {months.map((m) => (
+              <span key={m.iso} className="absolute whitespace-nowrap" style={{ left: `${m.left}%` }}>
+                {monthFmt.format(new Date(`${m.iso}T00:00:00Z`))}
+              </span>
             ))}
-
-            {/* Missing statement gap regions on timeline */}
-
-            {missingGaps.map((g) => {
-              const left = Math.max(0, Math.min(99, pct(g.from)));
-
-              const width = Math.max(
-                1.5,
-                Math.min(100 - left, pct(g.to) - pct(g.from) + 100 / range.days),
-              );
-
-              return (
-                <div
-                  key={g.from + g.to}
-
-                  className="absolute inset-y-1 rounded-xs border border-warning/40 bg-[repeating-linear-gradient(135deg,rgb(var(--warning)/0.22),rgb(var(--warning)/0.22)_3px,transparent_3px,transparent_6px)] transition-all z-10"
-
-                  style={{ left: `${left}%`, width: `${width}%` }}
-
-                  title={t("st.gapTitle", { range: g.label })}
-                >
-                  <span className="sr-only">{t("st.gapTitle", { range: g.label })}</span>
-                </div>
-              );
-            })}
-
-            {/* Precision vertical hairline ticks flush within the bar */}
-
-            {accountRejected.map((r) => {
-              const dateStr = r.suggested_fix?.posted_on;
-
-              if (!dateStr) return null;
-
-              const leftPct = Math.max(0.5, Math.min(99.5, pct(dateStr)));
-
-              const theme =
-                REASON_THEMES[r.reason_code] ?? REASON_THEMES.INVALID_DATE;
-
-              return (
-                <div
-                  key={r.row_number}
-
-                  className={cn(
-                    "absolute inset-y-1 w-[2.5px] -translate-x-1/2 z-20 rounded-[0.5px] cursor-pointer transition-all hover:w-[4px] hover:z-30",
-
-                    theme.bar,
-                  )}
-
-                  style={{ left: `${leftPct}%` }}
-
-                  title={t("st.flagTitle", { n: r.row_number, reason: t(`reason.${r.reason_code}` as Key), date: formatDate(dateStr) })}
-                >
-                  <span className="sr-only">{t("st.rowN", { n: r.row_number })}</span>
-                </div>
-              );
-            })}
           </div>
-        <div className="relative mt-1.5 h-4 text-[11px] text-muted-foreground" aria-hidden>
-          {months.map((m) => (
-            <span key={m.iso} className="absolute whitespace-nowrap" style={{ left: `${m.left}%` }}>
-              {monthFmt.format(new Date(`${m.iso}T00:00:00Z`))}
-            </span>
-          ))}
         </div>
-      </div>
+      )}
 
+      {manual ? (
+        <p className="mt-3 border-t pt-3 text-xs text-muted-foreground">{t("st.manualNote")}</p>
+      ) : (
       <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 border-t pt-3 text-xs">
         {gaps.length > 0 ? (
           <span className="font-medium text-warning-text">{t("st.gap", { ranges: gaps.join(t("st.and")) })}</span>
@@ -820,6 +703,7 @@ function AccountRow({
           {files.map((f) => t("common.range", { from: formatDate(f.start), to: formatDate(f.end) })).join(", ")}
         </span>
       </div>
+      )}
     </li>
   );
 }
@@ -861,15 +745,16 @@ function Results({
 
   const maxSpend = Math.max(...SPENDING.map((s) => s.cents), 1);
 
-  const { files, range } = layout(analysis, sample);
+  const { files } = layout(analysis, sample);
 
   const accounts = Array.from(new Set(files.map((f) => f.account_id)));
+  const manual = analysis.document_format === "MANUAL";
 
   // Each account's daily balance, from the sample series or what /analyze returned.
   const accountHistory = (id: string) =>
     ((sample ? SERIES : analysis.account_history ?? []).find((x) => x.account_id === id)?.points ?? [])
       .filter((p) => p.balance !== null)
-      .map((p) => stringToCents(p.balance as string));
+      .map((p) => ({ date: p.date, cents: stringToCents(p.balance as string) }));
 
   const transfers = analysis.internal_transfers ?? [];
 
@@ -1083,7 +968,7 @@ function Results({
       className="space-y-10"
     >
       <section>
-        <SectionTitle aside={t("count.files", { n: files.length })}>
+        <SectionTitle aside={manual ? undefined : t("count.files", { n: files.length })}>
           {t("st.accounts")}
         </SectionTitle>
 
@@ -1093,34 +978,18 @@ function Results({
               key={id}
               id={id}
               files={files}
-              range={range}
               analysis={analysis}
               history={accountHistory(id)}
             />
           ))}
         </ul>
-
-        <div className="mt-3 flex flex-wrap items-center gap-4 text-[11px] text-muted-foreground">
-          <span className="inline-flex items-center gap-1.5">
-            <span className="inline-block h-2 w-3 rounded-xs bg-primary/70" />
-
-            <span>{t("st.legendCovered")}</span>
-          </span>
-
-          <span className="inline-flex items-center gap-1.5">
-            <span className="inline-block h-2 w-3 rounded-xs border border-warning/40 bg-[repeating-linear-gradient(135deg,rgb(var(--warning)/0.22),rgb(var(--warning)/0.22)_3px,transparent_3px,transparent_6px)]" />
-
-            <span>{t("st.legendGap")}</span>
-          </span>
-
-          <span className="inline-flex items-center gap-1.5">
-            <span className="inline-block h-2.5 w-1 rounded-xs bg-warning" />
-
-            <span>{t("st.legendFlag")}</span>
-          </span>
-        </div>
       </section>
 
+      <EntriesLedger />
+
+      {/* Transfers, rows set aside and spending describe a statement; typed-in figures have none. */}
+      {!manual && (
+        <>
       <div className="grid gap-6 [&>*]:min-w-0">
         {transfers.length > 0 && (
           <section className="rounded-xl border bg-card p-5 md:p-6">
@@ -1862,6 +1731,8 @@ function Results({
           </div>
         )}
       </section>
+        </>
+      )}
 
       <section className="border-t pt-8">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-xl border border-destructive/20 bg-destructive/5 p-4 sm:p-5">
@@ -1934,23 +1805,6 @@ export default function StatementsPage() {
 
         description={t("st.desc")}
 
-        actions={
-          state.status === "ready" ? (
-            <QuickCashDialog
-              trigger={
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="gap-1.5 shadow-2xs"
-                >
-                  <Coins className="h-3.5 w-3.5 text-primary" />
-
-                  <span>{t("quickCash.trigger")}</span>
-                </Button>
-              }
-            />
-          ) : undefined
-        }
       />
 
       <div className="space-y-10">

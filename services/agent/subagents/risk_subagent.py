@@ -31,6 +31,7 @@ from services.agent.schema import (
     AgentMetricsSummary,
     CopilotResponse,
 )
+from services.agent.trace import traced_agent
 from services.agent.tools import (
     tool_annualized_statement_flows,
     tool_analyze_cash_flow,
@@ -54,6 +55,7 @@ from services.agent.prompts import (
 )
 
 
+@traced_agent("risk")
 class RiskManagerSubagent:
     """Specialist subagent for operational risk, unit economics, and predictive early-warnings."""
 

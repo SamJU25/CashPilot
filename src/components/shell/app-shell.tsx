@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { createContext, useContext, useEffect, useState } from 'react';
-import { motion } from 'motion/react';
+import { AnimatePresence, motion } from 'motion/react';
 import {
   FileText,
   Landmark,
@@ -11,19 +11,22 @@ import {
   Menu,
   PanelLeftClose,
   PanelLeftOpen,
+  Plus,
   MessageSquare,
   ReceiptText,
   Settings2,
+  Workflow,
   ShieldCheck,
 } from 'lucide-react';
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import { spring } from '@/lib/motion';
+import { fade, spring } from '@/lib/motion';
 import { useIntents, useWorkspace } from '@/lib/workspace';
 import { cn } from '@/lib/utils';
 import { useT, type Key } from '@/lib/i18n';
 import { CashPilotMark, Wordmark } from '@/components/shell/brand';
+import { QuickCashDialog } from '@/components/overview/quick-cash-dialog';
 import { formatDate } from '@/lib/format';
 import { todayIso } from '@/lib/live-forecast';
 import { ANALYSIS, TODAY } from '@/lib/mock/demo';
@@ -46,6 +49,7 @@ const NAV: { href: string; label: Key; icon: typeof LineChart }[][] = [
   ],
   [
     { href: '/assistant', label: 'nav.assistant', icon: MessageSquare },
+    { href: '/workstation', label: 'nav.workstation', icon: Workflow },
     { href: '/sentinel', label: 'nav.sentinel', icon: ShieldCheck },
   ],
 ];
@@ -235,6 +239,30 @@ function DemoBadge({ compact }: { compact?: boolean }) {
   );
 }
 
+/** The one place to record money in or out; every page reaches it, so no page repeats it. */
+function RecordButton({ compact }: { compact?: boolean }) {
+  const { t } = useT();
+  const { hasData } = useWorkspace();
+  // Before any data, the welcome and Statements screens offer the first balance themselves.
+  if (!hasData) return null;
+  return (
+    <QuickCashDialog
+      trigger={
+        compact ? (
+          <Button size="icon" className="size-9" aria-label={t('quickCash.trigger')} title={t('quickCash.trigger')}>
+            <Plus aria-hidden />
+          </Button>
+        ) : (
+          <Button className="w-full justify-start gap-2">
+            <Plus aria-hidden />
+            {t('quickCash.trigger')}
+          </Button>
+        )
+      }
+    />
+  );
+}
+
 /** The rail folded to icons, so wide dashboards get the room; labels move into tooltips. */
 function MiniRail({ onExpand }: { onExpand: () => void }) {
   const pathname = usePathname();
@@ -268,6 +296,11 @@ function MiniRail({ onExpand }: { onExpand: () => void }) {
       <Link href="/" aria-label="CashPilot by Blueprint">
         <CashPilotMark className="size-8" />
       </Link>
+      {/* Same place and style as the collapse button on the full rail, so the toggle never moves. */}
+      <Button variant="ghost" size="icon" className="size-8 shrink-0 text-muted-foreground" onClick={onExpand} aria-label={t('rail.expand')}>
+        <PanelLeftOpen aria-hidden />
+      </Button>
+      <RecordButton compact />
       {hasData && source === 'sample' && (
         <Tooltip>
           <TooltipTrigger asChild>
@@ -284,9 +317,6 @@ function MiniRail({ onExpand }: { onExpand: () => void }) {
         ))}
       </nav>
       {item('/settings', t('nav.settings'), Settings2, effective.startsWith('/settings'))}
-      <Button variant="ghost" size="icon" onClick={onExpand} aria-label={t('rail.expand')}>
-        <PanelLeftOpen aria-hidden />
-      </Button>
     </div>
   );
 }
@@ -326,27 +356,38 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           />
         </div>
       )}
-      <div className={cn('min-h-dvh lg:grid', collapsed ? 'lg:grid-cols-[60px_1fr]' : 'lg:grid-cols-[232px_1fr]')}>
-      <aside className={cn('sticky top-0 hidden h-dvh flex-col gap-6 overflow-y-auto border-r bg-background py-5 lg:flex', collapsed ? 'px-2' : 'px-3')}>
-        {collapsed ? (
-          <MiniRail onExpand={() => setRail(false)} />
-        ) : (
-          <>
-            <div className="space-y-3">
-              <div className="flex items-start justify-between gap-2">
-                <Brand />
-                <Button variant="ghost" size="icon" className="size-8 shrink-0 text-muted-foreground" onClick={() => setRail(true)} aria-label={t('rail.collapse')}>
-                  <PanelLeftClose aria-hidden />
-                </Button>
-              </div>
-              <DemoBadge />
-            </div>
-            <div className="flex-1">
-              <NavLinks />
-            </div>
-            <RailFooter />
-          </>
+      {/* The column width slides; each rail keeps a fixed inner width so text is clipped, never re-wrapped, and the two crossfade. */}
+      <div
+        className={cn(
+          'min-h-dvh lg:grid lg:transition-[grid-template-columns]',
+          collapsed ? 'lg:grid-cols-[60px_1fr]' : 'lg:grid-cols-[232px_1fr]',
         )}
+      >
+      <aside className="sticky top-0 hidden h-dvh overflow-x-hidden overflow-y-auto border-r bg-background lg:block">
+        <AnimatePresence mode="popLayout" initial={false}>
+          {collapsed ? (
+            <motion.div key="mini" className="h-full w-[60px] px-2 py-5" initial={{ opacity: 0 }} animate={{ opacity: 1, transition: { ...fade, delay: 0.08 } }} exit={{ opacity: 0, transition: fade }}>
+              <MiniRail onExpand={() => setRail(false)} />
+            </motion.div>
+          ) : (
+            <motion.div key="full" className="flex h-full w-[232px] flex-col gap-6 px-3 py-5" initial={{ opacity: 0 }} animate={{ opacity: 1, transition: { ...fade, delay: 0.08 } }} exit={{ opacity: 0, transition: fade }}>
+              <div className="space-y-3">
+                <div className="flex items-start justify-between gap-2">
+                  <Brand />
+                  <Button variant="ghost" size="icon" className="size-8 shrink-0 text-muted-foreground" onClick={() => setRail(true)} aria-label={t('rail.collapse')}>
+                    <PanelLeftClose aria-hidden />
+                  </Button>
+                </div>
+                <DemoBadge />
+                <RecordButton />
+              </div>
+              <div className="flex-1">
+                <NavLinks />
+              </div>
+              <RailFooter />
+            </motion.div>
+          )}
+        </AnimatePresence>
       </aside>
 
       <div className={cn('min-w-0', isAssistant && 'flex h-dvh flex-col overflow-hidden')}>
@@ -361,10 +402,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               </SheetTrigger>
               <SheetContent side="left" className="flex w-72 flex-col gap-6 bg-background px-3 py-5">
                 <SheetTitle className="sr-only">{t('nav.menuTitle')}</SheetTitle>
-                <div className="space-y-3">
-                  <Brand />
-                  <DemoBadge />
-                </div>
+                {/* The demo badge already sits in the top bar on these screens. */}
+                <Brand />
                 <div className="flex-1">
                   <NavLinks onNavigate={() => setOpen(false)} id="mobile" />
                 </div>
@@ -373,7 +412,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             </Sheet>
             <Wordmark name="cashpilot" height={15} />
           </div>
-          <DemoBadge compact />
+          <div className="flex items-center gap-2">
+            <DemoBadge compact />
+            <RecordButton compact />
+          </div>
         </header>
 
         <main

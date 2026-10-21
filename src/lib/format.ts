@@ -5,7 +5,7 @@ import { getCurrencySymbol } from '@/lib/currencies';
 
 const symbolCache = new Map<string, string>();
 
-function currencySymbol(currency: string): string {
+export function currencySymbol(currency: string): string {
   let symbol = symbolCache.get(currency);
   if (!symbol) {
     const known = getCurrencySymbol(currency);

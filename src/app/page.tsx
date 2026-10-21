@@ -17,6 +17,7 @@ import { ANALYSIS, ANCHOR, BASE, BASE_SCENARIO, COMPANY, INTENTS, OVERDUE_INVOIC
 import { spring } from '@/lib/motion';
 import { useData } from '@/lib/use-data';
 import { useIntents, useWorkspace } from '@/lib/workspace';
+import { recordedTotals } from '@/lib/use-cash-change';
 import type { CashAnalysis } from '@/lib/types';
 import { useT, type Key } from '@/lib/i18n';
 import { QuickCashDialog } from '@/components/overview/quick-cash-dialog';
@@ -29,21 +30,8 @@ const SAMPLE_HISTORY: ChartHistory = {
   accounts: SERIES.map((s) => ({ account_id: s.account_id, points: s.points.map((p) => ({ date: p.date, cents: p.balance === null ? null : stringToCents(p.balance) })) })),
 };
 
-/** Page-level tools: entering cash and refreshing statements sit with the page, away from the decision buttons. */
 function daysUntil(f: { has_projected_deficit: boolean; projected_deficit_date: string | null } | null, today: string) {
   return f?.has_projected_deficit && f.projected_deficit_date ? Math.max(0, Math.round((Date.parse(f.projected_deficit_date) - Date.parse(today)) / 86_400_000)) : null;
-}
-
-function PageTools() {
-  const { t } = useT();
-  return (
-    <>
-      <QuickCashDialog size="sm" />
-      <Button asChild size="sm" variant="ghost">
-        <Link href="/statements">{t('ov.hero.update')}</Link>
-      </Button>
-    </>
-  );
 }
 
 function Welcome() {
@@ -164,7 +152,6 @@ function LiveOverview({ analysis: a }: { analysis: CashAnalysis }) {
             today={today}
             fallback={fallback}
             alertThresholdDays={alertThresholdDays}
-            tools={<PageTools />}
             actions={
               <>
                 {pending && (
@@ -183,7 +170,7 @@ function LiveOverview({ analysis: a }: { analysis: CashAnalysis }) {
         <RunwayGauge days={daysUntil(changed && result ? result.forecast : f, today)} windowDays={alertThresholdDays} />
       </div>
 
-      <KpiCards analysis={a} history={history.total} />
+      <KpiCards analysis={a} history={history.total} recorded={a.document_format === 'MANUAL' ? recordedTotals(live.entries ?? []) : null} />
 
       {base && f ? (
         <section className="grid gap-px overflow-hidden rounded-xl border bg-border xl:grid-cols-[1fr_320px]" aria-label={t('ov.forecastAria')}>
@@ -274,7 +261,6 @@ function SampleOverview({ analysis, base }: { analysis: CashAnalysis; base: Proj
             company={COMPANY}
             fallback={t('ov.hero.safe')}
             alertThresholdDays={alertThresholdDays}
-            tools={<PageTools />}
             actions={
               <>
                 {pending && (

@@ -21,6 +21,7 @@ import { useIntents, useWorkspace } from '@/lib/workspace';
 import { ApiError, api, llmConfig, resetSession, type ProposedEntry } from '@/lib/api';
 import { Briefing } from '@/components/copilot/briefing';
 import { EntryCard, type EntryStatus } from '@/components/copilot/entry-card';
+import { saveRun } from '@/lib/runs';
 import type { ActionType, IntentStatus, RunStep, StagedActionIntent } from '@/lib/types';
 import { AssistantInspector } from '@/components/copilot/assistant-inspector';
 import { cn } from '@/lib/utils';
@@ -563,6 +564,7 @@ export default function AssistantPage() {
         },
         controller.signal,
       );
+      saveRun({ question: q, intent: res.intent_detected, trace: res.trace ?? [] });
       const staged = res.staged_action;
       if (staged) {
         const intent = {

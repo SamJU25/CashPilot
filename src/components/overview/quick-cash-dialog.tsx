@@ -1,32 +1,18 @@
 'use client';
 
 import { useState } from 'react';
-import { ArrowDownLeft, ArrowUpRight, Coins } from 'lucide-react';
+import { ArrowDownLeft, ArrowUpRight, Info, Plus, Scale } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog';
+import { DatePicker } from '@/components/ui/date-picker';
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { ApiError } from '@/lib/api';
 import { latestBalances, useCashChange } from '@/lib/use-cash-change';
 import { useWorkspace } from '@/lib/workspace';
-import { useT } from '@/lib/i18n';
-import { centsToString, formatMoney, stringToCents } from '@/lib/format';
+import { useT, type Key } from '@/lib/i18n';
+import { centsToString, currencySymbol, formatMoney, stringToCents } from '@/lib/format';
 import { todayIso } from '@/lib/live-forecast';
 import { cn } from '@/lib/utils';
 
@@ -35,6 +21,19 @@ type Mode = 'INFLOW' | 'OUTFLOW' | 'SET_BALANCE';
 // A plain decimal amount as typed: digits with up to 4 decimals (the backend's numeric(18,4)).
 const MONEY_INPUT = /^\d{1,14}(\.\d{0,4})?$/;
 const NEW_ACCOUNT = '__new__';
+
+const MODES: { id: Mode; label: Key; icon: typeof Plus; on: string }[] = [
+  { id: 'INFLOW', label: 'quickCash.inflow', icon: ArrowDownLeft, on: 'text-good-text' },
+  { id: 'OUTFLOW', label: 'quickCash.outflow', icon: ArrowUpRight, on: 'text-foreground' },
+  { id: 'SET_BALANCE', label: 'quickCash.setBalance', icon: Scale, on: 'text-accent-foreground' },
+];
+
+// Worded so the backend's description rules recognise payroll, rent and loan payments for the forecast.
+const SUGGEST: Record<Mode, Key[]> = {
+  INFLOW: ['qc.s.customer', 'qc.s.loanIn', 'qc.s.owner'],
+  OUTFLOW: ['qc.s.supplier', 'qc.s.payroll', 'qc.s.rent', 'qc.s.loanOut', 'qc.s.tax'],
+  SET_BALANCE: [],
+};
 
 interface Props {
   trigger?: React.ReactNode;
@@ -46,7 +45,7 @@ interface Props {
 
 export function QuickCashDialog({ trigger, variant = 'outline', size = 'default', className, defaultMode = 'INFLOW' }: Props) {
   const { t } = useT();
-  const { live, homeCurrency, source, accountNames } = useWorkspace();
+  const { live, homeCurrency, source, hasData, accountNames } = useWorkspace();
   const applyChange = useCashChange();
   const [open, setOpen] = useState(false);
   const [mode, setMode] = useState<Mode>(defaultMode);
@@ -61,6 +60,7 @@ export function QuickCashDialog({ trigger, variant = 'outline', size = 'default'
 
   // The sample company's figures never mix with the owner's own entries.
   const ownAnalysis = source === 'live' ? live.analysis : undefined;
+  const replacesSample = hasData && source === 'sample';
   const currBalance = ownAnalysis?.current_balance ?? '0.00';
   // Burn comes only from the owner's statements or what they type; never a guessed default.
   const burn = customBurn.trim() || ownAnalysis?.average_daily_burn || '';
@@ -71,12 +71,14 @@ export function QuickCashDialog({ trigger, variant = 'outline', size = 'default'
   const pooled = !!ownAnalysis && accounts.length === 0; // older analyses without a breakdown
   const selected = accountSel || accounts[0]?.id || NEW_ACCOUNT;
   const isNew = !pooled && selected === NEW_ACCOUNT;
-  const accountId = isNew ? newName.trim() : selected;
+  // The placeholder name is the default, so an empty field never blocks saving.
+  const accountId = isNew ? newName.trim() || t('quickCash.defaultAccount') : selected;
   const label = (id: string) => accountNames[id] ?? id;
   const nameTaken = isNew && accounts.some((a) => a.id.toLowerCase() === accountId.toLowerCase() || label(a.id).toLowerCase() === accountId.toLowerCase());
   const validName = !isNew || (accountId.length > 0 && accountId.length <= 80 && !nameTaken);
   // A new account starts from the balance entered.
   const effectiveMode: Mode = isNew ? 'SET_BALANCE' : mode;
+  const firstEntry = !ownAnalysis;
 
   // Integer cents throughout, so the preview matches the backend's Decimal result.
   const validAmount = MONEY_INPUT.test(amount.trim());
@@ -98,14 +100,7 @@ export function QuickCashDialog({ trigger, variant = 'outline', size = 'default'
     setBusy(true);
     setErr(null);
     try {
-      await applyChange({
-        mode: effectiveMode,
-        amount: amount.trim(),
-        description: desc.trim() || undefined,
-        accountId,
-        customBurn,
-        effectiveDate,
-      });
+      await applyChange({ mode: effectiveMode, amount: amount.trim(), description: desc.trim() || undefined, accountId, customBurn, effectiveDate });
       setOpen(false);
       setAmount('');
       setDesc('');
@@ -124,116 +119,53 @@ export function QuickCashDialog({ trigger, variant = 'outline', size = 'default'
       <DialogTrigger asChild>
         {trigger ?? (
           <Button variant={variant} size={size} className={cn('gap-2', className)}>
-            <Coins className="h-4 w-4" />
+            <Plus className="size-4" aria-hidden />
             {t('quickCash.trigger')}
           </Button>
         )}
       </DialogTrigger>
-      <DialogContent className="max-h-[calc(100dvh-2rem)] overflow-y-auto sm:max-w-[440px]">
+      <DialogContent className="max-h-[calc(100dvh-2rem)] overflow-y-auto sm:max-w-[460px]">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2 text-xl font-semibold">
-            <Coins className="h-5 w-5 text-primary" />
-            {t('quickCash.title')}
-          </DialogTitle>
-          <DialogDescription className="text-sm text-muted-foreground">
-            {t('quickCash.desc')}
-          </DialogDescription>
+          <DialogTitle className="font-display text-2xl font-semibold tracking-tight">{t(firstEntry ? 'quickCash.titleFirst' : 'quickCash.title')}</DialogTitle>
+          <DialogDescription>{t(firstEntry ? 'quickCash.descFirst' : 'quickCash.desc')}</DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-4 pt-1">
-          {/* Account selector */}
-          {!pooled && (
-            <div className="space-y-1.5">
-              <Label htmlFor="qc-account" className="text-xs font-medium text-muted-foreground">
-                {t('quickCash.account')}
-              </Label>
-              {accounts.length > 0 && (
-                <Select value={selected} onValueChange={(val) => setAccountSel(val)}>
-                  <SelectTrigger
-                    id="qc-account"
-                    className="h-10 w-full rounded-lg border-input/60 bg-card/60 px-3 text-sm font-medium text-foreground transition-colors hover:border-input focus-visible:ring-1 focus-visible:ring-primary shadow-2xs"
-                  >
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent className="bg-popover border-border/80 text-popover-foreground shadow-xl">
-                    {accounts.map((a) => (
-                      <SelectItem key={a.id} value={a.id} className="cursor-pointer text-xs">
-                        <span className="font-medium mr-2 text-foreground">{label(a.id)}</span>
-                        <span className="font-mono text-muted-foreground figures">({formatMoney(a.balance)})</span>
-                      </SelectItem>
-                    ))}
-                    <SelectItem value={NEW_ACCOUNT} className="cursor-pointer text-xs text-primary font-medium">
-                      + {t('quickCash.newAccount')}
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
-              )}
-              {isNew && (
-                <Input
-                  id={accounts.length > 0 ? 'qc-account-name' : 'qc-account'}
-                  type="text"
-                  maxLength={80}
-                  placeholder={t('quickCash.defaultAccount')}
-                  aria-label={t('quickCash.accountName')}
-                  value={newName}
-                  onChange={(e) => setNewName(e.target.value)}
-                  className="text-sm mt-1"
-                />
-              )}
-              {nameTaken && <p className="text-xs text-critical-text">{t('quickCash.nameTaken')}</p>}
+        <form onSubmit={handleSubmit} className="space-y-5">
+          {replacesSample && (
+            <p className="flex items-start gap-2 rounded-lg border border-warning/30 bg-warning/10 px-3 py-2 text-xs text-ink-2">
+              <Info className="mt-0.5 size-3.5 shrink-0 text-warning-text" aria-hidden />
+              {t('quickCash.sampleNote')}
+            </p>
+          )}
+
+          {/* A first entry is always a starting balance, so the choice only appears once one exists. */}
+          {!firstEntry && (
+            <div role="radiogroup" aria-label={t('quickCash.kind')} className={cn('grid grid-cols-3 gap-1 rounded-xl bg-muted p-1', isNew && 'pointer-events-none opacity-50')}>
+              {MODES.map((m) => (
+                <button
+                  key={m.id}
+                  type="button"
+                  role="radio"
+                  aria-checked={effectiveMode === m.id}
+                  onClick={() => setMode(m.id)}
+                  className={cn(
+                    'flex h-10 items-center justify-center gap-1.5 rounded-lg text-sm font-medium transition-colors',
+                    effectiveMode === m.id ? cn('bg-card shadow-sm', m.on) : 'text-muted-foreground hover:text-foreground',
+                  )}
+                >
+                  <m.icon className="size-4" aria-hidden />
+                  {t(m.label)}
+                </button>
+              ))}
             </div>
           )}
 
-          {/* Mode Switcher */}
-          <div className={cn('grid grid-cols-3 gap-1 rounded-xl border border-border/70 bg-muted/40 p-1 text-xs font-medium', isNew && 'pointer-events-none opacity-50')} aria-disabled={isNew}>
-            <button
-              type="button"
-              onClick={() => setMode('INFLOW')}
-              className={cn(
-                'flex items-center justify-center gap-1.5 rounded-lg py-2 transition-all',
-                effectiveMode === 'INFLOW'
-                  ? 'bg-background text-good-text shadow-sm font-semibold'
-                  : 'text-muted-foreground hover:text-foreground hover:bg-background/40'
-              )}
-            >
-              <ArrowDownLeft className="h-3.5 w-3.5" />
-              {t('quickCash.inflow')}
-            </button>
-            <button
-              type="button"
-              onClick={() => setMode('OUTFLOW')}
-              className={cn(
-                'flex items-center justify-center gap-1.5 rounded-lg py-2 transition-all',
-                effectiveMode === 'OUTFLOW'
-                  ? 'bg-background text-warning-text shadow-sm font-semibold'
-                  : 'text-muted-foreground hover:text-foreground hover:bg-background/40'
-              )}
-            >
-              <ArrowUpRight className="h-3.5 w-3.5" />
-              {t('quickCash.outflow')}
-            </button>
-            <button
-              type="button"
-              onClick={() => setMode('SET_BALANCE')}
-              className={cn(
-                'flex items-center justify-center gap-1.5 rounded-lg py-2 transition-all',
-                effectiveMode === 'SET_BALANCE'
-                  ? 'bg-background text-foreground shadow-sm font-semibold'
-                  : 'text-muted-foreground hover:text-foreground hover:bg-background/40'
-              )}
-            >
-              <Coins className="h-3.5 w-3.5" />
-              {t('quickCash.setBalance')}
-            </button>
-          </div>
-
-          {/* Amount & Transaction Date side-by-side */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div className="grid gap-3 sm:grid-cols-[1fr_10rem]">
             <div className="space-y-1.5">
-              <Label htmlFor="qc-amount" className="text-xs font-medium text-muted-foreground">
-                {t('quickCash.amount')} ({currency})
-              </Label>
-              <Input
+              <Label htmlFor="qc-amount">{t(effectiveMode === 'SET_BALANCE' ? 'quickCash.balanceLabel' : 'quickCash.amount')}</Label>
+              <div className="relative">
+                <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 font-display text-xl text-muted-foreground">{currencySymbol(currency).trim()}</span>
+                <Input
                   id="qc-amount"
                   type="text"
                   inputMode="decimal"
@@ -242,102 +174,114 @@ export function QuickCashDialog({ trigger, variant = 'outline', size = 'default'
                   placeholder="0.00"
                   value={amount}
                   onChange={(e) => setAmount(e.target.value.replace(/[^0-9.]/g, ''))}
-                  className="font-mono text-base font-semibold tabular-nums tracking-tight"
+                  aria-invalid={amount !== '' && !validAmount}
+                  className="figures h-12 pl-9 font-display text-2xl font-semibold"
                 />
+              </div>
             </div>
-
             <div className="space-y-1.5">
-              <Label htmlFor="qc-date" className="text-xs font-medium text-muted-foreground">
-                {t('quickCash.date')}
-              </Label>
-              <Input
-                id="qc-date"
-                type="date"
-                required
-                max={todayIso()}
-                value={effectiveDate}
-                onChange={(e) => setEffectiveDate(e.target.value)}
-                className="figures text-sm"
-              />
+              <Label htmlFor="qc-date">{t('quickCash.date')}</Label>
+              <DatePicker id="qc-date" value={effectiveDate} onChange={setEffectiveDate} max={todayIso()} className="h-12" />
             </div>
           </div>
 
-          {/* Description input */}
-          <div className="space-y-1.5">
-            <Label htmlFor="qc-desc" className="text-xs font-medium text-muted-foreground">
-              {t('quickCash.descLabel')}
-            </Label>
-            <Input
-              id="qc-desc"
-              type="text"
-              placeholder={t('quickCash.descPlaceholder')}
-              value={desc}
-              onChange={(e) => setDesc(e.target.value)}
-              className="text-sm"
-            />
-          </div>
-
-          {/* Burn is asked for on a first entry, or when the baseline balance is reset. */}
-          {(!ownAnalysis || effectiveMode === 'SET_BALANCE') && (
+          {effectiveMode !== 'SET_BALANCE' && (
             <div className="space-y-1.5">
-              <Label htmlFor="qc-burn" className="text-xs font-medium text-muted-foreground">
-                {t('quickCash.dailyBurn')} ({t('quickCash.perDay', { currency })})
-              </Label>
-              <Input
-                id="qc-burn"
-                type="text"
-                inputMode="decimal"
-                placeholder={ownAnalysis?.average_daily_burn ?? '0.00'}
-                value={customBurn}
-                onChange={(e) => setCustomBurn(e.target.value)}
-                className="font-mono text-sm tabular-nums"
-              />
+              <Label htmlFor="qc-desc">{t('quickCash.descLabel')}</Label>
+              <Input id="qc-desc" type="text" placeholder={t('quickCash.descPlaceholder')} value={desc} onChange={(e) => setDesc(e.target.value)} />
+              <div className="flex flex-wrap gap-1.5 pt-1">
+                {SUGGEST[effectiveMode].map((k) => (
+                  <button
+                    key={k}
+                    type="button"
+                    onClick={() => setDesc(t(k))}
+                    className={cn('rounded-full border px-2.5 py-1 text-xs transition-colors', desc === t(k) ? 'border-primary bg-accent text-accent-foreground' : 'text-ink-2 hover:bg-muted')}
+                  >
+                    {t(k)}
+                  </button>
+                ))}
+              </div>
             </div>
           )}
 
-          {/* Live Impact Preview Card */}
-          <div className="rounded-xl border border-border/70 bg-card/60 p-3.5 space-y-2 text-xs">
-            <div className="flex items-center justify-between text-muted-foreground">
-              <span>{t('quickCash.current')}</span>
-              <span className="font-mono font-medium text-foreground figures">
-                {formatMoney(centsToString(accountCents))}
-              </span>
+          {/* Which account, or the name of a new one; pooled older analyses have no accounts to pick. */}
+          {!pooled && (
+            <div className="space-y-1.5">
+              <Label htmlFor={accounts.length > 0 ? 'qc-account' : 'qc-account-name'}>{t('quickCash.account')}</Label>
+              {accounts.length > 0 && (
+                <Select value={selected} onValueChange={setAccountSel}>
+                  <SelectTrigger id="qc-account">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {accounts.map((a) => (
+                      <SelectItem key={a.id} value={a.id}>
+                        {label(a.id)} <span className="figures text-muted-foreground">{formatMoney(a.balance)}</span>
+                      </SelectItem>
+                    ))}
+                    <SelectItem value={NEW_ACCOUNT}>{t('quickCash.newAccount')}</SelectItem>
+                  </SelectContent>
+                </Select>
+              )}
+              {isNew && (
+                <Input
+                  id="qc-account-name"
+                  type="text"
+                  maxLength={80}
+                  placeholder={t('quickCash.defaultAccount')}
+                  aria-label={t('quickCash.accountName')}
+                  value={newName}
+                  onChange={(e) => setNewName(e.target.value)}
+                />
+              )}
+              {nameTaken && <p className="text-xs text-critical-text">{t('quickCash.nameTaken')}</p>}
+            </div>
+          )}
+
+          {/* Spend is asked for only when nothing else gives it: a first balance with no statements. */}
+          {firstEntry && (
+            <div className="space-y-1.5">
+              <Label htmlFor="qc-burn">
+                {t('quickCash.dailyBurn')} <span className="font-normal text-muted-foreground">({t('quickCash.optional')})</span>
+              </Label>
+              <Input id="qc-burn" type="text" inputMode="decimal" placeholder="0.00" value={customBurn} onChange={(e) => setCustomBurn(e.target.value)} className="figures" />
+              <p className="text-xs text-muted-foreground">{t('quickCash.burnHelp')}</p>
+            </div>
+          )}
+
+          <dl className="space-y-2 rounded-xl bg-muted/50 p-4 text-sm">
+            <div className="flex items-center justify-between">
+              <dt className="text-muted-foreground">{t(isNew || firstEntry ? 'quickCash.startsAt' : 'quickCash.current')}</dt>
+              <dd className="figures">{formatMoney(centsToString(accountCents))}</dd>
             </div>
             <div className="flex items-center justify-between font-medium">
-              <span>{t('quickCash.projected')}</span>
-              <span
-                className={cn(
-                  'font-mono tabular-nums font-semibold text-sm',
-                  accountAfter >= accountCents ? 'text-good-text' : 'text-warning-text'
-                )}
-              >
+              <dt>{t('quickCash.projected')}</dt>
+              <dd className={cn('figures font-display text-lg font-semibold', accountAfter < accountCents && 'text-ink-2', accountAfter > accountCents && 'text-good-text')}>
                 {formatMoney(centsToString(accountAfter))}
-              </span>
+              </dd>
             </div>
             {showTotal && (
-              <div className="flex items-center justify-between text-muted-foreground pt-1.5 border-t border-border/40">
-                <span>{t('quickCash.total')}</span>
-                <span className="font-mono tabular-nums">
-                  {formatMoney(currBalance)} → <strong className="text-foreground">{formatMoney(centsToString(totalAfter))}</strong>
-                </span>
+              <div className="flex items-center justify-between border-t pt-2 text-muted-foreground">
+                <dt>{t('quickCash.total')}</dt>
+                <dd className="figures">{formatMoney(centsToString(totalAfter))}</dd>
               </div>
             )}
-            <div className="flex items-center justify-between pt-1.5 border-t border-border/40 text-muted-foreground">
-              <span>{t('quickCash.runway')}</span>
-              {projectedRunway === null ? (
-                <span>{t('quickCash.noBurn')}</span>
-              ) : (
-                <span className="font-mono tabular-nums">
-                  {currentRunway !== null ? `${t('quickCash.days', { n: currentRunway })} → ` : ''}
-                  <strong className={cn('font-semibold', projectedRunway >= (currentRunway ?? 0) ? 'text-good-text' : 'text-warning-text')}>
-                    {t('quickCash.days', { n: projectedRunway })}
-                  </strong>
-                </span>
-              )}
-            </div>
-          </div>
+            {projectedRunway !== null && (
+              <div className="flex items-center justify-between border-t pt-2 text-muted-foreground">
+                <dt>{t('quickCash.runway')}</dt>
+                <dd className="figures">
+                  {currentRunway !== null && currentRunway !== projectedRunway ? `${t('quickCash.days', { n: currentRunway })} → ` : ''}
+                  <span className="font-medium text-foreground">{t('quickCash.days', { n: projectedRunway })}</span>
+                </dd>
+              </div>
+            )}
+          </dl>
 
-          {err && <p className="text-xs text-destructive font-medium">{err}</p>}
+          {err && (
+            <p className="text-sm text-critical-text" role="alert">
+              {err}
+            </p>
+          )}
 
           <DialogFooter className="gap-2 sm:gap-0">
             <DialogClose asChild>
@@ -346,7 +290,7 @@ export function QuickCashDialog({ trigger, variant = 'outline', size = 'default'
               </Button>
             </DialogClose>
             <Button type="submit" disabled={busy || !validAmount || !validBurn || !validName}>
-              {busy ? t('quickCash.saving') : t('quickCash.save')}
+              {busy ? t('quickCash.saving') : t(effectiveMode === 'SET_BALANCE' ? 'quickCash.saveBalance' : 'quickCash.save')}
             </Button>
           </DialogFooter>
         </form>

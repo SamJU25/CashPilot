@@ -143,18 +143,35 @@ export function MiniArea({ values, className, label }: { values: number[]; class
   const pts = values.map((v, i) => [(i / (values.length - 1)) * W, H - 4 - ((v - min) / span) * (H - 8)] as const);
   const line = `M${pts.map(([x, y]) => `${x.toFixed(1)},${y.toFixed(1)}`).join('L')}`;
   const [lx, ly] = pts[pts.length - 1];
+  // The SVG stretches to its box, so the line keeps a screen-pixel stroke and is revealed with a wipe:
+  // pathLength dashes would be measured in stretched units and leave the line half drawn.
   return (
-    <svg viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" className={cn('h-11 w-full overflow-visible text-primary', className)} role="img" aria-label={label}>
-      <defs>
-        <linearGradient id={fillId} x1="0" x2="0" y1="0" y2="1">
-          <stop offset="0%" stopColor="currentColor" stopOpacity={0.22} />
-          <stop offset="100%" stopColor="currentColor" stopOpacity={0} />
-        </linearGradient>
-      </defs>
-      <motion.path d={`${line}L${W},${H}L0,${H}Z`} fill={`url(#${fillId})`} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={draw} />
-      <motion.path d={line} fill="none" stroke="currentColor" strokeWidth={1.75} strokeLinejoin="round" vectorEffect="non-scaling-stroke" initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={draw} />
-      <circle cx={lx} cy={ly} r={2.75} fill="currentColor" stroke="rgb(var(--card))" strokeWidth={1.5} vectorEffect="non-scaling-stroke" />
-    </svg>
+    <div className={cn('relative h-11 w-full text-primary', className)} role="img" aria-label={label}>
+      <motion.svg
+        viewBox={`0 0 ${W} ${H}`}
+        preserveAspectRatio="none"
+        className="absolute inset-0 h-full w-full overflow-visible"
+        initial={{ clipPath: 'inset(0 100% 0 0)' }}
+        animate={{ clipPath: 'inset(0 0% 0 0)' }}
+        transition={draw}
+        aria-hidden
+      >
+        <defs>
+          <linearGradient id={fillId} x1="0" x2="0" y1="0" y2="1">
+            <stop offset="0%" stopColor="currentColor" stopOpacity={0.22} />
+            <stop offset="100%" stopColor="currentColor" stopOpacity={0} />
+          </linearGradient>
+        </defs>
+        <path d={`${line}L${W},${H}L0,${H}Z`} fill={`url(#${fillId})`} />
+        <path d={line} fill="none" stroke="currentColor" strokeWidth={1.75} strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
+      </motion.svg>
+      {/* An HTML dot stays round however the SVG is stretched. */}
+      <span
+        className="absolute size-1.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-current ring-2 ring-card"
+        style={{ left: `${(lx / W) * 100}%`, top: `${(ly / H) * 100}%` }}
+        aria-hidden
+      />
+    </div>
   );
 }
 

@@ -13,7 +13,23 @@ const STORAGE_KEY = 'copilot.workspace.v1';
 const LIVE_KEY = 'cashpilot.live.v1';
 
 /** What the backend returned for the owner's own files. */
+/** A cash change the owner typed in; listed on Statements so it can be seen and reversed. */
+export interface CashEntry {
+  id: string;
+  mode: 'INFLOW' | 'OUTFLOW' | 'SET_BALANCE';
+  amount: string;
+  description?: string;
+  accountId: string;
+  date: string;
+  /** The account balance before a correction, so the correction can be undone. */
+  previousBalance?: string;
+  /** Set on a reversal: the entry it cancels. */
+  reverses?: string;
+}
+
 export interface LiveData {
+  /** Entries since the last statement upload; an upload replaces the statement they were added to. */
+  entries?: CashEntry[];
   analysis?: CashAnalysis;
   underwrite?: { dossier: UnderwritingDossier; options: FinancingOption[] };
   receivables?: ReceivablesAgeing;

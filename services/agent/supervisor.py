@@ -70,6 +70,7 @@ from services.agent.schema import (
 )
 from services.agent.entry_parser import parse_cash_entry
 from services.agent.session_store import SessionRecord, session_store
+from services.agent import trace
 from services.agent.tools import (
     tool_analyze_cash_flow,
     tool_calculate_break_even,
@@ -295,6 +296,20 @@ def _handle_quantitative_calculation(
 
 
 def run_copilot_supervisor(
+    request: AgentChatRequest,
+    tenant_id: Optional[str] = None,
+    llm_config: Optional[LLMConfig] = None,
+    session_id: Optional[str] = None,
+    allow_staging: bool = False,
+) -> CopilotResponse:
+    """Answers one message and returns, with it, the trace of what ran to produce the answer."""
+    with trace.recording() as events:
+        resp = _run_copilot_supervisor(request, tenant_id, llm_config, session_id, allow_staging)
+    resp.trace = sorted(events, key=lambda e: e.start_ms)
+    return resp
+
+
+def _run_copilot_supervisor(
     request: AgentChatRequest,
     tenant_id: Optional[str] = None,
     llm_config: Optional[LLMConfig] = None,

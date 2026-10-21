@@ -19785,7 +19785,7 @@
       "file_type": "code",
       "norm_label": "comparebars()",
       "source_file": "src/components/charts/kit.tsx",
-      "source_location": "L185"
+      "source_location": "L186"
     },
     {
       "id": "src_components_charts_kit_gauge",
@@ -19833,7 +19833,7 @@
       "file_type": "code",
       "norm_label": "minibars()",
       "source_file": "src/components/charts/kit.tsx",
-      "source_location": "L161"
+      "source_location": "L162"
     },
     {
       "id": "src_components_charts_kit_scorering",
@@ -19845,7 +19845,7 @@
       "file_type": "code",
       "norm_label": "scorering()",
       "source_file": "src/components/charts/kit.tsx",
-      "source_location": "L211"
+      "source_location": "L212"
     },
     {
       "id": "src_components_common_bits_money",
@@ -30537,6 +30537,28 @@
       "source_location": "L476"
     },
     {
+      "id": "src_lib_mock_demo_dossier",
+      "label": "DOSSIER",
+      "_origin": "ast",
+      "community": 177,
+      "community_name": "assistant/page.tsx",
+      "file_type": "code",
+      "norm_label": "dossier",
+      "source_file": "src/lib/mock/demo.ts",
+      "source_location": "L380"
+    },
+    {
+      "id": "src_lib_mock_demo_intents",
+      "label": "INTENTS",
+      "_origin": "ast",
+      "community": 177,
+      "community_name": "assistant/page.tsx",
+      "file_type": "code",
+      "norm_label": "intents",
+      "source_file": "src/lib/mock/demo.ts",
+      "source_location": "L402"
+    },
+    {
       "id": "src_lib_mock_demo_options",
       "label": "OPTIONS",
       "_origin": "ast",
@@ -30546,28 +30568,6 @@
       "norm_label": "options",
       "source_file": "src/lib/mock/demo.ts",
       "source_location": "L395"
-    },
-    {
-      "id": "src_lib_mock_demo_receivables",
-      "label": "RECEIVABLES",
-      "_origin": "ast",
-      "community": 177,
-      "community_name": "assistant/page.tsx",
-      "file_type": "code",
-      "norm_label": "receivables",
-      "source_file": "src/lib/mock/demo.ts",
-      "source_location": "L348"
-    },
-    {
-      "id": "src_lib_mock_demo_sample_csv",
-      "label": "SAMPLE_CSV",
-      "_origin": "ast",
-      "community": 177,
-      "community_name": "assistant/page.tsx",
-      "file_type": "code",
-      "norm_label": "sample_csv",
-      "source_file": "src/lib/mock/demo.ts",
-      "source_location": "L104"
     },
     {
       "id": "src_components_copilot_assistant_inspector",
@@ -30669,28 +30669,6 @@
       "source_location": "L23"
     },
     {
-      "id": "src_lib_mock_demo_default_account_names",
-      "label": "DEFAULT_ACCOUNT_NAMES",
-      "_origin": "ast",
-      "community": 178,
-      "community_name": "demo.ts",
-      "file_type": "code",
-      "norm_label": "default_account_names",
-      "source_file": "src/lib/mock/demo.ts",
-      "source_location": "L67"
-    },
-    {
-      "id": "src_lib_mock_demo_dossier",
-      "label": "DOSSIER",
-      "_origin": "ast",
-      "community": 178,
-      "community_name": "demo.ts",
-      "file_type": "code",
-      "norm_label": "dossier",
-      "source_file": "src/lib/mock/demo.ts",
-      "source_location": "L380"
-    },
-    {
       "id": "src_lib_mock_demo_gross_in",
       "label": "GROSS_IN",
       "_origin": "ast",
@@ -30724,6 +30702,17 @@
       "source_location": "L146"
     },
     {
+      "id": "src_lib_mock_demo_receivables",
+      "label": "RECEIVABLES",
+      "_origin": "ast",
+      "community": 178,
+      "community_name": "demo.ts",
+      "file_type": "code",
+      "norm_label": "receivables",
+      "source_file": "src/lib/mock/demo.ts",
+      "source_location": "L348"
+    },
+    {
       "id": "src_lib_mock_demo_recurring",
       "label": "RECURRING",
       "_origin": "ast",
@@ -30755,6 +30744,17 @@
       "norm_label": "runwaydays",
       "source_file": "src/lib/mock/demo.ts",
       "source_location": "L238"
+    },
+    {
+      "id": "src_lib_mock_demo_sample_csv",
+      "label": "SAMPLE_CSV",
+      "_origin": "ast",
+      "community": 178,
+      "community_name": "demo.ts",
+      "file_type": "code",
+      "norm_label": "sample_csv",
+      "source_file": "src/lib/mock/demo.ts",
+      "source_location": "L104"
     },
     {
       "id": "src_lib_mock_demo_series",
@@ -54389,15 +54389,15 @@
       "source_location": "L3"
     },
     {
-      "id": "src_lib_mock_demo_intents",
-      "label": "INTENTS",
+      "id": "src_lib_mock_demo_default_account_names",
+      "label": "DEFAULT_ACCOUNT_NAMES",
       "_origin": "ast",
       "community": 6,
       "community_name": "workspace.tsx",
       "file_type": "code",
-      "norm_label": "intents",
+      "norm_label": "default_account_names",
       "source_file": "src/lib/mock/demo.ts",
-      "source_location": "L402"
+      "source_location": "L67"
     },
     {
       "id": "src_lib_types",
@@ -73297,6 +73297,18 @@
     },
     {
       "source": "src_app_assistant_page_assistantpage",
+      "target": "src_components_copilot_model_menu_modelmenu",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/app/assistant/page.tsx",
+      "source_location": "L1000",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_assistant_page_assistantpage",
       "target": "src_components_copilot_assistant_inspector_assistantinspector",
       "relation": "calls",
       "_origin": "ast",
@@ -73304,7 +73316,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/assistant/page.tsx",
-      "source_location": "L1055",
+      "source_location": "L1056",
       "weight": 1.0
     },
     {
@@ -73400,7 +73412,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/assistant/page.tsx",
-      "source_location": "L492",
+      "source_location": "L493",
       "weight": 1.0
     },
     {
@@ -73412,7 +73424,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/assistant/page.tsx",
-      "source_location": "L494",
+      "source_location": "L495",
       "weight": 1.0
     },
     {
@@ -73424,7 +73436,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/assistant/page.tsx",
-      "source_location": "L495",
+      "source_location": "L496",
       "weight": 1.0
     },
     {
@@ -73436,7 +73448,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/assistant/page.tsx",
-      "source_location": "L561",
+      "source_location": "L562",
       "weight": 1.0
     },
     {
@@ -73448,7 +73460,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/assistant/page.tsx",
-      "source_location": "L586",
+      "source_location": "L587",
       "weight": 1.0
     },
     {
@@ -73460,7 +73472,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/assistant/page.tsx",
-      "source_location": "L673",
+      "source_location": "L674",
       "weight": 1.0
     },
     {
@@ -73472,7 +73484,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/assistant/page.tsx",
-      "source_location": "L696",
+      "source_location": "L697",
       "weight": 1.0
     },
     {
@@ -73484,7 +73496,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/assistant/page.tsx",
-      "source_location": "L719",
+      "source_location": "L720",
       "weight": 1.0
     },
     {
@@ -73496,7 +73508,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/assistant/page.tsx",
-      "source_location": "L728",
+      "source_location": "L729",
       "weight": 1.0
     },
     {
@@ -73508,7 +73520,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/assistant/page.tsx",
-      "source_location": "L767",
+      "source_location": "L768",
       "weight": 1.0
     },
     {
@@ -73520,7 +73532,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/assistant/page.tsx",
-      "source_location": "L860",
+      "source_location": "L861",
       "weight": 1.0
     },
     {
@@ -73532,7 +73544,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/assistant/page.tsx",
-      "source_location": "L861",
+      "source_location": "L862",
       "weight": 1.0
     },
     {
@@ -73544,7 +73556,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/assistant/page.tsx",
-      "source_location": "L864",
+      "source_location": "L865",
       "weight": 1.0
     },
     {
@@ -73556,19 +73568,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/assistant/page.tsx",
-      "source_location": "L867",
-      "weight": 1.0
-    },
-    {
-      "source": "src_app_assistant_page_assistantpage",
-      "target": "src_components_copilot_model_menu_modelmenu",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "src/app/assistant/page.tsx",
-      "source_location": "L999",
+      "source_location": "L868",
       "weight": 1.0
     },
     {
@@ -77300,7 +77300,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/charts/kit.tsx",
-      "source_location": "L197",
+      "source_location": "L198",
       "weight": 1.0
     },
     {
@@ -77312,7 +77312,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/charts/kit.tsx",
-      "source_location": "L146",
+      "source_location": "L147",
       "weight": 1.0
     },
     {
@@ -77324,7 +77324,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/charts/kit.tsx",
-      "source_location": "L171",
+      "source_location": "L172",
       "weight": 1.0
     },
     {
@@ -107666,6 +107666,18 @@
     {
       "source": "src_app_assistant_page",
       "target": "src_lib_api_proposedentry",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/app/assistant/page.tsx",
+      "source_location": "L21",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_assistant_page",
+      "target": "src_lib_api_resetsession",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -161072,7 +161084,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/components/charts/kit.tsx",
-      "source_location": "L161",
+      "source_location": "L162",
       "weight": 1.0
     },
     {
@@ -161083,7 +161095,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/components/charts/kit.tsx",
-      "source_location": "L185",
+      "source_location": "L186",
       "weight": 1.0
     },
     {
@@ -161094,7 +161106,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/components/charts/kit.tsx",
-      "source_location": "L211",
+      "source_location": "L212",
       "weight": 1.0
     },
     {
@@ -186543,6 +186555,18 @@
       "context": "argument",
       "source_file": "services/agent/supervisor.py",
       "source_location": "L667",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_assistant_page_assistantpage",
+      "target": "src_lib_api_resetsession",
+      "relation": "indirect_call",
+      "_origin": "ast",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "context": "argument",
+      "source_file": "src/app/assistant/page.tsx",
+      "source_location": "L441",
       "weight": 1.0
     },
     {

@@ -196,7 +196,8 @@ export function RunwayChart({
       </ul>
 
       <div className="h-[320px] w-full" role="img" aria-label={t('chart.aria', { from: formatDate(rows[0].date), n: horizon })}>
-        <ResponsiveContainer width="100%" height="100%">
+        {/* Debounced so sliding the sidebar resizes the chart once, not every frame. */}
+        <ResponsiveContainer width="100%" height="100%" debounce={200}>
           <ComposedChart data={rows} margin={{ top: 16, right: 12, bottom: 0, left: 0 }}>
             <CartesianGrid vertical={false} stroke={GRID} strokeDasharray="0" />
             <XAxis

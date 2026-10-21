@@ -38,6 +38,7 @@ from services.agent.schema import (
     AgentMetricsSummary,
     CopilotResponse,
 )
+from services.agent.trace import traced_agent
 from services.agent.tools import (
     tool_annualized_statement_flows,
     tool_calculate_altman_z_score,
@@ -69,6 +70,7 @@ from services.agent.prompts import (
 
 logger = logging.getLogger(__name__)
 
+@traced_agent("credit")
 class CreditSubagent:
     """Specialist subagent for debt affordability, credit underwriting, and financing options."""
 

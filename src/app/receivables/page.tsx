@@ -42,7 +42,7 @@ function InvoiceUpload({
     try {
       const receivables = await api.invoices(file);
       // Invoices on their own switch the workspace to the owner's files; the sample company's statements leave with it.
-      if (source === 'sample') setLive({ analysis: undefined, underwrite: undefined, intents: [], receivables });
+      if (source === 'sample') setLive({ analysis: undefined, underwrite: undefined, intents: [], entries: [], receivables });
       else setLive({ receivables });
       if (source === 'sample' || !hasData) update({ hasData: true, source: 'live', ...(receivables.currency ? { homeCurrency: receivables.currency } : {}), intentStatus: {}, intentDecidedAt: {} });
     } catch (e) {

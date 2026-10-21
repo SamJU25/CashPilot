@@ -18,6 +18,8 @@ from typing import Optional
 
 import numpy as np
 
+from services.agent import trace
+
 logger = logging.getLogger(__name__)
 
 CARDS_DIR = Path(__file__).resolve().parents[2] / "knowledge" / "cards"
@@ -143,7 +145,10 @@ class _CardIndex:
                 sims[i] += 0.35
 
         order = np.argsort(sims)[::-1][:k]
-        return [self.cards[i] for i in order if sims[i] >= min_similarity]
+        picked = [i for i in order if sims[i] >= min_similarity]
+        for i in picked:
+            trace.record("card", self.cards[i].title, trace.now_ms(), 0.0, file=f"{self.cards[i].area}.md", score=f"{float(sims[i]):.2f}")
+        return [self.cards[i] for i in picked]
 
 
 def resolve_retrieval_query(query: str, history: Optional[list] = None) -> str:
