@@ -365,7 +365,7 @@ export function AutonomousSentinel({ analysis: a }: { analysis: CashAnalysis }) 
               transition={spring.gentle}
               className={cn(
                 'h-full rounded-full transition-colors',
-                isTriggered ? 'bg-warning' : 'bg-primary'
+                runwayDays <= 0 ? 'bg-destructive' : isTriggered ? 'bg-warning' : 'bg-good'
               )}
             />
           </div>
