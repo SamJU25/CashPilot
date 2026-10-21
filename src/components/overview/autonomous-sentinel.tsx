@@ -106,7 +106,7 @@ export function AutonomousSentinel({ analysis: a }: { analysis: CashAnalysis }) 
   }, [alertThresholdDays]);
 
   const handleAdjustThreshold = (delta: number) => {
-    const next = Math.max(7, Math.min(120, alertThresholdDays + delta));
+    const next = Math.max(1, Math.min(120, alertThresholdDays + delta));
     update({ alertThresholdDays: next });
     setThresholdInput(String(next));
   };
@@ -116,7 +116,7 @@ export function AutonomousSentinel({ analysis: a }: { analysis: CashAnalysis }) 
   const targetFormattedDate = targetDate ? formatDate(targetDate) : '';
 
   const numInputVal = parseInt(thresholdInput, 10);
-  const isUnderMin = !Number.isNaN(numInputVal) && numInputVal < 7;
+  const isUnderMin = !Number.isNaN(numInputVal) && numInputVal < 1;
   const isOverMax = !Number.isNaN(numInputVal) && numInputVal > 120;
   const isInputEmpty = thresholdInput.trim() === '';
 
@@ -214,15 +214,15 @@ export function AutonomousSentinel({ analysis: a }: { analysis: CashAnalysis }) 
                     const raw = e.target.value.replace(/[^0-9]/g, '');
                     setThresholdInput(raw);
                     const val = parseInt(raw, 10);
-                    if (!Number.isNaN(val) && val >= 7 && val <= 120) {
+                    if (!Number.isNaN(val) && val >= 1 && val <= 120) {
                       update({ alertThresholdDays: val });
                     }
                   }}
                   onBlur={() => {
                     const val = parseInt(thresholdInput, 10);
-                    if (Number.isNaN(val) || val < 7) {
-                      update({ alertThresholdDays: 7 });
-                      setThresholdInput('7');
+                    if (Number.isNaN(val) || val < 1) {
+                      update({ alertThresholdDays: 1 });
+                      setThresholdInput('1');
                     } else if (val > 120) {
                       update({ alertThresholdDays: 120 });
                       setThresholdInput('120');
@@ -244,9 +244,9 @@ export function AutonomousSentinel({ analysis: a }: { analysis: CashAnalysis }) 
                 <button
                   type="button"
                   onClick={() => handleAdjustThreshold(-5)}
-                  disabled={alertThresholdDays <= 7}
+                  disabled={alertThresholdDays <= 1}
                   className="flex size-7 items-center justify-center rounded-md border bg-card hover:bg-muted text-foreground transition-colors active:scale-95 disabled:opacity-35 disabled:cursor-not-allowed"
-                  title={alertThresholdDays <= 7 ? 'Minimum 7 days threshold reached' : 'Decrease threshold by 5 days'}
+                  title={alertThresholdDays <= 1 ? 'Minimum 1 day threshold reached' : 'Decrease threshold by 5 days'}
                   aria-label="Decrease threshold"
                 >
                   <Minus className="size-3.5" />
@@ -267,7 +267,7 @@ export function AutonomousSentinel({ analysis: a }: { analysis: CashAnalysis }) 
             {/* Target Date or Exception Feedback */}
             {isUnderMin ? (
               <p className="mt-2 text-xs text-warning-text font-medium truncate">
-                ⚠️ Min buffer is 7 days (ZenEngine covenant)
+                ⚠️ Minimum threshold is 1 day
               </p>
             ) : isOverMax ? (
               <p className="mt-2 text-xs text-warning-text font-medium truncate">
@@ -275,7 +275,7 @@ export function AutonomousSentinel({ analysis: a }: { analysis: CashAnalysis }) 
               </p>
             ) : isInputEmpty ? (
               <p className="mt-2 text-xs text-muted-foreground truncate">
-                Enter between 7 and 120 days
+                Enter between 1 and 120 days
               </p>
             ) : (
               <p className="mt-2 text-xs text-ink-2 truncate">
