@@ -2,13 +2,14 @@
 
 import { useRef, useState } from 'react';
 import { motion } from 'motion/react';
-import { Fingerprint, Upload } from 'lucide-react';
+import { Upload } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { Money, PageHeader, SectionTitle } from '@/components/common/bits';
 import { EmptyState, ErrorState, LoadingBlock } from '@/components/common/states';
-import { formatDate, formatMoney } from '@/lib/format';
+import { centsToString, formatDate, formatMoney, stringToCents } from '@/lib/format';
+import { Donut, Legend, type Segment } from '@/components/charts/kit';
+import { BUCKET_COLORS } from '@/components/charts/colors';
 import { ApiError, api } from '@/lib/api';
 import { RECEIVABLES } from '@/lib/mock/demo';
 import { spring } from '@/lib/motion';
@@ -18,16 +19,6 @@ import { useWorkspace } from '@/lib/workspace';
 import type { Debtor } from '@/lib/types';
 import { useT, type Key } from '@/lib/i18n';
 import { ReminderDialog } from '@/components/receivables/reminder-dialog';
-import { BlockchainVerifyDialog } from '@/components/receivables/blockchain-verify-dialog';
-
-// Lateness escalates from caution to critical; "not yet due" stays neutral.
-const BUCKET_COLORS: Record<string, string> = {
-  current: 'rgb(var(--muted-foreground) / 0.35)',
-  d1_30: 'rgb(var(--warning) / 0.7)',
-  d31_60: 'rgb(var(--serious))',
-  d61_90: 'rgb(var(--critical))',
-  d90_plus: 'rgb(var(--critical-text))',
-};
 
 const pct = (v: string) => Math.round(Number(v));
 
@@ -96,7 +87,6 @@ export default function ReceivablesPage() {
     (live) => live.receivables,
   );
   const [drafting, setDrafting] = useState<Debtor | null>(null);
-  const [verifying, setVerifying] = useState<Debtor | null>(null);
   const { source } = useWorkspace();
   const { t } = useT();
   const sample = source === 'sample';
@@ -116,7 +106,9 @@ export default function ReceivablesPage() {
     );
 
   const r = state.data;
-  const buckets = Object.entries(r.buckets);
+  const bucketSegments: Segment[] = Object.entries(r.buckets).map(([key, b]) => ({ key, label: t(`bucket.${key}` as Key), value: stringToCents(b.amount), color: BUCKET_COLORS[key] }));
+  const byOverdue = r.top_debtors.filter((d) => stringToCents(d.overdue_amount) > 0).sort((a, b) => stringToCents(b.overdue_amount) - stringToCents(a.overdue_amount));
+  const topOverdue = Math.max(1, ...byOverdue.map((d) => stringToCents(d.overdue_amount)));
   const top = r.top_debtors[0];
 
   return (
@@ -143,40 +135,42 @@ export default function ReceivablesPage() {
         ))}
       </dl>
 
-      <section className="mt-10 rounded-xl border bg-card p-5 sm:p-6">
-        <SectionTitle aside={t('rec.asOf', { date: formatDate(r.as_of_date, true) })}>{t('rec.howLate')}</SectionTitle>
-        <div className="flex h-3 w-full gap-0.5 overflow-hidden rounded-full" role="img" aria-label={t('rec.barAria')}>
-          {buckets
-            .filter(([, b]) => Number(b.percentage) > 0)
-            .map(([key, b], i) => (
-              <Tooltip key={key}>
-                <TooltipTrigger asChild>
+      <div className="mt-6 grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.3fr)]">
+        <section className="rounded-xl border bg-card p-5 sm:p-6">
+          <SectionTitle aside={t('rec.asOf', { date: formatDate(r.as_of_date, true) })}>{t('rec.howLate')}</SectionTitle>
+          <div className="flex flex-col items-center gap-6 sm:flex-row">
+            <Donut segments={bucketSegments} label={t('rec.barAria')}>
+              <span className="text-xs text-muted-foreground">{t('rec.overdue')}</span>
+              <Money value={r.total_overdue} cents={false} className="font-display text-2xl font-semibold" />
+              <span className="text-xs text-muted-foreground">{t('rec.overdueNote', { pct: pct(r.overdue_ratio_pct) })}</span>
+            </Donut>
+            <Legend segments={bucketSegments} format={(v) => formatMoney(centsToString(v), undefined, { cents: false })} />
+          </div>
+        </section>
+        <section className="rounded-xl border bg-card p-5 sm:p-6">
+          <SectionTitle aside={t('rec.byCustomerAside')}>{t('rec.byCustomer')}</SectionTitle>
+          <ul className="space-y-3">
+            {byOverdue.map((d, i) => (
+              <li key={d.customer_name} className="grid grid-cols-[minmax(0,9rem)_1fr_auto] items-center gap-3 text-sm">
+                <span className="truncate">{d.customer_name}</span>
+                <span className="relative h-2.5 rounded-full bg-muted" title={t('rec.lateTip', { n: d.max_days_overdue })}>
                   <motion.span
-                    className="h-full origin-left first:rounded-l-full last:rounded-r-full"
-                    style={{ width: `${b.percentage}%`, background: BUCKET_COLORS[key] }}
+                    className={cn('absolute inset-y-0 left-0 rounded-full', d.max_days_overdue > 60 ? 'bg-critical' : d.max_days_overdue > 30 ? 'bg-serious' : 'bg-warning/70')}
+                    style={{ width: `${(stringToCents(d.overdue_amount) / topOverdue) * 100}%`, originX: 0 }}
                     initial={{ scaleX: 0 }}
                     animate={{ scaleX: 1 }}
                     transition={{ ...spring.gentle, delay: i * 0.03 }}
                   />
-                </TooltipTrigger>
-                <TooltipContent>
-                  {t('rec.bucketTip', { label: t(`bucket.${key}` as Key), amount: formatMoney(b.amount), count: t('count.invoices', { n: b.invoice_count }) })}
-                </TooltipContent>
-              </Tooltip>
+                </span>
+                <span className="flex items-baseline gap-2">
+                  <Money value={d.overdue_amount} cents={false} className="font-medium" />
+                  <span className="figures w-12 text-right text-xs text-muted-foreground">{t('rec.daysLate', { n: d.max_days_overdue })}</span>
+                </span>
+              </li>
             ))}
-        </div>
-        <ul className="mt-4 grid grid-cols-2 gap-x-6 gap-y-3 text-sm sm:grid-cols-5">
-          {buckets.map(([key, b]) => (
-            <li key={key}>
-              <span className="flex items-center gap-2 text-muted-foreground">
-                <span className="size-2 rounded-full" style={{ background: BUCKET_COLORS[key] }} aria-hidden />
-                {t(`bucket.${key}` as Key)}
-              </span>
-              <Money value={b.amount} className="mt-0.5 block font-medium" />
-            </li>
-          ))}
-        </ul>
-      </section>
+          </ul>
+        </section>
+      </div>
 
       <section className="mt-6 rounded-xl border bg-card p-5 sm:p-6">
         <SectionTitle>{t('rec.customers')}</SectionTitle>
@@ -204,22 +198,11 @@ export default function ReceivablesPage() {
                     <dd className={`figures ${d.max_days_overdue > 45 ? 'text-critical-text' : ''}`}>{d.max_days_overdue || '–'}</dd>
                   </div>
                 </dl>
-                <div className="flex gap-2">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setVerifying(d)}
-                    className="flex-1 justify-center gap-1.5 text-xs text-muted-foreground border hover:text-foreground"
-                  >
-                    <Fingerprint className="size-3.5" aria-hidden />
-                    {t('rec.blockchainAudit')}
+                {late && (
+                  <Button variant="outline" size="sm" className="w-full" onClick={() => setDrafting(d)}>
+                    {t('rec.draft')}
                   </Button>
-                  {late && (
-                    <Button variant="outline" size="sm" className="flex-1" onClick={() => setDrafting(d)}>
-                      {t('rec.draft')}
-                    </Button>
-                  )}
-                </div>
+                )}
               </li>
             );
           })}
@@ -233,7 +216,6 @@ export default function ReceivablesPage() {
                 <TableHead className="text-right">{t('col.overdue')}</TableHead>
                 <TableHead className="text-right">{t('col.mostLate')}</TableHead>
                 <TableHead className="text-right">{t('col.share')}</TableHead>
-                <TableHead>{t('rec.blockchainAudit')}</TableHead>
                 <TableHead className="w-0" />
               </TableRow>
             </TableHeader>
@@ -248,17 +230,13 @@ export default function ReceivablesPage() {
                     {Number(d.overdue_amount) > 0 ? <Money value={d.overdue_amount} /> : <span className="text-muted-foreground">{t('rec.none')}</span>}
                   </TableCell>
                   <TableCell className={`figures text-right ${d.max_days_overdue > 45 ? 'text-critical-text' : ''}`}>{d.max_days_overdue || '–'}</TableCell>
-                  <TableCell className="figures text-right">{pct(d.share_of_total_ar)}%</TableCell>
-                  <TableCell>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => setVerifying(d)}
-                      className="h-8 gap-1.5 px-2 text-xs font-normal text-muted-foreground hover:text-foreground"
-                    >
-                      <Fingerprint className="size-3.5" aria-hidden />
-                      {t('rec.verifiedBadge')}
-                    </Button>
+                  <TableCell className="text-right">
+                    <span className="inline-flex items-center gap-2.5">
+                      <span className="relative hidden h-1.5 w-16 rounded-full bg-muted xl:block" aria-hidden>
+                        <span className="absolute inset-y-0 left-0 rounded-full bg-ink-2/70" style={{ width: `${Math.min(100, Number(d.share_of_total_ar))}%` }} />
+                      </span>
+                      <span className="figures w-9">{pct(d.share_of_total_ar)}%</span>
+                    </span>
                   </TableCell>
                   <TableCell>
                     {Number(d.overdue_amount) > 0 && (
@@ -290,7 +268,6 @@ export default function ReceivablesPage() {
       </section>
 
       <ReminderDialog debtor={drafting} onClose={() => setDrafting(null)} />
-      <BlockchainVerifyDialog debtor={verifying} onClose={() => setVerifying(null)} />
     </div>
   );
 }

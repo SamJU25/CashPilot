@@ -2,15 +2,14 @@
 
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import { motion } from 'motion/react';
 import { AlertTriangle, CheckCircle2, Minus, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { SplitFlap } from '@/components/common/split-flap';
+import { Gauge } from '@/components/charts/kit';
 import { centsToString, formatDate, formatMoney } from '@/lib/format';
 import { useT } from '@/lib/i18n';
 import { addDaysIso, todayIso } from '@/lib/live-forecast';
-import { spring } from '@/lib/motion';
 import { useIntents, useWorkspace } from '@/lib/workspace';
 import { cn } from '@/lib/utils';
 import type { CashAnalysis } from '@/lib/types';
@@ -67,50 +66,45 @@ export function AutonomousSentinel({ analysis: a }: { analysis: CashAnalysis }) 
 
   const setDays = (n: number) => update({ alertThresholdDays: Math.max(MIN_DAYS, Math.min(MAX_DAYS, n)) });
   const scale = Math.max(60, alertThresholdDays * 1.25, (days ?? 0) * 1.25);
-  const at = (n: number) => `${Math.min(100, (n / scale) * 100)}%`;
 
   const tone = {
-    out: { icon: AlertTriangle, text: 'text-critical-text', bar: 'bg-critical', label: t('sen.out') },
-    inside: { icon: AlertTriangle, text: 'text-warning-text', bar: 'bg-warning', label: t('sen.inside') },
-    clear: { icon: CheckCircle2, text: 'text-good-text', bar: 'bg-good', label: t('sen.clear') },
+    out: { icon: AlertTriangle, text: 'text-critical-text', gauge: 'text-critical', label: t('sen.out') },
+    inside: { icon: AlertTriangle, text: 'text-warning-text', gauge: 'text-warning', label: t('sen.inside') },
+    clear: { icon: CheckCircle2, text: 'text-good-text', gauge: 'text-good', label: t('sen.clear') },
   }[state];
 
   return (
     <div className="space-y-4">
       <section className="grid gap-px overflow-hidden rounded-xl border bg-border lg:grid-cols-[1.4fr_1fr]">
-        <div className="bg-card p-6 sm:p-8">
-          <p className={cn('flex items-center gap-2 text-sm font-medium', tone.text)}>
-            <tone.icon className="size-4" aria-hidden />
-            {tone.label}
-          </p>
-          <h2 className="mt-4 font-display text-4xl font-semibold leading-tight tracking-tight sm:text-5xl">
-            {days === null ? t('sen.noShortfall') : rich('sen.runsShortIn', { n: <SplitFlap text={String(days)} /> })}
-          </h2>
-          {days !== null && shortDate && (
-            <p className="mt-4 max-w-[56ch] text-base leading-relaxed text-ink-2">
-              {state === 'clear'
-                ? t('sen.clearBody', { date: formatDate(shortDate), n: days - alertThresholdDays, window: alertThresholdDays })
-                : t(pending ? 'sen.insideBodyDraft' : 'sen.insideBody', { date: formatDate(shortDate), window: alertThresholdDays })}
+        <div className="grid items-center gap-8 bg-card p-6 sm:p-8 xl:grid-cols-[minmax(0,1fr)_13rem]">
+          <div>
+            <p className={cn('flex items-center gap-2 text-sm font-medium', tone.text)}>
+              <tone.icon className="size-4" aria-hidden />
+              {tone.label}
             </p>
-          )}
-          {inside && pending && (
-            <Button asChild className="mt-6">
-              <Link href="/assistant">{t('ov.hero.review', { amount: formatMoney(centsToString(pending.amount_cents), undefined, { cents: false }) })}</Link>
-            </Button>
-          )}
-
+            <h2 className="mt-4 font-display text-4xl font-semibold leading-tight tracking-tight">
+              {days === null ? t('sen.noShortfall') : rich('sen.runsShortIn', { n: <SplitFlap text={String(days)} /> })}
+            </h2>
+            {days !== null && shortDate && (
+              <p className="mt-4 max-w-[56ch] text-base leading-relaxed text-ink-2">
+                {state === 'clear'
+                  ? t('sen.clearBody', { date: formatDate(shortDate), n: days - alertThresholdDays, window: alertThresholdDays })
+                  : t(pending ? 'sen.insideBodyDraft' : 'sen.insideBody', { date: formatDate(shortDate), window: alertThresholdDays })}
+              </p>
+            )}
+            {inside && pending && (
+              <Button asChild className="mt-6">
+                <Link href="/assistant">{t('ov.hero.review', { amount: formatMoney(centsToString(pending.amount_cents), undefined, { cents: false }) })}</Link>
+              </Button>
+            )}
+          </div>
           {days !== null && (
-            <div className="mt-8" aria-hidden>
-              <div className="relative h-2 rounded-full bg-muted">
-                <motion.div className={cn('absolute inset-y-0 left-0 rounded-full', tone.bar)} initial={false} animate={{ width: at(days) }} transition={spring.gentle} />
-                <motion.div className="absolute -inset-y-1.5 w-0.5 rounded bg-foreground" initial={false} animate={{ left: at(alertThresholdDays) }} transition={spring.snappy} />
-              </div>
-              <div className="relative mt-2 h-4 text-xs text-muted-foreground">
-                <span className="absolute left-0">{t('sen.today')}</span>
-                <motion.span className="absolute -translate-x-1/2 whitespace-nowrap font-medium text-foreground" initial={false} animate={{ left: at(alertThresholdDays) }} transition={spring.snappy}>
-                  {t('sen.warnAt', { n: alertThresholdDays })}
-                </motion.span>
-              </div>
+            <div>
+              <Gauge value={days} max={scale} threshold={alertThresholdDays} tone={tone.gauge} label={t('dash.runwayAria', { n: days, w: alertThresholdDays })}>
+                <span className="figures font-display text-3xl font-semibold leading-none">{days}</span>
+                <span className="mt-1 text-[11px] text-muted-foreground">{t('dash.daysLeft')}</span>
+              </Gauge>
+              <p className="mt-3 text-center text-xs text-muted-foreground">{t('dash.windowMark', { n: alertThresholdDays })}</p>
             </div>
           )}
         </div>

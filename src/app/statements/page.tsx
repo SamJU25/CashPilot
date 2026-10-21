@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { Donut, MiniArea } from "@/components/charts/kit";
+import { CATEGORY_COLORS } from "@/components/charts/colors";
 
 import { AnimatePresence, motion } from "motion/react";
 
@@ -52,7 +54,7 @@ import { RunReceipt } from "@/components/copilot/run-receipt";
 
 import { ThinkingIndicator } from "@/components/copilot/thinking-block";
 
-import { formatDate, formatMoney } from "@/lib/format";
+import { centsToString, formatDate, formatMoney, stringToCents } from "@/lib/format";
 
 import { useT, type Key } from "@/lib/i18n";
 
@@ -60,7 +62,7 @@ import { ApiError, api } from "@/lib/api";
 
 import { QuickCashDialog } from "@/components/overview/quick-cash-dialog";
 
-import { ANALYSIS, FILES, SPENDING, buildRuns } from "@/lib/mock/demo";
+import { ANALYSIS, FILES, SERIES, SPENDING, buildRuns } from "@/lib/mock/demo";
 
 import { fade, spring } from "@/lib/motion";
 
@@ -611,14 +613,16 @@ function AccountRow({
   files: allFiles,
   range,
   analysis,
+  history,
 }: {
   id: string;
   files: FileSpan[];
   range: Range;
   analysis: CashAnalysis;
+  history: number[];
 }) {
   const { accountNames, renameAccount } = useWorkspace();
-  const { t } = useT();
+  const { t, lang } = useT();
   const files = [...allFiles.filter((f) => f.account_id === id)].sort((a, b) =>
     (a.start || "").localeCompare(b.start || ""),
   );
@@ -664,165 +668,157 @@ function AccountRow({
     return files.some((f) => f.start && f.end && d >= f.start && d <= f.end);
   });
 
+  const closing = latest?.closing_balance ?? analysis.current_balance;
+  // Month starts inside the statement range, as labels under the coverage bar.
+  const months: { iso: string; left: number }[] = [];
+  if (range.days > 0 && !isNaN(range.start)) {
+    const m = new Date(range.start);
+    m.setUTCDate(1);
+    for (let guard = 0; guard < 24; guard++) {
+      const left = pct(m.toISOString().slice(0, 10));
+      // A label starting in the last sliver would run off the card.
+      if (m.getTime() >= range.start && left < 92) months.push({ iso: m.toISOString().slice(0, 10), left });
+      m.setUTCMonth(m.getUTCMonth() + 1);
+      if (m.getTime() > range.start + range.days * 86_400_000) break;
+    }
+  }
+  const monthFmt = new Intl.DateTimeFormat(lang, { month: "short", timeZone: "UTC" });
+
   return (
-    <li className="grid gap-4 py-5 md:grid-cols-[minmax(200px,260px)_1fr_auto] md:items-center">
-      <div>
-        <label htmlFor={`name-${id}`} className="sr-only">
-          {t("st.accountName")}
-        </label>
-
-        <div className="group relative flex items-center max-w-[240px]">
-          <Input
-            id={`name-${id}`}
-
-            value={name}
-
-            onChange={(e) => setName(e.target.value)}
-
-            onBlur={() => renameAccount(id, name)}
-
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                (e.target as HTMLInputElement).blur();
-              }
-            }}
-
-            className="h-8 rounded-md border border-input/60 bg-card/60 px-2.5 pr-8 text-sm font-medium text-foreground transition-colors hover:border-input focus-visible:border-primary focus-visible:bg-card focus-visible:ring-1 focus-visible:ring-primary shadow-xs"
-          />
-
-          <Pencil
-            className="pointer-events-none absolute right-2.5 size-3.5 text-muted-foreground/70"
-            aria-hidden
-          />
-        </div>
-
-        <p className="text-xs text-muted-foreground mt-1">
-          {t("count.files", { n: files.length })},{" "}
-          {t("count.tx", { n: txCount })}, {analysis.currency}
-        </p>
-      </div>
-
-      <div>
-        <div
-          className="relative h-6 rounded bg-muted overflow-hidden"
-          aria-hidden
-        >
-          {contiguousSpans(files).map((span) => (
-            <div
-              key={span.start + span.end}
-
-              className="absolute inset-y-1 rounded-sm bg-primary/70 transition-all duration-300"
-
-              style={{
-                left: `${pct(span.start)}%`,
-                width: `${pct(span.end) - pct(span.start) + 100 / range.days}%`,
+    <li className="flex flex-col rounded-xl border bg-card p-5">
+      <div className="flex items-start justify-between gap-4">
+        <div className="min-w-0 flex-1">
+          <label htmlFor={`name-${id}`} className="sr-only">
+            {t("st.accountName")}
+          </label>
+          <div className="group relative flex max-w-[16rem] items-center">
+            <Input
+              id={`name-${id}`}
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              onBlur={() => renameAccount(id, name)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") (e.target as HTMLInputElement).blur();
               }}
-
-              title={`${span.files.join(", ")}: ${formatDate(span.start)} to ${formatDate(span.end)}`}
+              className="h-9 -ml-2 rounded-md border-transparent bg-transparent px-2 pr-8 font-display text-lg font-semibold shadow-none transition-colors hover:border-input focus-visible:border-primary focus-visible:bg-background"
             />
-          ))}
-
-          {/* Missing statement gap regions on timeline */}
-
-          {missingGaps.map((g) => {
-            const left = Math.max(0, Math.min(99, pct(g.from)));
-
-            const width = Math.max(
-              1.5,
-              Math.min(100 - left, pct(g.to) - pct(g.from) + 100 / range.days),
-            );
-
-            return (
-              <div
-                key={g.from + g.to}
-
-                className="absolute inset-y-1 rounded-xs border border-warning/40 bg-[repeating-linear-gradient(135deg,rgb(var(--warning)/0.22),rgb(var(--warning)/0.22)_3px,transparent_3px,transparent_6px)] transition-all z-10"
-
-                style={{ left: `${left}%`, width: `${width}%` }}
-
-                title={t("st.gapTitle", { range: g.label })}
-              >
-                <span className="sr-only">{t("st.gapTitle", { range: g.label })}</span>
-              </div>
-            );
-          })}
-
-          {/* Precision vertical hairline ticks flush within the bar */}
-
-          {accountRejected.map((r) => {
-            const dateStr = r.suggested_fix?.posted_on;
-
-            if (!dateStr) return null;
-
-            const leftPct = Math.max(0.5, Math.min(99.5, pct(dateStr)));
-
-            const theme =
-              REASON_THEMES[r.reason_code] ?? REASON_THEMES.INVALID_DATE;
-
-            return (
-              <div
-                key={r.row_number}
-
-                className={cn(
-                  "absolute inset-y-1 w-[2.5px] -translate-x-1/2 z-20 rounded-[0.5px] cursor-pointer transition-all hover:w-[4px] hover:z-30",
-
-                  theme.bar,
-                )}
-
-                style={{ left: `${leftPct}%` }}
-
-                title={t("st.flagTitle", { n: r.row_number, reason: t(`reason.${r.reason_code}` as Key), date: formatDate(dateStr) })}
-              >
-                <span className="sr-only">{t("st.rowN", { n: r.row_number })}</span>
-              </div>
-            );
-          })}
+            <Pencil className="pointer-events-none absolute right-2 size-3.5 text-muted-foreground/70 opacity-0 transition-opacity group-hover:opacity-100 group-focus-within:opacity-100" aria-hidden />
+          </div>
+          <p className="text-xs text-muted-foreground">
+            {t("count.files", { n: files.length })}, {t("count.tx", { n: txCount })}, {analysis.currency}
+          </p>
         </div>
-
-        <p className="mt-1.5 text-xs text-muted-foreground">
-          {files
-            .map((f) =>
-              t("common.range", {
-                from: formatDate(f.start),
-                to: formatDate(f.end),
-              }),
-            )
-            .join(", ")}
-          .{" "}
-          {gaps.length > 0 ? (
-            <span className="text-warning-text font-medium">
-              {t("st.gap", { ranges: gaps.join(t("st.and")) })}
-            </span>
-          ) : (
-            <span className="text-good-text font-medium inline-flex items-center gap-1">
-              <CheckCircle2 className="h-3 w-3" />
-
-              {t("st.connected")}
-            </span>
-          )}
-          {accountRejected.length > 0 && (
-            <span className="ml-2 inline-flex items-center gap-1.5 font-medium text-warning-text">
-              <span className="inline-block size-1.5 rounded-full bg-warning" />
-              {t("st.flagged", { n: accountRejected.length })}
-            </span>
-          )}
-        </p>
+        <div className="shrink-0 text-right">
+          <p className="text-xs text-muted-foreground">{t("st.closing")}</p>
+          <Money value={closing} className="font-display text-2xl font-semibold tracking-tight" />
+        </div>
       </div>
 
-      <div className="md:text-right">
-        <p className="text-xs text-muted-foreground">{t("st.closing")}</p>
+      {history.length > 1 && <MiniArea values={history} className="mt-4 h-14" label={t("st.balanceTrend", { name })} />}
 
-        {latest ? (
-          <Money
-            value={latest.closing_balance}
-            className="text-base font-semibold"
-          />
+      <div className="mt-5">
+          <div
+            className="relative h-6 rounded bg-muted overflow-hidden"
+            aria-hidden
+          >
+            {contiguousSpans(files).map((span) => (
+              <div
+                key={span.start + span.end}
+
+                className="absolute inset-y-1 rounded-sm bg-primary/70 transition-all duration-300"
+
+                style={{
+                  left: `${pct(span.start)}%`,
+                  width: `${pct(span.end) - pct(span.start) + 100 / range.days}%`,
+                }}
+
+                title={`${span.files.join(", ")}: ${formatDate(span.start)} to ${formatDate(span.end)}`}
+              />
+            ))}
+
+            {/* Missing statement gap regions on timeline */}
+
+            {missingGaps.map((g) => {
+              const left = Math.max(0, Math.min(99, pct(g.from)));
+
+              const width = Math.max(
+                1.5,
+                Math.min(100 - left, pct(g.to) - pct(g.from) + 100 / range.days),
+              );
+
+              return (
+                <div
+                  key={g.from + g.to}
+
+                  className="absolute inset-y-1 rounded-xs border border-warning/40 bg-[repeating-linear-gradient(135deg,rgb(var(--warning)/0.22),rgb(var(--warning)/0.22)_3px,transparent_3px,transparent_6px)] transition-all z-10"
+
+                  style={{ left: `${left}%`, width: `${width}%` }}
+
+                  title={t("st.gapTitle", { range: g.label })}
+                >
+                  <span className="sr-only">{t("st.gapTitle", { range: g.label })}</span>
+                </div>
+              );
+            })}
+
+            {/* Precision vertical hairline ticks flush within the bar */}
+
+            {accountRejected.map((r) => {
+              const dateStr = r.suggested_fix?.posted_on;
+
+              if (!dateStr) return null;
+
+              const leftPct = Math.max(0.5, Math.min(99.5, pct(dateStr)));
+
+              const theme =
+                REASON_THEMES[r.reason_code] ?? REASON_THEMES.INVALID_DATE;
+
+              return (
+                <div
+                  key={r.row_number}
+
+                  className={cn(
+                    "absolute inset-y-1 w-[2.5px] -translate-x-1/2 z-20 rounded-[0.5px] cursor-pointer transition-all hover:w-[4px] hover:z-30",
+
+                    theme.bar,
+                  )}
+
+                  style={{ left: `${leftPct}%` }}
+
+                  title={t("st.flagTitle", { n: r.row_number, reason: t(`reason.${r.reason_code}` as Key), date: formatDate(dateStr) })}
+                >
+                  <span className="sr-only">{t("st.rowN", { n: r.row_number })}</span>
+                </div>
+              );
+            })}
+          </div>
+        <div className="relative mt-1.5 h-4 text-[11px] text-muted-foreground" aria-hidden>
+          {months.map((m) => (
+            <span key={m.iso} className="absolute whitespace-nowrap" style={{ left: `${m.left}%` }}>
+              {monthFmt.format(new Date(`${m.iso}T00:00:00Z`))}
+            </span>
+          ))}
+        </div>
+      </div>
+
+      <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 border-t pt-3 text-xs">
+        {gaps.length > 0 ? (
+          <span className="font-medium text-warning-text">{t("st.gap", { ranges: gaps.join(t("st.and")) })}</span>
         ) : (
-          <Money
-            value={analysis.current_balance}
-            className="text-base font-semibold"
-          />
+          <span className="inline-flex items-center gap-1 font-medium text-good-text">
+            <CheckCircle2 className="size-3.5" aria-hidden />
+            {t("st.connectedShort")}
+          </span>
         )}
+        {accountRejected.length > 0 && (
+          <span className="inline-flex items-center gap-1.5 font-medium text-warning-text">
+            <span className="inline-block size-1.5 rounded-full bg-warning" aria-hidden />
+            {t("st.flagged", { n: accountRejected.length })}
+          </span>
+        )}
+        <span className="ml-auto text-muted-foreground">
+          {files.map((f) => t("common.range", { from: formatDate(f.start), to: formatDate(f.end) })).join(", ")}
+        </span>
       </div>
     </li>
   );
@@ -868,6 +864,12 @@ function Results({
   const { files, range } = layout(analysis, sample);
 
   const accounts = Array.from(new Set(files.map((f) => f.account_id)));
+
+  // Each account's daily balance, from the sample series or what /analyze returned.
+  const accountHistory = (id: string) =>
+    ((sample ? SERIES : analysis.account_history ?? []).find((x) => x.account_id === id)?.points ?? [])
+      .filter((p) => p.balance !== null)
+      .map((p) => stringToCents(p.balance as string));
 
   const transfers = analysis.internal_transfers ?? [];
 
@@ -1085,7 +1087,7 @@ function Results({
           {t("st.accounts")}
         </SectionTitle>
 
-        <ul className="divide-y border-y">
+        <ul className={cn("grid gap-4", accounts.length > 1 && "lg:grid-cols-2")}>
           {accounts.map((id) => (
             <AccountRow
               key={id}
@@ -1093,6 +1095,7 @@ function Results({
               files={files}
               range={range}
               analysis={analysis}
+              history={accountHistory(id)}
             />
           ))}
         </ul>
@@ -1118,7 +1121,7 @@ function Results({
         </div>
       </section>
 
-      <div className="grid gap-6">
+      <div className="grid gap-6 [&>*]:min-w-0">
         {transfers.length > 0 && (
           <section className="rounded-xl border bg-card p-5 md:p-6">
             <SectionTitle
@@ -1690,7 +1693,16 @@ function Results({
               {t("st.spendNote")}
             </p>
 
-            <ul className="space-y-3.5">
+            <div className="flex flex-col items-center gap-8 md:flex-row md:items-center">
+            <Donut
+              segments={SPENDING.map((x) => ({ key: x.category, label: t(`cat.${x.category}` as Key), value: x.cents, color: CATEGORY_COLORS[x.category] ?? 'rgb(var(--muted-foreground))' }))}
+              label={t("st.spend")}
+              size={176}
+            >
+              <span className="text-xs text-muted-foreground">{t("fig.out")}</span>
+              <Money value={centsToString(totalSpend)} cents={false} className="font-display text-xl font-semibold" />
+            </Donut>
+            <ul className="w-full flex-1 space-y-3.5">
               {SPENDING.map((s) => {
                 const pct =
                   totalSpend > 0
@@ -1708,7 +1720,8 @@ function Results({
 
                     <div className="relative h-2 w-full overflow-hidden rounded-full bg-muted/80">
                       <motion.div
-                        className="absolute inset-y-0 left-0 rounded-full bg-primary"
+                        className="absolute inset-y-0 left-0 rounded-full"
+                        style={{ background: CATEGORY_COLORS[s.category] ?? 'rgb(var(--primary))' }}
 
                         initial={{ width: 0 }}
 
@@ -1732,6 +1745,7 @@ function Results({
                 );
               })}
             </ul>
+            </div>
           </>
         ) : analysis.recurring_obligations &&
           analysis.recurring_obligations.length > 0 ? (

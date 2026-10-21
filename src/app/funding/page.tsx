@@ -5,6 +5,7 @@ import { motion } from 'motion/react';
 import { AlertOctagon, ShieldCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Money, PageHeader, SectionTitle } from '@/components/common/bits';
+import { ScoreRing } from '@/components/charts/kit';
 import { UnderwritingDossierDialog } from '@/components/funding/underwriting-dossier-dialog';
 import { EmptyState, ErrorState, LoadingBlock } from '@/components/common/states';
 import { centsToString, formatDate, formatMoney, stringToCents } from '@/lib/format';
@@ -44,56 +45,151 @@ function ScoreScale({ score }: { score: number }) {
   );
 }
 
-function OfferRow({ o, needCents, drafted, best, sample }: { o: FinancingOption; needCents: number; drafted: boolean; best: boolean; sample: boolean }) {
-  const cost = costToBorrow(needCents, o.apr_percent);
+const PREDATORY_APR = 36;
+
+/** True APR on a scale shared by every offer, with the predatory line marked. */
+function AprMeter({ apr, max, predatory }: { apr: number; max: number; predatory: boolean }) {
+  return (
+    <div className="relative mt-2 h-1.5 w-full max-w-[11rem] rounded-full bg-muted" aria-hidden>
+      <motion.div
+        className={cn('absolute inset-y-0 left-0 rounded-full', predatory ? 'bg-critical' : 'bg-ink-2/70')}
+        initial={{ scaleX: 0 }}
+        animate={{ scaleX: 1 }}
+        style={{ width: `${Math.min(100, (apr / max) * 100)}%`, originX: 0 }}
+        transition={spring.gentle}
+      />
+      <span className="absolute -inset-y-1 w-px bg-foreground/70" style={{ left: `${(PREDATORY_APR / max) * 100}%` }} />
+    </div>
+  );
+}
+
+function useQuote(o: FinancingOption, sample: boolean) {
   const { t } = useT();
   // The lender's own wording is translated for the sample offers; live offers carry it as quoted_as.
   const quoteIndex = sample ? OPTIONS.findIndex((x) => x.provider === o.provider) : -1;
+  return quoteIndex >= 0 ? t(`quote.${quoteIndex}` as Key) : (o.quoted_as ?? null);
+}
+
+function Stat({ label, children, className }: { label: string; children: React.ReactNode; className?: string }) {
   return (
-    <li className={cn('relative grid gap-4 px-5 py-5 sm:px-6 md:grid-cols-[1.5fr_1fr_1fr_auto] md:items-center', o.is_predatory && 'bg-critical/5')}>
-      {o.is_predatory && <span className="absolute inset-y-0 left-0 w-0.5 bg-critical" aria-hidden />}
-      <div>
-        <p className="flex flex-wrap items-center gap-2 font-medium">
-          {o.provider}
-          {best && <span className="rounded-full bg-accent px-2 py-0.5 text-xs font-medium text-accent-foreground">{t('fund.best')}</span>}
-        </p>
-        <p className="mt-0.5 text-sm text-muted-foreground">
-          {t('fund.offerMeta', { product: t(`product.${o.product_type}` as Key), amount: formatMoney(o.max_amount, undefined, { cents: false }), days: o.term_days })}
-        </p>
-        {o.is_predatory && (
-          <p className="mt-2 flex items-start gap-1.5 text-sm text-critical-text">
-            <AlertOctagon className="mt-0.5 size-4 shrink-0" aria-hidden />
-            {t('fund.predatory')}
-          </p>
-        )}
+    <div className={className}>
+      <p className="text-xs text-muted-foreground">{label}</p>
+      <div className="mt-1">{children}</div>
+    </div>
+  );
+}
+
+const fitTone = (n: number) => (n >= 75 ? 'text-good' : n >= 50 ? 'text-warning' : 'text-critical');
+
+/** The offer that fits best, with its numbers side by side and the next step on it. */
+function BestOffer({ o, needCents, drafted, sample, aprMax }: { o: FinancingOption; needCents: number; drafted: boolean; sample: boolean; aprMax: number }) {
+  const { t } = useT();
+  const quote = useQuote(o, sample);
+  return (
+    <article className="rounded-xl border border-primary/40 bg-card p-6 shadow-[0_0_0_4px_rgb(var(--primary)/0.06)] sm:p-7">
+      <div className="flex flex-wrap items-start justify-between gap-4">
+        <div>
+          <span className="rounded-full bg-accent px-2 py-0.5 text-xs font-medium text-accent-foreground">{t('fund.best')}</span>
+          <h3 className="mt-2 font-display text-2xl font-semibold tracking-tight">{o.provider}</h3>
+          <p className="text-sm text-muted-foreground">{t('fund.offerMeta', { product: t(`product.${o.product_type}` as Key), amount: formatMoney(o.max_amount, undefined, { cents: false }), days: o.term_days })}</p>
+        </div>
+        <div className="flex items-center gap-3">
+          <div className="text-right">
+            <p className="text-xs text-muted-foreground">{t('fund.fitLabel')}</p>
+            <p className="text-xs text-ink-2">{t('fund.fitOutOf')}</p>
+          </div>
+          <ScoreRing value={o.suitability_score} tone={fitTone(o.suitability_score)} size={52} label={t('fund.fit', { n: o.suitability_score })} />
+        </div>
       </div>
-      <div>
-        <p className={cn('figures font-display text-3xl font-semibold tracking-tight', o.is_predatory && 'text-critical-text')}>{o.apr_percent}%</p>
-        <p className="text-xs text-muted-foreground">
-          {quoteIndex >= 0 || o.quoted_as ? t('fund.trueApr', { quote: quoteIndex >= 0 ? t(`quote.${quoteIndex}` as Key) : o.quoted_as! }) : t('lv.trueApr')}
-        </p>
+
+      <div className="mt-6 grid gap-6 border-t pt-6 sm:grid-cols-3">
+        <Stat label={t('fund.colApr')}>
+          <p className="figures font-display text-4xl font-semibold leading-none tracking-tight">{o.apr_percent}%</p>
+          <AprMeter apr={Number(o.apr_percent)} max={aprMax} predatory={false} />
+        </Stat>
+        <Stat label={t('fund.costFor', { days: COMPARE_DAYS })}>
+          <Money value={centsToString(costToBorrow(needCents, o.apr_percent))} className="font-display text-4xl font-semibold leading-none tracking-tight" />
+        </Stat>
+        <Stat label={t('fund.colLimit')}>
+          <Money value={o.max_amount} cents={false} className="font-display text-4xl font-semibold leading-none tracking-tight" />
+        </Stat>
       </div>
-      <div>
-        <Money value={centsToString(cost)} className="font-display text-2xl font-semibold tracking-tight" />
-        <p className="text-xs text-muted-foreground">{t('fund.costShort')}</p>
-      </div>
-      <div className="flex items-center gap-3 md:flex-col md:items-end md:gap-1.5">
-        <span className="figures text-sm text-muted-foreground">{t('fund.fit', { n: o.suitability_score })}</span>
+
+      <div className="mt-6 flex flex-wrap items-center justify-between gap-4">
+        <p className="max-w-xl text-sm text-muted-foreground">{quote ? t('fund.theyQuote', { quote }) : t('lv.trueApr')}</p>
         {drafted && (
-          <Button asChild size="sm">
+          <Button asChild>
             <Link href="/assistant">{t('fund.review')}</Link>
           </Button>
         )}
       </div>
-    </li>
+    </article>
+  );
+}
+
+function OfferCard({ o, needCents, drafted, sample, aprMax }: { o: FinancingOption; needCents: number; drafted: boolean; sample: boolean; aprMax: number }) {
+  const { t } = useT();
+  const quote = useQuote(o, sample);
+  return (
+    <article className="flex flex-col rounded-xl border bg-card p-5">
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <h3 className="truncate font-medium">{o.provider}</h3>
+          <p className="text-sm text-muted-foreground">{t(`product.${o.product_type}` as Key)}</p>
+        </div>
+        <ScoreRing value={o.suitability_score} tone={fitTone(o.suitability_score)} label={t('fund.fit', { n: o.suitability_score })} />
+      </div>
+      <div className="mt-5 grid grid-cols-2 gap-4">
+        <Stat label={t('fund.colApr')}>
+          <p className="figures font-display text-2xl font-semibold leading-none">{o.apr_percent}%</p>
+          <AprMeter apr={Number(o.apr_percent)} max={aprMax} predatory={false} />
+        </Stat>
+        <Stat label={t('fund.costFor', { days: COMPARE_DAYS })}>
+          <Money value={centsToString(costToBorrow(needCents, o.apr_percent))} className="font-display text-2xl font-semibold leading-none" />
+        </Stat>
+      </div>
+      <p className="mt-4 text-xs text-muted-foreground">{t('fund.offerMeta', { product: t(`product.${o.product_type}` as Key), amount: formatMoney(o.max_amount, undefined, { cents: false }), days: o.term_days })}</p>
+      {quote && <p className="mt-1 text-xs text-muted-foreground">{t('fund.theyQuote', { quote })}</p>}
+      {drafted && (
+        <Button asChild size="sm" className="mt-4 self-start">
+          <Link href="/assistant">{t('fund.review')}</Link>
+        </Button>
+      )}
+    </article>
+  );
+}
+
+/** Kept out of the ranking: shown so the owner recognises the pattern if this lender calls. */
+function PredatoryOffer({ o, needCents, sample, aprMax }: { o: FinancingOption; needCents: number; sample: boolean; aprMax: number }) {
+  const { t } = useT();
+  const quote = useQuote(o, sample);
+  return (
+    <article className="grid gap-5 rounded-xl border border-critical/40 bg-critical/5 p-5 md:grid-cols-[minmax(0,1.4fr)_1fr_1fr] md:items-center">
+      <div>
+        <p className="flex items-center gap-1.5 text-sm font-medium text-critical-text">
+          <AlertOctagon className="size-4 shrink-0" aria-hidden />
+          {t('fund.avoid')}
+        </p>
+        <h3 className="mt-1 font-medium">{o.provider}</h3>
+        <p className="text-sm text-muted-foreground">{t('fund.predatory')}</p>
+      </div>
+      <Stat label={t('fund.colApr')}>
+        <p className="figures font-display text-2xl font-semibold leading-none text-critical-text">{o.apr_percent}%</p>
+        <AprMeter apr={Number(o.apr_percent)} max={aprMax} predatory />
+        {quote && <p className="mt-2 text-xs text-muted-foreground">{t('fund.theyQuote', { quote })}</p>}
+      </Stat>
+      <Stat label={t('fund.costFor', { days: COMPARE_DAYS })}>
+        <Money value={centsToString(costToBorrow(needCents, o.apr_percent))} className="font-display text-2xl font-semibold leading-none" />
+      </Stat>
+    </article>
   );
 }
 
 export default function FundingPage() {
   const state = useData<{ dossier: typeof DOSSIER; options: FinancingOption[]; forecast: Forecast | null }>(
     () => ({ dossier: DOSSIER, options: OPTIONS, forecast: BASE.forecast }),
-    // shortcut: no forecast until /analyze returns one (handoff item 1), so the bridge amount is not shown for live data.
-    (live) => live.underwrite && { ...live.underwrite, forecast: null },
+    // Connect the live analysis forecast so the bridge amount and shortfall date display for live data.
+    (live) => live.underwrite && { ...live.underwrite, forecast: live.analysis?.forecast ?? null },
   );
   const { source, live } = useWorkspace();
   const intents = useIntents();
@@ -125,7 +221,11 @@ export default function FundingPage() {
   const needCents = stringToCents(f?.recommended_bridge_amount ?? d.max_qualified_limit);
   const drafted = intents.find((i) => i.status === 'STAGED_PENDING_HITL')?.target_identifier;
   const sorted = [...options].sort((a, b) => Number(a.is_predatory) - Number(b.is_predatory) || b.suitability_score - a.suitability_score);
-  const bestProvider = sorted.find((o) => !o.is_predatory)?.provider;
+  const sample = source === 'sample';
+  const fair = sorted.filter((o) => !o.is_predatory);
+  const [best, ...others] = fair;
+  const predatory = sorted.filter((o) => o.is_predatory);
+  const aprMax = Math.max(PREDATORY_APR * 2, ...options.map((o) => Number(o.apr_percent) * 1.1));
 
   return (
     <div>
@@ -179,14 +279,24 @@ export default function FundingPage() {
         <SectionTitle aside={t('fund.costBasis', { amount: formatMoney(centsToString(needCents), undefined, { cents: false }), days: COMPARE_DAYS })}>
           {t('fund.offers')}
         </SectionTitle>
-        <ul className="divide-y overflow-hidden rounded-xl border bg-card">
-          {sorted.map((o) => (
-            <OfferRow key={o.provider} o={o} needCents={needCents} drafted={o.provider === drafted} best={o.provider === bestProvider} sample={source === 'sample'} />
+        <div className="space-y-4">
+          {best && <BestOffer o={best} needCents={needCents} drafted={best.provider === drafted} sample={sample} aprMax={aprMax} />}
+          {others.length > 0 && (
+            <div className={cn("grid gap-4 md:grid-cols-2", others.length >= 3 && "xl:grid-cols-3")}>
+              {others.map((o) => (
+                <OfferCard key={o.provider} o={o} needCents={needCents} drafted={o.provider === drafted} sample={sample} aprMax={aprMax} />
+              ))}
+            </div>
+          )}
+          {predatory.map((o) => (
+            <PredatoryOffer key={o.provider} o={o} needCents={needCents} sample={sample} aprMax={aprMax} />
           ))}
-        </ul>
+        </div>
         <p className="mt-4 flex max-w-2xl items-start gap-2 text-sm text-muted-foreground">
           <ShieldCheck className="mt-0.5 size-4 shrink-0" aria-hidden />
-          {t('fund.footer')}
+          <span>
+            {t('fund.footer')} {t('fund.meterNote', { n: PREDATORY_APR })}
+          </span>
         </p>
       </section>
     </div>

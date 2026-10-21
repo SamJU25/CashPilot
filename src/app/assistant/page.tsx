@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 import Link from 'next/link';
-import { ArrowUp, ArrowUpRight, Check, Clock, Copy, Download, FileText, MessageSquare, PanelRightOpen, Pencil, Square, X } from 'lucide-react';
+import { ArrowUp, ArrowUpRight, Check, Clock, Copy, Download, FileText, MessageSquare, PanelRightOpen, Pencil, Square, SquarePen, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ErrorState, LoadingBlock } from '@/components/common/states';
 import { RunReceipt } from '@/components/copilot/run-receipt';
@@ -18,7 +18,7 @@ import { ThinkingIndicator } from '@/components/copilot/thinking-block';
 import { AnswerMarkdown } from '@/components/copilot/answer-markdown';
 import { useData } from '@/lib/use-data';
 import { useIntents, useWorkspace } from '@/lib/workspace';
-import { ApiError, api, llmConfig, type ProposedEntry } from '@/lib/api';
+import { ApiError, api, llmConfig, resetSession, type ProposedEntry } from '@/lib/api';
 import { Briefing } from '@/components/copilot/briefing';
 import { EntryCard, type EntryStatus } from '@/components/copilot/entry-card';
 import type { ActionType, IntentStatus, RunStep, StagedActionIntent } from '@/lib/types';
@@ -438,6 +438,7 @@ export default function AssistantPage() {
       try {
         window.sessionStorage.removeItem(CHAT_KEY);
       } catch {}
+      api.clearSession().catch(() => {}).finally(resetSession);
     };
     window.addEventListener('cashpilot:new-chat', handleNewChat);
     return () => window.removeEventListener('cashpilot:new-chat', handleNewChat);
@@ -661,7 +662,7 @@ export default function AssistantPage() {
   const assistantHeader = (
     <header className="flex shrink-0 flex-col gap-3 border-b pb-3 pt-1 sm:flex-row sm:items-center sm:justify-between">
       <div className="space-y-0.5">
-        <h1 className="text-xl font-semibold tracking-tight">{t('nav.assistant')}</h1>
+        <h1 className="font-display text-2xl font-semibold tracking-tight">{t('nav.assistant')}</h1>
         <p className="hidden max-w-xl text-xs leading-normal text-muted-foreground sm:block">
           {provider === 'local' && !activeLocal
             ? t('as.descNoModel')
@@ -669,6 +670,12 @@ export default function AssistantPage() {
         </p>
       </div>
       <div className="flex shrink-0 items-center gap-2 self-start sm:self-center">
+        {messages.length > 0 && (
+          <Button type="button" variant="outline" size="sm" onClick={() => window.dispatchEvent(new CustomEvent('cashpilot:new-chat'))} className="h-8 gap-1.5 px-2.5 text-xs">
+            <SquarePen className="size-3.5" aria-hidden />
+            {t('as.newChat')}
+          </Button>
+        )}
         {messages.length > 0 && (
           <Button
             type="button"

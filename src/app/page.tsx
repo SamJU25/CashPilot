@@ -7,14 +7,13 @@ import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ErrorState } from '@/components/common/states';
 import { Money, SectionTitle, SeverityBadge } from '@/components/common/bits';
-import { KeyFigures } from '@/components/overview/key-figures';
-import { WorkingCapitalCard } from '@/components/overview/working-capital-card';
+import { FundingSummary, HealthSummary, KpiCards, ReceivablesSummary, RunwayGauge } from '@/components/overview/dashboard';
 import { RunwayChart, type ChartHistory } from '@/components/overview/runway-chart';
 import { ApiError } from '@/lib/api';
 import { addDaysIso, liveHistory, liveProjection, runScenario, todayIso } from '@/lib/live-forecast';
 import { WhatIf } from '@/components/overview/what-if';
 import { centsToString, formatDate, formatMoney, stringToCents } from '@/lib/format';
-import { ANALYSIS, ANCHOR, BASE, BASE_SCENARIO, COMPANY, INTENTS, OVERDUE_INVOICE, RECEIVABLES, SERIES, TODAY, TOTAL_SERIES, project, type Projection, type Scenario } from '@/lib/mock/demo';
+import { ANALYSIS, ANCHOR, BASE, BASE_SCENARIO, COMPANY, INTENTS, OVERDUE_INVOICE, OPTIONS, RECEIVABLES, SERIES, TODAY, TOTAL_SERIES, project, type Projection, type Scenario } from '@/lib/mock/demo';
 import { spring } from '@/lib/motion';
 import { useData } from '@/lib/use-data';
 import { useIntents, useWorkspace } from '@/lib/workspace';
@@ -22,6 +21,7 @@ import type { CashAnalysis } from '@/lib/types';
 import { useT, type Key } from '@/lib/i18n';
 import { QuickCashDialog } from '@/components/overview/quick-cash-dialog';
 import { ShortfallHero } from '@/components/overview/hero';
+import { CashFlowDetail } from '@/components/overview/cash-bridge';
 import { SplitFlap } from '@/components/common/split-flap';
 
 const SAMPLE_HISTORY: ChartHistory = {
@@ -30,6 +30,10 @@ const SAMPLE_HISTORY: ChartHistory = {
 };
 
 /** Page-level tools: entering cash and refreshing statements sit with the page, away from the decision buttons. */
+function daysUntil(f: { has_projected_deficit: boolean; projected_deficit_date: string | null } | null, today: string) {
+  return f?.has_projected_deficit && f.projected_deficit_date ? Math.max(0, Math.round((Date.parse(f.projected_deficit_date) - Date.parse(today)) / 86_400_000)) : null;
+}
+
 function PageTools() {
   const { t } = useT();
   return (
@@ -150,33 +154,36 @@ function LiveOverview({ analysis: a }: { analysis: CashAnalysis }) {
     : t('lv.hero.basis', { from: formatDate(a.start_date!), to: formatDate(a.end_date!, true), burn: formatMoney(a.average_daily_burn) });
 
   return (
-    <div className="space-y-8">
-      <ShortfallHero
-        forecast={changed && result ? result.forecast : f}
-        baseForecast={f}
-        changed={changed && !!result}
-        today={today}
-        fallback={fallback}
-        alertThresholdDays={alertThresholdDays}
-        tools={<PageTools />}
-        actions={
-          <>
-            {pending && (
-              <Button asChild size="lg">
-                <Link href="/assistant">{t('ov.hero.review', { amount: formatMoney(centsToString(pending.amount_cents), undefined, { cents: false }) })}</Link>
-              </Button>
-            )}
-            <Button asChild size="lg" variant={pending ? 'outline' : 'default'}>
-              <Link href="/funding">{t('ov.hero.compare')}</Link>
-            </Button>
-          </>
-        }
-        basis={<span>{basis}</span>}
-      />
+    <div className="space-y-4">
+      <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_19rem]">
+        <div className="rounded-xl border bg-card p-6 sm:p-8">
+          <ShortfallHero
+            forecast={changed && result ? result.forecast : f}
+            baseForecast={f}
+            changed={changed && !!result}
+            today={today}
+            fallback={fallback}
+            alertThresholdDays={alertThresholdDays}
+            tools={<PageTools />}
+            actions={
+              <>
+                {pending && (
+                  <Button asChild size="lg">
+                    <Link href="/assistant">{t('ov.hero.review', { amount: formatMoney(centsToString(pending.amount_cents), undefined, { cents: false }) })}</Link>
+                  </Button>
+                )}
+                <Button asChild size="lg" variant={pending ? 'outline' : 'default'}>
+                  <Link href="/funding">{t('ov.hero.compare')}</Link>
+                </Button>
+              </>
+            }
+            basis={<span>{basis}</span>}
+          />
+        </div>
+        <RunwayGauge days={daysUntil(changed && result ? result.forecast : f, today)} windowDays={alertThresholdDays} />
+      </div>
 
-      <section aria-label={t('ov.figuresAria')} className="rounded-xl border bg-card px-5 py-5 sm:px-6">
-        <KeyFigures analysis={a} />
-      </section>
+      <KpiCards analysis={a} history={history.total} />
 
       {base && f ? (
         <section className="grid gap-px overflow-hidden rounded-xl border bg-border xl:grid-cols-[1fr_320px]" aria-label={t('ov.forecastAria')}>
@@ -197,7 +204,20 @@ function LiveOverview({ analysis: a }: { analysis: CashAnalysis }) {
         <p className="rounded-lg border border-dashed px-4 py-3 text-sm text-muted-foreground">{t('lv.noForecast')}</p>
       )}
 
-      <WorkingCapitalCard analysis={a} />
+      {base && (
+        <CashFlowDetail
+          points={changed && result ? result.points : base.points}
+          obligations={a.recurring_obligations ?? []}
+          shortfallDate={(changed && result ? result.forecast : f)?.has_projected_deficit ? (changed && result ? result.forecast : f)!.projected_deficit_date : null}
+          today={today}
+        />
+      )}
+
+      <div className="grid gap-4 lg:grid-cols-3">
+        <ReceivablesSummary data={live.receivables ?? null} />
+        <FundingSummary options={live.underwrite?.options ?? null} needCents={f?.has_projected_deficit ? stringToCents(f.recommended_bridge_amount) : null} />
+        <HealthSummary analysis={a} />
+      </div>
     </div>
   );
 }
@@ -243,34 +263,37 @@ function SampleOverview({ analysis, base }: { analysis: CashAnalysis; base: Proj
   const chosenSampleDays = sampleDebtor?.max_days_overdue ?? Math.max(...sampleDebtors.map((d) => d.max_days_overdue));
 
   return (
-    <div className="space-y-8">
-      <ShortfallHero
-        forecast={changed ? result.forecast : f}
-        baseForecast={f}
-        changed={changed}
-        today={TODAY}
-        company={COMPANY}
-        fallback={t('ov.hero.safe')}
-        alertThresholdDays={alertThresholdDays}
-        tools={<PageTools />}
-        actions={
-          <>
-            {pending && (
-              <Button asChild size="lg">
-                <Link href="/assistant">{t('ov.hero.review', { amount: formatMoney(centsToString(pending.amount_cents), undefined, { cents: false }) })}</Link>
-              </Button>
-            )}
-            <Button asChild size="lg" variant={pending ? 'outline' : 'default'}>
-              <Link href="/funding">{t('ov.hero.compare')}</Link>
-            </Button>
-          </>
-        }
-        basis={<span>{t('ov.hero.basis', { n: analysis.accounts_breakdown?.length ?? 1, from: formatDate(analysis.start_date!), to: formatDate(analysis.end_date!, true) })}</span>}
-      />
+    <div className="space-y-4">
+      <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_19rem]">
+        <div className="rounded-xl border bg-card p-6 sm:p-8">
+          <ShortfallHero
+            forecast={changed ? result.forecast : f}
+            baseForecast={f}
+            changed={changed}
+            today={TODAY}
+            company={COMPANY}
+            fallback={t('ov.hero.safe')}
+            alertThresholdDays={alertThresholdDays}
+            tools={<PageTools />}
+            actions={
+              <>
+                {pending && (
+                  <Button asChild size="lg">
+                    <Link href="/assistant">{t('ov.hero.review', { amount: formatMoney(centsToString(pending.amount_cents), undefined, { cents: false }) })}</Link>
+                  </Button>
+                )}
+                <Button asChild size="lg" variant={pending ? 'outline' : 'default'}>
+                  <Link href="/funding">{t('ov.hero.compare')}</Link>
+                </Button>
+              </>
+            }
+            basis={<span>{t('ov.hero.basis', { n: analysis.accounts_breakdown?.length ?? 1, from: formatDate(analysis.start_date!), to: formatDate(analysis.end_date!, true) })}</span>}
+          />
+        </div>
+        <RunwayGauge days={daysUntil(changed ? result.forecast : f, TODAY)} windowDays={alertThresholdDays} />
+      </div>
 
-      <section aria-label={t('ov.figuresAria')} className="rounded-xl border bg-card px-5 py-5 sm:px-6">
-        <KeyFigures analysis={analysis} />
-      </section>
+      <KpiCards analysis={analysis} history={SAMPLE_HISTORY.total} />
 
       <section className="grid gap-px overflow-hidden rounded-xl border bg-border xl:grid-cols-[1fr_320px]" aria-label={t('ov.forecastAria')}>
         <div className="bg-card p-5 sm:p-6">
@@ -301,7 +324,18 @@ function SampleOverview({ analysis, base }: { analysis: CashAnalysis; base: Proj
         </div>
       </section>
 
-      <WorkingCapitalCard analysis={analysis} />
+      <CashFlowDetail
+        points={changed ? result.points : base.points}
+        obligations={analysis.recurring_obligations ?? []}
+        shortfallDate={(changed ? result.forecast : f).has_projected_deficit ? (changed ? result.forecast : f).projected_deficit_date : null}
+        today={TODAY}
+      />
+
+      <div className="grid gap-4 lg:grid-cols-3">
+        <ReceivablesSummary data={RECEIVABLES} />
+        <FundingSummary options={OPTIONS} needCents={f.has_projected_deficit ? stringToCents(f.recommended_bridge_amount) : null} />
+        <HealthSummary analysis={analysis} />
+      </div>
     </div>
   );
 }
