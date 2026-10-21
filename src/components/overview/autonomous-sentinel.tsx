@@ -10,7 +10,6 @@ import {
   Cpu,
   Minus,
   Plus,
-  RefreshCw,
   ShieldCheck,
   Zap,
 } from 'lucide-react';
@@ -85,22 +84,26 @@ export function AutonomousSentinel({ analysis: a }: { analysis: CashAnalysis }) 
   const isTriggered = runwayDays <= alertThresholdDays;
   const deltaDays = Math.abs(alertThresholdDays - runwayDays);
 
-  const handleReevaluate = async () => {
-    setIsEvaluating(true);
-    try {
-      const res = await api.sentinelEvaluate();
-      if (res.timestamp) {
-        const dt = new Date(res.timestamp);
-        setLastAuditTime(dt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }));
-      }
-      const data = await api.sentinelHeartbeat();
-      setTelemetry(data);
-    } catch {
-      setLastAuditTime(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
-    } finally {
-      setIsEvaluating(false);
-    }
-  };
+  // Automatically re-evaluate and sync background telemetry whenever threshold changes
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsEvaluating(true);
+      api.sentinelEvaluate()
+        .then((res) => {
+          if (res.timestamp) {
+            const dt = new Date(res.timestamp);
+            setLastAuditTime(dt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }));
+          }
+          return api.sentinelHeartbeat();
+        })
+        .then((data) => {
+          if (data) setTelemetry(data);
+        })
+        .catch(() => {})
+        .finally(() => setIsEvaluating(false));
+    }, 400);
+    return () => clearTimeout(timer);
+  }, [alertThresholdDays]);
 
   const handleAdjustThreshold = (delta: number) => {
     const next = Math.max(7, Math.min(120, alertThresholdDays + delta));
@@ -168,18 +171,10 @@ export function AutonomousSentinel({ analysis: a }: { analysis: CashAnalysis }) 
         </div>
 
         <div className="flex items-center gap-2 self-start sm:self-auto">
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            onClick={handleReevaluate}
-            disabled={isEvaluating}
-            className="h-8 gap-1.5 text-xs text-muted-foreground hover:text-foreground"
-            title="Trigger an on-demand liquidity and debt audit"
-          >
-            <RefreshCw className={cn('size-3.5', isEvaluating && 'animate-spin text-primary')} aria-hidden />
-            <span>{t('sentinel.reEvaluate')}</span>
-          </Button>
+          <div className="flex items-center gap-1.5 rounded-full border border-primary/25 bg-primary/10 px-2.5 py-1 text-xs text-primary font-mono">
+            <span className="size-1.5 rounded-full bg-primary animate-pulse" aria-hidden />
+            <span>Autonomous Mode</span>
+          </div>
         </div>
       </div>
 

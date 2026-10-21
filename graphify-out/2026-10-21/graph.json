@@ -77187,7 +77187,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/overview/autonomous-sentinel.tsx",
-      "source_location": "L115",
+      "source_location": "L120",
       "weight": 1.0
     },
     {
@@ -77199,7 +77199,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/overview/autonomous-sentinel.tsx",
-      "source_location": "L166",
+      "source_location": "L171",
       "weight": 1.0
     },
     {
@@ -77211,7 +77211,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/overview/autonomous-sentinel.tsx",
-      "source_location": "L175",
+      "source_location": "L180",
       "weight": 1.0
     },
     {
@@ -185400,5 +185400,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "30e212776593d080efcb15afb43b2e4a38c42233"
+  "built_at_commit": "035ee5106ccddbe88e7a42e364c1c15249b43286"
 }
