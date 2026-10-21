@@ -112,6 +112,11 @@ export function AutonomousSentinel({ analysis: a }: { analysis: CashAnalysis }) 
   const targetDate = addDays(anchorDate, alertThresholdDays);
   const targetFormattedDate = targetDate ? formatDate(targetDate) : '';
 
+  const numInputVal = parseInt(thresholdInput, 10);
+  const isUnderMin = !Number.isNaN(numInputVal) && numInputVal < 7;
+  const isOverMax = !Number.isNaN(numInputVal) && numInputVal > 120;
+  const isInputEmpty = thresholdInput.trim() === '';
+
   const shortfallAmount = f?.projected_shortfall_amount ? formatMoney(f.projected_shortfall_amount) : '$13,420.00';
   const bridgeAmount = f?.recommended_bridge_amount ? formatMoney(f.recommended_bridge_amount) : '$15,000.00';
   const deficitFormattedDate = deficitDate ? formatDate(deficitDate) : 'Nov 28, 2026';
@@ -188,13 +193,15 @@ export function AutonomousSentinel({ analysis: a }: { analysis: CashAnalysis }) 
               <span className="font-mono text-[10px] uppercase tracking-wider">Forecast</span>
             </div>
             <div className="mt-2 flex items-baseline gap-2">
-              <span className="figures text-3xl font-bold tracking-tight text-foreground">
-                {runwayDays}
+              <span className={cn('figures text-3xl font-bold tracking-tight', runwayDays <= 0 ? 'text-destructive' : 'text-foreground')}>
+                {runwayDays <= 0 ? 0 : runwayDays}
               </span>
-              <span className="text-xs text-muted-foreground">days until deficit</span>
+              <span className="text-xs text-muted-foreground">
+                {runwayDays <= 0 ? 'days remaining (depleted)' : 'days until deficit'}
+              </span>
             </div>
-            <p className="mt-2 text-xs text-ink-2 truncate">
-              Shortfall on {deficitFormattedDate}
+            <p className={cn('mt-2 text-xs truncate', runwayDays <= 0 ? 'text-destructive font-medium' : 'text-ink-2')}>
+              {runwayDays <= 0 ? 'Cash buffer depleted today · Overdraft imminent' : `Shortfall on ${deficitFormattedDate}`}
             </p>
           </div>
 
@@ -207,13 +214,14 @@ export function AutonomousSentinel({ analysis: a }: { analysis: CashAnalysis }) 
             <div className="mt-2 flex items-center justify-between">
               <div className="flex items-center gap-1.5 min-w-0">
                 <input
-                  type="number"
-                  min={7}
-                  max={120}
+                  type="text"
+                  inputMode="numeric"
+                  pattern="[0-9]*"
                   value={thresholdInput}
                   onChange={(e) => {
-                    setThresholdInput(e.target.value);
-                    const val = parseInt(e.target.value, 10);
+                    const raw = e.target.value.replace(/[^0-9]/g, '');
+                    setThresholdInput(raw);
+                    const val = parseInt(raw, 10);
                     if (!Number.isNaN(val) && val >= 7 && val <= 120) {
                       update({ alertThresholdDays: val });
                     }
@@ -228,7 +236,12 @@ export function AutonomousSentinel({ analysis: a }: { analysis: CashAnalysis }) 
                       setThresholdInput('120');
                     }
                   }}
-                  className="figures w-14 h-9 rounded-md border border-input/60 bg-background px-1.5 text-center text-2xl font-bold tracking-tight text-foreground focus:border-primary focus:outline-hidden focus:ring-1 focus:ring-primary tabular-nums"
+                  className={cn(
+                    'figures w-14 h-9 rounded-md border bg-background px-1 text-center text-2xl font-bold tracking-tight text-foreground focus:outline-hidden focus:ring-1 tabular-nums transition-colors [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none',
+                    isUnderMin || isOverMax || isInputEmpty
+                      ? 'border-warning/70 focus:border-warning focus:ring-warning'
+                      : 'border-input/60 focus:border-primary focus:ring-primary'
+                  )}
                   aria-label="Warning threshold days"
                 />
                 <span className="text-xs text-muted-foreground leading-tight">
@@ -239,8 +252,9 @@ export function AutonomousSentinel({ analysis: a }: { analysis: CashAnalysis }) 
                 <button
                   type="button"
                   onClick={() => handleAdjustThreshold(-5)}
-                  className="flex size-7 items-center justify-center rounded-md border bg-card hover:bg-muted text-foreground transition-colors active:scale-95"
-                  title="Decrease threshold by 5 days"
+                  disabled={alertThresholdDays <= 7}
+                  className="flex size-7 items-center justify-center rounded-md border bg-card hover:bg-muted text-foreground transition-colors active:scale-95 disabled:opacity-35 disabled:cursor-not-allowed"
+                  title={alertThresholdDays <= 7 ? 'Minimum 7 days threshold reached' : 'Decrease threshold by 5 days'}
                   aria-label="Decrease threshold"
                 >
                   <Minus className="size-3.5" />
@@ -248,8 +262,9 @@ export function AutonomousSentinel({ analysis: a }: { analysis: CashAnalysis }) 
                 <button
                   type="button"
                   onClick={() => handleAdjustThreshold(5)}
-                  className="flex size-7 items-center justify-center rounded-md border bg-card hover:bg-muted text-foreground transition-colors active:scale-95"
-                  title="Increase threshold by 5 days"
+                  disabled={alertThresholdDays >= 120}
+                  className="flex size-7 items-center justify-center rounded-md border bg-card hover:bg-muted text-foreground transition-colors active:scale-95 disabled:opacity-35 disabled:cursor-not-allowed"
+                  title={alertThresholdDays >= 120 ? 'Maximum 120 days horizon reached' : 'Increase threshold by 5 days'}
                   aria-label="Increase threshold"
                 >
                   <Plus className="size-3.5" />
@@ -257,9 +272,24 @@ export function AutonomousSentinel({ analysis: a }: { analysis: CashAnalysis }) 
               </div>
             </div>
 
-            <p className="mt-2 text-xs text-ink-2 truncate">
-              Buffer through <span className="font-medium text-foreground">{targetFormattedDate}</span>
-            </p>
+            {/* Target Date or Exception Feedback */}
+            {isUnderMin ? (
+              <p className="mt-2 text-xs text-warning-text font-medium truncate">
+                ⚠️ Min buffer is 7 days (ZenEngine covenant)
+              </p>
+            ) : isOverMax ? (
+              <p className="mt-2 text-xs text-warning-text font-medium truncate">
+                ⚠️ Max horizon is 120 days (treasury policy)
+              </p>
+            ) : isInputEmpty ? (
+              <p className="mt-2 text-xs text-muted-foreground truncate">
+                Enter between 7 and 120 days
+              </p>
+            ) : (
+              <p className="mt-2 text-xs text-ink-2 truncate">
+                Buffer through <span className="font-medium text-foreground">{targetFormattedDate}</span>
+              </p>
+            )}
 
             {/* Quick Preset Pills */}
             <div className="mt-2.5 flex items-center gap-1.5 pt-2 border-t border-border/40">
@@ -288,25 +318,35 @@ export function AutonomousSentinel({ analysis: a }: { analysis: CashAnalysis }) 
           {/* Card C: Sentinel Decision State */}
           <div className={cn(
             'rounded-xl border p-4 sm:col-span-2 lg:col-span-1 transition-colors',
-            isTriggered ? 'border-warning/40 bg-warning/10' : 'border-good/30 bg-good/5'
+            runwayDays <= 0 ? 'border-destructive/40 bg-destructive/10' : isTriggered ? 'border-warning/40 bg-warning/10' : 'border-good/30 bg-good/5'
           )}>
             <div className="flex items-center justify-between text-xs">
-              <span className={cn('font-semibold uppercase tracking-wider text-[10px]', isTriggered ? 'text-warning-text' : 'text-good-text')}>
-                {isTriggered ? 'Trigger Condition Met' : 'Solvent & Protected'}
+              <span className={cn('font-semibold uppercase tracking-wider text-[10px]',
+                runwayDays <= 0 ? 'text-destructive font-bold' : isTriggered ? 'text-warning-text' : 'text-good-text'
+              )}>
+                {runwayDays <= 0 ? 'Critical Deficit · Out of Cash' : isTriggered ? 'Trigger Condition Met' : 'Solvent & Protected'}
               </span>
-              {isTriggered ? (
+              {runwayDays <= 0 ? (
+                <AlertTriangle className="size-4 text-destructive shrink-0" aria-hidden />
+              ) : isTriggered ? (
                 <AlertTriangle className="size-4 text-warning-text shrink-0" aria-hidden />
               ) : (
                 <CheckCircle2 className="size-4 text-good-text shrink-0" aria-hidden />
               )}
             </div>
             <p className="mt-2 text-base font-semibold text-foreground">
-              {isTriggered ? t('sentinel.deltaTriggered', { n: deltaDays }) : t('sentinel.deltaSafe', { n: deltaDays })}
+              {runwayDays <= 0
+                ? '0 days left · Intervention required'
+                : isTriggered
+                  ? t('sentinel.deltaTriggered', { n: deltaDays })
+                  : t('sentinel.deltaSafe', { n: deltaDays })}
             </p>
             <p className="mt-1 text-xs text-muted-foreground">
-              {isTriggered
-                ? 'Automated liquidity protocol initiated. Staged proposal waiting.'
-                : 'Cash buffer safely covers all projected obligations.'}
+              {runwayDays <= 0
+                ? 'Cash buffer fully depleted. Autonomous bridge line proposal staged in Tier 2.'
+                : isTriggered
+                  ? 'Automated liquidity protocol initiated. Staged proposal waiting.'
+                  : 'Cash buffer safely covers all projected obligations.'}
             </p>
           </div>
         </div>
