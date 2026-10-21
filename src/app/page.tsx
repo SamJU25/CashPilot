@@ -54,7 +54,7 @@ function Welcome() {
  */
 function LiveOverview({ analysis: a }: { analysis: CashAnalysis }) {
   const { t, rich, lang } = useT();
-  const { live } = useWorkspace();
+  const { live, alertThresholdDays } = useWorkspace();
   const pending = useIntents().find((i) => i.status === 'STAGED_PENDING_HITL');
   const today = todayIso();
   const f = a.forecast ?? null;
@@ -149,6 +149,30 @@ function LiveOverview({ analysis: a }: { analysis: CashAnalysis }) {
         </div>
       </motion.section>
 
+      {f?.has_projected_deficit && daysFromToday !== null && daysFromToday <= alertThresholdDays && (
+        <motion.div
+          initial={{ opacity: 0, y: 6 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 rounded-xl border border-warning/30 bg-warning/10 px-4 py-3 text-xs text-warning-text shadow-xs"
+        >
+          <div className="flex items-center gap-2.5 min-w-0">
+            <span className="size-2 shrink-0 rounded-full bg-warning animate-pulse" aria-hidden />
+            <div className="min-w-0">
+              <span className="font-semibold text-foreground mr-1.5">Autonomous Sentinel Alert:</span>
+              <span className="text-muted-foreground">
+                Runway ({daysFromToday}d) is below your {alertThresholdDays}d warning threshold.
+              </span>
+            </div>
+          </div>
+          <Button asChild size="sm" variant="outline" className="h-7 text-xs shrink-0 border-warning/40 text-foreground hover:bg-warning/20">
+            <Link href="/sentinel">
+              <span>Open Sentinel</span>
+              <span className="ml-1 text-[11px] font-mono">→</span>
+            </Link>
+          </Button>
+        </motion.div>
+      )}
+
       {base && f ? (
         <section className="grid gap-px overflow-hidden rounded-xl border bg-border xl:grid-cols-[1fr_320px]" aria-label={t('ov.forecastAria')}>
           <div className="bg-card p-5 sm:p-6">
@@ -197,7 +221,7 @@ function OverviewSkeleton() {
 
 export default function OverviewPage() {
   const state = useData(() => ({ analysis: ANALYSIS, base: BASE }));
-  const { accountNames, intentStatus, source, live } = useWorkspace();
+  const { accountNames, intentStatus, source, live, alertThresholdDays } = useWorkspace();
   const [scenario, setScenario] = useState<Scenario>(BASE_SCENARIO);
   const result = useMemo(() => project(scenario), [scenario]);
   const { t, rich, lang } = useT();
@@ -264,6 +288,30 @@ export default function OverviewPage() {
           </Link>
         </p>
       </motion.section>
+
+      {f.has_projected_deficit && daysFromToday !== null && daysFromToday <= alertThresholdDays && (
+        <motion.div
+          initial={{ opacity: 0, y: 6 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 rounded-xl border border-warning/30 bg-warning/10 px-4 py-3 text-xs text-warning-text shadow-xs"
+        >
+          <div className="flex items-center gap-2.5 min-w-0">
+            <span className="size-2 shrink-0 rounded-full bg-warning animate-pulse" aria-hidden />
+            <div className="min-w-0">
+              <span className="font-semibold text-foreground mr-1.5">Autonomous Sentinel Alert:</span>
+              <span className="text-muted-foreground">
+                Runway ({daysFromToday}d) is below your {alertThresholdDays}d warning threshold.
+              </span>
+            </div>
+          </div>
+          <Button asChild size="sm" variant="outline" className="h-7 text-xs shrink-0 border-warning/40 text-foreground hover:bg-warning/20">
+            <Link href="/sentinel">
+              <span>Open Sentinel</span>
+              <span className="ml-1 text-[11px] font-mono">→</span>
+            </Link>
+          </Button>
+        </motion.div>
+      )}
 
       <section className="grid gap-px overflow-hidden rounded-xl border bg-border xl:grid-cols-[1fr_320px]" aria-label={t('ov.forecastAria')}>
         <div className="bg-card p-5 sm:p-6">

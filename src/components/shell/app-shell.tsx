@@ -12,6 +12,7 @@ import {
   MessageSquare,
   ReceiptText,
   Settings2,
+  ShieldCheck,
   SquarePen,
 } from 'lucide-react';
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
@@ -37,6 +38,7 @@ const NAV: { group: Key; items: { href: string; label: Key; icon: typeof LineCha
     group: 'nav.copilot',
     items: [
       { href: '/assistant', label: 'nav.assistant', icon: MessageSquare },
+      { href: '/sentinel', label: 'nav.sentinel', icon: ShieldCheck },
       { href: '/assistant?new=true', label: 'as.newChat', icon: SquarePen, isAction: true },
     ],
   },
@@ -81,7 +83,7 @@ function NavLinks({ onNavigate, id = 'desktop' }: { onNavigate?: () => void; id?
                     )}
                     <item.icon className="relative size-4 shrink-0" aria-hidden />
                     <span className="relative">{t(item.label)}</span>
-                    {item.href === '/assistant' && !item.isAction && pending > 0 && (
+                    {(item.href === '/assistant' || item.href === '/sentinel') && !item.isAction && pending > 0 && (
                       <span className="figures relative ml-auto rounded-full bg-warning/20 px-1.5 text-xs font-medium text-warning-text" aria-label={t('nav.waiting', { n: pending })}>
                         {pending}
                       </span>
@@ -154,6 +156,57 @@ function Brand() {
   );
 }
 
+function DemoBadge({ compact }: { compact?: boolean }) {
+  const { hasData, source, clearData } = useWorkspace();
+  const { t } = useT();
+
+  if (!hasData || source !== 'sample') return null;
+
+  const handleExit = () => {
+    clearData();
+    try {
+      window.sessionStorage.removeItem('cashpilot.chat.v2');
+    } catch {}
+    window.dispatchEvent(new CustomEvent('cashpilot:new-chat'));
+  };
+
+  if (compact) {
+    return (
+      <div className="flex items-center gap-1.5 rounded-full border border-warning/30 bg-warning/10 px-2.5 py-1 text-xs text-warning-text">
+        <span className="size-1.5 shrink-0 rounded-full bg-warning animate-pulse" aria-hidden />
+        <span className="font-medium text-[11px] sm:text-xs">{t('rail.demoMode')}</span>
+        <button
+          type="button"
+          onClick={handleExit}
+          className="ml-1 rounded px-1 text-[11px] font-semibold underline underline-offset-2 hover:text-foreground transition-colors"
+          title={t('rail.exitDemo')}
+        >
+          {t('rail.exitDemo')}
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="mx-1 flex items-center justify-between gap-2 rounded-lg border border-warning/30 bg-warning/10 px-2.5 py-2 text-xs text-warning-text">
+      <div className="flex items-center gap-2 min-w-0">
+        <span className="size-1.5 shrink-0 rounded-full bg-warning animate-pulse" aria-hidden />
+        <div className="min-w-0">
+          <p className="font-semibold leading-tight text-foreground/90 truncate">{t('rail.demoMode')}</p>
+          <p className="text-[10px] text-muted-foreground truncate">{t('rail.demoActive')}</p>
+        </div>
+      </div>
+      <button
+        type="button"
+        onClick={handleExit}
+        className="shrink-0 rounded-md border border-warning/40 bg-background/60 px-2 py-1 text-[11px] font-medium text-foreground transition-colors hover:bg-warning/20 hover:text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+      >
+        {t('rail.exitDemo')}
+      </button>
+    </div>
+  );
+}
+
 export function AppShell({ children }: { children: React.ReactNode }) {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
@@ -162,8 +215,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="min-h-dvh lg:grid lg:grid-cols-[232px_1fr]">
-      <aside className="sticky top-0 hidden h-dvh flex-col gap-8 overflow-y-auto border-r bg-background px-3 py-5 lg:flex">
-        <Brand />
+      <aside className="sticky top-0 hidden h-dvh flex-col gap-6 overflow-y-auto border-r bg-background px-3 py-5 lg:flex">
+        <div className="space-y-3">
+          <Brand />
+          <DemoBadge />
+        </div>
         <div className="flex-1">
           <NavLinks />
         </div>
@@ -172,22 +228,29 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
       <div className={cn('min-w-0', isAssistant && 'flex h-dvh flex-col overflow-hidden')}>
         {/* Below lg only: the menu button opens the rail, which holds navigation, language and theme. */}
-        <header className="sticky top-0 z-30 flex h-14 shrink-0 items-center justify-between border-b bg-background/90 px-2 backdrop-blur lg:hidden">
-          <Sheet open={open} onOpenChange={setOpen}>
-            <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" className="size-11" aria-label={t('nav.menu')}>
-                <Menu />
-              </Button>
-            </SheetTrigger>
-            <SheetContent side="left" className="flex w-72 flex-col gap-8 bg-background px-3 py-5">
-              <SheetTitle className="sr-only">{t('nav.menuTitle')}</SheetTitle>
-              <Brand />
-              <div className="flex-1">
-                <NavLinks onNavigate={() => setOpen(false)} id="mobile" />
-              </div>
-              <RailFooter />
-            </SheetContent>
-          </Sheet>
+        <header className="sticky top-0 z-30 flex h-14 shrink-0 items-center justify-between border-b bg-background/90 px-3 backdrop-blur lg:hidden">
+          <div className="flex items-center gap-2">
+            <Sheet open={open} onOpenChange={setOpen}>
+              <SheetTrigger asChild>
+                <Button variant="ghost" size="icon" className="size-10" aria-label={t('nav.menu')}>
+                  <Menu />
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="left" className="flex w-72 flex-col gap-6 bg-background px-3 py-5">
+                <SheetTitle className="sr-only">{t('nav.menuTitle')}</SheetTitle>
+                <div className="space-y-3">
+                  <Brand />
+                  <DemoBadge />
+                </div>
+                <div className="flex-1">
+                  <NavLinks onNavigate={() => setOpen(false)} id="mobile" />
+                </div>
+                <RailFooter />
+              </SheetContent>
+            </Sheet>
+            <Wordmark name="cashpilot" height={15} />
+          </div>
+          <DemoBadge compact />
         </header>
 
         <main

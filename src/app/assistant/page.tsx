@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 import Link from 'next/link';
-import { ArrowUp, ArrowUpRight, Check, Copy, Download, FileText, MessageSquare, PanelRightOpen, RotateCcw, Square, X } from 'lucide-react';
+import { ArrowUp, ArrowUpRight, Check, Clock, Copy, Download, FileText, MessageSquare, PanelRightOpen, Pencil, Square, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ErrorState, LoadingBlock } from '@/components/common/states';
 import { RunReceipt } from '@/components/copilot/run-receipt';
@@ -344,16 +344,6 @@ export default function AssistantPage() {
   const abortRef = useRef<AbortController | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
 
-  const handleExitDemo = () => {
-    stopGeneration();
-    clearData();
-    setMessages([]);
-    setDraft('');
-    try {
-      window.sessionStorage.removeItem(CHAT_KEY);
-    } catch {}
-  };
-
   const exportTranscript = () => {
     if (messages.length === 0) return;
     const dateStr = new Date().toISOString().slice(0, 10);
@@ -442,6 +432,7 @@ export default function AssistantPage() {
 
   useEffect(() => {
     const handleNewChat = () => {
+      setQueuedMessage(null);
       setMessages([]);
       setDraft('');
       try {
@@ -456,6 +447,7 @@ export default function AssistantPage() {
     if (typeof window === 'undefined') return;
     const params = new URLSearchParams(window.location.search);
     if (params.get('new')) {
+      setQueuedMessage(null);
       setMessages([]);
       setDraft('');
       try {
@@ -473,6 +465,7 @@ export default function AssistantPage() {
     }
   }, [messages, restored, source]);
   const [draft, setDraft] = useState('');
+  const [queuedMessage, setQueuedMessage] = useState<string | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
@@ -624,14 +617,30 @@ export default function AssistantPage() {
     }
   };
 
+  // When AI becomes idle, automatically dispatch any queued follow-up message (Antigravity-style)
+  useEffect(() => {
+    if (!waiting && !busy && queuedMessage) {
+      const next = queuedMessage;
+      setQueuedMessage(null);
+      void sendLive(next);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [waiting, busy, queuedMessage]);
+
   const send = (text: string) => {
     const q = text.trim();
-    if (!q || busy || waiting) return;
+    if (!q) return;
+    if (busy || waiting) {
+      setQueuedMessage(q);
+      setDraft('');
+      return;
+    }
     return void sendLive(q);
   };
 
   const newChat = () => {
     stopGeneration();
+    setQueuedMessage(null);
     setMessages([]);
     setDraft('');
   };
@@ -660,19 +669,6 @@ export default function AssistantPage() {
         </p>
       </div>
       <div className="flex shrink-0 items-center gap-2 self-start sm:self-center">
-        {hasData && source === 'sample' && (
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            onClick={handleExitDemo}
-            className="h-8 gap-1.5 px-2.5 text-xs text-muted-foreground hover:text-foreground transition-colors"
-            title="Exit demo mode and reset to clean slate"
-          >
-            <RotateCcw className="size-3.5" aria-hidden />
-            <span>{t('as.exitDemo')}</span>
-          </Button>
-        )}
         {messages.length > 0 && (
           <Button
             type="button"
@@ -752,15 +748,6 @@ export default function AssistantPage() {
                         <span className="leading-relaxed text-foreground/90">{t('as.noData')}</span>
                       </div>
                       <div className="flex items-center gap-2 shrink-0">
-                        <Button
-                          type="button"
-                          size="sm"
-                          variant="outline"
-                          onClick={() => update({ hasData: true, source: 'sample' })}
-                          className="text-xs font-medium"
-                        >
-                          {t('as.noDataDemo')}
-                        </Button>
                         <Button asChild size="sm">
                           <Link href="/statements">
                             {t('as.noDataLink')}
@@ -835,6 +822,18 @@ export default function AssistantPage() {
                                 {formatMessageTime(m.timestamp)}
                               </span>
                             )}
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setDraft(m.text);
+                                textareaRef.current?.focus();
+                              }}
+                              className="inline-flex items-center gap-1 rounded p-1 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+                              title={t('as.edit')}
+                              aria-label={t('as.edit')}
+                            >
+                              <Pencil className="size-3" aria-hidden />
+                            </button>
                             <button
                               type="button"
                               onClick={() => copyText(m.text, m.id)}
@@ -916,6 +915,59 @@ export default function AssistantPage() {
               send(draft);
             }}
           >
+            {/* Queued follow-up banner (Antigravity-style) */}
+            <AnimatePresence>
+              {queuedMessage && (
+                <motion.div
+                  initial={{ opacity: 0, y: 6, scale: 0.98 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: 4, scale: 0.98 }}
+                  transition={spring.snappy}
+                  className="mb-2 flex items-center justify-between gap-3 rounded-xl border border-primary/30 bg-primary/5 dark:bg-primary/10 px-3.5 py-2 text-xs backdrop-blur-sm shadow-xs"
+                >
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-primary/20 text-primary">
+                      <Clock className="size-3 animate-pulse" />
+                    </span>
+                    <div className="min-w-0">
+                      <p className="font-medium text-foreground/90 truncate">
+                        <span className="text-muted-foreground mr-1.5 font-normal">{t('as.queuedNext')}:</span>
+                        "{queuedMessage}"
+                      </p>
+                      <p className="text-[10.5px] text-muted-foreground">{t('as.queuedNote')}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-1 shrink-0">
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => {
+                        setDraft(queuedMessage);
+                        setQueuedMessage(null);
+                        textareaRef.current?.focus();
+                      }}
+                      className="h-7 px-2 text-xs gap-1 font-medium hover:bg-primary/15 text-foreground"
+                      title={t('as.edit')}
+                    >
+                      <Pencil className="size-3" />
+                      <span>{t('as.edit')}</span>
+                    </Button>
+                    <Button
+                      type="button"
+                      size="icon"
+                      variant="ghost"
+                      onClick={() => setQueuedMessage(null)}
+                      className="size-7 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+                      title="Cancel queued message"
+                    >
+                      <X className="size-3.5" />
+                    </Button>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
             <div className="relative flex flex-col rounded-2xl border bg-card/75 dark:bg-card/40 backdrop-blur-md shadow-xs focus-within:ring-2 focus-within:ring-primary/25 focus-within:border-primary/50 transition-all p-2.5 gap-1.5">
               <label htmlFor="ask" className="sr-only">
                 {t('as.ask')}
@@ -945,16 +997,30 @@ export default function AssistantPage() {
                     Shift + Enter for new line
                   </span>
                   {waiting || busy ? (
-                    <Button
-                      type="button"
-                      size="icon"
-                      onClick={stopGeneration}
-                      className="size-7 sm:size-7.5 shrink-0 rounded-lg sm:rounded-xl transition-all active:scale-95 shadow-xs"
-                      aria-label={t('as.stop')}
-                      title={`${t('as.stop')} (Esc)`}
-                    >
-                      <Square className="size-2.5 sm:size-3 fill-current" />
-                    </Button>
+                    <div className="flex items-center gap-1.5">
+                      {draft.trim() && (
+                        <Button
+                          type="submit"
+                          size="sm"
+                          className="h-7 sm:h-7.5 px-2.5 rounded-lg sm:rounded-xl text-xs gap-1 font-medium transition-all active:scale-95 shadow-xs"
+                          title="Queue follow-up to send after current response"
+                        >
+                          <Clock className="size-3" />
+                          <span>{t('as.queue')}</span>
+                        </Button>
+                      )}
+                      <Button
+                        type="button"
+                        size="icon"
+                        variant={draft.trim() ? "outline" : "default"}
+                        onClick={stopGeneration}
+                        className="size-7 sm:size-7.5 shrink-0 rounded-lg sm:rounded-xl transition-all active:scale-95 shadow-xs"
+                        aria-label={t('as.stop')}
+                        title={`${t('as.stop')} (Esc)`}
+                      >
+                        <Square className="size-2.5 sm:size-3 fill-current" />
+                      </Button>
+                    </div>
                   ) : (
                     <Button
                       type="submit"
