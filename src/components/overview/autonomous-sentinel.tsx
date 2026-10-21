@@ -114,10 +114,7 @@ export function AutonomousSentinel({ analysis: a }: { analysis: CashAnalysis }) 
   const isOverMax = !Number.isNaN(numInputVal) && numInputVal > 120;
   const isInputEmpty = thresholdInput.trim() === '';
 
-  const shortfallAmount = f?.projected_shortfall_amount ? formatMoney(f.projected_shortfall_amount) : '$13,420.00';
-  const bridgeAmount = f?.recommended_bridge_amount ? formatMoney(f.recommended_bridge_amount) : '$15,000.00';
   const deficitFormattedDate = deficitDate ? formatDate(deficitDate) : 'Nov 28, 2026';
-  const balanceAmount = formatMoney(a.current_balance ?? '29922.08');
 
   // Relative percentages for the comparison bar
   const maxDisplayDays = Math.max(60, alertThresholdDays * 1.4, runwayDays * 1.4);
@@ -367,78 +364,6 @@ export function AutonomousSentinel({ analysis: a }: { analysis: CashAnalysis }) 
             <span>0 days</span>
             <span className="font-medium text-foreground">Target: {alertThresholdDays}d</span>
             <span>{Math.round(maxDisplayDays)} days</span>
-          </div>
-        </div>
-
-        {/* 3. Continuous Verification Pipeline */}
-        <div>
-          <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">
-            {t('sentinel.traceTitle')}
-          </h3>
-          <div className="grid gap-2.5 sm:grid-cols-2">
-            {/* Step 1 */}
-            <div className="flex items-start gap-2.5 rounded-xl border bg-card/60 p-3 text-xs shadow-2xs">
-              <div className="flex size-5 shrink-0 items-center justify-center rounded-full bg-good/15 text-good-text mt-0.5">
-                <CheckCircle2 className="size-3.5" />
-              </div>
-              <div className="min-w-0">
-                <p className="font-medium text-foreground">1. Multi-Account Statement Ingestion</p>
-                <p className="text-[11px] text-muted-foreground mt-0.5">
-                  {t('sentinel.step1', { amount: balanceAmount })}
-                </p>
-                <span className="mt-1 inline-block font-mono text-[10px] text-ink-2">
-                  Ledger Reconciled · Decimal Accuracy
-                </span>
-              </div>
-            </div>
-
-            {/* Step 2 */}
-            <div className="flex items-start gap-2.5 rounded-xl border bg-card/60 p-3 text-xs shadow-2xs">
-              <div className="flex size-5 shrink-0 items-center justify-center rounded-full bg-good/15 text-good-text mt-0.5">
-                <CheckCircle2 className="size-3.5" />
-              </div>
-              <div className="min-w-0">
-                <p className="font-medium text-foreground">2. Predictive Overdraft Pinpointing</p>
-                <p className="text-[11px] text-muted-foreground mt-0.5">
-                  {t('sentinel.step2', { amount: shortfallAmount, date: deficitFormattedDate })}
-                </p>
-                <span className="mt-1 inline-block font-mono text-[10px] text-ink-2">
-                  Cash Flow Simulation Model
-                </span>
-              </div>
-            </div>
-
-            {/* Step 3 */}
-            <div className="flex items-start gap-2.5 rounded-xl border bg-card/60 p-3 text-xs shadow-2xs">
-              <div className="flex size-5 shrink-0 items-center justify-center rounded-full bg-good/15 text-good-text mt-0.5">
-                <CheckCircle2 className="size-3.5" />
-              </div>
-              <div className="min-w-0">
-                <p className="font-medium text-foreground">3. Digital Credit Matching & APR Audit</p>
-                <p className="text-[11px] text-muted-foreground mt-0.5">
-                  {t('sentinel.step3')}
-                </p>
-                <span className="mt-1 inline-block font-mono text-[10px] text-ink-2">
-                  Truth-in-Lending Act (36% APR Cap)
-                </span>
-              </div>
-            </div>
-
-            {/* Step 4 */}
-            <div className="flex items-start gap-2.5 rounded-xl border bg-card/60 p-3 text-xs shadow-2xs">
-              <div className="flex size-5 shrink-0 items-center justify-center rounded-full bg-good/15 text-good-text mt-0.5">
-                <CheckCircle2 className="size-3.5" />
-              </div>
-              <div className="min-w-0">
-                <p className="font-medium text-foreground">4. Tier 2 Safe Proposal Staging</p>
-                <p className="text-[11px] text-muted-foreground mt-0.5">
-                  {t('sentinel.step4', { amount: bridgeAmount })}
-                </p>
-                <span className="mt-1 inline-block font-mono text-[10px] text-ink-2">
-                  Queue-Only · Execution Strictly Refused
-                </span>
-              </div>
-            </div>
           </div>
         </div>
       </div>
