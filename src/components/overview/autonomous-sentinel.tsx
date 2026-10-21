@@ -1,23 +1,19 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import Link from 'next/link';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   AlertTriangle,
-  ArrowRight,
   CheckCircle2,
   Cpu,
   Minus,
   Plus,
-  ShieldCheck,
   Zap,
 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 import { formatDate, formatMoney } from '@/lib/format';
 import { useT, type Key } from '@/lib/i18n';
 import { spring, fade } from '@/lib/motion';
-import { useIntents, useWorkspace } from '@/lib/workspace';
+import { useWorkspace } from '@/lib/workspace';
 import { cn } from '@/lib/utils';
 import type { CashAnalysis } from '@/lib/types';
 import { api, type SentinelTelemetry } from '@/lib/api';
@@ -40,8 +36,6 @@ function addDays(baseDate: string, days: number): string {
 export function AutonomousSentinel({ analysis: a }: { analysis: CashAnalysis }) {
   const { t } = useT();
   const { alertThresholdDays, update } = useWorkspace();
-  const intents = useIntents();
-  const pending = intents.find((i) => i.status === 'STAGED_PENDING_HITL');
 
   const [isEvaluating, setIsEvaluating] = useState(false);
   const [lastAuditTime, setLastAuditTime] = useState<string>('Just now');
@@ -446,25 +440,6 @@ export function AutonomousSentinel({ analysis: a }: { analysis: CashAnalysis }) 
               </div>
             </div>
           </div>
-        </div>
-
-        {/* 4. Safety Handshake Footer */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 rounded-xl border border-primary/25 bg-primary/5 dark:bg-primary/10 p-3.5 text-xs">
-          <div className="flex items-center gap-2.5 min-w-0">
-            <ShieldCheck className="size-4 shrink-0 text-primary" aria-hidden />
-            <span className="text-muted-foreground leading-relaxed">
-              <span className="font-medium text-foreground">Three-Tier Governance:</span> Proposals are staged in Tier 2 queue only. No funds move without owner confirmation.
-            </span>
-          </div>
-
-          {pending && (
-            <Button asChild size="sm" variant="outline" className="shrink-0 text-xs gap-1.5 shadow-xs">
-              <Link href="/assistant">
-                <span>Review Staged Proposal in Assistant</span>
-                <ArrowRight className="size-3.5" aria-hidden />
-              </Link>
-            </Button>
-          )}
         </div>
       </div>
     </motion.section>
