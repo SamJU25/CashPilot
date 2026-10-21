@@ -13,8 +13,8 @@ import { RunwayChart, type ChartHistory } from '@/components/overview/runway-cha
 import { ApiError } from '@/lib/api';
 import { addDaysIso, liveHistory, liveProjection, runScenario, todayIso } from '@/lib/live-forecast';
 import { WhatIf } from '@/components/overview/what-if';
-import { centsToString, formatDate, formatDateTime, formatMoney, stringToCents } from '@/lib/format';
-import { ANALYSIS, ANCHOR, BASE, BASE_SCENARIO, COMPANY, INTENTS, OVERDUE_INVOICE, SERIES, TODAY, TOTAL_SERIES, buildRuns, project, type Projection, type Scenario } from '@/lib/mock/demo';
+import { centsToString, formatDate, formatMoney, stringToCents } from '@/lib/format';
+import { ANALYSIS, ANCHOR, BASE, BASE_SCENARIO, COMPANY, INTENTS, OVERDUE_INVOICE, SERIES, TODAY, TOTAL_SERIES, project, type Projection, type Scenario } from '@/lib/mock/demo';
 import { spring } from '@/lib/motion';
 import { useData } from '@/lib/use-data';
 import { useIntents, useWorkspace } from '@/lib/workspace';
@@ -225,8 +225,6 @@ export default function OverviewPage() {
   const [scenario, setScenario] = useState<Scenario>(BASE_SCENARIO);
   const result = useMemo(() => project(scenario), [scenario]);
   const { t, rich, lang } = useT();
-  // lang is a dependency because dates inside run text are formatted per language.
-  const runs = useMemo(() => buildRuns(accountNames, t), [accountNames, t, lang]);
 
   if (source === 'live') return live.analysis ? <LiveOverview analysis={live.analysis} /> : <Welcome />;
   if (state.status === 'empty') return <Welcome />;
@@ -239,7 +237,6 @@ export default function OverviewPage() {
   const daysFromToday = f.projected_deficit_date ? Math.round((Date.parse(f.projected_deficit_date) - Date.parse(TODAY)) / 86_400_000) : null;
   const triggerAmount = { PAYROLL: f.detected_recurring_payroll, RENT: f.detected_recurring_rent, DEBT_SERVICE: f.detected_recurring_debt }[f.primary_deficit_trigger ?? ''] ?? null;
   const pending = INTENTS.find((i) => (intentStatus[i.id] ?? i.status) === 'STAGED_PENDING_HITL');
-  const latest = runs[0];
   const shortNode = <Money value={f.projected_shortfall_amount} className="font-medium text-critical-text" />;
 
   return (
@@ -342,31 +339,6 @@ export default function OverviewPage() {
       <section aria-label={t('ov.figuresAria')}>
         <KeyFigures analysis={analysis} />
         <WorkingCapitalCard analysis={analysis} />
-      </section>
-
-      <section className="grid gap-10 border-t pt-10 lg:grid-cols-2">
-        <div>
-          <SectionTitle aside={<Link href="/assistant" className="hover:text-foreground">{t('ov.allApprovals')}</Link>}>{t('ov.waiting')}</SectionTitle>
-          {pending ? (
-            <div className="rounded-lg border bg-card p-5">
-              <p className="text-sm text-muted-foreground">{t('ov.drawFrom', { name: pending.target_identifier })}</p>
-              <p className="mt-1 text-2xl font-semibold tracking-tight">
-                <Money value={centsToString(pending.amount_cents)} />
-              </p>
-              <p className="mt-2 text-sm text-ink-2">{t(`intent.${pending.id}` as Key, { date: formatDate(f.projected_deficit_date ?? TODAY) })}</p>
-              <Button asChild className="mt-4">
-                <Link href="/assistant">{t('ov.reviewApprove')}</Link>
-              </Button>
-            </div>
-          ) : (
-            <p className="text-sm text-muted-foreground">{t('ov.nothing')}</p>
-          )}
-        </div>
-        <div>
-          <SectionTitle aside={<Link href="/assistant" className="hover:text-foreground">{t('ov.allActivity')}</Link>}>{t('ov.latest')}</SectionTitle>
-          <p className="text-sm">{t('ov.runAt', { trigger: latest.trigger, time: formatDateTime(latest.started_at) })}</p>
-          <p className="mb-2 text-sm text-muted-foreground">{latest.outcome}</p>
-        </div>
       </section>
     </div>
   );
