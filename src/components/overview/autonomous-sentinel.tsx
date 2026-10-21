@@ -31,6 +31,13 @@ function daysBetween(a: string, b: string) {
   return Math.round((msB - msA) / 86_400_000);
 }
 
+function addDays(baseDate: string, days: number): string {
+  const ms = Date.parse(baseDate.includes('T') ? baseDate : `${baseDate}T00:00:00Z`);
+  if (Number.isNaN(ms)) return '';
+  const d = new Date(ms + days * 86_400_000);
+  return d.toISOString().split('T')[0];
+}
+
 export function AutonomousSentinel({ analysis: a }: { analysis: CashAnalysis }) {
   const { t } = useT();
   const { alertThresholdDays, update } = useWorkspace();
@@ -40,6 +47,11 @@ export function AutonomousSentinel({ analysis: a }: { analysis: CashAnalysis }) 
   const [isEvaluating, setIsEvaluating] = useState(false);
   const [lastAuditTime, setLastAuditTime] = useState<string>('Just now');
   const [telemetry, setTelemetry] = useState<SentinelTelemetry | null>(null);
+  const [thresholdInput, setThresholdInput] = useState(String(alertThresholdDays));
+
+  useEffect(() => {
+    setThresholdInput(String(alertThresholdDays));
+  }, [alertThresholdDays]);
 
   useEffect(() => {
     let mounted = true;
@@ -91,9 +103,14 @@ export function AutonomousSentinel({ analysis: a }: { analysis: CashAnalysis }) 
   };
 
   const handleAdjustThreshold = (delta: number) => {
-    const next = Math.max(7, Math.min(90, alertThresholdDays + delta));
+    const next = Math.max(7, Math.min(120, alertThresholdDays + delta));
     update({ alertThresholdDays: next });
+    setThresholdInput(String(next));
   };
+
+  const anchorDate = a.end_date || TODAY;
+  const targetDate = addDays(anchorDate, alertThresholdDays);
+  const targetFormattedDate = targetDate ? formatDate(targetDate) : '';
 
   const shortfallAmount = f?.projected_shortfall_amount ? formatMoney(f.projected_shortfall_amount) : '$13,420.00';
   const bridgeAmount = f?.recommended_bridge_amount ? formatMoney(f.recommended_bridge_amount) : '$15,000.00';
@@ -181,20 +198,44 @@ export function AutonomousSentinel({ analysis: a }: { analysis: CashAnalysis }) 
             </p>
           </div>
 
-          {/* Card B: Warning Threshold with Live Stepper */}
+          {/* Card B: Warning Threshold with Editable Input, Presets, and Target Date */}
           <div className="rounded-xl border bg-background/50 p-4">
             <div className="flex items-center justify-between text-xs text-muted-foreground">
               <span>Warning Threshold</span>
               <span className="font-mono text-[10px] uppercase tracking-wider text-primary">Policy Rule</span>
             </div>
             <div className="mt-2 flex items-center justify-between">
-              <div className="flex items-baseline gap-2">
-                <span className="figures text-3xl font-bold tracking-tight text-foreground">
-                  {alertThresholdDays}
+              <div className="flex items-center gap-1.5 min-w-0">
+                <input
+                  type="number"
+                  min={7}
+                  max={120}
+                  value={thresholdInput}
+                  onChange={(e) => {
+                    setThresholdInput(e.target.value);
+                    const val = parseInt(e.target.value, 10);
+                    if (!Number.isNaN(val) && val >= 7 && val <= 120) {
+                      update({ alertThresholdDays: val });
+                    }
+                  }}
+                  onBlur={() => {
+                    const val = parseInt(thresholdInput, 10);
+                    if (Number.isNaN(val) || val < 7) {
+                      update({ alertThresholdDays: 7 });
+                      setThresholdInput('7');
+                    } else if (val > 120) {
+                      update({ alertThresholdDays: 120 });
+                      setThresholdInput('120');
+                    }
+                  }}
+                  className="figures w-14 h-9 rounded-md border border-input/60 bg-background px-1.5 text-center text-2xl font-bold tracking-tight text-foreground focus:border-primary focus:outline-hidden focus:ring-1 focus:ring-primary tabular-nums"
+                  aria-label="Warning threshold days"
+                />
+                <span className="text-xs text-muted-foreground leading-tight">
+                  days safety target
                 </span>
-                <span className="text-xs text-muted-foreground">days safety target</span>
               </div>
-              <div className="flex items-center gap-1">
+              <div className="flex items-center gap-1 shrink-0">
                 <button
                   type="button"
                   onClick={() => handleAdjustThreshold(-5)}
@@ -215,9 +256,33 @@ export function AutonomousSentinel({ analysis: a }: { analysis: CashAnalysis }) 
                 </button>
               </div>
             </div>
-            <p className="mt-2 text-[11px] text-muted-foreground truncate">
-              Evaluated against ZenEngine decision table
+
+            <p className="mt-2 text-xs text-ink-2 truncate">
+              Buffer through <span className="font-medium text-foreground">{targetFormattedDate}</span>
             </p>
+
+            {/* Quick Preset Pills */}
+            <div className="mt-2.5 flex items-center gap-1.5 pt-2 border-t border-border/40">
+              <span className="text-[10px] uppercase font-mono text-muted-foreground mr-0.5">Presets:</span>
+              {[14, 30, 45, 60].map((days) => (
+                <button
+                  key={days}
+                  type="button"
+                  onClick={() => {
+                    update({ alertThresholdDays: days });
+                    setThresholdInput(String(days));
+                  }}
+                  className={cn(
+                    'rounded-md px-2 py-0.5 text-[11px] font-mono transition-colors',
+                    alertThresholdDays === days
+                      ? 'bg-primary/15 text-primary font-semibold border border-primary/30'
+                      : 'bg-muted/50 text-muted-foreground hover:bg-muted hover:text-foreground border border-transparent'
+                  )}
+                >
+                  {days}d
+                </button>
+              ))}
+            </div>
           </div>
 
           {/* Card C: Sentinel Decision State */}
