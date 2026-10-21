@@ -1,12 +1,12 @@
-# Graph Report - SME Finance Copilot  (2026-10-21)
+# Graph Report - SME Finance Copilot  (2026-10-22)
 
 ## Corpus Check
-- 450 files · ~320,254 words
+- 450 files · ~320,343 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 25 file(s) not represented in the graph (top: .csv 14, (none) 6, .example 1)
 
 ## Summary
-- 5043 nodes · 11005 edges · 439 communities (297 shown, 142 thin omitted)
+- 5043 nodes · 11006 edges · 439 communities (297 shown, 142 thin omitted)
 - Extraction: 97% EXTRACTED · 3% INFERRED · 0% AMBIGUOUS · INFERRED: 295 edges (avg confidence: 0.94)
 - Token cost: 0 input · 0 output
 
@@ -22,7 +22,7 @@
 - DCF Process Workflow
 - Report Structure and Templates
 - Formula Reference
-- local-models.tsx
+- Button
 - What You Must Do When Invoked
 - 社交媒体 & 社区
 - Analysis workflow
@@ -194,7 +194,7 @@
 - test_cash_scenario.py
 - test_calculations.py
 - assistant/page.tsx
-- Button
+- what-if.tsx
 - test_enterprise_finance_tools.py
 - SessionStore
 - 2. Deterministic FinTech Engine (25+ Core Routines)
@@ -210,7 +210,7 @@
 - tenant_headers
 - 3-statement-model/SKILL.md
 - Credit Metrics
-- app-shell.tsx
+- layout.tsx
 - Model Structure
 - tools.py
 - compilerOptions
@@ -504,9 +504,9 @@ Nodes (19): Business Metrics (1 page), Call Transcript Highlights (optional), Co
 Cohesion: 0.13
 Nodes (15): Balance Sheet Structure, Cash Flow Statement Structure, Check Formulas, Core Linkages, Credit Metric Formulas, D&A Schedule Formulas, Debt Schedule Formulas, Forecast Formulas (% of Net Revenue Method) (+7 more)
 
-### Community 6 - "local-models.tsx"
-Cohesion: 0.07
-Nodes (43): ACTIVE, Chip(), FIT_LABEL, FitTag(), HardwarePanel(), InstalledRow(), MemoryMeter(), Progress() (+35 more)
+### Community 6 - "Button"
+Cohesion: 0.11
+Nodes (50): lucide-react, PrivacySection(), PrepareDialog(), UnderwritingDossierDialog(), BlockchainVerifyDialog(), invoiceFingerprint(), ReminderDialog(), reminderText() (+42 more)
 
 ### Community 7 - "What You Must Do When Invoked"
 Cohesion: 0.07
@@ -538,7 +538,7 @@ Nodes (24): 0. Project Truth & Engineering Documentation, 1.1 Knowledge Graph Sy
 
 ### Community 14 - "demo.ts"
 Cohesion: 0.04
-Nodes (80): STATUS_CONFIG, WorkingCapitalCard(), resetSession(), CurrencyMetadata, getCurrencySymbol(), SYMBOL_MAP, WORLD_CURRENCIES, debtServiceCoverage() (+72 more)
+Nodes (81): AnalyzeResponse, API_URL, BUCKET_KEYS, ChatRequest, ChatResponse, HFDownload, HFFile, HFRepo (+73 more)
 
 ### Community 15 - "视频/播客"
 Cohesion: 0.20
@@ -1145,12 +1145,12 @@ Cohesion: 0.13
 Nodes (23): calculate_cash_conversion_cycle(), calculate_dab(), calculate_dscr(), calculate_net_burn(), calculate_runway_days(), Decimal, Calculate Net Daily Burn Rate. Formula: (Sum of Operating Debits - Sum of…, Calculate exact Cash Runway in days. If net_daily_burn <= 0, the company is… (+15 more)
 
 ### Community 177 - "assistant/page.tsx"
-Cohesion: 0.08
-Nodes (41): Answer, appendCapped(), AssistantPage(), BRIEFED_SUGGESTIONS, CARDS, cardStep(), cccAnswer(), dscrAnswer() (+33 more)
+Cohesion: 0.09
+Nodes (40): Answer, appendCapped(), AssistantPage(), BRIEFED_SUGGESTIONS, CARDS, cardStep(), cccAnswer(), dscrAnswer() (+32 more)
 
-### Community 178 - "Button"
-Cohesion: 0.25
-Nodes (23): lucide-react, PrivacySection(), PrepareDialog(), UnderwritingDossierDialog(), BlockchainVerifyDialog(), invoiceFingerprint(), ReminderDialog(), reminderText() (+15 more)
+### Community 178 - "what-if.tsx"
+Cohesion: 0.20
+Nodes (17): AiSection(), RemoteModelPicker(), CollectLever, CollectOption, daysBetween(), Range(), Switch(), WhatIf() (+9 more)
 
 ### Community 179 - "test_enterprise_finance_tools.py"
 Cohesion: 0.06
@@ -1204,9 +1204,9 @@ Nodes (41): Helpers for minting signed tenant identities in tests., Issues a sig
 Cohesion: 0.50
 Nodes (4): Core Credit Metrics to Include, Covenant Compliance Tracking, Credit Metric Hierarchy Checks, Credit Metrics
 
-### Community 195 - "app-shell.tsx"
-Cohesion: 0.10
-Nodes (28): @radix-ui/react-dialog, src_app_globals, display, metadata, mono, RootLayout(), sans, AppShell() (+20 more)
+### Community 195 - "layout.tsx"
+Cohesion: 0.29
+Nodes (7): src_app_globals, display, metadata, mono, RootLayout(), sans, Providers()
 
 ### Community 196 - "Model Structure"
 Cohesion: 0.50
@@ -1385,8 +1385,8 @@ Cohesion: 0.13
 Nodes (15): 0. Project Truth, Instruction Precedence & Current Baseline, 1. Operating Model & Hierarchy Matrix, 2. Subagent Suites Directory (57 Specialized Subagents), 3. Dynamic Task Routing Matrix (Scenario-to-Squad Mapping), 4. Antigravity Agent Execution Protocol, CashPilot — AI Agents & Task Routing Engine, Master Documentation & Operational Protocols:, Suite 0: Global Governance Specialists (`.agent/agents/0-global-specialists/`) (+7 more)
 
 ### Community 251 - "cn"
-Cohesion: 0.05
-Nodes (87): class-variance-authority, @radix-ui/react-separator, react, AboutFact(), AboutSection(), AiSection(), CurrencyCombobox(), FetchState (+79 more)
+Cohesion: 0.04
+Nodes (98): class-variance-authority, @radix-ui/react-dialog, @radix-ui/react-separator, react, AboutFact(), AboutSection(), CurrencyCombobox(), FetchState (+90 more)
 
 ### Community 252 - "param_extractor.py"
 Cohesion: 0.05
@@ -1601,8 +1601,8 @@ Cohesion: 0.20
 Nodes (13): fastapi_testclient, _chat(), The chat answers from the same figures the app shows, including entries…, test_another_tenants_session_is_not_written(), test_chat_balance_is_the_consolidated_total_after_a_multi_account_upload(), test_quick_cash_entry_reaches_the_chat(), test_typed_balance_and_spend_drive_the_chat_runway(), test_underwrite_does_not_replace_the_uploaded_statement() (+5 more)
 
 ### Community 326 - "useT"
-Cohesion: 0.08
-Nodes (78): motion, next, LiveOverview(), OverviewPage(), OverviewSkeleton(), PageTools(), SAMPLE_HISTORY, SampleOverview() (+70 more)
+Cohesion: 0.07
+Nodes (87): motion, next, LiveOverview(), OverviewPage(), OverviewSkeleton(), PageTools(), SAMPLE_HISTORY, SampleOverview() (+79 more)
 
 ### Community 327 - "_resolve_agent_tenant"
 Cohesion: 0.40
