@@ -1026,9 +1026,9 @@
     "semantic_hash": ""
   },
   "api/main.py": {
-    "mtime": 1792519320.820014,
-    "seen": 1792520017.4420629,
-    "ast_hash": "a5f54d1ad5cdaae0d7bb755f86a166db",
+    "mtime": 1792544162.9397116,
+    "seen": 1792544703.457544,
+    "ast_hash": "9fe7796a90315fa1c459ac10806abdef",
     "semantic_hash": ""
   },
   "api/routes/__init__.py": {
@@ -1320,9 +1320,9 @@
     "semantic_hash": ""
   },
   "services/calculations/predictive_cash.py": {
-    "mtime": 1792460938.8704958,
-    "seen": 1792485228.180235,
-    "ast_hash": "e3b4423d4d1b725b88acd9d8137e73ce",
+    "mtime": 1792544369.0828972,
+    "seen": 1792544703.4664402,
+    "ast_hash": "86fd8970727a883879f67af4a53b0d38",
     "semantic_hash": ""
   },
   "tests/unit/test_predictive_cash.py": {
@@ -1416,9 +1416,9 @@
     "semantic_hash": ""
   },
   "services/agent/session_store.py": {
-    "mtime": 1792359075.9646406,
-    "seen": 1792360755.3877356,
-    "ast_hash": "3c09d14ffb6db8d9d41ec098068d1c79",
+    "mtime": 1792544043.2738945,
+    "seen": 1792544703.4635382,
+    "ast_hash": "1e7275af045d54d2ab3f9df1941be0ab",
     "semantic_hash": ""
   },
   "tests/integration/test_session_memory_api.py": {
@@ -2466,9 +2466,9 @@
     "semantic_hash": ""
   },
   "src/lib/api.ts": {
-    "mtime": 1792538436.5365438,
-    "seen": 1792538850.7089424,
-    "ast_hash": "0dad328798b144b0a766f86a842b3836",
+    "mtime": 1792544530.169312,
+    "seen": 1792544703.4772718,
+    "ast_hash": "305812b21c3e1937eddf88333a71462a",
     "semantic_hash": ""
   },
   "src/lib/currencies.ts": {
@@ -2694,15 +2694,33 @@
     "semantic_hash": ""
   },
   "src/components/overview/autonomous-sentinel.tsx": {
-    "mtime": 1792542857.9084685,
-    "seen": 1792542997.6177278,
-    "ast_hash": "a56e14642362f3fd902f9a0f7a920c01",
+    "mtime": 1792544584.0453508,
+    "seen": 1792544703.4732652,
+    "ast_hash": "195c78ba5fbd663660b03efcb0824bd4",
     "semantic_hash": ""
   },
   "src/app/sentinel/page.tsx": {
     "mtime": 1792543375.934366,
     "seen": 1792543438.4319654,
     "ast_hash": "63e4ae7662892cb7bed492711cbbdf37",
+    "semantic_hash": ""
+  },
+  "api/routes/sentinel.py": {
+    "mtime": 1792544121.43423,
+    "seen": 1792544703.4584558,
+    "ast_hash": "b6cec119d8c31756d4bca55be22ebd0b",
+    "semantic_hash": ""
+  },
+  "services/sentinel/sentinel_daemon.py": {
+    "mtime": 1792544418.837041,
+    "seen": 1792544703.4707236,
+    "ast_hash": "6daceb48a906648aaff7ef47dfcfceb2",
+    "semantic_hash": ""
+  },
+  "tests/unit/test_sentinel_daemon.py": {
+    "mtime": 1792544449.3353984,
+    "seen": 1792544703.4875584,
+    "ast_hash": "43650f18efda102a131a7a642c9ef84a",
     "semantic_hash": ""
   }
 }

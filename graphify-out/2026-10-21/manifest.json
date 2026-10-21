@@ -2112,9 +2112,9 @@
     "semantic_hash": ""
   },
   "src/app/assistant/page.tsx": {
-    "mtime": 1792542123.7245283,
-    "seen": 1792542186.6532595,
-    "ast_hash": "178b1bff90c9cc4ab9c6e4945759dc99",
+    "mtime": 1792543651.8541398,
+    "seen": 1792543728.7528048,
+    "ast_hash": "132296f5c523834ea5bf9467be83b49f",
     "semantic_hash": ""
   },
   "src/app/funding/page.tsx": {

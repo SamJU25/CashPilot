@@ -307,6 +307,11 @@ class SessionStore:
                         except OSError:
                             pass
 
+    def list_sessions(self) -> List[SessionRecord]:
+        """Returns snapshot of all active in-memory sessions."""
+        with self._store_lock:
+            return list(self._sessions.values())
+
 
 # Global singleton instance
 session_store = SessionStore.get_instance()

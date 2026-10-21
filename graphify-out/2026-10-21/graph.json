@@ -71924,18 +71924,6 @@
     },
     {
       "source": "src_app_assistant_page_assistantpage",
-      "target": "src_components_copilot_model_menu_modelmenu",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "src/app/assistant/page.tsx",
-      "source_location": "L1017",
-      "weight": 1.0
-    },
-    {
-      "source": "src_app_assistant_page_assistantpage",
       "target": "src_components_copilot_assistant_inspector_assistantinspector",
       "relation": "calls",
       "_origin": "ast",
@@ -71943,7 +71931,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/assistant/page.tsx",
-      "source_location": "L1073",
+      "source_location": "L1049",
       "weight": 1.0
     },
     {
@@ -72015,7 +72003,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/assistant/page.tsx",
-      "source_location": "L362",
+      "source_location": "L351",
       "weight": 1.0
     },
     {
@@ -72027,7 +72015,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/assistant/page.tsx",
-      "source_location": "L362",
+      "source_location": "L351",
       "weight": 1.0
     },
     {
@@ -72039,7 +72027,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/assistant/page.tsx",
-      "source_location": "L503",
+      "source_location": "L492",
       "weight": 1.0
     },
     {
@@ -72051,7 +72039,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/assistant/page.tsx",
-      "source_location": "L505",
+      "source_location": "L494",
       "weight": 1.0
     },
     {
@@ -72063,7 +72051,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/assistant/page.tsx",
-      "source_location": "L506",
+      "source_location": "L495",
       "weight": 1.0
     },
     {
@@ -72075,7 +72063,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/assistant/page.tsx",
-      "source_location": "L572",
+      "source_location": "L561",
       "weight": 1.0
     },
     {
@@ -72087,7 +72075,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/assistant/page.tsx",
-      "source_location": "L597",
+      "source_location": "L586",
       "weight": 1.0
     },
     {
@@ -72099,7 +72087,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/assistant/page.tsx",
-      "source_location": "L684",
+      "source_location": "L673",
       "weight": 1.0
     },
     {
@@ -72111,7 +72099,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/assistant/page.tsx",
-      "source_location": "L714",
+      "source_location": "L690",
       "weight": 1.0
     },
     {
@@ -72123,7 +72111,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/assistant/page.tsx",
-      "source_location": "L737",
+      "source_location": "L713",
       "weight": 1.0
     },
     {
@@ -72135,7 +72123,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/assistant/page.tsx",
-      "source_location": "L746",
+      "source_location": "L722",
       "weight": 1.0
     },
     {
@@ -72147,7 +72135,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/assistant/page.tsx",
-      "source_location": "L785",
+      "source_location": "L761",
       "weight": 1.0
     },
     {
@@ -72159,7 +72147,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/assistant/page.tsx",
-      "source_location": "L878",
+      "source_location": "L854",
       "weight": 1.0
     },
     {
@@ -72171,7 +72159,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/assistant/page.tsx",
-      "source_location": "L879",
+      "source_location": "L855",
       "weight": 1.0
     },
     {
@@ -72183,7 +72171,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/assistant/page.tsx",
-      "source_location": "L882",
+      "source_location": "L858",
       "weight": 1.0
     },
     {
@@ -72195,7 +72183,19 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/assistant/page.tsx",
-      "source_location": "L885",
+      "source_location": "L861",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_assistant_page_assistantpage",
+      "target": "src_components_copilot_model_menu_modelmenu",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/app/assistant/page.tsx",
+      "source_location": "L993",
       "weight": 1.0
     },
     {

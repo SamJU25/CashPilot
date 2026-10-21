@@ -213,6 +213,8 @@ def calculate_predictive_cash(
         raise ValueError("target_horizon_days must be at least 1 day")
 
     # Use the latest transaction date as anchor, or today
+    if isinstance(anchor_date, str):
+        anchor_date = date.fromisoformat(anchor_date)
     latest_date = anchor_date or (max(r.posted_on for r in rows) if rows else date.today())
     # Obligations come from the statement, or are passed in when only the summary is known (what-if).
     obligations = list(detect_obligations(rows) if obligations is None else obligations)

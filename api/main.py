@@ -39,6 +39,7 @@ from api.routes.underwrite import router as underwrite_router
 from api.routes.agent import router as agent_router
 from api.routes.decision import router as decision_router
 from api.routes.auth import router as auth_router
+from api.routes.sentinel import router as sentinel_router
 
 @asynccontextmanager
 async def lifespan(_: FastAPI):
@@ -73,7 +74,16 @@ async def lifespan(_: FastAPI):
                 pass
 
     threading.Thread(target=_warmup_background, daemon=True).start()
+
+    from services.sentinel.sentinel_daemon import sentinel_daemon
+
+    if "pytest" not in sys.modules and os.getenv("SENTINEL_DAEMON_ENABLED", "1") == "1":
+        sentinel_daemon.start()
+
     yield
+
+    if "pytest" not in sys.modules:
+        sentinel_daemon.stop()
 
 
 app = FastAPI(
@@ -114,6 +124,7 @@ app.include_router(underwrite_router)
 app.include_router(agent_router)
 app.include_router(decision_router)
 app.include_router(auth_router)
+app.include_router(sentinel_router)
 
 
 from api.routes.health import get_health_status

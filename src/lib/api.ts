@@ -222,6 +222,8 @@ export const api = {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ file_path: filePath }),
     }, 30_000),
+  sentinelHeartbeat: () => request<SentinelTelemetry>('/api/v1/sentinel/heartbeat', {}, 5_000),
+  sentinelEvaluate: () => request<SentinelEvaluationResult>('/api/v1/sentinel/evaluate', { method: 'POST' }, 15_000),
 };
 
 /** A model from fetch-models; `installed`, `repo_id` and `quant` are set for local GGUF models only. */
@@ -317,4 +319,31 @@ export function llmConfig(provider: string, keys: Record<string, string>, urls: 
   if (provider === 'claude') return { provider: 'anthropic', api_key: key, model_name: model };
   if (provider === 'custom') return { provider: 'custom', api_key: key, base_url: url, model_name: model };
   return { provider, api_key: key, base_url: url, model_name: model };
+}
+
+export interface SentinelTelemetry {
+  daemon_status: 'RUNNING' | 'STOPPED';
+  started_at: string | null;
+  last_sweep_at: string | null;
+  cycle_count: number;
+  interval_seconds: number;
+  last_sweep_summary: {
+    status: string;
+    cycle: number;
+    tenants_audited: number;
+    deficits_detected: number;
+    actions_staged: number;
+    timestamp: string;
+    error?: string;
+  };
+}
+
+export interface SentinelEvaluationResult {
+  status: string;
+  cycle: number;
+  tenants_audited: number;
+  deficits_detected: number;
+  actions_staged: number;
+  timestamp: string;
+  error?: string | null;
 }

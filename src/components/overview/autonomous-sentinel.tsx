@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'motion/react';
 import {
@@ -21,6 +21,7 @@ import { spring, fade } from '@/lib/motion';
 import { useIntents, useWorkspace } from '@/lib/workspace';
 import { cn } from '@/lib/utils';
 import type { CashAnalysis } from '@/lib/types';
+import { api, type SentinelTelemetry } from '@/lib/api';
 import { TODAY } from '@/lib/mock/demo';
 
 function daysBetween(a: string, b: string) {
@@ -38,6 +39,31 @@ export function AutonomousSentinel({ analysis: a }: { analysis: CashAnalysis }) 
 
   const [isEvaluating, setIsEvaluating] = useState(false);
   const [lastAuditTime, setLastAuditTime] = useState<string>('Just now');
+  const [telemetry, setTelemetry] = useState<SentinelTelemetry | null>(null);
+
+  useEffect(() => {
+    let mounted = true;
+    const fetchTelemetry = async () => {
+      try {
+        const data = await api.sentinelHeartbeat();
+        if (mounted) {
+          setTelemetry(data);
+          if (data.last_sweep_at) {
+            const dt = new Date(data.last_sweep_at);
+            setLastAuditTime(dt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }));
+          }
+        }
+      } catch {
+        // Sentinel daemon offline or server starting
+      }
+    };
+    fetchTelemetry();
+    const interval = setInterval(fetchTelemetry, 15_000);
+    return () => {
+      mounted = false;
+      clearInterval(interval);
+    };
+  }, []);
 
   const f = a.forecast ?? null;
   const deficitDate = f?.projected_deficit_date ?? a.projected_depletion_date;
@@ -47,12 +73,21 @@ export function AutonomousSentinel({ analysis: a }: { analysis: CashAnalysis }) 
   const isTriggered = runwayDays <= alertThresholdDays;
   const deltaDays = Math.abs(alertThresholdDays - runwayDays);
 
-  const handleReevaluate = () => {
+  const handleReevaluate = async () => {
     setIsEvaluating(true);
-    setTimeout(() => {
-      setIsEvaluating(false);
+    try {
+      const res = await api.sentinelEvaluate();
+      if (res.timestamp) {
+        const dt = new Date(res.timestamp);
+        setLastAuditTime(dt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }));
+      }
+      const data = await api.sentinelHeartbeat();
+      setTelemetry(data);
+    } catch {
       setLastAuditTime(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
-    }, 1100);
+    } finally {
+      setIsEvaluating(false);
+    }
   };
 
   const handleAdjustThreshold = (delta: number) => {
@@ -91,11 +126,21 @@ export function AutonomousSentinel({ analysis: a }: { analysis: CashAnalysis }) 
               </h2>
               <span className="flex items-center gap-1.5 rounded-full border border-primary/30 bg-primary/10 px-2 py-0.5 text-[10px] font-medium text-primary">
                 <span className="size-1.5 rounded-full bg-primary animate-pulse" aria-hidden />
-                <span>{t('sentinel.active')}</span>
+                <span>{telemetry?.daemon_status === 'STOPPED' ? 'DAEMON PAUSED' : t('sentinel.active')}</span>
               </span>
+              {telemetry && (
+                <span className="hidden sm:inline-block font-mono text-[10px] text-muted-foreground border-l border-border/60 pl-2">
+                  Cycle #{telemetry.cycle_count} · {telemetry.interval_seconds}s cadence
+                </span>
+              )}
             </div>
             <p className="text-xs text-muted-foreground truncate">
               {isEvaluating ? t('sentinel.evaluating') : t('sentinel.lastAudit', { time: lastAuditTime })}
+              {telemetry?.last_sweep_summary && (
+                <span className="ml-1.5 text-[11px] text-ink-2 font-mono">
+                  ({telemetry.last_sweep_summary.tenants_audited} sessions scanned · {telemetry.last_sweep_summary.actions_staged} auto-staged)
+                </span>
+              )}
             </p>
           </div>
         </div>
