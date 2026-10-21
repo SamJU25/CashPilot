@@ -2226,9 +2226,9 @@
     "semantic_hash": ""
   },
   "src/components/shell/app-shell.tsx": {
-    "mtime": 1792536362.3930297,
-    "seen": 1792536447.0966082,
-    "ast_hash": "d13357d5f41cc97415c6164b02cba42c",
+    "mtime": 1792540496.403747,
+    "seen": 1792540579.5902014,
+    "ast_hash": "9e20d5226865c34c695ba30ddfa5a9af",
     "semantic_hash": ""
   },
   "src/components/shell/brand.tsx": {

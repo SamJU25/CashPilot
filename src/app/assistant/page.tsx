@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 import Link from 'next/link';
-import { ArrowUp, ArrowUpRight, Check, Copy, FileText, MessageSquare, PanelRightOpen, RotateCcw, Square, X } from 'lucide-react';
+import { ArrowUp, ArrowUpRight, Check, Copy, Download, FileText, MessageSquare, PanelRightOpen, RotateCcw, Square, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ErrorState, LoadingBlock } from '@/components/common/states';
 import { RunReceipt } from '@/components/copilot/run-receipt';
@@ -354,6 +354,47 @@ export default function AssistantPage() {
     } catch {}
   };
 
+  const exportTranscript = () => {
+    if (messages.length === 0) return;
+    const dateStr = new Date().toISOString().slice(0, 10);
+    const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    const model = provider === 'local' && activeLocal ? `Local (${modelLabel(activeLocal)})` : (providerName(provider, t, true) ?? provider);
+
+    const lines: string[] = [
+      `# CashPilot — Financial Consultation Report`,
+      `**Generated:** ${dateStr} ${timeStr}`,
+      `**AI Intelligence Model:** ${model}`,
+      `**Ledger Mode:** ${hasData ? (source === 'sample' ? 'Sample Business' : 'Live Connected Statements') : 'Unlinked (General Diagnostic)'}`,
+      `\n---\n`,
+    ];
+
+    for (const m of messages) {
+      if (m.role === 'switch') {
+        lines.push(`\n*Model switched to ${providerName(m.model ?? '', t) ?? m.model}*\n`);
+      } else if (m.role === 'user') {
+        lines.push(`### Owner Prompt\n${m.text}\n`);
+      } else if (m.role === 'copilot') {
+        lines.push(`### CashPilot Diagnostic & Recommendation\n${m.text}\n`);
+        if (m.steps && m.steps.length > 0) {
+          lines.push(`*Calculation Provenance:* ${m.steps.map((s) => s.tech).filter(Boolean).join(' · ')}\n`);
+        }
+        lines.push(`\n---\n`);
+      }
+    }
+
+    lines.push(`\n*Notice: CashPilot is an Autonomous Financial AI Participant. Staged transactions remain non-custodial and require owner transmission.*`);
+
+    const blob = new Blob([lines.join('\n')], { type: 'text/markdown;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `cashpilot-consultation-${dateStr}.md`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
   const stopGeneration = () => {
     if (abortRef.current) {
       abortRef.current.abort();
@@ -630,6 +671,19 @@ export default function AssistantPage() {
           >
             <RotateCcw className="size-3.5" aria-hidden />
             <span>{t('as.exitDemo')}</span>
+          </Button>
+        )}
+        {messages.length > 0 && (
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={exportTranscript}
+            className="h-8 gap-1.5 px-2.5 text-xs text-muted-foreground hover:text-foreground transition-colors"
+            title={t('as.exportTitle')}
+          >
+            <Download className="size-3.5" aria-hidden />
+            <span className="hidden sm:inline">{t('as.export')}</span>
           </Button>
         )}
         {/* On desktop (xl+) the inspector is permanently docked; mobile/tablet gets a compact drawer trigger */}

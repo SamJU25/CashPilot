@@ -3108,7 +3108,7 @@
       "file_type": "code",
       "norm_label": "key",
       "source_file": "src/lib/i18n/en.ts",
-      "source_location": "L805"
+      "source_location": "L807"
     },
     {
       "id": "src_lib_i18n_index_vars",
@@ -71914,66 +71914,6 @@
     },
     {
       "source": "src_app_assistant_page_assistantpage",
-      "target": "src_lib_format_formatmoney",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "src/app/assistant/page.tsx",
-      "source_location": "L458",
-      "weight": 1.0
-    },
-    {
-      "source": "src_app_assistant_page_assistantpage",
-      "target": "src_lib_format_formatdate",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "src/app/assistant/page.tsx",
-      "source_location": "L460",
-      "weight": 1.0
-    },
-    {
-      "source": "src_app_assistant_page_assistantpage",
-      "target": "src_app_assistant_page_appendcapped",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "src/app/assistant/page.tsx",
-      "source_location": "L461",
-      "weight": 1.0
-    },
-    {
-      "source": "src_app_assistant_page_assistantpage",
-      "target": "src_lib_api_llmconfig",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "src/app/assistant/page.tsx",
-      "source_location": "L527",
-      "weight": 1.0
-    },
-    {
-      "source": "src_app_assistant_page_assistantpage",
-      "target": "src_app_assistant_page_topicof",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "src/app/assistant/page.tsx",
-      "source_location": "L552",
-      "weight": 1.0
-    },
-    {
-      "source": "src_app_assistant_page_assistantpage",
       "target": "src_lib_local_models_modellabel",
       "relation": "calls",
       "_origin": "ast",
@@ -71981,7 +71921,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/assistant/page.tsx",
-      "source_location": "L618",
+      "source_location": "L361",
       "weight": 1.0
     },
     {
@@ -71993,7 +71933,67 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/assistant/page.tsx",
-      "source_location": "L618",
+      "source_location": "L361",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_assistant_page_assistantpage",
+      "target": "src_lib_format_formatmoney",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/app/assistant/page.tsx",
+      "source_location": "L499",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_assistant_page_assistantpage",
+      "target": "src_lib_format_formatdate",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/app/assistant/page.tsx",
+      "source_location": "L501",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_assistant_page_assistantpage",
+      "target": "src_app_assistant_page_appendcapped",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/app/assistant/page.tsx",
+      "source_location": "L502",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_assistant_page_assistantpage",
+      "target": "src_lib_api_llmconfig",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/app/assistant/page.tsx",
+      "source_location": "L568",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_assistant_page_assistantpage",
+      "target": "src_app_assistant_page_topicof",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/app/assistant/page.tsx",
+      "source_location": "L593",
       "weight": 1.0
     },
     {
@@ -72005,7 +72005,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/assistant/page.tsx",
-      "source_location": "L623",
+      "source_location": "L664",
       "weight": 1.0
     },
     {
@@ -72017,7 +72017,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/assistant/page.tsx",
-      "source_location": "L640",
+      "source_location": "L694",
       "weight": 1.0
     },
     {
@@ -72029,7 +72029,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/assistant/page.tsx",
-      "source_location": "L663",
+      "source_location": "L717",
       "weight": 1.0
     },
     {
@@ -72041,7 +72041,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/assistant/page.tsx",
-      "source_location": "L672",
+      "source_location": "L726",
       "weight": 1.0
     },
     {
@@ -72053,7 +72053,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/assistant/page.tsx",
-      "source_location": "L720",
+      "source_location": "L774",
       "weight": 1.0
     },
     {
@@ -72065,7 +72065,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/assistant/page.tsx",
-      "source_location": "L801",
+      "source_location": "L855",
       "weight": 1.0
     },
     {
@@ -72077,7 +72077,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/assistant/page.tsx",
-      "source_location": "L802",
+      "source_location": "L856",
       "weight": 1.0
     },
     {
@@ -72089,7 +72089,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/assistant/page.tsx",
-      "source_location": "L805",
+      "source_location": "L859",
       "weight": 1.0
     },
     {
@@ -72101,7 +72101,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/assistant/page.tsx",
-      "source_location": "L808",
+      "source_location": "L862",
       "weight": 1.0
     },
     {
@@ -72113,7 +72113,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/assistant/page.tsx",
-      "source_location": "L887",
+      "source_location": "L941",
       "weight": 1.0
     },
     {
@@ -72125,7 +72125,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/assistant/page.tsx",
-      "source_location": "L929",
+      "source_location": "L983",
       "weight": 1.0
     },
     {
@@ -157236,7 +157236,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/i18n/en.ts",
-      "source_location": "L805",
+      "source_location": "L807",
       "weight": 1.0
     },
     {
@@ -183016,5 +183016,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "52282ecb4ab09d2cbe80c2846ebec3d34d90341a"
+  "built_at_commit": "9f24a5bdf7dac03d374c3dd8723431355db7e377"
 }

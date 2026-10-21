@@ -646,6 +646,8 @@ export const en = {
   'as.noDataLink': 'Add statements',
   'as.noDataDemo': 'Try demo business',
   'as.exitDemo': 'Exit demo',
+  'as.export': 'Export',
+  'as.exportTitle': 'Export consultation report (Markdown)',
   'as.n1': 'What is DSCR?',
   'as.n2': 'What does a factor rate really cost?',
   'as.n3': 'What is Cash Conversion Cycle?',
