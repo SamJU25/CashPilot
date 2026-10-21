@@ -433,6 +433,19 @@
       "source_location": "L45"
     },
     {
+      "id": "src_components_copilot_briefing_finding",
+      "label": "Finding",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 178,
+      "community_name": "demo.ts",
+      "file_type": "code",
+      "norm_label": "finding",
+      "source_file": "src/components/copilot/briefing.tsx",
+      "source_location": "L15"
+    },
+    {
       "id": "src_components_shell_activity_panel_feeditem",
       "label": "FeedItem",
       "_callable": true,
@@ -446,95 +459,30 @@
       "source_location": "L14"
     },
     {
-      "id": "src_lib_api_analyzeresponse",
-      "label": "AnalyzeResponse",
+      "id": "src_lib_currencies_currencymetadata",
+      "label": "CurrencyMetadata",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
       "community": 178,
       "community_name": "demo.ts",
       "file_type": "code",
-      "norm_label": "analyzeresponse",
-      "source_file": "src/lib/api.ts",
-      "source_location": "L106"
+      "norm_label": "currencymetadata",
+      "source_file": "src/lib/currencies.ts",
+      "source_location": "L1"
     },
     {
-      "id": "src_lib_api_chatrequest",
-      "label": "ChatRequest",
+      "id": "src_lib_format_moneyoptions",
+      "label": "MoneyOptions",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
       "community": 178,
       "community_name": "demo.ts",
       "file_type": "code",
-      "norm_label": "chatrequest",
-      "source_file": "src/lib/api.ts",
-      "source_location": "L282"
-    },
-    {
-      "id": "src_lib_api_chatresponse",
-      "label": "ChatResponse",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 178,
-      "community_name": "demo.ts",
-      "file_type": "code",
-      "norm_label": "chatresponse",
-      "source_file": "src/lib/api.ts",
-      "source_location": "L293"
-    },
-    {
-      "id": "src_lib_api_hffile",
-      "label": "HFFile",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 178,
-      "community_name": "demo.ts",
-      "file_type": "code",
-      "norm_label": "hffile",
-      "source_file": "src/lib/api.ts",
-      "source_location": "L263"
-    },
-    {
-      "id": "src_lib_api_hfrepo",
-      "label": "HFRepo",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 178,
-      "community_name": "demo.ts",
-      "file_type": "code",
-      "norm_label": "hfrepo",
-      "source_file": "src/lib/api.ts",
-      "source_location": "L250"
-    },
-    {
-      "id": "src_lib_api_sentinelevaluationresult",
-      "label": "SentinelEvaluationResult",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 178,
-      "community_name": "demo.ts",
-      "file_type": "code",
-      "norm_label": "sentinelevaluationresult",
-      "source_file": "src/lib/api.ts",
-      "source_location": "L341"
-    },
-    {
-      "id": "src_lib_api_sentineltelemetry",
-      "label": "SentinelTelemetry",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 178,
-      "community_name": "demo.ts",
-      "file_type": "code",
-      "norm_label": "sentineltelemetry",
-      "source_file": "src/lib/api.ts",
-      "source_location": "L324"
+      "norm_label": "moneyoptions",
+      "source_file": "src/lib/format.ts",
+      "source_location": "L29"
     },
     {
       "id": "src_lib_i18n_languages_lang",
@@ -784,19 +732,6 @@
       "source_location": "L128"
     },
     {
-      "id": "src_lib_types_recurringobligation",
-      "label": "RecurringObligation",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 178,
-      "community_name": "demo.ts",
-      "file_type": "code",
-      "norm_label": "recurringobligation",
-      "source_file": "src/lib/types.ts",
-      "source_location": "L74"
-    },
-    {
       "id": "src_lib_types_rejectedrow",
       "label": "RejectedRow",
       "_callable": true,
@@ -1031,6 +966,19 @@
       "source_location": "L9"
     },
     {
+      "id": "src_lib_api_analyzeresponse",
+      "label": "AnalyzeResponse",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 195,
+      "community_name": "local-models.tsx",
+      "file_type": "code",
+      "norm_label": "analyzeresponse",
+      "source_file": "src/lib/api.ts",
+      "source_location": "L106"
+    },
+    {
       "id": "src_lib_api_apierror",
       "label": "ApiError",
       "_callable": true,
@@ -1042,6 +990,32 @@
       "norm_label": "apierror",
       "source_file": "src/lib/api.ts",
       "source_location": "L10"
+    },
+    {
+      "id": "src_lib_api_chatrequest",
+      "label": "ChatRequest",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 195,
+      "community_name": "local-models.tsx",
+      "file_type": "code",
+      "norm_label": "chatrequest",
+      "source_file": "src/lib/api.ts",
+      "source_location": "L282"
+    },
+    {
+      "id": "src_lib_api_chatresponse",
+      "label": "ChatResponse",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 195,
+      "community_name": "local-models.tsx",
+      "file_type": "code",
+      "norm_label": "chatresponse",
+      "source_file": "src/lib/api.ts",
+      "source_location": "L293"
     },
     {
       "id": "src_lib_api_hardware",
@@ -1070,6 +1044,32 @@
       "source_location": "L271"
     },
     {
+      "id": "src_lib_api_hffile",
+      "label": "HFFile",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 195,
+      "community_name": "local-models.tsx",
+      "file_type": "code",
+      "norm_label": "hffile",
+      "source_file": "src/lib/api.ts",
+      "source_location": "L263"
+    },
+    {
+      "id": "src_lib_api_hfrepo",
+      "label": "HFRepo",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 195,
+      "community_name": "local-models.tsx",
+      "file_type": "code",
+      "norm_label": "hfrepo",
+      "source_file": "src/lib/api.ts",
+      "source_location": "L250"
+    },
+    {
       "id": "src_lib_api_localmodel",
       "label": "LocalModel",
       "_callable": true,
@@ -1081,6 +1081,19 @@
       "norm_label": "localmodel",
       "source_file": "src/lib/api.ts",
       "source_location": "L230"
+    },
+    {
+      "id": "src_lib_api_sentinelevaluationresult",
+      "label": "SentinelEvaluationResult",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 195,
+      "community_name": "local-models.tsx",
+      "file_type": "code",
+      "norm_label": "sentinelevaluationresult",
+      "source_file": "src/lib/api.ts",
+      "source_location": "L341"
     },
     {
       "id": "src_lib_local_models_fit",
@@ -1107,6 +1120,19 @@
       "norm_label": "installedstate",
       "source_file": "src/lib/local-models.ts",
       "source_location": "L8"
+    },
+    {
+      "id": "src_lib_types_recurringobligation",
+      "label": "RecurringObligation",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 195,
+      "community_name": "local-models.tsx",
+      "file_type": "code",
+      "norm_label": "recurringobligation",
+      "source_file": "src/lib/types.ts",
+      "source_location": "L74"
     },
     {
       "id": "services_matcher_liquidity_matcher_financingoption",
@@ -1538,32 +1564,6 @@
       "source_location": "L66"
     },
     {
-      "id": "src_components_copilot_briefing_finding",
-      "label": "Finding",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 235,
-      "community_name": "app/page.tsx",
-      "file_type": "code",
-      "norm_label": "finding",
-      "source_file": "src/components/copilot/briefing.tsx",
-      "source_location": "L15"
-    },
-    {
-      "id": "src_components_overview_key_figures_figure",
-      "label": "Figure",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 235,
-      "community_name": "app/page.tsx",
-      "file_type": "code",
-      "norm_label": "figure",
-      "source_file": "src/components/overview/key-figures.tsx",
-      "source_location": "L10"
-    },
-    {
       "id": "src_components_overview_runway_chart_charthistory",
       "label": "ChartHistory",
       "_callable": true,
@@ -1629,19 +1629,6 @@
       "source_location": "L56"
     },
     {
-      "id": "src_lib_format_moneyoptions",
-      "label": "MoneyOptions",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 235,
-      "community_name": "app/page.tsx",
-      "file_type": "code",
-      "norm_label": "moneyoptions",
-      "source_file": "src/lib/format.ts",
-      "source_location": "L29"
-    },
-    {
       "id": "src_lib_mock_demo_scenario",
       "label": "Scenario",
       "_callable": true,
@@ -1666,19 +1653,6 @@
       "norm_label": "balanceat",
       "source_file": "src/lib/types.ts",
       "source_location": "L69"
-    },
-    {
-      "id": "src_lib_types_workingcapitalstatus",
-      "label": "WorkingCapitalStatus",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 235,
-      "community_name": "app/page.tsx",
-      "file_type": "code",
-      "norm_label": "workingcapitalstatus",
-      "source_file": "src/lib/types.ts",
-      "source_location": "L7"
     },
     {
       "id": "src_types_api_accountsummary",
@@ -2604,6 +2578,19 @@
       "source_location": "L230"
     },
     {
+      "id": "src_components_overview_key_figures_figure",
+      "label": "Figure",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 251,
+      "community_name": "cn",
+      "file_type": "code",
+      "norm_label": "figure",
+      "source_file": "src/components/overview/key-figures.tsx",
+      "source_location": "L10"
+    },
+    {
       "id": "src_components_ui_badge_badgeprops",
       "label": "BadgeProps",
       "_callable": true,
@@ -2628,32 +2615,6 @@
       "norm_label": "buttonprops",
       "source_file": "src/components/ui/button.tsx",
       "source_location": "L37"
-    },
-    {
-      "id": "src_components_ui_sheet_sheetcontentprops",
-      "label": "SheetContentProps",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 251,
-      "community_name": "cn",
-      "file_type": "code",
-      "norm_label": "sheetcontentprops",
-      "source_file": "src/components/ui/sheet.tsx",
-      "source_location": "L52"
-    },
-    {
-      "id": "src_lib_currencies_currencymetadata",
-      "label": "CurrencyMetadata",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 251,
-      "community_name": "cn",
-      "file_type": "code",
-      "norm_label": "currencymetadata",
-      "source_file": "src/lib/currencies.ts",
-      "source_location": "L1"
     },
     {
       "id": "src_lib_providers_providerid",
@@ -3319,6 +3280,19 @@
       "source_location": "L57"
     },
     {
+      "id": "src_components_ui_sheet_sheetcontentprops",
+      "label": "SheetContentProps",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 324,
+      "community_name": "app-shell.tsx",
+      "file_type": "code",
+      "norm_label": "sheetcontentprops",
+      "source_file": "src/components/ui/sheet.tsx",
+      "source_location": "L52"
+    },
+    {
       "id": "tests_unit_test_treasury_dupont_lease_testdupontroecalculations",
       "label": "TestDuPontROECalculations",
       "_callable": true,
@@ -3330,6 +3304,45 @@
       "norm_label": "testdupontroecalculations",
       "source_file": "tests/unit/test_treasury_dupont_lease.py",
       "source_location": "L107"
+    },
+    {
+      "id": "src_lib_api_sentineltelemetry",
+      "label": "SentinelTelemetry",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 326,
+      "community_name": "autonomous-sentinel.tsx",
+      "file_type": "code",
+      "norm_label": "sentineltelemetry",
+      "source_file": "src/lib/api.ts",
+      "source_location": "L324"
+    },
+    {
+      "id": "src_lib_types_agentid",
+      "label": "AgentId",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 326,
+      "community_name": "autonomous-sentinel.tsx",
+      "file_type": "code",
+      "norm_label": "agentid",
+      "source_file": "src/lib/types.ts",
+      "source_location": "L191"
+    },
+    {
+      "id": "src_lib_types_workingcapitalstatus",
+      "label": "WorkingCapitalStatus",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 326,
+      "community_name": "autonomous-sentinel.tsx",
+      "file_type": "code",
+      "norm_label": "workingcapitalstatus",
+      "source_file": "src/lib/types.ts",
+      "source_location": "L7"
     },
     {
       "id": "services_security_tenant_token_tenantissuancedeniederror",
@@ -3577,19 +3590,6 @@
       "norm_label": "actiontype",
       "source_file": "src/lib/types.ts",
       "source_location": "L175"
-    },
-    {
-      "id": "src_lib_types_agentid",
-      "label": "AgentId",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 49,
-      "community_name": "assistant/page.tsx",
-      "file_type": "code",
-      "norm_label": "agentid",
-      "source_file": "src/lib/types.ts",
-      "source_location": "L191"
     },
     {
       "id": "src_lib_types_runstep",
@@ -7133,42 +7133,6 @@
       "source_location": "L52"
     },
     {
-      "id": "src_components_overview_autonomous_sentinel_adddays",
-      "label": "addDays()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 178,
-      "community_name": "demo.ts",
-      "file_type": "code",
-      "norm_label": "adddays()",
-      "source_file": "src/components/overview/autonomous-sentinel.tsx",
-      "source_location": "L33"
-    },
-    {
-      "id": "src_components_overview_autonomous_sentinel_autonomoussentinel",
-      "label": "AutonomousSentinel()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 178,
-      "community_name": "demo.ts",
-      "file_type": "code",
-      "norm_label": "autonomoussentinel()",
-      "source_file": "src/components/overview/autonomous-sentinel.tsx",
-      "source_location": "L40"
-    },
-    {
-      "id": "src_components_overview_autonomous_sentinel_daysbetween",
-      "label": "daysBetween()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 178,
-      "community_name": "demo.ts",
-      "file_type": "code",
-      "norm_label": "daysbetween()",
-      "source_file": "src/components/overview/autonomous-sentinel.tsx",
-      "source_location": "L26"
-    },
-    {
       "id": "src_components_shell_activity_panel_feedrow",
       "label": "FeedRow()",
       "_callable": true,
@@ -7179,30 +7143,6 @@
       "norm_label": "feedrow()",
       "source_file": "src/components/shell/activity-panel.tsx",
       "source_location": "L70"
-    },
-    {
-      "id": "src_lib_api_form",
-      "label": "form()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 178,
-      "community_name": "demo.ts",
-      "file_type": "code",
-      "norm_label": "form()",
-      "source_file": "src/lib/api.ts",
-      "source_location": "L97"
-    },
-    {
-      "id": "src_lib_api_request",
-      "label": "request()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 178,
-      "community_name": "demo.ts",
-      "file_type": "code",
-      "norm_label": "request()",
-      "source_file": "src/lib/api.ts",
-      "source_location": "L54"
     },
     {
       "id": "src_lib_api_resetsession",
@@ -7217,28 +7157,40 @@
       "source_location": "L33"
     },
     {
-      "id": "src_lib_api_sessionid",
-      "label": "sessionId()",
+      "id": "src_lib_currencies_getcurrencysymbol",
+      "label": "getCurrencySymbol()",
       "_callable": true,
       "_origin": "ast",
       "community": 178,
       "community_name": "demo.ts",
       "file_type": "code",
-      "norm_label": "sessionid()",
-      "source_file": "src/lib/api.ts",
-      "source_location": "L20"
+      "norm_label": "getcurrencysymbol()",
+      "source_file": "src/lib/currencies.ts",
+      "source_location": "L77"
     },
     {
-      "id": "src_lib_api_tenanttoken",
-      "label": "tenantToken()",
+      "id": "src_lib_format_currencysymbol",
+      "label": "currencySymbol()",
       "_callable": true,
       "_origin": "ast",
       "community": 178,
       "community_name": "demo.ts",
       "file_type": "code",
-      "norm_label": "tenanttoken()",
-      "source_file": "src/lib/api.ts",
-      "source_location": "L43"
+      "norm_label": "currencysymbol()",
+      "source_file": "src/lib/format.ts",
+      "source_location": "L8"
+    },
+    {
+      "id": "src_lib_format_formatter",
+      "label": "formatter()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 178,
+      "community_name": "demo.ts",
+      "file_type": "code",
+      "norm_label": "formatter()",
+      "source_file": "src/lib/format.ts",
+      "source_location": "L73"
     },
     {
       "id": "src_lib_format_setdatelanguage",
@@ -9267,6 +9219,54 @@
       "norm_label": ".constructor()",
       "source_file": "src/lib/api.ts",
       "source_location": "L11"
+    },
+    {
+      "id": "src_lib_api_form",
+      "label": "form()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 195,
+      "community_name": "local-models.tsx",
+      "file_type": "code",
+      "norm_label": "form()",
+      "source_file": "src/lib/api.ts",
+      "source_location": "L97"
+    },
+    {
+      "id": "src_lib_api_request",
+      "label": "request()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 195,
+      "community_name": "local-models.tsx",
+      "file_type": "code",
+      "norm_label": "request()",
+      "source_file": "src/lib/api.ts",
+      "source_location": "L54"
+    },
+    {
+      "id": "src_lib_api_sessionid",
+      "label": "sessionId()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 195,
+      "community_name": "local-models.tsx",
+      "file_type": "code",
+      "norm_label": "sessionid()",
+      "source_file": "src/lib/api.ts",
+      "source_location": "L20"
+    },
+    {
+      "id": "src_lib_api_tenanttoken",
+      "label": "tenantToken()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 195,
+      "community_name": "local-models.tsx",
+      "file_type": "code",
+      "norm_label": "tenanttoken()",
+      "source_file": "src/lib/api.ts",
+      "source_location": "L43"
     },
     {
       "id": "src_lib_local_models_fitfor",
@@ -12941,18 +12941,6 @@
       "source_location": "L20"
     },
     {
-      "id": "src_lib_currencies_getcurrencysymbol",
-      "label": "getCurrencySymbol()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 235,
-      "community_name": "app/page.tsx",
-      "file_type": "code",
-      "norm_label": "getcurrencysymbol()",
-      "source_file": "src/lib/currencies.ts",
-      "source_location": "L77"
-    },
-    {
       "id": "src_lib_format_centstostring",
       "label": "centsToString()",
       "_callable": true,
@@ -12963,18 +12951,6 @@
       "norm_label": "centstostring()",
       "source_file": "src/lib/format.ts",
       "source_location": "L50"
-    },
-    {
-      "id": "src_lib_format_currencysymbol",
-      "label": "currencySymbol()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 235,
-      "community_name": "app/page.tsx",
-      "file_type": "code",
-      "norm_label": "currencysymbol()",
-      "source_file": "src/lib/format.ts",
-      "source_location": "L8"
     },
     {
       "id": "src_lib_format_formatdate",
@@ -13011,18 +12987,6 @@
       "norm_label": "formatmoney()",
       "source_file": "src/lib/format.ts",
       "source_location": "L41"
-    },
-    {
-      "id": "src_lib_format_formatter",
-      "label": "formatter()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 235,
-      "community_name": "app/page.tsx",
-      "file_type": "code",
-      "norm_label": "formatter()",
-      "source_file": "src/lib/format.ts",
-      "source_location": "L73"
     },
     {
       "id": "src_lib_format_stringtocents",
@@ -14621,6 +14585,18 @@
       "source_location": "L14"
     },
     {
+      "id": "src_components_shell_app_shell_sessionendedbanner",
+      "label": "SessionEndedBanner()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 250,
+      "community_name": "useT",
+      "file_type": "code",
+      "norm_label": "sessionendedbanner()",
+      "source_file": "src/components/shell/app-shell.tsx",
+      "source_location": "L124"
+    },
+    {
       "id": "src_components_shell_theme_switch_themeswitch",
       "label": "ThemeSwitch()",
       "_callable": true,
@@ -14715,30 +14691,6 @@
       "norm_label": "useworkspace()",
       "source_file": "src/lib/workspace.tsx",
       "source_location": "L173"
-    },
-    {
-      "id": "src_app_settings_page_aboutfact",
-      "label": "AboutFact()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 251,
-      "community_name": "cn",
-      "file_type": "code",
-      "norm_label": "aboutfact()",
-      "source_file": "src/app/settings/page.tsx",
-      "source_location": "L571"
-    },
-    {
-      "id": "src_app_settings_page_aboutsection",
-      "label": "AboutSection()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 251,
-      "community_name": "cn",
-      "file_type": "code",
-      "norm_label": "aboutsection()",
-      "source_file": "src/app/settings/page.tsx",
-      "source_location": "L580"
     },
     {
       "id": "src_app_settings_page_aisection",
@@ -14861,114 +14813,6 @@
       "source_location": "L26"
     },
     {
-      "id": "src_components_shell_app_shell_appshell",
-      "label": "AppShell()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 251,
-      "community_name": "cn",
-      "file_type": "code",
-      "norm_label": "appshell()",
-      "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L210"
-    },
-    {
-      "id": "src_components_shell_app_shell_brand",
-      "label": "Brand()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 251,
-      "community_name": "cn",
-      "file_type": "code",
-      "norm_label": "brand()",
-      "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L147"
-    },
-    {
-      "id": "src_components_shell_app_shell_demobadge",
-      "label": "DemoBadge()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 251,
-      "community_name": "cn",
-      "file_type": "code",
-      "norm_label": "demobadge()",
-      "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L159"
-    },
-    {
-      "id": "src_components_shell_app_shell_navlinks",
-      "label": "NavLinks()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 251,
-      "community_name": "cn",
-      "file_type": "code",
-      "norm_label": "navlinks()",
-      "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L47"
-    },
-    {
-      "id": "src_components_shell_app_shell_railfooter",
-      "label": "RailFooter()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 251,
-      "community_name": "cn",
-      "file_type": "code",
-      "norm_label": "railfooter()",
-      "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L102"
-    },
-    {
-      "id": "src_components_shell_app_shell_sessionendedbanner",
-      "label": "SessionEndedBanner()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 251,
-      "community_name": "cn",
-      "file_type": "code",
-      "norm_label": "sessionendedbanner()",
-      "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L124"
-    },
-    {
-      "id": "src_components_shell_brand_blueprintmark",
-      "label": "BlueprintMark()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 251,
-      "community_name": "cn",
-      "file_type": "code",
-      "norm_label": "blueprintmark()",
-      "source_file": "src/components/shell/brand.tsx",
-      "source_location": "L23"
-    },
-    {
-      "id": "src_components_shell_brand_cashpilotmark",
-      "label": "CashPilotMark()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 251,
-      "community_name": "cn",
-      "file_type": "code",
-      "norm_label": "cashpilotmark()",
-      "source_file": "src/components/shell/brand.tsx",
-      "source_location": "L13"
-    },
-    {
-      "id": "src_components_shell_brand_wordmark",
-      "label": "Wordmark()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 251,
-      "community_name": "cn",
-      "file_type": "code",
-      "norm_label": "wordmark()",
-      "source_file": "src/components/shell/brand.tsx",
-      "source_location": "L41"
-    },
-    {
       "id": "src_components_shell_language_menu_languagemenu",
       "label": "LanguageMenu()",
       "_callable": true,
@@ -15003,30 +14847,6 @@
       "norm_label": "dropdownmenushortcut()",
       "source_file": "src/components/ui/dropdown-menu.tsx",
       "source_location": "L172"
-    },
-    {
-      "id": "src_components_ui_sheet_sheetfooter",
-      "label": "SheetFooter()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 251,
-      "community_name": "cn",
-      "file_type": "code",
-      "norm_label": "sheetfooter()",
-      "source_file": "src/components/ui/sheet.tsx",
-      "source_location": "L91"
-    },
-    {
-      "id": "src_components_ui_sheet_sheetheader",
-      "label": "SheetHeader()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 251,
-      "community_name": "cn",
-      "file_type": "code",
-      "norm_label": "sheetheader()",
-      "source_file": "src/components/ui/sheet.tsx",
-      "source_location": "L77"
     },
     {
       "id": "src_lib_providers_isproviderready",
@@ -19673,6 +19493,174 @@
       "source_location": "L115"
     },
     {
+      "id": "src_app_layout_rootlayout",
+      "label": "RootLayout()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 324,
+      "community_name": "app-shell.tsx",
+      "file_type": "code",
+      "norm_label": "rootlayout()",
+      "source_file": "src/app/layout.tsx",
+      "source_location": "L18"
+    },
+    {
+      "id": "src_app_settings_page_aboutfact",
+      "label": "AboutFact()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 324,
+      "community_name": "app-shell.tsx",
+      "file_type": "code",
+      "norm_label": "aboutfact()",
+      "source_file": "src/app/settings/page.tsx",
+      "source_location": "L571"
+    },
+    {
+      "id": "src_app_settings_page_aboutsection",
+      "label": "AboutSection()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 324,
+      "community_name": "app-shell.tsx",
+      "file_type": "code",
+      "norm_label": "aboutsection()",
+      "source_file": "src/app/settings/page.tsx",
+      "source_location": "L580"
+    },
+    {
+      "id": "src_components_shell_app_shell_appshell",
+      "label": "AppShell()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 324,
+      "community_name": "app-shell.tsx",
+      "file_type": "code",
+      "norm_label": "appshell()",
+      "source_file": "src/components/shell/app-shell.tsx",
+      "source_location": "L210"
+    },
+    {
+      "id": "src_components_shell_app_shell_brand",
+      "label": "Brand()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 324,
+      "community_name": "app-shell.tsx",
+      "file_type": "code",
+      "norm_label": "brand()",
+      "source_file": "src/components/shell/app-shell.tsx",
+      "source_location": "L147"
+    },
+    {
+      "id": "src_components_shell_app_shell_demobadge",
+      "label": "DemoBadge()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 324,
+      "community_name": "app-shell.tsx",
+      "file_type": "code",
+      "norm_label": "demobadge()",
+      "source_file": "src/components/shell/app-shell.tsx",
+      "source_location": "L159"
+    },
+    {
+      "id": "src_components_shell_app_shell_navlinks",
+      "label": "NavLinks()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 324,
+      "community_name": "app-shell.tsx",
+      "file_type": "code",
+      "norm_label": "navlinks()",
+      "source_file": "src/components/shell/app-shell.tsx",
+      "source_location": "L47"
+    },
+    {
+      "id": "src_components_shell_app_shell_railfooter",
+      "label": "RailFooter()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 324,
+      "community_name": "app-shell.tsx",
+      "file_type": "code",
+      "norm_label": "railfooter()",
+      "source_file": "src/components/shell/app-shell.tsx",
+      "source_location": "L102"
+    },
+    {
+      "id": "src_components_shell_brand_blueprintmark",
+      "label": "BlueprintMark()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 324,
+      "community_name": "app-shell.tsx",
+      "file_type": "code",
+      "norm_label": "blueprintmark()",
+      "source_file": "src/components/shell/brand.tsx",
+      "source_location": "L23"
+    },
+    {
+      "id": "src_components_shell_brand_cashpilotmark",
+      "label": "CashPilotMark()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 324,
+      "community_name": "app-shell.tsx",
+      "file_type": "code",
+      "norm_label": "cashpilotmark()",
+      "source_file": "src/components/shell/brand.tsx",
+      "source_location": "L13"
+    },
+    {
+      "id": "src_components_shell_brand_wordmark",
+      "label": "Wordmark()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 324,
+      "community_name": "app-shell.tsx",
+      "file_type": "code",
+      "norm_label": "wordmark()",
+      "source_file": "src/components/shell/brand.tsx",
+      "source_location": "L41"
+    },
+    {
+      "id": "src_components_shell_providers_providers",
+      "label": "Providers()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 324,
+      "community_name": "app-shell.tsx",
+      "file_type": "code",
+      "norm_label": "providers()",
+      "source_file": "src/components/shell/providers.tsx",
+      "source_location": "L8"
+    },
+    {
+      "id": "src_components_ui_sheet_sheetfooter",
+      "label": "SheetFooter()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 324,
+      "community_name": "app-shell.tsx",
+      "file_type": "code",
+      "norm_label": "sheetfooter()",
+      "source_file": "src/components/ui/sheet.tsx",
+      "source_location": "L91"
+    },
+    {
+      "id": "src_components_ui_sheet_sheetheader",
+      "label": "SheetHeader()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 324,
+      "community_name": "app-shell.tsx",
+      "file_type": "code",
+      "norm_label": "sheetheader()",
+      "source_file": "src/components/ui/sheet.tsx",
+      "source_location": "L77"
+    },
+    {
       "id": "services_calculations_dupont_calculate_dupont_roe",
       "label": "calculate_dupont_roe()",
       "_callable": true,
@@ -19755,6 +19743,90 @@
       "norm_label": ".test_zero_revenue_raises_error()",
       "source_file": "tests/unit/test_treasury_dupont_lease.py",
       "source_location": "L173"
+    },
+    {
+      "id": "src_components_copilot_run_receipt_chips",
+      "label": "Chips()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 326,
+      "community_name": "autonomous-sentinel.tsx",
+      "file_type": "code",
+      "norm_label": "chips()",
+      "source_file": "src/components/copilot/run-receipt.tsx",
+      "source_location": "L30"
+    },
+    {
+      "id": "src_components_copilot_run_receipt_runreceipt",
+      "label": "RunReceipt()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 326,
+      "community_name": "autonomous-sentinel.tsx",
+      "file_type": "code",
+      "norm_label": "runreceipt()",
+      "source_file": "src/components/copilot/run-receipt.tsx",
+      "source_location": "L70"
+    },
+    {
+      "id": "src_components_copilot_run_receipt_techline",
+      "label": "TechLine()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 326,
+      "community_name": "autonomous-sentinel.tsx",
+      "file_type": "code",
+      "norm_label": "techline()",
+      "source_file": "src/components/copilot/run-receipt.tsx",
+      "source_location": "L54"
+    },
+    {
+      "id": "src_components_copilot_run_receipt_totalms",
+      "label": "totalMs()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 326,
+      "community_name": "autonomous-sentinel.tsx",
+      "file_type": "code",
+      "norm_label": "totalms()",
+      "source_file": "src/components/copilot/run-receipt.tsx",
+      "source_location": "L64"
+    },
+    {
+      "id": "src_components_overview_autonomous_sentinel_adddays",
+      "label": "addDays()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 326,
+      "community_name": "autonomous-sentinel.tsx",
+      "file_type": "code",
+      "norm_label": "adddays()",
+      "source_file": "src/components/overview/autonomous-sentinel.tsx",
+      "source_location": "L32"
+    },
+    {
+      "id": "src_components_overview_autonomous_sentinel_autonomoussentinel",
+      "label": "AutonomousSentinel()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 326,
+      "community_name": "autonomous-sentinel.tsx",
+      "file_type": "code",
+      "norm_label": "autonomoussentinel()",
+      "source_file": "src/components/overview/autonomous-sentinel.tsx",
+      "source_location": "L39"
+    },
+    {
+      "id": "src_components_overview_autonomous_sentinel_daysbetween",
+      "label": "daysBetween()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 326,
+      "community_name": "autonomous-sentinel.tsx",
+      "file_type": "code",
+      "norm_label": "daysbetween()",
+      "source_file": "src/components/overview/autonomous-sentinel.tsx",
+      "source_location": "L25"
     },
     {
       "id": "services_security_tenant_token_authorize_token_issuance",
@@ -20523,78 +20595,6 @@
       "norm_label": "topicof()",
       "source_file": "src/app/assistant/page.tsx",
       "source_location": "L322"
-    },
-    {
-      "id": "src_app_layout_rootlayout",
-      "label": "RootLayout()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 49,
-      "community_name": "assistant/page.tsx",
-      "file_type": "code",
-      "norm_label": "rootlayout()",
-      "source_file": "src/app/layout.tsx",
-      "source_location": "L18"
-    },
-    {
-      "id": "src_components_copilot_run_receipt_chips",
-      "label": "Chips()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 49,
-      "community_name": "assistant/page.tsx",
-      "file_type": "code",
-      "norm_label": "chips()",
-      "source_file": "src/components/copilot/run-receipt.tsx",
-      "source_location": "L30"
-    },
-    {
-      "id": "src_components_copilot_run_receipt_runreceipt",
-      "label": "RunReceipt()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 49,
-      "community_name": "assistant/page.tsx",
-      "file_type": "code",
-      "norm_label": "runreceipt()",
-      "source_file": "src/components/copilot/run-receipt.tsx",
-      "source_location": "L70"
-    },
-    {
-      "id": "src_components_copilot_run_receipt_techline",
-      "label": "TechLine()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 49,
-      "community_name": "assistant/page.tsx",
-      "file_type": "code",
-      "norm_label": "techline()",
-      "source_file": "src/components/copilot/run-receipt.tsx",
-      "source_location": "L54"
-    },
-    {
-      "id": "src_components_copilot_run_receipt_totalms",
-      "label": "totalMs()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 49,
-      "community_name": "assistant/page.tsx",
-      "file_type": "code",
-      "norm_label": "totalms()",
-      "source_file": "src/components/copilot/run-receipt.tsx",
-      "source_location": "L64"
-    },
-    {
-      "id": "src_components_shell_providers_providers",
-      "label": "Providers()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 49,
-      "community_name": "assistant/page.tsx",
-      "file_type": "code",
-      "norm_label": "providers()",
-      "source_file": "src/components/shell/providers.tsx",
-      "source_location": "L8"
     },
     {
       "id": "src_lib_api_llmconfig",
@@ -29982,14 +29982,36 @@
       "source_location": "L1"
     },
     {
-      "id": "src_components_overview_autonomous_sentinel",
-      "label": "autonomous-sentinel.tsx",
+      "id": "src_components_copilot_briefing",
+      "label": "briefing.tsx",
       "_origin": "ast",
       "community": 178,
       "community_name": "demo.ts",
       "file_type": "code",
-      "norm_label": "autonomous-sentinel.tsx",
-      "source_file": "src/components/overview/autonomous-sentinel.tsx",
+      "norm_label": "briefing.tsx",
+      "source_file": "src/components/copilot/briefing.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "src_components_copilot_briefing_tone",
+      "label": "TONE",
+      "_origin": "ast",
+      "community": 178,
+      "community_name": "demo.ts",
+      "file_type": "code",
+      "norm_label": "tone",
+      "source_file": "src/components/copilot/briefing.tsx",
+      "source_location": "L23"
+    },
+    {
+      "id": "src_components_funding_underwriting_dossier_dialog",
+      "label": "underwriting-dossier-dialog.tsx",
+      "_origin": "ast",
+      "community": 178,
+      "community_name": "demo.ts",
+      "file_type": "code",
+      "norm_label": "underwriting-dossier-dialog.tsx",
+      "source_file": "src/components/funding/underwriting-dossier-dialog.tsx",
       "source_location": "L1"
     },
     {
@@ -30015,48 +30037,70 @@
       "source_location": "L64"
     },
     {
-      "id": "src_lib_api",
-      "label": "lib/api.ts",
+      "id": "src_lib_currencies",
+      "label": "currencies.ts",
       "_origin": "ast",
       "community": 178,
       "community_name": "demo.ts",
       "file_type": "code",
-      "norm_label": "lib/api.ts",
-      "source_file": "src/lib/api.ts",
+      "norm_label": "currencies.ts",
+      "source_file": "src/lib/currencies.ts",
       "source_location": "L1"
     },
     {
-      "id": "src_lib_api_api",
-      "label": "api",
+      "id": "src_lib_currencies_symbol_map",
+      "label": "SYMBOL_MAP",
       "_origin": "ast",
       "community": 178,
       "community_name": "demo.ts",
       "file_type": "code",
-      "norm_label": "api",
-      "source_file": "src/lib/api.ts",
-      "source_location": "L108"
+      "norm_label": "symbol_map",
+      "source_file": "src/lib/currencies.ts",
+      "source_location": "L73"
     },
     {
-      "id": "src_lib_api_api_url",
-      "label": "API_URL",
+      "id": "src_lib_currencies_world_currencies",
+      "label": "WORLD_CURRENCIES",
       "_origin": "ast",
       "community": 178,
       "community_name": "demo.ts",
       "file_type": "code",
-      "norm_label": "api_url",
-      "source_file": "src/lib/api.ts",
-      "source_location": "L7"
+      "norm_label": "world_currencies",
+      "source_file": "src/lib/currencies.ts",
+      "source_location": "L9"
     },
     {
-      "id": "src_lib_api_bucket_keys",
-      "label": "BUCKET_KEYS",
+      "id": "src_lib_format",
+      "label": "format.ts",
       "_origin": "ast",
       "community": 178,
       "community_name": "demo.ts",
       "file_type": "code",
-      "norm_label": "bucket_keys",
-      "source_file": "src/lib/api.ts",
-      "source_location": "L104"
+      "norm_label": "format.ts",
+      "source_file": "src/lib/format.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "src_lib_format_formatters",
+      "label": "formatters",
+      "_origin": "ast",
+      "community": 178,
+      "community_name": "demo.ts",
+      "file_type": "code",
+      "norm_label": "formatters",
+      "source_file": "src/lib/format.ts",
+      "source_location": "L67"
+    },
+    {
+      "id": "src_lib_format_symbolcache",
+      "label": "symbolCache",
+      "_origin": "ast",
+      "community": 178,
+      "community_name": "demo.ts",
+      "file_type": "code",
+      "norm_label": "symbolcache",
+      "source_file": "src/lib/format.ts",
+      "source_location": "L6"
     },
     {
       "id": "src_lib_i18n_languages",
@@ -30268,6 +30312,17 @@
       "source_location": "L144"
     },
     {
+      "id": "src_lib_mock_demo_receivables",
+      "label": "RECEIVABLES",
+      "_origin": "ast",
+      "community": 178,
+      "community_name": "demo.ts",
+      "file_type": "code",
+      "norm_label": "receivables",
+      "source_file": "src/lib/mock/demo.ts",
+      "source_location": "L301"
+    },
+    {
       "id": "src_lib_mock_demo_recurring",
       "label": "RECURRING",
       "_origin": "ast",
@@ -30431,17 +30486,6 @@
       "norm_label": "lucide-react",
       "source_file": "package.json",
       "source_location": "L37"
-    },
-    {
-      "id": "ref_motion",
-      "label": "motion",
-      "_origin": "ast",
-      "community": 178,
-      "community_name": "demo.ts",
-      "file_type": "concept",
-      "norm_label": "motion",
-      "source_file": "package.json",
-      "source_location": "L38"
     },
     {
       "id": "ref_next",
@@ -33099,6 +33143,50 @@
       "norm_label": "skeleton.tsx",
       "source_file": "src/components/ui/skeleton.tsx",
       "source_location": "L1"
+    },
+    {
+      "id": "src_lib_api",
+      "label": "lib/api.ts",
+      "_origin": "ast",
+      "community": 195,
+      "community_name": "local-models.tsx",
+      "file_type": "code",
+      "norm_label": "lib/api.ts",
+      "source_file": "src/lib/api.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "src_lib_api_api",
+      "label": "api",
+      "_origin": "ast",
+      "community": 195,
+      "community_name": "local-models.tsx",
+      "file_type": "code",
+      "norm_label": "api",
+      "source_file": "src/lib/api.ts",
+      "source_location": "L108"
+    },
+    {
+      "id": "src_lib_api_api_url",
+      "label": "API_URL",
+      "_origin": "ast",
+      "community": 195,
+      "community_name": "local-models.tsx",
+      "file_type": "code",
+      "norm_label": "api_url",
+      "source_file": "src/lib/api.ts",
+      "source_location": "L7"
+    },
+    {
+      "id": "src_lib_api_bucket_keys",
+      "label": "BUCKET_KEYS",
+      "_origin": "ast",
+      "community": 195,
+      "community_name": "local-models.tsx",
+      "file_type": "code",
+      "norm_label": "bucket_keys",
+      "source_file": "src/lib/api.ts",
+      "source_location": "L104"
     },
     {
       "id": "src_lib_local_models",
@@ -37864,39 +37952,6 @@
       "source_location": "L25"
     },
     {
-      "id": "src_components_copilot_briefing",
-      "label": "briefing.tsx",
-      "_origin": "ast",
-      "community": 235,
-      "community_name": "app/page.tsx",
-      "file_type": "code",
-      "norm_label": "briefing.tsx",
-      "source_file": "src/components/copilot/briefing.tsx",
-      "source_location": "L1"
-    },
-    {
-      "id": "src_components_copilot_briefing_tone",
-      "label": "TONE",
-      "_origin": "ast",
-      "community": 235,
-      "community_name": "app/page.tsx",
-      "file_type": "code",
-      "norm_label": "tone",
-      "source_file": "src/components/copilot/briefing.tsx",
-      "source_location": "L23"
-    },
-    {
-      "id": "src_components_overview_key_figures",
-      "label": "key-figures.tsx",
-      "_origin": "ast",
-      "community": 235,
-      "community_name": "app/page.tsx",
-      "file_type": "code",
-      "norm_label": "key-figures.tsx",
-      "source_file": "src/components/overview/key-figures.tsx",
-      "source_location": "L1"
-    },
-    {
       "id": "src_components_overview_runway_chart",
       "label": "runway-chart.tsx",
       "_origin": "ast",
@@ -37930,28 +37985,6 @@
       "source_location": "L1"
     },
     {
-      "id": "src_components_overview_working_capital_card",
-      "label": "working-capital-card.tsx",
-      "_origin": "ast",
-      "community": 235,
-      "community_name": "app/page.tsx",
-      "file_type": "code",
-      "norm_label": "working-capital-card.tsx",
-      "source_file": "src/components/overview/working-capital-card.tsx",
-      "source_location": "L1"
-    },
-    {
-      "id": "src_components_overview_working_capital_card_status_config",
-      "label": "STATUS_CONFIG",
-      "_origin": "ast",
-      "community": 235,
-      "community_name": "app/page.tsx",
-      "file_type": "code",
-      "norm_label": "status_config",
-      "source_file": "src/components/overview/working-capital-card.tsx",
-      "source_location": "L13"
-    },
-    {
       "id": "src_components_ui_toggle_group_togglegroup",
       "label": "ToggleGroup",
       "_origin": "ast",
@@ -37961,39 +37994,6 @@
       "norm_label": "togglegroup",
       "source_file": "src/components/ui/toggle-group.tsx",
       "source_location": "L17"
-    },
-    {
-      "id": "src_lib_format",
-      "label": "format.ts",
-      "_origin": "ast",
-      "community": 235,
-      "community_name": "app/page.tsx",
-      "file_type": "code",
-      "norm_label": "format.ts",
-      "source_file": "src/lib/format.ts",
-      "source_location": "L1"
-    },
-    {
-      "id": "src_lib_format_formatters",
-      "label": "formatters",
-      "_origin": "ast",
-      "community": 235,
-      "community_name": "app/page.tsx",
-      "file_type": "code",
-      "norm_label": "formatters",
-      "source_file": "src/lib/format.ts",
-      "source_location": "L67"
-    },
-    {
-      "id": "src_lib_format_symbolcache",
-      "label": "symbolCache",
-      "_origin": "ast",
-      "community": 235,
-      "community_name": "app/page.tsx",
-      "file_type": "code",
-      "norm_label": "symbolcache",
-      "source_file": "src/lib/format.ts",
-      "source_location": "L6"
     },
     {
       "id": "src_lib_live_forecast",
@@ -38016,17 +38016,6 @@
       "norm_label": "base_scenario",
       "source_file": "src/lib/mock/demo.ts",
       "source_location": "L152"
-    },
-    {
-      "id": "src_lib_mock_demo_receivables",
-      "label": "RECEIVABLES",
-      "_origin": "ast",
-      "community": 235,
-      "community_name": "app/page.tsx",
-      "file_type": "code",
-      "norm_label": "receivables",
-      "source_file": "src/lib/mock/demo.ts",
-      "source_location": "L301"
     },
     {
       "id": "src_lib_mock_demo_series",
@@ -39883,17 +39872,6 @@
       "source_location": "L1"
     },
     {
-      "id": "src_components_funding_underwriting_dossier_dialog",
-      "label": "underwriting-dossier-dialog.tsx",
-      "_origin": "ast",
-      "community": 250,
-      "community_name": "useT",
-      "file_type": "code",
-      "norm_label": "underwriting-dossier-dialog.tsx",
-      "source_file": "src/components/funding/underwriting-dossier-dialog.tsx",
-      "source_location": "L1"
-    },
-    {
       "id": "src_components_overview_quick_cash_dialog",
       "label": "quick-cash-dialog.tsx",
       "_origin": "ast",
@@ -40125,48 +40103,15 @@
       "source_location": "L1"
     },
     {
-      "id": "src_components_shell_app_shell",
-      "label": "app-shell.tsx",
+      "id": "src_components_overview_key_figures",
+      "label": "key-figures.tsx",
       "_origin": "ast",
       "community": 251,
       "community_name": "cn",
       "file_type": "code",
-      "norm_label": "app-shell.tsx",
-      "source_file": "src/components/shell/app-shell.tsx",
+      "norm_label": "key-figures.tsx",
+      "source_file": "src/components/overview/key-figures.tsx",
       "source_location": "L1"
-    },
-    {
-      "id": "src_components_shell_app_shell_nav",
-      "label": "NAV",
-      "_origin": "ast",
-      "community": 251,
-      "community_name": "cn",
-      "file_type": "code",
-      "norm_label": "nav",
-      "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L27"
-    },
-    {
-      "id": "src_components_shell_brand",
-      "label": "brand.tsx",
-      "_origin": "ast",
-      "community": 251,
-      "community_name": "cn",
-      "file_type": "code",
-      "norm_label": "brand.tsx",
-      "source_file": "src/components/shell/brand.tsx",
-      "source_location": "L1"
-    },
-    {
-      "id": "src_components_shell_brand_brand",
-      "label": "BRAND",
-      "_origin": "ast",
-      "community": 251,
-      "community_name": "cn",
-      "file_type": "code",
-      "norm_label": "brand",
-      "source_file": "src/components/shell/brand.tsx",
-      "source_location": "L6"
     },
     {
       "id": "src_components_shell_language_menu",
@@ -40631,72 +40576,6 @@
       "source_location": "L8"
     },
     {
-      "id": "src_components_ui_sheet",
-      "label": "sheet.tsx",
-      "_origin": "ast",
-      "community": 251,
-      "community_name": "cn",
-      "file_type": "code",
-      "norm_label": "sheet.tsx",
-      "source_file": "src/components/ui/sheet.tsx",
-      "source_location": "L1"
-    },
-    {
-      "id": "src_components_ui_sheet_sheetcontent",
-      "label": "SheetContent",
-      "_origin": "ast",
-      "community": 251,
-      "community_name": "cn",
-      "file_type": "code",
-      "norm_label": "sheetcontent",
-      "source_file": "src/components/ui/sheet.tsx",
-      "source_location": "L56"
-    },
-    {
-      "id": "src_components_ui_sheet_sheetdescription",
-      "label": "SheetDescription",
-      "_origin": "ast",
-      "community": 251,
-      "community_name": "cn",
-      "file_type": "code",
-      "norm_label": "sheetdescription",
-      "source_file": "src/components/ui/sheet.tsx",
-      "source_location": "L117"
-    },
-    {
-      "id": "src_components_ui_sheet_sheetoverlay",
-      "label": "SheetOverlay",
-      "_origin": "ast",
-      "community": 251,
-      "community_name": "cn",
-      "file_type": "code",
-      "norm_label": "sheetoverlay",
-      "source_file": "src/components/ui/sheet.tsx",
-      "source_location": "L18"
-    },
-    {
-      "id": "src_components_ui_sheet_sheettitle",
-      "label": "SheetTitle",
-      "_origin": "ast",
-      "community": 251,
-      "community_name": "cn",
-      "file_type": "code",
-      "norm_label": "sheettitle",
-      "source_file": "src/components/ui/sheet.tsx",
-      "source_location": "L105"
-    },
-    {
-      "id": "src_components_ui_sheet_sheetvariants",
-      "label": "sheetVariants",
-      "_origin": "ast",
-      "community": 251,
-      "community_name": "cn",
-      "file_type": "code",
-      "norm_label": "sheetvariants",
-      "source_file": "src/components/ui/sheet.tsx",
-      "source_location": "L33"
-    },
-    {
       "id": "src_components_ui_table_tablecaption",
       "label": "TableCaption",
       "_origin": "ast",
@@ -40840,39 +40719,6 @@
       "source_location": "L1"
     },
     {
-      "id": "src_lib_currencies",
-      "label": "currencies.ts",
-      "_origin": "ast",
-      "community": 251,
-      "community_name": "cn",
-      "file_type": "code",
-      "norm_label": "currencies.ts",
-      "source_file": "src/lib/currencies.ts",
-      "source_location": "L1"
-    },
-    {
-      "id": "src_lib_currencies_symbol_map",
-      "label": "SYMBOL_MAP",
-      "_origin": "ast",
-      "community": 251,
-      "community_name": "cn",
-      "file_type": "code",
-      "norm_label": "symbol_map",
-      "source_file": "src/lib/currencies.ts",
-      "source_location": "L73"
-    },
-    {
-      "id": "src_lib_currencies_world_currencies",
-      "label": "WORLD_CURRENCIES",
-      "_origin": "ast",
-      "community": 251,
-      "community_name": "cn",
-      "file_type": "code",
-      "norm_label": "world_currencies",
-      "source_file": "src/lib/currencies.ts",
-      "source_location": "L9"
-    },
-    {
       "id": "src_lib_providers",
       "label": "providers.ts",
       "_origin": "ast",
@@ -40926,17 +40772,6 @@
       "norm_label": "class-variance-authority",
       "source_file": "package.json",
       "source_location": "L34"
-    },
-    {
-      "id": "ref_radix_ui_react_dialog",
-      "label": "@radix-ui/react-dialog",
-      "_origin": "ast",
-      "community": 251,
-      "community_name": "cn",
-      "file_type": "concept",
-      "norm_label": "@radix-ui/react-dialog",
-      "source_file": "package.json",
-      "source_location": "L22"
     },
     {
       "id": "ref_radix_ui_react_tabs",
@@ -48172,6 +48007,171 @@
       "source_location": "L839"
     },
     {
+      "id": "src_app_layout",
+      "label": "layout.tsx",
+      "_origin": "ast",
+      "community": 324,
+      "community_name": "app-shell.tsx",
+      "file_type": "code",
+      "norm_label": "layout.tsx",
+      "source_file": "src/app/layout.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "src_app_layout_metadata",
+      "label": "metadata",
+      "_origin": "ast",
+      "community": 324,
+      "community_name": "app-shell.tsx",
+      "file_type": "code",
+      "norm_label": "metadata",
+      "source_file": "src/app/layout.tsx",
+      "source_location": "L13"
+    },
+    {
+      "id": "src_app_layout_mono",
+      "label": "mono",
+      "_origin": "ast",
+      "community": 324,
+      "community_name": "app-shell.tsx",
+      "file_type": "code",
+      "norm_label": "mono",
+      "source_file": "src/app/layout.tsx",
+      "source_location": "L8"
+    },
+    {
+      "id": "src_app_layout_sans",
+      "label": "sans",
+      "_origin": "ast",
+      "community": 324,
+      "community_name": "app-shell.tsx",
+      "file_type": "code",
+      "norm_label": "sans",
+      "source_file": "src/app/layout.tsx",
+      "source_location": "L7"
+    },
+    {
+      "id": "src_components_shell_app_shell",
+      "label": "app-shell.tsx",
+      "_origin": "ast",
+      "community": 324,
+      "community_name": "app-shell.tsx",
+      "file_type": "code",
+      "norm_label": "app-shell.tsx",
+      "source_file": "src/components/shell/app-shell.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "src_components_shell_app_shell_nav",
+      "label": "NAV",
+      "_origin": "ast",
+      "community": 324,
+      "community_name": "app-shell.tsx",
+      "file_type": "code",
+      "norm_label": "nav",
+      "source_file": "src/components/shell/app-shell.tsx",
+      "source_location": "L27"
+    },
+    {
+      "id": "src_components_shell_brand",
+      "label": "brand.tsx",
+      "_origin": "ast",
+      "community": 324,
+      "community_name": "app-shell.tsx",
+      "file_type": "code",
+      "norm_label": "brand.tsx",
+      "source_file": "src/components/shell/brand.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "src_components_shell_brand_brand",
+      "label": "BRAND",
+      "_origin": "ast",
+      "community": 324,
+      "community_name": "app-shell.tsx",
+      "file_type": "code",
+      "norm_label": "brand",
+      "source_file": "src/components/shell/brand.tsx",
+      "source_location": "L6"
+    },
+    {
+      "id": "src_components_ui_sheet",
+      "label": "sheet.tsx",
+      "_origin": "ast",
+      "community": 324,
+      "community_name": "app-shell.tsx",
+      "file_type": "code",
+      "norm_label": "sheet.tsx",
+      "source_file": "src/components/ui/sheet.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "src_components_ui_sheet_sheetcontent",
+      "label": "SheetContent",
+      "_origin": "ast",
+      "community": 324,
+      "community_name": "app-shell.tsx",
+      "file_type": "code",
+      "norm_label": "sheetcontent",
+      "source_file": "src/components/ui/sheet.tsx",
+      "source_location": "L56"
+    },
+    {
+      "id": "src_components_ui_sheet_sheetdescription",
+      "label": "SheetDescription",
+      "_origin": "ast",
+      "community": 324,
+      "community_name": "app-shell.tsx",
+      "file_type": "code",
+      "norm_label": "sheetdescription",
+      "source_file": "src/components/ui/sheet.tsx",
+      "source_location": "L117"
+    },
+    {
+      "id": "src_components_ui_sheet_sheetoverlay",
+      "label": "SheetOverlay",
+      "_origin": "ast",
+      "community": 324,
+      "community_name": "app-shell.tsx",
+      "file_type": "code",
+      "norm_label": "sheetoverlay",
+      "source_file": "src/components/ui/sheet.tsx",
+      "source_location": "L18"
+    },
+    {
+      "id": "src_components_ui_sheet_sheettitle",
+      "label": "SheetTitle",
+      "_origin": "ast",
+      "community": 324,
+      "community_name": "app-shell.tsx",
+      "file_type": "code",
+      "norm_label": "sheettitle",
+      "source_file": "src/components/ui/sheet.tsx",
+      "source_location": "L105"
+    },
+    {
+      "id": "src_components_ui_sheet_sheetvariants",
+      "label": "sheetVariants",
+      "_origin": "ast",
+      "community": 324,
+      "community_name": "app-shell.tsx",
+      "file_type": "code",
+      "norm_label": "sheetvariants",
+      "source_file": "src/components/ui/sheet.tsx",
+      "source_location": "L33"
+    },
+    {
+      "id": "ref_radix_ui_react_dialog",
+      "label": "@radix-ui/react-dialog",
+      "_origin": "ast",
+      "community": 324,
+      "community_name": "app-shell.tsx",
+      "file_type": "concept",
+      "norm_label": "@radix-ui/react-dialog",
+      "source_file": "package.json",
+      "source_location": "L22"
+    },
+    {
       "id": "services_calculations_dupont_py_any",
       "label": "Any",
       "_origin": "ast",
@@ -48214,6 +48214,138 @@
       "norm_label": "test suite for 3-stage dupont roe decomposition engine.",
       "source_file": "tests/unit/test_treasury_dupont_lease.py",
       "source_location": "L108"
+    },
+    {
+      "id": "src_components_copilot_run_receipt",
+      "label": "run-receipt.tsx",
+      "_origin": "ast",
+      "community": 326,
+      "community_name": "autonomous-sentinel.tsx",
+      "file_type": "code",
+      "norm_label": "run-receipt.tsx",
+      "source_file": "src/components/copilot/run-receipt.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "src_components_copilot_run_receipt_agent_class",
+      "label": "AGENT_CLASS",
+      "_origin": "ast",
+      "community": 326,
+      "community_name": "autonomous-sentinel.tsx",
+      "file_type": "code",
+      "norm_label": "agent_class",
+      "source_file": "src/components/copilot/run-receipt.tsx",
+      "source_location": "L20"
+    },
+    {
+      "id": "src_components_copilot_run_receipt_agent_dot",
+      "label": "AGENT_DOT",
+      "_origin": "ast",
+      "community": 326,
+      "community_name": "autonomous-sentinel.tsx",
+      "file_type": "code",
+      "norm_label": "agent_dot",
+      "source_file": "src/components/copilot/run-receipt.tsx",
+      "source_location": "L12"
+    },
+    {
+      "id": "src_components_overview_autonomous_sentinel",
+      "label": "autonomous-sentinel.tsx",
+      "_origin": "ast",
+      "community": 326,
+      "community_name": "autonomous-sentinel.tsx",
+      "file_type": "code",
+      "norm_label": "autonomous-sentinel.tsx",
+      "source_file": "src/components/overview/autonomous-sentinel.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "src_components_overview_working_capital_card",
+      "label": "working-capital-card.tsx",
+      "_origin": "ast",
+      "community": 326,
+      "community_name": "autonomous-sentinel.tsx",
+      "file_type": "code",
+      "norm_label": "working-capital-card.tsx",
+      "source_file": "src/components/overview/working-capital-card.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "src_components_overview_working_capital_card_status_config",
+      "label": "STATUS_CONFIG",
+      "_origin": "ast",
+      "community": 326,
+      "community_name": "autonomous-sentinel.tsx",
+      "file_type": "code",
+      "norm_label": "status_config",
+      "source_file": "src/components/overview/working-capital-card.tsx",
+      "source_location": "L13"
+    },
+    {
+      "id": "src_components_shell_providers",
+      "label": "providers.tsx",
+      "_origin": "ast",
+      "community": 326,
+      "community_name": "autonomous-sentinel.tsx",
+      "file_type": "code",
+      "norm_label": "providers.tsx",
+      "source_file": "src/components/shell/providers.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "src_lib_motion",
+      "label": "motion.ts",
+      "_origin": "ast",
+      "community": 326,
+      "community_name": "autonomous-sentinel.tsx",
+      "file_type": "code",
+      "norm_label": "motion.ts",
+      "source_file": "src/lib/motion.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "src_lib_motion_fade",
+      "label": "fade",
+      "_origin": "ast",
+      "community": 326,
+      "community_name": "autonomous-sentinel.tsx",
+      "file_type": "code",
+      "norm_label": "fade",
+      "source_file": "src/lib/motion.ts",
+      "source_location": "L8"
+    },
+    {
+      "id": "src_lib_motion_spring",
+      "label": "spring",
+      "_origin": "ast",
+      "community": 326,
+      "community_name": "autonomous-sentinel.tsx",
+      "file_type": "code",
+      "norm_label": "spring",
+      "source_file": "src/lib/motion.ts",
+      "source_location": "L2"
+    },
+    {
+      "id": "src_lib_motion_stagger_s",
+      "label": "STAGGER_S",
+      "_origin": "ast",
+      "community": 326,
+      "community_name": "autonomous-sentinel.tsx",
+      "file_type": "code",
+      "norm_label": "stagger_s",
+      "source_file": "src/lib/motion.ts",
+      "source_location": "L10"
+    },
+    {
+      "id": "ref_motion",
+      "label": "motion",
+      "_origin": "ast",
+      "community": 326,
+      "community_name": "autonomous-sentinel.tsx",
+      "file_type": "concept",
+      "norm_label": "motion",
+      "source_file": "package.json",
+      "source_location": "L38"
     },
     {
       "id": "tests_unit_test_tenant_token",
@@ -52089,50 +52221,6 @@
       "source_location": "L58"
     },
     {
-      "id": "src_app_layout",
-      "label": "layout.tsx",
-      "_origin": "ast",
-      "community": 49,
-      "community_name": "assistant/page.tsx",
-      "file_type": "code",
-      "norm_label": "layout.tsx",
-      "source_file": "src/app/layout.tsx",
-      "source_location": "L1"
-    },
-    {
-      "id": "src_app_layout_metadata",
-      "label": "metadata",
-      "_origin": "ast",
-      "community": 49,
-      "community_name": "assistant/page.tsx",
-      "file_type": "code",
-      "norm_label": "metadata",
-      "source_file": "src/app/layout.tsx",
-      "source_location": "L13"
-    },
-    {
-      "id": "src_app_layout_mono",
-      "label": "mono",
-      "_origin": "ast",
-      "community": 49,
-      "community_name": "assistant/page.tsx",
-      "file_type": "code",
-      "norm_label": "mono",
-      "source_file": "src/app/layout.tsx",
-      "source_location": "L8"
-    },
-    {
-      "id": "src_app_layout_sans",
-      "label": "sans",
-      "_origin": "ast",
-      "community": 49,
-      "community_name": "assistant/page.tsx",
-      "file_type": "code",
-      "norm_label": "sans",
-      "source_file": "src/app/layout.tsx",
-      "source_location": "L7"
-    },
-    {
       "id": "src_components_copilot_answer_markdown_answermarkdown",
       "label": "AnswerMarkdown",
       "_origin": "ast",
@@ -52142,50 +52230,6 @@
       "norm_label": "answermarkdown",
       "source_file": "src/components/copilot/answer-markdown.tsx",
       "source_location": "L48"
-    },
-    {
-      "id": "src_components_copilot_run_receipt",
-      "label": "run-receipt.tsx",
-      "_origin": "ast",
-      "community": 49,
-      "community_name": "assistant/page.tsx",
-      "file_type": "code",
-      "norm_label": "run-receipt.tsx",
-      "source_file": "src/components/copilot/run-receipt.tsx",
-      "source_location": "L1"
-    },
-    {
-      "id": "src_components_copilot_run_receipt_agent_class",
-      "label": "AGENT_CLASS",
-      "_origin": "ast",
-      "community": 49,
-      "community_name": "assistant/page.tsx",
-      "file_type": "code",
-      "norm_label": "agent_class",
-      "source_file": "src/components/copilot/run-receipt.tsx",
-      "source_location": "L20"
-    },
-    {
-      "id": "src_components_copilot_run_receipt_agent_dot",
-      "label": "AGENT_DOT",
-      "_origin": "ast",
-      "community": 49,
-      "community_name": "assistant/page.tsx",
-      "file_type": "code",
-      "norm_label": "agent_dot",
-      "source_file": "src/components/copilot/run-receipt.tsx",
-      "source_location": "L12"
-    },
-    {
-      "id": "src_components_shell_providers",
-      "label": "providers.tsx",
-      "_origin": "ast",
-      "community": 49,
-      "community_name": "assistant/page.tsx",
-      "file_type": "code",
-      "norm_label": "providers.tsx",
-      "source_file": "src/components/shell/providers.tsx",
-      "source_location": "L1"
     },
     {
       "id": "src_lib_mock_demo_anchor",
@@ -52208,50 +52252,6 @@
       "norm_label": "sample_csv",
       "source_file": "src/lib/mock/demo.ts",
       "source_location": "L102"
-    },
-    {
-      "id": "src_lib_motion",
-      "label": "motion.ts",
-      "_origin": "ast",
-      "community": 49,
-      "community_name": "assistant/page.tsx",
-      "file_type": "code",
-      "norm_label": "motion.ts",
-      "source_file": "src/lib/motion.ts",
-      "source_location": "L1"
-    },
-    {
-      "id": "src_lib_motion_fade",
-      "label": "fade",
-      "_origin": "ast",
-      "community": 49,
-      "community_name": "assistant/page.tsx",
-      "file_type": "code",
-      "norm_label": "fade",
-      "source_file": "src/lib/motion.ts",
-      "source_location": "L8"
-    },
-    {
-      "id": "src_lib_motion_spring",
-      "label": "spring",
-      "_origin": "ast",
-      "community": 49,
-      "community_name": "assistant/page.tsx",
-      "file_type": "code",
-      "norm_label": "spring",
-      "source_file": "src/lib/motion.ts",
-      "source_location": "L2"
-    },
-    {
-      "id": "src_lib_motion_stagger_s",
-      "label": "STAGGER_S",
-      "_origin": "ast",
-      "community": 49,
-      "community_name": "assistant/page.tsx",
-      "file_type": "code",
-      "norm_label": "stagger_s",
-      "source_file": "src/lib/motion.ts",
-      "source_location": "L10"
     },
     {
       "id": "agent_skills_3_statement_model_references_formulas_balance_sheet_structure",
@@ -57893,30 +57893,6 @@
       "type": "external"
     },
     {
-      "id": "src_components_ui_popover_popover",
-      "label": "src_components_ui_popover_popover",
-      "_origin": "semantic",
-      "community": 235,
-      "community_name": "app/page.tsx",
-      "external": true,
-      "file_type": "concept",
-      "norm_label": "src_components_ui_popover_popover",
-      "source_file": "",
-      "type": "external"
-    },
-    {
-      "id": "src_components_ui_popover_popovertrigger",
-      "label": "src_components_ui_popover_popovertrigger",
-      "_origin": "semantic",
-      "community": 235,
-      "community_name": "app/page.tsx",
-      "external": true,
-      "file_type": "concept",
-      "norm_label": "src_components_ui_popover_popovertrigger",
-      "source_file": "",
-      "type": "external"
-    },
-    {
       "id": "app_globals",
       "label": "app_globals",
       "_origin": "semantic",
@@ -58013,6 +57989,30 @@
       "type": "external"
     },
     {
+      "id": "src_components_ui_popover_popover",
+      "label": "src_components_ui_popover_popover",
+      "_origin": "semantic",
+      "community": 251,
+      "community_name": "cn",
+      "external": true,
+      "file_type": "concept",
+      "norm_label": "src_components_ui_popover_popover",
+      "source_file": "",
+      "type": "external"
+    },
+    {
+      "id": "src_components_ui_popover_popovertrigger",
+      "label": "src_components_ui_popover_popovertrigger",
+      "_origin": "semantic",
+      "community": 251,
+      "community_name": "cn",
+      "external": true,
+      "file_type": "concept",
+      "norm_label": "src_components_ui_popover_popovertrigger",
+      "source_file": "",
+      "type": "external"
+    },
+    {
       "id": "src_components_ui_select_select",
       "label": "src_components_ui_select_select",
       "_origin": "semantic",
@@ -58033,30 +58033,6 @@
       "external": true,
       "file_type": "concept",
       "norm_label": "src_components_ui_select_selectvalue",
-      "source_file": "",
-      "type": "external"
-    },
-    {
-      "id": "src_components_ui_sheet_sheet",
-      "label": "src_components_ui_sheet_sheet",
-      "_origin": "semantic",
-      "community": 251,
-      "community_name": "cn",
-      "external": true,
-      "file_type": "concept",
-      "norm_label": "src_components_ui_sheet_sheet",
-      "source_file": "",
-      "type": "external"
-    },
-    {
-      "id": "src_components_ui_sheet_sheettrigger",
-      "label": "src_components_ui_sheet_sheettrigger",
-      "_origin": "semantic",
-      "community": 251,
-      "community_name": "cn",
-      "external": true,
-      "file_type": "concept",
-      "norm_label": "src_components_ui_sheet_sheettrigger",
       "source_file": "",
       "type": "external"
     },
@@ -58465,6 +58441,54 @@
       "external": true,
       "file_type": "concept",
       "norm_label": "zlib",
+      "source_file": "",
+      "type": "external"
+    },
+    {
+      "id": "src_app_globals",
+      "label": "src_app_globals",
+      "_origin": "semantic",
+      "community": 324,
+      "community_name": "app-shell.tsx",
+      "external": true,
+      "file_type": "concept",
+      "norm_label": "src_app_globals",
+      "source_file": "",
+      "type": "external"
+    },
+    {
+      "id": "src_components_ui_sheet_sheet",
+      "label": "src_components_ui_sheet_sheet",
+      "_origin": "semantic",
+      "community": 324,
+      "community_name": "app-shell.tsx",
+      "external": true,
+      "file_type": "concept",
+      "norm_label": "src_components_ui_sheet_sheet",
+      "source_file": "",
+      "type": "external"
+    },
+    {
+      "id": "src_components_ui_sheet_sheettrigger",
+      "label": "src_components_ui_sheet_sheettrigger",
+      "_origin": "semantic",
+      "community": 324,
+      "community_name": "app-shell.tsx",
+      "external": true,
+      "file_type": "concept",
+      "norm_label": "src_components_ui_sheet_sheettrigger",
+      "source_file": "",
+      "type": "external"
+    },
+    {
+      "id": "src_components_ui_tooltip_tooltipprovider",
+      "label": "src_components_ui_tooltip_tooltipprovider",
+      "_origin": "semantic",
+      "community": 326,
+      "community_name": "autonomous-sentinel.tsx",
+      "external": true,
+      "file_type": "concept",
+      "norm_label": "src_components_ui_tooltip_tooltipprovider",
       "source_file": "",
       "type": "external"
     },
@@ -59629,30 +59653,6 @@
       "external": true,
       "file_type": "concept",
       "norm_label": "webauthn_helpers_structs",
-      "source_file": "",
-      "type": "external"
-    },
-    {
-      "id": "src_app_globals",
-      "label": "src_app_globals",
-      "_origin": "semantic",
-      "community": 49,
-      "community_name": "assistant/page.tsx",
-      "external": true,
-      "file_type": "concept",
-      "norm_label": "src_app_globals",
-      "source_file": "",
-      "type": "external"
-    },
-    {
-      "id": "src_components_ui_tooltip_tooltipprovider",
-      "label": "src_components_ui_tooltip_tooltipprovider",
-      "_origin": "semantic",
-      "community": 49,
-      "community_name": "assistant/page.tsx",
-      "external": true,
-      "file_type": "concept",
-      "norm_label": "src_components_ui_tooltip_tooltipprovider",
       "source_file": "",
       "type": "external"
     }
@@ -77163,7 +77163,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/overview/autonomous-sentinel.tsx",
-      "source_location": "L115",
+      "source_location": "L114",
       "weight": 1.0
     },
     {
@@ -77175,7 +77175,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/overview/autonomous-sentinel.tsx",
-      "source_location": "L116",
+      "source_location": "L115",
       "weight": 1.0
     },
     {
@@ -77187,7 +77187,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/overview/autonomous-sentinel.tsx",
-      "source_location": "L123",
+      "source_location": "L122",
       "weight": 1.0
     },
     {
@@ -77199,7 +77199,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/overview/autonomous-sentinel.tsx",
-      "source_location": "L191",
+      "source_location": "L187",
       "weight": 1.0
     },
     {
@@ -77211,7 +77211,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/overview/autonomous-sentinel.tsx",
-      "source_location": "L41",
+      "source_location": "L40",
       "weight": 1.0
     },
     {
@@ -77223,7 +77223,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/overview/autonomous-sentinel.tsx",
-      "source_location": "L42",
+      "source_location": "L41",
       "weight": 1.0
     },
     {
@@ -77235,7 +77235,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/overview/autonomous-sentinel.tsx",
-      "source_location": "L43",
+      "source_location": "L42",
       "weight": 1.0
     },
     {
@@ -77247,7 +77247,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/overview/autonomous-sentinel.tsx",
-      "source_location": "L464",
+      "source_location": "L460",
       "weight": 1.0
     },
     {
@@ -77259,7 +77259,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/overview/autonomous-sentinel.tsx",
-      "source_location": "L81",
+      "source_location": "L80",
       "weight": 1.0
     },
     {
@@ -109395,7 +109395,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/overview/autonomous-sentinel.tsx",
-      "source_location": "L16",
+      "source_location": "L15",
       "weight": 1.0
     },
     {
@@ -109407,7 +109407,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/overview/autonomous-sentinel.tsx",
-      "source_location": "L17",
+      "source_location": "L16",
       "weight": 1.0
     },
     {
@@ -109419,7 +109419,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/overview/autonomous-sentinel.tsx",
-      "source_location": "L17",
+      "source_location": "L16",
       "weight": 1.0
     },
     {
@@ -109431,7 +109431,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/overview/autonomous-sentinel.tsx",
-      "source_location": "L18",
+      "source_location": "L17",
       "weight": 1.0
     },
     {
@@ -109443,7 +109443,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/overview/autonomous-sentinel.tsx",
-      "source_location": "L18",
+      "source_location": "L17",
       "weight": 1.0
     },
     {
@@ -109455,7 +109455,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/overview/autonomous-sentinel.tsx",
-      "source_location": "L18",
+      "source_location": "L17",
       "weight": 1.0
     },
     {
@@ -109467,7 +109467,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/overview/autonomous-sentinel.tsx",
-      "source_location": "L19",
+      "source_location": "L18",
       "weight": 1.0
     },
     {
@@ -109479,7 +109479,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/overview/autonomous-sentinel.tsx",
-      "source_location": "L19",
+      "source_location": "L18",
       "weight": 1.0
     },
     {
@@ -109491,7 +109491,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/overview/autonomous-sentinel.tsx",
-      "source_location": "L20",
+      "source_location": "L19",
       "weight": 1.0
     },
     {
@@ -109503,7 +109503,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/overview/autonomous-sentinel.tsx",
-      "source_location": "L20",
+      "source_location": "L19",
       "weight": 1.0
     },
     {
@@ -109515,7 +109515,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/overview/autonomous-sentinel.tsx",
-      "source_location": "L21",
+      "source_location": "L20",
       "weight": 1.0
     },
     {
@@ -109527,7 +109527,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/overview/autonomous-sentinel.tsx",
-      "source_location": "L22",
+      "source_location": "L21",
       "weight": 1.0
     },
     {
@@ -109539,7 +109539,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/overview/autonomous-sentinel.tsx",
-      "source_location": "L23",
+      "source_location": "L22",
       "weight": 1.0
     },
     {
@@ -109551,7 +109551,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/overview/autonomous-sentinel.tsx",
-      "source_location": "L23",
+      "source_location": "L22",
       "weight": 1.0
     },
     {
@@ -109563,7 +109563,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/overview/autonomous-sentinel.tsx",
-      "source_location": "L24",
+      "source_location": "L23",
       "weight": 1.0
     },
     {
@@ -125656,7 +125656,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/overview/autonomous-sentinel.tsx",
-      "source_location": "L16",
+      "source_location": "L15",
       "weight": 1.0
     },
     {
@@ -125668,7 +125668,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/overview/autonomous-sentinel.tsx",
-      "source_location": "L17",
+      "source_location": "L16",
       "weight": 1.0
     },
     {
@@ -125680,7 +125680,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/overview/autonomous-sentinel.tsx",
-      "source_location": "L18",
+      "source_location": "L17",
       "weight": 1.0
     },
     {
@@ -125692,7 +125692,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/overview/autonomous-sentinel.tsx",
-      "source_location": "L19",
+      "source_location": "L18",
       "weight": 1.0
     },
     {
@@ -125704,7 +125704,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/overview/autonomous-sentinel.tsx",
-      "source_location": "L20",
+      "source_location": "L19",
       "weight": 1.0
     },
     {
@@ -125716,7 +125716,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/overview/autonomous-sentinel.tsx",
-      "source_location": "L21",
+      "source_location": "L20",
       "weight": 1.0
     },
     {
@@ -125728,7 +125728,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/overview/autonomous-sentinel.tsx",
-      "source_location": "L22",
+      "source_location": "L21",
       "type_only": true,
       "weight": 1.0
     },
@@ -125741,7 +125741,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/overview/autonomous-sentinel.tsx",
-      "source_location": "L23",
+      "source_location": "L22",
       "weight": 1.0
     },
     {
@@ -125753,7 +125753,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/overview/autonomous-sentinel.tsx",
-      "source_location": "L24",
+      "source_location": "L23",
       "weight": 1.0
     },
     {
@@ -125770,7 +125770,7 @@
     },
     {
       "source": "src_components_overview_autonomous_sentinel",
-      "target": "ref_next",
+      "target": "ref_motion",
       "relation": "imports_from",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -125782,18 +125782,6 @@
     },
     {
       "source": "src_components_overview_autonomous_sentinel",
-      "target": "ref_motion",
-      "relation": "imports_from",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "import",
-      "source_file": "src/components/overview/autonomous-sentinel.tsx",
-      "source_location": "L5",
-      "weight": 1.0
-    },
-    {
-      "source": "src_components_overview_autonomous_sentinel",
       "target": "ref_lucide_react",
       "relation": "imports_from",
       "_origin": "ast",
@@ -125801,7 +125789,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/overview/autonomous-sentinel.tsx",
-      "source_location": "L6",
+      "source_location": "L5",
       "weight": 1.0
     },
     {
@@ -157464,7 +157452,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/components/overview/autonomous-sentinel.tsx",
-      "source_location": "L26",
+      "source_location": "L25",
       "weight": 1.0
     },
     {
@@ -157475,7 +157463,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/components/overview/autonomous-sentinel.tsx",
-      "source_location": "L33",
+      "source_location": "L32",
       "weight": 1.0
     },
     {
@@ -157486,7 +157474,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/components/overview/autonomous-sentinel.tsx",
-      "source_location": "L40",
+      "source_location": "L39",
       "weight": 1.0
     },
     {
@@ -185400,5 +185388,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "052cac68c5a424dd5cfea0aaa653aa52e2370ce9"
+  "built_at_commit": "757690221ce2f27f2739bbc4962d07c399634c82"
 }

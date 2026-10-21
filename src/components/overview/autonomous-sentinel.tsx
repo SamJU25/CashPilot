@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   AlertTriangle,
@@ -458,10 +459,10 @@ export function AutonomousSentinel({ analysis: a }: { analysis: CashAnalysis }) 
 
           {pending && (
             <Button asChild size="sm" variant="outline" className="shrink-0 text-xs gap-1.5 shadow-xs">
-              <a href="#approvals-heading">
-                <span>View Staged Proposal</span>
+              <Link href="/assistant">
+                <span>Review Staged Proposal in Assistant</span>
                 <ArrowRight className="size-3.5" aria-hidden />
-              </a>
+              </Link>
             </Button>
           )}
         </div>
