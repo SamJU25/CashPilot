@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { createContext, useContext, useEffect, useState } from 'react';
 import { motion } from 'motion/react';
 import {
   FileText,
@@ -31,6 +31,11 @@ import { ANALYSIS, TODAY } from '@/lib/mock/demo';
 
 // Two groups: the money pages, then the two places CashPilot acts for you. Starting a chat lives on the Assistant page.
 const RAIL_KEY = 'cashpilot.rail.collapsed';
+const NavContext = createContext<{
+  pendingHref: string | null;
+  setPendingHref: (href: string | null) => void;
+}>({ pendingHref: null, setPendingHref: () => {} });
+
 
 const NAV: { href: string; label: Key; icon: typeof LineChart }[][] = [
   [
@@ -47,6 +52,8 @@ const NAV: { href: string; label: Key; icon: typeof LineChart }[][] = [
 
 function NavLinks({ onNavigate, id = 'desktop' }: { onNavigate?: () => void; id?: string }) {
   const pathname = usePathname();
+  const { pendingHref, setPendingHref } = useContext(NavContext);
+  const effective = pendingHref ?? pathname;
   const { t } = useT();
   const pending = useIntents().filter((i) => i.status === 'STAGED_PENDING_HITL').length;
 
@@ -55,12 +62,16 @@ function NavLinks({ onNavigate, id = 'desktop' }: { onNavigate?: () => void; id?
       {NAV.map((group, g) => (
         <ul key={g} className={cn('space-y-0.5', g > 0 && 'mt-4 border-t pt-4')}>
           {group.map((item) => {
-            const active = item.href === '/' ? pathname === '/' : pathname.startsWith(item.href);
+            const active = item.href === '/' ? effective === '/' : effective.startsWith(item.href);
             return (
               <li key={item.href}>
                 <Link
                   href={item.href}
-                  onClick={onNavigate}
+                  prefetch={true}
+                  onClick={() => {
+                    if (item.href !== pathname) setPendingHref(item.href);
+                    onNavigate?.();
+                  }}
                   aria-current={active ? 'page' : undefined}
                   className={cn(
                     'relative flex h-10 items-center gap-3 rounded-lg px-3 text-sm transition-colors',
@@ -111,6 +122,8 @@ function DataFreshness() {
 function RailFooter() {
   const { t } = useT();
   const pathname = usePathname();
+  const { pendingHref, setPendingHref } = useContext(NavContext);
+  const effective = pendingHref ?? pathname;
 
   return (
     <div>
@@ -118,9 +131,13 @@ function RailFooter() {
       <div className="border-t pt-3">
         <Link
           href="/settings"
+          prefetch={true}
+          onClick={() => {
+            if (pathname !== '/settings') setPendingHref('/settings');
+          }}
           className={cn(
             'flex h-10 items-center gap-3 rounded-lg px-3 text-sm text-ink-2 transition-colors hover:bg-muted hover:text-foreground',
-            pathname.startsWith('/settings') && 'bg-card font-medium text-foreground shadow-[0_0_0_1px_rgb(var(--border))]',
+            effective.startsWith('/settings') && 'bg-card font-medium text-foreground shadow-[0_0_0_1px_rgb(var(--border))]',
           )}
         >
           <Settings2 className="size-4" aria-hidden />
@@ -221,6 +238,8 @@ function DemoBadge({ compact }: { compact?: boolean }) {
 /** The rail folded to icons, so wide dashboards get the room; labels move into tooltips. */
 function MiniRail({ onExpand }: { onExpand: () => void }) {
   const pathname = usePathname();
+  const { pendingHref, setPendingHref } = useContext(NavContext);
+  const effective = pendingHref ?? pathname;
   const { t } = useT();
   const pending = useIntents().filter((i) => i.status === 'STAGED_PENDING_HITL').length;
   const { hasData, source } = useWorkspace();
@@ -229,6 +248,10 @@ function MiniRail({ onExpand }: { onExpand: () => void }) {
       <TooltipTrigger asChild>
         <Link
           href={href}
+          prefetch={true}
+          onClick={() => {
+            if (href !== pathname) setPendingHref(href);
+          }}
           aria-label={label}
           aria-current={active ? 'page' : undefined}
           className={cn('relative flex size-10 items-center justify-center rounded-lg transition-colors', active ? 'bg-card text-primary shadow-[0_0_0_1px_rgb(var(--border))]' : 'text-ink-2 hover:bg-muted hover:text-foreground')}
@@ -256,11 +279,11 @@ function MiniRail({ onExpand }: { onExpand: () => void }) {
       <nav aria-label={t('nav.main')} className="flex flex-1 flex-col items-center">
         {NAV.map((group, g) => (
           <div key={g} className={cn('flex flex-col items-center gap-1', g > 0 && 'mt-4 border-t pt-4')}>
-            {group.map((n) => item(n.href, t(n.label), n.icon, n.href === '/' ? pathname === '/' : pathname.startsWith(n.href), n.href === '/assistant' && pending > 0))}
+            {group.map((n) => item(n.href, t(n.label), n.icon, n.href === '/' ? effective === '/' : effective.startsWith(n.href), n.href === '/assistant' && pending > 0))}
           </div>
         ))}
       </nav>
-      {item('/settings', t('nav.settings'), Settings2, pathname.startsWith('/settings'))}
+      {item('/settings', t('nav.settings'), Settings2, effective.startsWith('/settings'))}
       <Button variant="ghost" size="icon" onClick={onExpand} aria-label={t('rail.expand')}>
         <PanelLeftOpen aria-hidden />
       </Button>
@@ -271,6 +294,7 @@ function MiniRail({ onExpand }: { onExpand: () => void }) {
 export function AppShell({ children }: { children: React.ReactNode }) {
   const [open, setOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
+  const [pendingHref, setPendingHref] = useState<string | null>(null);
   // A per-browser preference; storage can be unavailable, and then the rail simply stays open.
   useEffect(() => {
     try {
@@ -284,11 +308,25 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     } catch {}
   };
   const pathname = usePathname();
+  useEffect(() => {
+    setPendingHref(null);
+  }, [pathname]);
   const isAssistant = pathname === '/assistant';
   const { t } = useT();
 
   return (
-    <div className={cn('min-h-dvh lg:grid', collapsed ? 'lg:grid-cols-[60px_1fr]' : 'lg:grid-cols-[232px_1fr]')}>
+    <NavContext.Provider value={{ pendingHref, setPendingHref }}>
+      {pendingHref && (
+        <div className="fixed inset-x-0 top-0 z-50 h-0.5 overflow-hidden bg-primary/20 pointer-events-none" aria-hidden>
+          <motion.div
+            className="h-full bg-primary"
+            initial={{ x: '-100%' }}
+            animate={{ x: '100%' }}
+            transition={{ repeat: Infinity, duration: 0.6, ease: 'linear' }}
+          />
+        </div>
+      )}
+      <div className={cn('min-h-dvh lg:grid', collapsed ? 'lg:grid-cols-[60px_1fr]' : 'lg:grid-cols-[232px_1fr]')}>
       <aside className={cn('sticky top-0 hidden h-dvh flex-col gap-6 overflow-y-auto border-r bg-background py-5 lg:flex', collapsed ? 'px-2' : 'px-3')}>
         {collapsed ? (
           <MiniRail onExpand={() => setRail(false)} />
@@ -351,6 +389,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         </main>
       </div>
     </div>
+    </NavContext.Provider>
   );
 }
 

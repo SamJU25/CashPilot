@@ -53,7 +53,7 @@ function appendCapped(list: Message[], ...items: Omit<Message, 'id'>[]): Message
   return [...list, ...items.map((item) => ({ timestamp: item.timestamp ?? now, ...item, id: next++ }))].slice(-MAX_CHAT_MESSAGES);
 }
 // shortcut: a fixed pause stands in for model latency; the backend's streamed reply ends it.
-const THINK_MS = 1200;
+const THINK_MS = 180;
 
 const NO_DATA_SUGGESTIONS: Key[] = ['as.n2', 'as.n3', 'as.s4', 'as.n1'];
 const BRIEFED_SUGGESTIONS: Key[] = ['as.s1', 'as.s2', 'as.s3', 'as.s4'];
@@ -523,7 +523,7 @@ export default function AssistantPage() {
     if (!busy || !last) return;
     // Phases: calculation steps, then the model's reasoning streams in, then the answer shows.
     if (live < (last.steps?.length ?? 0)) {
-      const timer = window.setTimeout(() => setLive((n) => n + 1), 380);
+      const timer = window.setTimeout(() => setLive((n) => n + 1), 90);
       return () => window.clearTimeout(timer);
     }
     if (!pondered) {
