@@ -1,17 +1,17 @@
 # Graph Report - SME Finance Copilot  (2026-10-21)
 
 ## Corpus Check
-- 444 files · ~315,845 words
+- 444 files · ~315,827 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 25 file(s) not represented in the graph (top: .csv 14, (none) 6, .example 1)
 
 ## Summary
-- 5013 nodes · 10859 edges · 434 communities (286 shown, 148 thin omitted)
+- 5013 nodes · 10858 edges · 436 communities (288 shown, 148 thin omitted)
 - Extraction: 97% EXTRACTED · 3% INFERRED · 0% AMBIGUOUS · INFERRED: 292 edges (avg confidence: 0.94)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `052cac68`
+- Built from commit: `75769022`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -335,7 +335,9 @@
 - pytest
 - supervisor.py
 - zlib
+- app-shell.tsx
 - calculate_dupont_roe
+- autonomous-sentinel.tsx
 - test_tenant_token.py
 - probe_hardware
 - xhtml2pdf
@@ -473,7 +475,7 @@
 ## Import Cycles
 - None detected.
 
-## Communities (434 total, 148 thin omitted)
+## Communities (436 total, 148 thin omitted)
 
 ### Community 0 - "DCF Model Troubleshooting Guide"
 Cohesion: 0.17
@@ -672,8 +674,8 @@ Cohesion: 0.25
 Nodes (7): 1. Intent & Context Extraction, 2. The 5-Part Production Prompt Architecture, 3. Prompt Test Suite Generation, 4. Versioning & Iteration Discipline, Prompt Engineer & Auto-Prompt Refiner (`prompt-engineer`), Role & Mission, The Auto-Prompt Refiner Protocol
 
 ### Community 49 - "assistant/page.tsx"
-Cohesion: 0.07
-Nodes (46): Answer, appendCapped(), AssistantPage(), BRIEFED_SUGGESTIONS, CARDS, cardStep(), cccAnswer(), dscrAnswer() (+38 more)
+Cohesion: 0.13
+Nodes (29): Answer, appendCapped(), AssistantPage(), BRIEFED_SUGGESTIONS, CARDS, cardStep(), cccAnswer(), dscrAnswer() (+21 more)
 
 ### Community 50 - "Instructions"
 Cohesion: 0.25
@@ -1141,7 +1143,7 @@ Nodes (23): calculate_cash_conversion_cycle(), calculate_dab(), calculate_dscr()
 
 ### Community 178 - "demo.ts"
 Cohesion: 0.04
-Nodes (96): lucide-react, motion, next, SEVERITY, TierBadge(), TIERS, STATUS_CLS, StatusPill() (+88 more)
+Nodes (90): lucide-react, next, SEVERITY, TierBadge(), TIERS, STATUS_CLS, StatusPill(), Finding (+82 more)
 
 ### Community 179 - "FallbackRuleAdapter"
 Cohesion: 0.23
@@ -1200,8 +1202,8 @@ Cohesion: 0.50
 Nodes (4): Core Credit Metrics to Include, Covenant Compliance Tracking, Credit Metric Hierarchy Checks, Credit Metrics
 
 ### Community 195 - "local-models.tsx"
-Cohesion: 0.12
-Nodes (32): ACTIVE, Chip(), FIT_LABEL, FitTag(), HardwarePanel(), HuggingFaceBrowser(), InstalledRow(), LocalModelManager() (+24 more)
+Cohesion: 0.08
+Nodes (45): ACTIVE, Chip(), FIT_LABEL, FitTag(), HardwarePanel(), HuggingFaceBrowser(), InstalledRow(), LocalModelManager() (+37 more)
 
 ### Community 196 - "Model Structure"
 Cohesion: 0.50
@@ -1324,8 +1326,8 @@ Cohesion: 0.25
 Nodes (8): Phase 2: Analysis (2-3 hours), Step 10: Update Valuation & Price Target, Step 11: Assess Rating Impact, Step 5: Beat/Miss Analysis, Step 6: Segment/Geographic/Product Analysis, Step 7: Margin Analysis, Step 8: Guidance Analysis, Step 9: Update Financial Model
 
 ### Community 235 - "app/page.tsx"
-Cohesion: 0.08
-Nodes (64): LiveOverview(), OverviewPage(), OverviewSkeleton(), SAMPLE_HISTORY, SectionTitle(), SeverityBadge(), useRequestText(), AssistantInspector() (+56 more)
+Cohesion: 0.10
+Nodes (50): LiveOverview(), OverviewPage(), OverviewSkeleton(), SAMPLE_HISTORY, SectionTitle(), SeverityBadge(), useRequestText(), AssistantInspector() (+42 more)
 
 ### Community 236 - "api.ts"
 Cohesion: 0.05
@@ -1377,11 +1379,11 @@ Nodes (4): 1. Intent & Spec Gate, 2. Root Cause Debugging Invariant, 3. Verifica
 
 ### Community 250 - "useT"
 Cohesion: 0.10
-Nodes (70): FundingPage(), OfferRow(), ScoreScale(), Welcome(), BUCKET_COLORS, InvoiceUpload(), ReceivablesPage(), SentinelPage() (+62 more)
+Nodes (71): FundingPage(), OfferRow(), ScoreScale(), Welcome(), BUCKET_COLORS, InvoiceUpload(), ReceivablesPage(), SentinelPage() (+63 more)
 
 ### Community 251 - "cn"
-Cohesion: 0.04
-Nodes (100): class-variance-authority, @radix-ui/react-dialog, @radix-ui/react-tabs, react, AboutFact(), AboutSection(), AiSection(), CurrencyCombobox() (+92 more)
+Cohesion: 0.06
+Nodes (76): class-variance-authority, @radix-ui/react-tabs, react, AiSection(), CurrencyCombobox(), FetchState, isSection(), LanguageCombobox() (+68 more)
 
 ### Community 252 - "test_enterprise_finance_tools.py"
 Cohesion: 0.04
@@ -1555,9 +1557,17 @@ Nodes (20): fastapi_testclient, pytest, End-to-End user flow test validating the
 Cohesion: 0.07
 Nodes (51): evaluate_persona_policy(), get_base_persona(), get_conversational_system_prompt(), get_missing_param_guidance(), get_missing_statement_guidance(), get_missing_statement_prompt(), get_off_topic_reply(), is_question() (+43 more)
 
+### Community 324 - "app-shell.tsx"
+Cohesion: 0.10
+Nodes (29): @radix-ui/react-dialog, src_app_globals, metadata, mono, RootLayout(), sans, AboutFact(), AboutSection() (+21 more)
+
 ### Community 325 - "calculate_dupont_roe"
 Cohesion: 0.24
 Nodes (6): calculate_dupont_roe(), Any, Decimal, Calculate 3-Stage DuPont Analysis decomposing ROE drivers. Args: net_income:…, Test suite for 3-Stage DuPont ROE Decomposition Engine., TestDuPontROECalculations
+
+### Community 326 - "autonomous-sentinel.tsx"
+Cohesion: 0.14
+Nodes (18): motion, AGENT_CLASS, AGENT_DOT, Chips(), RunReceipt(), TechLine(), totalMs(), addDays() (+10 more)
 
 ### Community 328 - "test_tenant_token.py"
 Cohesion: 0.23

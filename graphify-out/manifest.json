@@ -2502,9 +2502,9 @@
     "semantic_hash": ""
   },
   "src/lib/i18n/en.ts": {
-    "mtime": 1792543236.103096,
-    "seen": 1792543438.437728,
-    "ast_hash": "fe10318816fa58566abc67057b7c93dc",
+    "mtime": 1792546145.84951,
+    "seen": 1792546349.9195316,
+    "ast_hash": "152372983ae5a431ad004a9ea3095a19",
     "semantic_hash": ""
   },
   "src/lib/i18n/es.ts": {
@@ -2694,15 +2694,15 @@
     "semantic_hash": ""
   },
   "src/components/overview/autonomous-sentinel.tsx": {
-    "mtime": 1792545770.6355333,
-    "seen": 1792545854.4893665,
-    "ast_hash": "899b4e105a8a5686ea4d20c017533c9d",
+    "mtime": 1792546272.1826286,
+    "seen": 1792546349.9148834,
+    "ast_hash": "de4bd82a984488ae0da98700be9f895d",
     "semantic_hash": ""
   },
   "src/app/sentinel/page.tsx": {
-    "mtime": 1792543375.934366,
-    "seen": 1792543438.4319654,
-    "ast_hash": "63e4ae7662892cb7bed492711cbbdf37",
+    "mtime": 1792546173.325822,
+    "seen": 1792546349.913064,
+    "ast_hash": "563103df07a59fe826a9accfaa76bc45",
     "semantic_hash": ""
   },
   "api/routes/sentinel.py": {

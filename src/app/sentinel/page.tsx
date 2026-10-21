@@ -51,8 +51,8 @@ export default function SentinelPage() {
   return (
     <div className="space-y-10 pb-8">
       <PageHeader
-        title={t('sentinel.title')}
-        description="Continuous 24/7 background rule engine. Evaluates cash runway against your warning threshold and stages pre-emptive financing proposals under Tier 2 governance."
+        title="Treasury Sentinel"
+        description="Continuous cash runway monitoring and automated credit staging under Tier 2 governance."
       />
 
       {/* Main Autonomous Sentinel Engine Card */}
@@ -61,11 +61,11 @@ export default function SentinelPage() {
       {/* Secondary Section: Staged Approvals Queue & Execution Log */}
       <div className="grid gap-8 lg:grid-cols-2 pt-2">
         {/* Left Column: Pending Actions Queue (Tier 2 Governance) */}
-        <section className="space-y-4" aria-labelledby="approvals-heading">
+        <section id="approvals-heading" className="space-y-4" aria-labelledby="approvals-heading-label">
           <div className="flex items-center justify-between border-b pb-2">
-            <h2 id="approvals-heading" className="text-sm font-semibold tracking-tight text-foreground flex items-center gap-2">
+            <h2 id="approvals-heading-label" className="text-sm font-semibold tracking-tight text-foreground flex items-center gap-2">
               <ShieldCheck className="size-4 text-primary" aria-hidden />
-              <span>Staged Approvals Queue ({pending.length})</span>
+              <span>Staged Approvals ({pending.length})</span>
             </h2>
             <span className="text-xs text-muted-foreground font-mono">Tier 2 Safe Staging</span>
           </div>
@@ -98,12 +98,12 @@ export default function SentinelPage() {
           )}
         </section>
 
-        {/* Right Column: Multi-Agent Activity & Audit Trail */}
+        {/* Right Column: Audit Trail */}
         <section className="space-y-4" aria-labelledby="audit-heading">
           <div className="flex items-center justify-between border-b pb-2">
             <h2 id="audit-heading" className="text-sm font-semibold tracking-tight text-foreground flex items-center gap-2">
               <History className="size-4 text-muted-foreground" aria-hidden />
-              <span>Autonomous Audit Trail</span>
+              <span>Audit Trail</span>
             </h2>
             <span className="text-xs text-muted-foreground font-mono">Immutable Log</span>
           </div>

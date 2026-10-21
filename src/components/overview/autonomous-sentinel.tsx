@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import Link from 'next/link';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   AlertTriangle,
@@ -170,11 +169,8 @@ export function AutonomousSentinel({ analysis: a }: { analysis: CashAnalysis }) 
           </div>
         </div>
 
-        <div className="flex items-center gap-2 self-start sm:self-auto">
-          <div className="flex items-center gap-1.5 rounded-full border border-primary/25 bg-primary/10 px-2.5 py-1 text-xs text-primary font-mono">
-            <span className="size-1.5 rounded-full bg-primary animate-pulse" aria-hidden />
-            <span>Autonomous Mode</span>
-          </div>
+        <div className="flex items-center gap-2 self-start sm:self-auto font-mono text-[11px] text-muted-foreground">
+          <span>Continuous In-Process Daemon</span>
         </div>
       </div>
 
@@ -374,12 +370,12 @@ export function AutonomousSentinel({ analysis: a }: { analysis: CashAnalysis }) 
           </div>
           <div className="flex items-center justify-between text-[10.5px] text-muted-foreground">
             <span>0 days</span>
-            <span className="font-medium text-foreground">Target: {alertThresholdDays}d (Line)</span>
+            <span className="font-medium text-foreground">Target: {alertThresholdDays}d</span>
             <span>{Math.round(maxDisplayDays)} days</span>
           </div>
         </div>
 
-        {/* 3. Autonomous Actions Executed (Zero-Prompt Pipeline Trace) */}
+        {/* 3. Continuous Verification Pipeline */}
         <div>
           <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">
             {t('sentinel.traceTitle')}
@@ -395,8 +391,8 @@ export function AutonomousSentinel({ analysis: a }: { analysis: CashAnalysis }) 
                 <p className="text-[11px] text-muted-foreground mt-0.5">
                   {t('sentinel.step1', { amount: balanceAmount })}
                 </p>
-                <span className="mt-1 inline-block font-mono text-[10px] text-muted-foreground/80">
-                  csv_parser.py · 420ms
+                <span className="mt-1 inline-block font-mono text-[10px] text-ink-2">
+                  Ledger Reconciled · Decimal Accuracy
                 </span>
               </div>
             </div>
@@ -411,8 +407,8 @@ export function AutonomousSentinel({ analysis: a }: { analysis: CashAnalysis }) 
                 <p className="text-[11px] text-muted-foreground mt-0.5">
                   {t('sentinel.step2', { amount: shortfallAmount, date: deficitFormattedDate })}
                 </p>
-                <span className="mt-1 inline-block font-mono text-[10px] text-muted-foreground/80">
-                  deficit_severity_policy.json · 9ms
+                <span className="mt-1 inline-block font-mono text-[10px] text-ink-2">
+                  Cash Flow Simulation Model
                 </span>
               </div>
             </div>
@@ -427,8 +423,8 @@ export function AutonomousSentinel({ analysis: a }: { analysis: CashAnalysis }) 
                 <p className="text-[11px] text-muted-foreground mt-0.5">
                   {t('sentinel.step3')}
                 </p>
-                <span className="mt-1 inline-block font-mono text-[10px] text-muted-foreground/80">
-                  usury_policy.json · 64ms
+                <span className="mt-1 inline-block font-mono text-[10px] text-ink-2">
+                  Truth-in-Lending Act (36% APR Cap)
                 </span>
               </div>
             </div>
@@ -443,8 +439,8 @@ export function AutonomousSentinel({ analysis: a }: { analysis: CashAnalysis }) 
                 <p className="text-[11px] text-muted-foreground mt-0.5">
                   {t('sentinel.step4', { amount: bridgeAmount })}
                 </p>
-                <span className="mt-1 inline-block font-mono text-[10px] text-muted-foreground/80">
-                  security_gate_policy.json · 21ms
+                <span className="mt-1 inline-block font-mono text-[10px] text-ink-2">
+                  Queue-Only · Execution Strictly Refused
                 </span>
               </div>
             </div>
@@ -456,16 +452,16 @@ export function AutonomousSentinel({ analysis: a }: { analysis: CashAnalysis }) 
           <div className="flex items-center gap-2.5 min-w-0">
             <ShieldCheck className="size-4 shrink-0 text-primary" aria-hidden />
             <span className="text-muted-foreground leading-relaxed">
-              <span className="font-medium text-foreground">Three-Tier Governance:</span> {t('sentinel.tier2Badge')}
+              <span className="font-medium text-foreground">Three-Tier Governance:</span> Proposals are staged in Tier 2 queue only. No funds move without owner confirmation.
             </span>
           </div>
 
           {pending && (
-            <Button asChild size="sm" className="shrink-0 text-xs gap-1.5 shadow-xs">
-              <Link href="/assistant">
-                <span>{t('sentinel.reviewAction')}</span>
+            <Button asChild size="sm" variant="outline" className="shrink-0 text-xs gap-1.5 shadow-xs">
+              <a href="#approvals-heading">
+                <span>View Staged Proposal</span>
                 <ArrowRight className="size-3.5" aria-hidden />
-              </Link>
+              </a>
             </Button>
           )}
         </div>
