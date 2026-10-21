@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 import { LineChart, ListChecks, ShieldCheck } from 'lucide-react';
 import { ApprovalCard, StatusPill, ViewRequestButton } from '@/components/copilot/approval';
+import { Money } from '@/components/common/bits';
 import { FeedRow, useFeed } from '@/components/shell/activity-panel';
 import { useT, type Key } from '@/lib/i18n';
 import { ANALYSIS, BASE } from '@/lib/mock/demo';
@@ -107,56 +108,72 @@ export function AssistantInspector({
               transition={fade}
               className="space-y-4"
             >
-              {/* Executive Financial Telemetry Card (Real Data / No Dummy Numbers) */}
+              {/* Executive Financial Telemetry Card (Cockpit Theme Aligned) */}
               <div className="rounded-xl border bg-card/60 p-3.5 space-y-2.5 text-xs shadow-xs">
                 <div className="flex items-center justify-between">
-                  <span className="font-semibold text-foreground text-xs flex items-center gap-1.5">
+                  <span className="font-display text-sm font-semibold tracking-tight text-foreground flex items-center gap-1.5">
                     <LineChart className="size-3.5 text-primary" aria-hidden />
                     Financial Telemetry
                   </span>
                   {hasData ? (
                     forecast?.has_projected_deficit ? (
-                      <span className="text-[10px] font-medium text-critical-text bg-critical/10 px-2 py-0.5 rounded-full border border-critical/20">
+                      <span className="figures inline-flex items-center gap-1.5 rounded-full border border-critical/20 bg-critical/10 px-2 py-0.5 text-[11px] font-medium text-critical-text">
+                        <span className="size-1.5 rounded-full bg-critical-text animate-pulse" aria-hidden />
                         Deficit Projected
                       </span>
                     ) : (
-                      <span className="text-[10px] font-medium text-good-text bg-good/10 px-2 py-0.5 rounded-full border border-good/20">
+                      <span className="figures inline-flex items-center gap-1.5 rounded-full border border-good/20 bg-good/10 px-2 py-0.5 text-[11px] font-medium text-good-text">
+                        <span className="size-1.5 rounded-full bg-good-text" aria-hidden />
                         Healthy
                       </span>
                     )
                   ) : (
-                    <span className="text-[10px] font-medium text-muted-foreground bg-muted px-2 py-0.5 rounded-full">
+                    <span className="figures inline-flex items-center gap-1 rounded-full bg-muted px-2 py-0.5 text-[11px] font-medium text-muted-foreground">
                       Unlinked
                     </span>
                   )}
                 </div>
 
                 <div className="grid grid-cols-2 gap-2 pt-1 border-t border-border/40">
-                  <div className="rounded-lg border bg-background/50 p-2 space-y-0.5">
-                    <p className="text-[10.5px] font-medium text-muted-foreground">Cash Balance</p>
-                    <p className="font-mono text-xs sm:text-[13px] font-semibold text-foreground truncate">
-                      {hasData && analysis ? formatMoney(analysis.current_balance) : '—'}
-                    </p>
+                  <div className="rounded-lg border bg-background/60 p-2 space-y-0.5">
+                    <p className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">Cash Balance</p>
+                    <div className="figures font-display text-base font-semibold tracking-tight text-foreground truncate">
+                      {hasData && analysis ? <Money value={analysis.current_balance} /> : '—'}
+                    </div>
                   </div>
-                  <div className="rounded-lg border bg-background/50 p-2 space-y-0.5">
-                    <p className="text-[10.5px] font-medium text-muted-foreground">Cash Runway</p>
-                    <p className="font-mono text-xs sm:text-[13px] font-semibold text-foreground truncate">
-                      {hasData && analysis?.runway_days != null
-                        ? `${analysis.runway_days}d (${(analysis.runway_days / 30).toFixed(1)} mo)`
-                        : '—'}
-                    </p>
+                  <div className="rounded-lg border bg-background/60 p-2 space-y-0.5">
+                    <p className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">Cash Runway</p>
+                    <div className="figures font-display text-base font-semibold tracking-tight text-foreground truncate">
+                      {hasData && analysis?.runway_days != null ? (
+                        <>
+                          {analysis.runway_days}d <span className="font-sans text-xs font-normal text-muted-foreground">({(analysis.runway_days / 30).toFixed(1)} mo)</span>
+                        </>
+                      ) : (
+                        '—'
+                      )}
+                    </div>
                   </div>
-                  <div className="rounded-lg border bg-background/50 p-2 space-y-0.5">
-                    <p className="text-[10.5px] font-medium text-muted-foreground">Daily Burn</p>
-                    <p className="font-mono text-xs sm:text-[13px] font-semibold text-foreground truncate">
-                      {hasData && analysis ? `${formatMoney(analysis.average_daily_burn)}/d` : '—'}
-                    </p>
+                  <div className="rounded-lg border bg-background/60 p-2 space-y-0.5">
+                    <p className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">Daily Burn</p>
+                    <div className="figures font-display text-base font-semibold tracking-tight text-foreground truncate">
+                      {hasData && analysis ? (
+                        <>
+                          <Money value={analysis.average_daily_burn} /><span className="font-sans text-xs font-normal text-muted-foreground">/d</span>
+                        </>
+                      ) : (
+                        '—'
+                      )}
+                    </div>
                   </div>
-                  <div className="rounded-lg border bg-background/50 p-2 space-y-0.5">
-                    <p className="text-[10.5px] font-medium text-muted-foreground">Period Change</p>
-                    <p className="font-mono text-xs sm:text-[13px] font-semibold text-foreground truncate">
-                      {hasData && analysis?.net_period_change ? formatMoney(analysis.net_period_change) : '—'}
-                    </p>
+                  <div className="rounded-lg border bg-background/60 p-2 space-y-0.5">
+                    <p className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">Period Change</p>
+                    <div className={cn('figures font-display text-base font-semibold tracking-tight truncate', analysis?.net_period_change?.startsWith('-') ? 'text-critical-text' : 'text-foreground')}>
+                      {hasData && analysis?.net_period_change ? (
+                        <Money value={analysis.net_period_change} signed />
+                      ) : (
+                        '—'
+                      )}
+                    </div>
                   </div>
                 </div>
 
