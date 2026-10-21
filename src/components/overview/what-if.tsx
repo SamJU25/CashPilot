@@ -2,6 +2,7 @@
 
 import { AnimatePresence, motion } from 'motion/react';
 import { Button } from '@/components/ui/button';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { formatDate, formatMoney } from '@/lib/format';
 import { fade, spring } from '@/lib/motion';
 import type { Projection, Scenario } from '@/lib/mock/demo';
@@ -53,7 +54,16 @@ function daysBetween(a: string, b: string) {
 }
 
 /** The invoice-collection lever, when there is a known overdue amount: label and the assumption it makes. */
+export interface CollectOption {
+  id: string;
+  name: string;
+  amount: string;
+}
+
 export interface CollectLever {
+  options?: CollectOption[];
+  selectedId?: string;
+  onSelect?: (id: string) => void;
   label: string;
   note: string;
 }
@@ -88,7 +98,13 @@ export function WhatIf({
     const shift = b.projected_deficit_date ? daysBetween(b.projected_deficit_date, r.projected_deficit_date!) : 0;
     const amount = formatMoney(r.projected_shortfall_amount);
     headline = t('whatif.on', { date: formatDate(r.projected_deficit_date!) });
-    detail = shift > 0 ? t('whatif.later', { n: shift, amount }) : shift < 0 ? t('whatif.sooner', { n: -shift, amount }) : t('whatif.same', { amount });
+    detail = !b.has_projected_deficit
+      ? t('whatif.new', { amount })
+      : shift > 0
+        ? t('whatif.later', { n: shift, amount })
+        : shift < 0
+          ? t('whatif.sooner', { n: -shift, amount })
+          : t('whatif.same', { amount });
   }
 
   return (
@@ -100,12 +116,43 @@ export function WhatIf({
 
       <div className="mt-6 space-y-6">
         {collect && (
-          <div className="flex items-start justify-between gap-4">
+          <div className="space-y-2">
+            <div className="flex items-start justify-between gap-4">
             <div>
               <p className="text-sm">{collect.label}</p>
               <p className="text-xs text-muted-foreground">{collect.note}</p>
             </div>
             <Switch checked={scenario.collectInvoice} onChange={(v) => onChange({ ...scenario, collectInvoice: v })} label={collect.label} />
+          </div>
+          {collect.options && collect.options.length > 1 && (
+            <div className="mt-2.5 flex items-center gap-2 pt-2 border-t border-border/40">
+              <span className="text-xs text-muted-foreground shrink-0 font-medium">
+                {t('whatif.target')}
+              </span>
+              <Select
+                value={collect.selectedId ?? collect.options[0]?.id}
+                onValueChange={(val) => collect.onSelect?.(val)}
+              >
+                <SelectTrigger
+                  className="h-8 w-full text-xs font-normal bg-card border-input hover:bg-accent/40"
+                  aria-label={t('whatif.target')}
+                >
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent align="end" className="text-xs">
+                  {collect.options.map((opt) => (
+                    <SelectItem key={opt.id} value={opt.id} className="text-xs cursor-pointer">
+                      <span className="font-medium mr-1.5">{opt.name}</span>
+                      <span className="figures text-muted-foreground">
+                        ({formatMoney(opt.amount, undefined, { cents: false })})
+                      </span>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
+
           </div>
         )}
         <Range
@@ -140,7 +187,7 @@ export function WhatIf({
           </AnimatePresence>
         </div>
         {changed && (
-          <Button variant="ghost" size="sm" className="mt-2 px-2 text-ink-2" onClick={() => onChange({ cutPct: 0, extraMonthlyCents: 0, collectInvoice: false })}>
+          <Button variant="ghost" size="sm" className="mt-2 px-2 text-ink-2" onClick={() => onChange({ cutPct: 0, extraMonthlyCents: 0, collectInvoice: false, selectedDebtorId: scenario.selectedDebtorId ?? 'ALL' })}>
             {t('whatif.reset')}
           </Button>
         )}

@@ -9,6 +9,15 @@ export type WorkingCapitalStatus = 'WORKING_CAPITAL_TRAP' | 'BALANCED' | 'CASH_G
 export interface RejectedRow {
   row_number: number;
   reason_code: string;
+  account_id?: string;
+  raw_line?: string;
+  suggested_fix?: {
+    posted_on?: string;
+    amount?: string;
+    description?: string;
+    transaction_id?: string;
+    explanation?: string;
+  };
 }
 
 export interface AccountSummary {

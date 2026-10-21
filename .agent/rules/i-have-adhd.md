@@ -1,6 +1,6 @@
 ---
 trigger: always_on
-description: Auto-apply ADHD-friendly output formatting: lead with next action, number multi-step tasks, restate state every turn, suppress tangents, concrete time estimates, cap lists at 5 items, zero preamble or closing pleasantries.
+description: "Auto-apply ADHD-friendly output formatting: lead with next action, number multi-step tasks, restate state every turn, suppress tangents, concrete time estimates, cap lists at 5 items, zero preamble or closing pleasantries."
 ---
 
 # Rule: ADHD-Friendly Output Protocol (i-have-adhd)

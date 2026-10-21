@@ -107,8 +107,12 @@ export function RunwayChart({
     return out;
   }, [history, accounts, base, scenario, horizon]);
 
-  const f = base.forecast;
-  const deficitInRange = f.projected_deficit_date && f.days_until_deficit! <= horizon;
+  const activeForecast = scenario ? scenario.forecast : base.forecast;
+  const deficitInRange =
+    activeForecast.has_projected_deficit &&
+    !!activeForecast.projected_deficit_date &&
+    activeForecast.days_until_deficit !== null &&
+    activeForecast.days_until_deficit <= horizon;
   const minY = Math.min(0, ...rows.map((r) => Math.min(r.total ?? Infinity, r.forecast ?? Infinity, r.scenario ?? Infinity)));
   const maxY = Math.max(...rows.map((r) => Math.max(r.total ?? -Infinity, r.forecast ?? -Infinity, r.scenario ?? -Infinity)));
   const step = niceStep(maxY - minY);
@@ -259,13 +263,13 @@ export function RunwayChart({
             {scenario && <Line dataKey="scenario" name={t('chart.legend.changes')} stroke="rgb(var(--primary))" strokeWidth={2} strokeDasharray="5 4" dot={false} isAnimationActive={false} />}
             {deficitInRange && (
               <ReferenceDot
-                x={f.projected_deficit_date!}
-                y={toUnits(-stringToCents(f.projected_shortfall_amount))}
+                x={activeForecast.projected_deficit_date!}
+                y={toUnits(-stringToCents(activeForecast.projected_shortfall_amount))}
                 r={5}
                 fill="rgb(var(--critical))"
                 stroke="rgb(var(--card))"
                 strokeWidth={2}
-                label={{ value: t('chart.short', { amount: formatMoney(f.projected_shortfall_amount, undefined, { cents: false }) }), position: 'left', offset: 10, fill: 'rgb(var(--critical-text))', fontSize: 12 }}
+                label={{ value: t('chart.short', { amount: formatMoney(activeForecast.projected_shortfall_amount, undefined, { cents: false }) }), position: 'left', offset: 10, fill: 'rgb(var(--critical-text))', fontSize: 12 }}
               />
             )}
             <Tooltip

@@ -1,10 +1,29 @@
-'use client';
+"use client";
 
-import { useEffect, useRef, useState } from 'react';
-import { AnimatePresence, motion } from 'motion/react';
-import { FileText, Upload } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { useEffect, useRef, useState } from "react";
+
+import { AnimatePresence, motion } from "motion/react";
+
+import {
+  AlertCircle,
+  ArrowRight,
+  Ban,
+  CalendarX2,
+  Check,
+  CheckCheck,
+  CheckCircle2,
+  CopyX,
+  FileText,
+  Pencil,
+  Coins,
+  ShieldCheck,
+  Upload,
+} from "lucide-react";
+
+import { Button } from "@/components/ui/button";
+
+import { Input } from "@/components/ui/input";
+
 import {
   Dialog,
   DialogClose,
@@ -14,80 +33,267 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/components/ui/dialog';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Money, PageHeader, SectionTitle } from '@/components/common/bits';
-import { ErrorState, LoadingBlock } from '@/components/common/states';
-import { RunReceipt } from '@/components/copilot/run-receipt';
-import { ThinkingIndicator } from '@/components/copilot/thinking-block';
-import { formatDate, formatMoney } from '@/lib/format';
-import { useT, type Key } from '@/lib/i18n';
-import { ApiError, api } from '@/lib/api';
-import { QuickCashDialog } from '@/components/overview/quick-cash-dialog';
-import { ANALYSIS, FILES, SPENDING, buildRuns } from '@/lib/mock/demo';
-import { fade, spring } from '@/lib/motion';
-import { useData } from '@/lib/use-data';
-import { useWorkspace } from '@/lib/workspace';
-import { cn } from '@/lib/utils';
-import type { CashAnalysis, RunStep } from '@/lib/types';
+} from "@/components/ui/dialog";
 
-const shiftDay = (iso: string, n: number) => new Date(Date.parse(iso) + n * 86_400_000).toISOString().slice(0, 10);
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
-type FileSpan = { file_name: string; account_id: string; start: string; end: string };
+import { Money, PageHeader, SectionTitle } from "@/components/common/bits";
+
+import { ErrorState, LoadingBlock } from "@/components/common/states";
+
+import { RunReceipt } from "@/components/copilot/run-receipt";
+
+import { ThinkingIndicator } from "@/components/copilot/thinking-block";
+
+import { formatDate, formatMoney } from "@/lib/format";
+
+import { useT, type Key } from "@/lib/i18n";
+
+import { ApiError, api } from "@/lib/api";
+
+import { QuickCashDialog } from "@/components/overview/quick-cash-dialog";
+
+import { ANALYSIS, FILES, SPENDING, buildRuns } from "@/lib/mock/demo";
+
+import { fade, spring } from "@/lib/motion";
+
+import { useData } from "@/lib/use-data";
+
+import { useWorkspace } from "@/lib/workspace";
+
+import { cn } from "@/lib/utils";
+
+import type { CashAnalysis, RejectedRow, RunStep } from "@/lib/types";
+
+const shiftDay = (iso: string | null | undefined, n: number) => {
+  if (!iso) return "";
+  const parsed = Date.parse(String(iso));
+  if (isNaN(parsed)) return "";
+  return new Date(parsed + n * 86_400_000).toISOString().slice(0, 10);
+};
+
+type FileSpan = {
+  file_name: string;
+  account_id: string;
+  start: string;
+  end: string;
+};
 type Range = { start: number; days: number };
 
 /** Files per account and the date range the timeline bars are drawn against. */
-function layout(analysis: CashAnalysis, sample: boolean): { files: FileSpan[]; range: Range } {
+function layout(
+  analysis: CashAnalysis,
+  sample: boolean,
+): { files: FileSpan[]; range: Range } {
   const files = sample
     ? FILES
-    : (analysis.accounts_breakdown ?? []).map((a) => ({ file_name: a.file_name, account_id: a.account_id, start: a.start_date, end: a.end_date }));
-  const starts = files.map((f) => Date.parse(f.start));
-  const ends = files.map((f) => Date.parse(f.end));
-  const start = Math.min(...starts);
-  return { files, range: { start, days: Math.max(1, Math.round((Math.max(...ends) - start) / 86_400_000) + 1) } };
+    : (analysis?.accounts_breakdown ?? []).map((a) => ({
+        file_name: a.file_name,
+        account_id: a.account_id,
+        start: a.start_date,
+        end: a.end_date,
+      }));
+  const starts = files.map((f) => Date.parse(f.start)).filter((n) => !isNaN(n));
+  const ends = files.map((f) => Date.parse(f.end)).filter((n) => !isNaN(n));
+  const start = starts.length > 0 ? Math.min(...starts) : Date.now();
+  const end = ends.length > 0 ? Math.max(...ends) : start;
+  return {
+    files,
+    range: {
+      start,
+      days: Math.max(1, Math.round((end - start) / 86_400_000) + 1),
+    },
+  };
 }
 
 /** "SVB_Operating_2026-09.csv" -> "SVB Operating": a starting name the owner can edit. */
-const guessName = (file: string) => file.replace(/\.[^.]+$/, '').replace(/[_-]?\d{4}([_-]?\d{2}){0,2}$/, '').replace(/[_-]+/g, ' ').trim() || file;
+
+const guessName = (file: string) =>
+  file
+    .replace(/\.[^.]+$/, "")
+    .replace(/[_-]?\d{4}([_-]?\d{2}){0,2}$/, "")
+    .replace(/[_-]+/g, " ")
+    .trim() || file;
 
 function Dropzone({ onFiles }: { onFiles: (files: File[]) => void }) {
   const input = useRef<HTMLInputElement>(null);
+
   const [over, setOver] = useState(false);
+
   const { t } = useT();
 
   return (
     <div
+      onClick={() => input.current?.click()}
+
       onDragOver={(e) => {
         e.preventDefault();
+
         setOver(true);
       }}
+
       onDragLeave={() => setOver(false)}
+
       onDrop={(e) => {
         e.preventDefault();
+
         setOver(false);
-        const files = Array.from(e.dataTransfer.files).filter((f) => /\.(csv|pdf)$/i.test(f.name));
+
+        const files = Array.from(e.dataTransfer.files).filter((f) =>
+          /\.(csv|pdf)$/i.test(f.name),
+        );
+
         if (files.length) onFiles(files);
       }}
-      className={cn('rounded-xl border border-dashed bg-card px-6 py-10 text-center transition-colors', over && 'border-primary bg-accent')}
+
+      className={cn(
+        "cursor-pointer rounded-xl border border-dashed bg-card px-6 py-10 text-center transition-colors hover:border-primary/60 hover:bg-accent/40",
+
+        over && "border-primary bg-accent",
+      )}
     >
       <Upload className="mx-auto size-6 text-muted-foreground" aria-hidden />
+
       {/* Touch screens cannot drag files, so they get the upload wording. */}
-      <p className="mt-3 text-base font-medium [@media(pointer:coarse)]:hidden">{t('st.drop')}</p>
-      <p className="mt-3 hidden text-base font-medium [@media(pointer:coarse)]:block">{t('st.dropTouch')}</p>
-      <p className="mt-1 text-sm text-muted-foreground">{t('st.dropNote')}</p>
-      <Button variant="outline" className="mt-5" onClick={() => input.current?.click()}>
-        {t('st.choose')}
+
+      <p className="mt-3 text-base font-medium [@media(pointer:coarse)]:hidden">
+        {t("st.drop")}
+      </p>
+
+      <p className="mt-3 hidden text-base font-medium [@media(pointer:coarse)]:block">
+        {t("st.dropTouch")}
+      </p>
+
+      <p className="mt-1 text-sm text-muted-foreground">{t("st.dropNote")}</p>
+
+      <Button
+        variant="outline"
+
+        className="mt-5 pointer-events-auto"
+
+        onClick={(e) => {
+          e.stopPropagation();
+
+          input.current?.click();
+        }}
+      >
+        {t("st.choose")}
       </Button>
+
       <input
         ref={input}
+
         type="file"
+
         accept=".csv,.pdf"
+
         multiple
+
         className="sr-only"
+
         onChange={(e) => {
           const files = Array.from(e.target.files ?? []);
+
           if (files.length) onFiles(files);
-          e.target.value = '';
+
+          e.target.value = "";
+        }}
+      />
+    </div>
+  );
+}
+
+function CompactDropzone({ onFiles }: { onFiles: (files: File[]) => void }) {
+  const input = useRef<HTMLInputElement>(null);
+
+  const [over, setOver] = useState(false);
+
+  const { t } = useT();
+
+  return (
+    <div
+      onClick={() => input.current?.click()}
+
+      onDragOver={(e) => {
+        e.preventDefault();
+
+        setOver(true);
+      }}
+
+      onDragLeave={() => setOver(false)}
+
+      onDrop={(e) => {
+        e.preventDefault();
+
+        setOver(false);
+
+        const files = Array.from(e.dataTransfer.files).filter((f) =>
+          /\.(csv|pdf)$/i.test(f.name),
+        );
+
+        if (files.length) onFiles(files);
+      }}
+
+      className={cn(
+        "group flex cursor-pointer flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-xl border border-dashed bg-card/60 px-5 py-3.5 transition-colors hover:border-primary hover:bg-accent/30",
+
+        over && "border-primary bg-accent",
+      )}
+    >
+      <div className="flex items-center gap-3 min-w-0">
+        <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-muted text-muted-foreground group-hover:text-foreground">
+          <Upload className="size-4" aria-hidden />
+        </div>
+
+        <div className="min-w-0 text-left">
+          <p className="text-xs font-medium text-foreground">{t("st.drop")}</p>
+
+          <p className="text-[11px] text-muted-foreground">
+            {t("st.dropNote")}
+          </p>
+        </div>
+      </div>
+
+      <Button
+        variant="outline"
+
+        size="sm"
+
+        className="h-8 shrink-0 text-xs"
+
+        onClick={(e) => {
+          e.stopPropagation();
+
+          input.current?.click();
+        }}
+      >
+        {t("st.choose")}
+      </Button>
+
+      <input
+        ref={input}
+
+        type="file"
+
+        accept=".csv,.pdf"
+
+        multiple
+
+        className="sr-only"
+
+        onChange={(e) => {
+          const files = Array.from(e.target.files ?? []);
+
+          if (files.length) onFiles(files);
+
+          e.target.value = "";
         }}
       />
     </div>
@@ -96,13 +302,21 @@ function Dropzone({ onFiles }: { onFiles: (files: File[]) => void }) {
 
 function FileChips({ names }: { names: string[] }) {
   const { t } = useT();
+
   return (
     <>
-      <p className="text-sm font-medium">{t('st.received', { n: names.length })}</p>
+      <p className="text-sm font-medium">
+        {t("st.received", { n: names.length })}
+      </p>
+
       <ul className="mt-2 flex flex-wrap gap-2">
         {names.map((n) => (
-          <li key={n} className="flex items-center gap-1.5 rounded-md bg-muted px-2 py-1 text-xs">
+          <li
+            key={n}
+            className="flex items-center gap-1.5 rounded-md bg-muted px-2 py-1 text-xs"
+          >
             <FileText className="size-3.5" aria-hidden />
+
             {n}
           </li>
         ))}
@@ -112,27 +326,40 @@ function FileChips({ names }: { names: string[] }) {
 }
 
 /** Replays the sample company's run; used by "Use the sample company". */
+
 function SampleAnalyzing({ onDone }: { onDone: () => void }) {
   const { accountNames } = useWorkspace();
+
   const { t } = useT();
+
   const steps = buildRuns(accountNames, t)[0].steps;
+
   const [live, setLive] = useState(1);
 
   useEffect(() => {
     if (live >= steps.length) return;
+
     const t = window.setTimeout(() => setLive((n) => n + 1), 520);
+
     return () => window.clearTimeout(t);
   }, [live, steps.length]);
 
   return (
-    <motion.section initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={spring.smooth} className="rounded-xl border bg-card p-6">
+    <motion.section
+      initial={{ opacity: 0, y: 6 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={spring.smooth}
+      className="rounded-xl border bg-card p-6"
+    >
       <FileChips names={FILES.map((f) => f.file_name)} />
+
       <div className="mt-4">
         <RunReceipt steps={steps} live={live} defaultOpen />
       </div>
+
       {live >= steps.length && (
         <Button className="mt-4" onClick={onDone}>
-          {t('st.seeResults')}
+          {t("st.seeResults")}
         </Button>
       )}
     </motion.section>
@@ -140,339 +367,1645 @@ function SampleAnalyzing({ onDone }: { onDone: () => void }) {
 }
 
 /** Sends the owner's files to the backend; each step completes when its call returns. */
-function LiveAnalyzing({ files, onDone, onCancel }: { files: File[]; onDone: () => void; onCancel: () => void }) {
+
+function LiveAnalyzing({
+  files,
+  onDone,
+  onCancel,
+}: {
+  files: File[];
+  onDone: () => void;
+  onCancel: () => void;
+}) {
   const { alertThresholdDays, accountNames, update, setLive } = useWorkspace();
+
   const { t } = useT();
+
   const [steps, setSteps] = useState<RunStep[]>([]);
+
   const [current, setCurrent] = useState<string | null>(null);
+
   const [done, setDone] = useState(false);
+
   const [error, setError] = useState<string | null>(null);
+
   const [attempt, setAttempt] = useState(0);
 
   useEffect(() => {
     let cancelled = false;
+
     // A step joins the receipt once its call returns; until then only its label shows as in progress.
+
     const start = (s: RunStep) => !cancelled && setCurrent(s.label);
+
     const step = (s: RunStep) => {
       if (cancelled) return;
+
       setSteps((list) => [...list, s]);
+
       setCurrent(null);
     };
+
     (async () => {
       setSteps([]);
+
       setCurrent(null);
+
       setError(null);
+
       setDone(false);
+
       let t0 = performance.now();
-      const reading: RunStep = { label: t('lv.read'), detail: '', agent: 'liquidity', tech: 'POST /api/v1/analyze', duration_ms: 0 };
+
+      const reading: RunStep = {
+        label: t("lv.read"),
+        detail: "",
+        agent: "liquidity",
+        tech: "POST /api/v1/analyze",
+        duration_ms: 0,
+      };
+
       start(reading);
-      const { normalized_csv, ...analysis } = await api.analyze(files, alertThresholdDays);
+
+      const { normalized_csv, ...analysis } = await api.analyze(
+        files,
+        alertThresholdDays,
+      );
+
       step({
         ...reading,
-        detail: t('lv.readDone', { n: analysis.accepted_count, rejected: analysis.rejected_rows.length, accounts: new Set((analysis.accounts_breakdown ?? []).map((a) => a.account_id)).size || 1 }),
+
+        detail: t("lv.readDone", {
+          n: analysis.accepted_count,
+          rejected: (analysis?.rejected_rows ?? []).length,
+          accounts:
+            new Set(
+              (analysis.accounts_breakdown ?? []).map((a) => a.account_id),
+            ).size || 1,
+        }),
+
         duration_ms: Math.round(performance.now() - t0),
       });
 
       // /underwrite reads one statement; PDFs arrive back from /analyze already converted to CSV.
+
       // shortcut: with several CSV files only the first is scored; send a combined CSV once /underwrite accepts many files.
+
       const csvFile = files.find((f) => /\.csv$/i.test(f.name));
-      const source = normalized_csv ? new Blob([normalized_csv], { type: 'text/csv' }) : csvFile;
+
+      const source = normalized_csv
+        ? new Blob([normalized_csv], { type: "text/csv" })
+        : csvFile;
+
       let underwrite;
+
       if (source) {
         t0 = performance.now();
-        const scoring: RunStep = { label: t('lv.score'), detail: '', agent: 'credit', tech: 'POST /api/v1/underwrite · underwrite_sme_transactions', duration_ms: 0 };
+
+        const scoring: RunStep = {
+          label: t("lv.score"),
+          detail: "",
+          agent: "credit",
+          tech: "POST /api/v1/underwrite · underwrite_sme_transactions",
+          duration_ms: 0,
+        };
+
         start(scoring);
-        const res = await api.underwrite(source, csvFile?.name ?? 'statements.csv');
+
+        const res = await api.underwrite(
+          source,
+          csvFile?.name ?? "statements.csv",
+        );
+
         underwrite = { dossier: res.dossier, options: res.matched_options };
-        step({ ...scoring, detail: t('lv.scoreDone', { score: res.dossier.liquidity_score ?? '–', n: res.matched_options.length }), duration_ms: Math.round(performance.now() - t0) });
+
+        step({
+          ...scoring,
+          detail: t("lv.scoreDone", {
+            score: res.dossier.liquidity_score ?? "–",
+            n: res.matched_options.length,
+          }),
+          duration_ms: Math.round(performance.now() - t0),
+        });
       }
+
       if (cancelled) return;
 
       const names = { ...accountNames };
-      for (const a of analysis.accounts_breakdown ?? []) names[a.account_id] ??= guessName(a.file_name);
+
+      for (const a of analysis.accounts_breakdown ?? [])
+        names[a.account_id] ??= guessName(a.file_name);
+
       setLive({ analysis, underwrite, receivables: undefined, intents: [] });
-      update({ hasData: true, source: 'live', ...(analysis.currency ? { homeCurrency: analysis.currency } : {}), accountNames: names, intentStatus: {}, intentDecidedAt: {} });
+
+      update({
+        hasData: true,
+        source: "live",
+        ...(analysis.currency ? { homeCurrency: analysis.currency } : {}),
+        accountNames: names,
+        intentStatus: {},
+        intentDecidedAt: {},
+      });
+
       setDone(true);
     })().catch((e: unknown) => {
       if (cancelled) return;
+
       setCurrent(null);
-      setError(e instanceof ApiError ? e.message : t('common.timeout'));
+
+      setError(e instanceof ApiError ? e.message : t("common.timeout"));
     });
+
     return () => {
       cancelled = true;
     };
+
     // One run per attempt; the settings it reads are fixed while it runs.
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [files, attempt]);
 
   return (
-    <motion.section initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={spring.smooth} className="rounded-xl border bg-card p-6">
+    <motion.section
+      initial={{ opacity: 0, y: 6 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={spring.smooth}
+      className="rounded-xl border bg-card p-6"
+    >
       <FileChips names={files.map((f) => f.name)} />
+
       {steps.length > 0 && (
         <div className="mt-4">
           <RunReceipt steps={steps} holdOpen={!done} defaultOpen />
         </div>
       )}
+
       {current && !error && (
         <div className="mt-3">
           <ThinkingIndicator label={current} />
         </div>
       )}
+
       {error && (
-        <div className="mt-4 rounded-md border border-critical/40 bg-critical/5 px-4 py-3 text-sm" role="alert">
-          <p className="font-medium text-critical-text">{t('lv.failed')}</p>
+        <div
+          className="mt-4 rounded-md border border-critical/40 bg-critical/5 px-4 py-3 text-sm"
+          role="alert"
+        >
+          <p className="font-medium text-critical-text">{t("lv.failed")}</p>
+
           <p className="mt-1 text-ink-2">{error}</p>
+
           <div className="mt-3 flex gap-2">
             <Button size="sm" onClick={() => setAttempt((n) => n + 1)}>
-              {t('common.retry')}
+              {t("common.retry")}
             </Button>
+
             <Button size="sm" variant="outline" onClick={onCancel}>
-              {t('lv.back')}
+              {t("lv.back")}
             </Button>
           </div>
         </div>
       )}
+
       {done && (
         <Button className="mt-4" onClick={onDone}>
-          {t('st.seeResults')}
+          {t("st.seeResults")}
         </Button>
       )}
     </motion.section>
   );
 }
 
-function AccountRow({ id, files: allFiles, range, analysis }: { id: string; files: FileSpan[]; range: Range; analysis: CashAnalysis }) {
+const REASON_THEMES: Record<string, { bar: string }> = {
+  INVALID_DATE: { bar: "bg-warning" },
+  DUPLICATE_TRANSACTION_ID: { bar: "bg-series-4" },
+  INVALID_AMOUNT: { bar: "bg-critical" },
+  INVALID_ROW_SHAPE: { bar: "bg-serious" },
+  OUT_OF_ORDER_DATE: { bar: "bg-series-1" },
+};
+
+function contiguousSpans(files: FileSpan[]) {
+  if (!files.length) return [];
+
+  const sorted = [...files].sort((a, b) => a.start.localeCompare(b.start));
+
+  const merged: { start: string; end: string; files: string[] }[] = [];
+
+  for (const f of sorted) {
+    const last = merged[merged.length - 1];
+
+    if (last && shiftDay(last.end, 1) >= f.start) {
+      if (f.end > last.end) last.end = f.end;
+
+      last.files.push(f.file_name);
+    } else {
+      merged.push({ start: f.start, end: f.end, files: [f.file_name] });
+    }
+  }
+
+  return merged;
+}
+
+function AccountRow({
+  id,
+  files: allFiles,
+  range,
+  analysis,
+}: {
+  id: string;
+  files: FileSpan[];
+  range: Range;
+  analysis: CashAnalysis;
+}) {
   const { accountNames, renameAccount } = useWorkspace();
   const { t } = useT();
-  const files = allFiles.filter((f) => f.account_id === id);
-  const summaries = (analysis.accounts_breakdown ?? []).filter((a) => a.account_id === id);
+  const files = [...allFiles.filter((f) => f.account_id === id)].sort((a, b) =>
+    (a.start || "").localeCompare(b.start || ""),
+  );
+  const summaries = (analysis?.accounts_breakdown ?? []).filter(
+    (a) => a.account_id === id,
+  );
   const latest = summaries[summaries.length - 1];
-  const pct = (iso: string) => ((Date.parse(iso) - range.start) / 86_400_000 / range.days) * 100;
-  const gaps = files.slice(1).flatMap((f, i) => {
+  const pct = (iso: string) => {
+    if (!iso || !range.days || isNaN(range.start)) return 0;
+    const parsed = Date.parse(iso);
+    if (isNaN(parsed)) return 0;
+    return Math.max(
+      0,
+      Math.min(100, ((parsed - range.start) / 86_400_000 / range.days) * 100),
+    );
+  };
+
+  const missingGaps: { from: string; to: string; label: string }[] = [];
+  for (let i = 0; i < files.length - 1; i++) {
+    if (!files[i]?.end || !files[i + 1]?.start) continue;
     const from = shiftDay(files[i].end, 1);
-    const to = shiftDay(f.start, -1);
-    if (from > to) return [];
-    return [from === to ? formatDate(from) : t('common.range', { from: formatDate(from), to: formatDate(to) })];
-  });
-  const txCount = summaries.reduce((s, a) => s + a.transaction_count, 0);
+    const to = shiftDay(files[i + 1].start, -1);
+    if (from && to && from <= to) {
+      missingGaps.push({
+        from,
+        to,
+        label:
+          from === to
+            ? formatDate(from)
+            : `${formatDate(from)} - ${formatDate(to)}`,
+      });
+    }
+  }
+
+  const gaps = missingGaps.map((g) => g.label);
+  const txCount = summaries.reduce((s, a) => s + (a.transaction_count || 0), 0);
   const [name, setName] = useState(accountNames[id] ?? id);
+
+  const accountRejected = (analysis?.rejected_rows ?? []).filter((r) => {
+    if (r.account_id) return r.account_id === id;
+    const d = r.suggested_fix?.posted_on;
+    if (!d) return false;
+    return files.some((f) => f.start && f.end && d >= f.start && d <= f.end);
+  });
 
   return (
     <li className="grid gap-4 py-5 md:grid-cols-[minmax(200px,260px)_1fr_auto] md:items-center">
       <div>
         <label htmlFor={`name-${id}`} className="sr-only">
-          {t('st.accountName')}
+          {t("st.accountName")}
         </label>
-        <Input
-          id={`name-${id}`}
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          onBlur={() => renameAccount(id, name)}
-          className="h-8 border-transparent px-2 -ml-2 text-base font-medium sm:text-sm shadow-none hover:border-input focus-visible:border-input"
-        />
-        <p className="text-xs text-muted-foreground">
-          {t('count.files', { n: files.length })}, {t('count.tx', { n: txCount })}, {analysis.currency}
+
+        <div className="group relative flex items-center max-w-[240px]">
+          <Input
+            id={`name-${id}`}
+
+            value={name}
+
+            onChange={(e) => setName(e.target.value)}
+
+            onBlur={() => renameAccount(id, name)}
+
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                (e.target as HTMLInputElement).blur();
+              }
+            }}
+
+            className="h-8 rounded-md border border-input/60 bg-card/60 px-2.5 pr-8 text-sm font-medium text-foreground transition-colors hover:border-input focus-visible:border-primary focus-visible:bg-card focus-visible:ring-1 focus-visible:ring-primary shadow-xs"
+          />
+
+          <Pencil
+            className="pointer-events-none absolute right-2.5 size-3.5 text-muted-foreground/70"
+            aria-hidden
+          />
+        </div>
+
+        <p className="text-xs text-muted-foreground mt-1">
+          {t("count.files", { n: files.length })},{" "}
+          {t("count.tx", { n: txCount })}, {analysis.currency}
         </p>
       </div>
 
       <div>
-        <div className="relative h-6 rounded bg-muted" aria-hidden>
-          {files.map((f) => (
+        <div
+          className="relative h-6 rounded bg-muted overflow-hidden"
+          aria-hidden
+        >
+          {contiguousSpans(files).map((span) => (
             <div
-              key={f.file_name}
-              className="absolute inset-y-1 rounded-sm bg-primary/70"
-              style={{ left: `${pct(f.start)}%`, width: `calc(${pct(f.end) - pct(f.start) + 100 / range.days}% - 2px)` }}
-              title={`${f.file_name}: ${formatDate(f.start)} to ${formatDate(f.end)}`}
+              key={span.start + span.end}
+
+              className="absolute inset-y-1 rounded-sm bg-primary/70 transition-all duration-300"
+
+              style={{
+                left: `${pct(span.start)}%`,
+                width: `${pct(span.end) - pct(span.start) + 100 / range.days}%`,
+              }}
+
+              title={`${span.files.join(", ")}: ${formatDate(span.start)} to ${formatDate(span.end)}`}
             />
           ))}
+
+          {/* Missing statement gap regions on timeline */}
+
+          {missingGaps.map((g) => {
+            const left = Math.max(0, Math.min(99, pct(g.from)));
+
+            const width = Math.max(
+              1.5,
+              Math.min(100 - left, pct(g.to) - pct(g.from) + 100 / range.days),
+            );
+
+            return (
+              <div
+                key={g.from + g.to}
+
+                className="absolute inset-y-1 rounded-xs border border-warning/40 bg-[repeating-linear-gradient(135deg,rgb(var(--warning)/0.22),rgb(var(--warning)/0.22)_3px,transparent_3px,transparent_6px)] transition-all z-10"
+
+                style={{ left: `${left}%`, width: `${width}%` }}
+
+                title={t("st.gapTitle", { range: g.label })}
+              >
+                <span className="sr-only">{t("st.gapTitle", { range: g.label })}</span>
+              </div>
+            );
+          })}
+
+          {/* Precision vertical hairline ticks flush within the bar */}
+
+          {accountRejected.map((r) => {
+            const dateStr = r.suggested_fix?.posted_on;
+
+            if (!dateStr) return null;
+
+            const leftPct = Math.max(0.5, Math.min(99.5, pct(dateStr)));
+
+            const theme =
+              REASON_THEMES[r.reason_code] ?? REASON_THEMES.INVALID_DATE;
+
+            return (
+              <div
+                key={r.row_number}
+
+                className={cn(
+                  "absolute inset-y-1 w-[2.5px] -translate-x-1/2 z-20 rounded-[0.5px] cursor-pointer transition-all hover:w-[4px] hover:z-30",
+
+                  theme.bar,
+                )}
+
+                style={{ left: `${leftPct}%` }}
+
+                title={t("st.flagTitle", { n: r.row_number, reason: t(`reason.${r.reason_code}` as Key), date: formatDate(dateStr) })}
+              >
+                <span className="sr-only">{t("st.rowN", { n: r.row_number })}</span>
+              </div>
+            );
+          })}
         </div>
+
         <p className="mt-1.5 text-xs text-muted-foreground">
-          {files.map((f) => t('common.range', { from: formatDate(f.start), to: formatDate(f.end) })).join(', ')}.{' '}
+          {files
+            .map((f) =>
+              t("common.range", {
+                from: formatDate(f.start),
+                to: formatDate(f.end),
+              }),
+            )
+            .join(", ")}
+          .{" "}
           {gaps.length > 0 ? (
-            <span className="text-warning-text">{t('st.gap', { ranges: gaps.join(t('st.and')) })}</span>
+            <span className="text-warning-text font-medium">
+              {t("st.gap", { ranges: gaps.join(t("st.and")) })}
+            </span>
           ) : (
-            <span>{t('st.connected')}</span>
+            <span className="text-good-text font-medium inline-flex items-center gap-1">
+              <CheckCircle2 className="h-3 w-3" />
+
+              {t("st.connected")}
+            </span>
+          )}
+          {accountRejected.length > 0 && (
+            <span className="ml-2 inline-flex items-center gap-1.5 font-medium text-warning-text">
+              <span className="inline-block size-1.5 rounded-full bg-warning" />
+              {t("st.flagged", { n: accountRejected.length })}
+            </span>
           )}
         </p>
       </div>
 
       <div className="md:text-right">
-        <p className="text-xs text-muted-foreground">{t('st.closing')}</p>
-        {latest && <Money value={latest.closing_balance} className="text-base font-semibold" />}
+        <p className="text-xs text-muted-foreground">{t("st.closing")}</p>
+
+        {latest ? (
+          <Money
+            value={latest.closing_balance}
+            className="text-base font-semibold"
+          />
+        ) : (
+          <Money
+            value={analysis.current_balance}
+            className="text-base font-semibold"
+          />
+        )}
       </div>
     </li>
   );
 }
 
-function Results({ analysis, sample }: { analysis: CashAnalysis; sample: boolean }) {
-  const { clearData, accountNames } = useWorkspace();
+function Results({
+  analysis: initialAnalysis,
+  sample,
+}: {
+  analysis: CashAnalysis;
+  sample: boolean;
+}) {
+  const { clearData, accountNames, setLive, source, update } = useWorkspace();
+
   const { t } = useT();
-  const maxSpend = Math.max(...SPENDING.map((s) => s.cents));
+
+  const [analysis, setAnalysis] = useState<CashAnalysis>(initialAnalysis);
+
+  const [repairNotice, setRepairNotice] = useState<string | null>(null);
+
+  // Modal edit state for rejected row
+
+  const [editingRow, setEditingRow] = useState<RejectedRow | null>(null);
+
+  const [editDate, setEditDate] = useState("");
+
+  const [editAmount, setEditAmount] = useState("");
+
+  const [editDesc, setEditDesc] = useState("");
+
+  const [editId, setEditId] = useState("");
+
+  const [editError, setEditError] = useState<string | null>(null);
+
+  useEffect(() => {
+    setAnalysis(initialAnalysis);
+  }, [initialAnalysis]);
+
+  const totalSpend = SPENDING.reduce((sum, s) => sum + s.cents, 0);
+
+  const maxSpend = Math.max(...SPENDING.map((s) => s.cents), 1);
+
   const { files, range } = layout(analysis, sample);
+
   const accounts = Array.from(new Set(files.map((f) => f.account_id)));
+
   const transfers = analysis.internal_transfers ?? [];
 
+  const closingNum = parseFloat(analysis.current_balance || "0");
+
+  const netChangeNum = parseFloat(analysis.net_period_change || "0");
+
+  const openingNum = closingNum - netChangeNum;
+
+  const handleRepairRow = (
+    rowNumber: number,
+
+    fix: {
+      posted_on?: string;
+      amount?: string;
+      description?: string;
+      transaction_id?: string;
+    },
+
+    notice: string,
+  ) => {
+    setAnalysis((prev) => {
+      const remaining = prev.rejected_rows.filter(
+        (r) => r.row_number !== rowNumber,
+      );
+
+      const deltaAmount = fix.amount ? parseFloat(fix.amount) : 0;
+
+      const currentVal = parseFloat(prev.current_balance || "0");
+
+      const updatedBalance = (currentVal + deltaAmount).toFixed(2);
+
+      const nextAnalysis: CashAnalysis = {
+        ...prev,
+
+        accepted_count: prev.accepted_count + 1,
+
+        rejected_rows: remaining,
+
+        current_balance: updatedBalance,
+      };
+
+      setLive({ analysis: nextAnalysis });
+
+      if (source !== "live") {
+        update({ hasData: true, source: "live" });
+      }
+
+      return nextAnalysis;
+    });
+
+    setRepairNotice(notice);
+
+    setTimeout(() => setRepairNotice(null), 4500);
+  };
+
+  const handleExcludeDuplicate = (r: RejectedRow) => {
+    setAnalysis((prev) => {
+      const remaining = prev.rejected_rows.filter(
+        (row) => row.row_number !== r.row_number,
+      );
+
+      const nextAnalysis: CashAnalysis = {
+        ...prev,
+
+        rejected_rows: remaining,
+      };
+
+      setLive({ analysis: nextAnalysis });
+
+      if (source !== "live") {
+        update({ hasData: true, source: "live" });
+      }
+
+      return nextAnalysis;
+    });
+
+    setRepairNotice(
+      t("st.nExcluded", { n: r.row_number }),
+    );
+
+    setTimeout(() => setRepairNotice(null), 4500);
+  };
+
+  const handleNormalizeDate = (r: RejectedRow) => {
+    if (!r.suggested_fix) return;
+
+    handleRepairRow(
+      r.row_number,
+
+      r.suggested_fix,
+
+      t("st.nNormalized", { n: r.row_number, date: formatDate(r.suggested_fix.posted_on) }),
+    );
+  };
+
+  const handleResolveAll = () => {
+    const count = (analysis?.rejected_rows ?? []).length;
+
+    setAnalysis((prev) => {
+      let balanceDelta = 0;
+
+      let addedCount = 0;
+
+      for (const r of prev.rejected_rows) {
+        if (r.reason_code === "DUPLICATE_TRANSACTION_ID") {
+          continue;
+        }
+
+        if (r.suggested_fix?.amount) {
+          balanceDelta += parseFloat(r.suggested_fix.amount);
+
+          addedCount += 1;
+        }
+      }
+
+      const currentVal = parseFloat(prev.current_balance || "0");
+
+      const updatedBalance = (currentVal + balanceDelta).toFixed(2);
+
+      const nextAnalysis: CashAnalysis = {
+        ...prev,
+
+        accepted_count: prev.accepted_count + addedCount,
+
+        rejected_rows: [],
+
+        current_balance: updatedBalance,
+      };
+
+      setLive({ analysis: nextAnalysis });
+
+      if (source !== "live") {
+        update({ hasData: true, source: "live" });
+      }
+
+      return nextAnalysis;
+    });
+
+    setRepairNotice(
+      t("st.nAll", { n: count }),
+    );
+
+    setTimeout(() => setRepairNotice(null), 4500);
+  };
+
+  const handleQuickFix = (r: RejectedRow) => {
+    if (!r.suggested_fix) return;
+
+    handleRepairRow(
+      r.row_number,
+      r.suggested_fix,
+      t("st.nFixed", { n: r.row_number }),
+    );
+  };
+
+  const openEditModal = (r: RejectedRow) => {
+    setEditingRow(r);
+
+    setEditDate(r.suggested_fix?.posted_on ?? "");
+
+    setEditAmount(r.suggested_fix?.amount ?? "");
+
+    setEditDesc(r.suggested_fix?.description ?? "");
+
+    setEditId(r.suggested_fix?.transaction_id ?? `tx_${r.row_number}`);
+
+    setEditError(null);
+  };
+
+  const saveEditModal = () => {
+    if (!editingRow) return;
+
+    const cleanDate = editDate.trim();
+
+    const cleanAmount = editAmount.trim();
+
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(cleanDate)) {
+      setEditError(t("st.errDate"));
+
+      return;
+    }
+
+    if (isNaN(parseFloat(cleanAmount))) {
+      setEditError(t("st.errAmount"));
+
+      return;
+    }
+
+    handleRepairRow(
+      editingRow.row_number,
+
+      {
+        posted_on: cleanDate,
+        amount: cleanAmount,
+        description: editDesc.trim(),
+        transaction_id: editId.trim(),
+      },
+
+      t("st.nEdited", { n: editingRow.row_number }),
+    );
+
+    setEditingRow(null);
+  };
+
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={fade} className="space-y-12">
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={fade}
+      className="space-y-10"
+    >
       <section>
-        <SectionTitle aside={t('st.renameHint')}>{t('st.accounts')}</SectionTitle>
+        <SectionTitle aside={t("count.files", { n: files.length })}>
+          {t("st.accounts")}
+        </SectionTitle>
+
         <ul className="divide-y border-y">
           {accounts.map((id) => (
-            <AccountRow key={id} id={id} files={files} range={range} analysis={analysis} />
+            <AccountRow
+              key={id}
+              id={id}
+              files={files}
+              range={range}
+              analysis={analysis}
+            />
           ))}
         </ul>
+
+        <div className="mt-3 flex flex-wrap items-center gap-4 text-[11px] text-muted-foreground">
+          <span className="inline-flex items-center gap-1.5">
+            <span className="inline-block h-2 w-3 rounded-xs bg-primary/70" />
+
+            <span>{t("st.legendCovered")}</span>
+          </span>
+
+          <span className="inline-flex items-center gap-1.5">
+            <span className="inline-block h-2 w-3 rounded-xs border border-warning/40 bg-[repeating-linear-gradient(135deg,rgb(var(--warning)/0.22),rgb(var(--warning)/0.22)_3px,transparent_3px,transparent_6px)]" />
+
+            <span>{t("st.legendGap")}</span>
+          </span>
+
+          <span className="inline-flex items-center gap-1.5">
+            <span className="inline-block h-2.5 w-1 rounded-xs bg-warning" />
+
+            <span>{t("st.legendFlag")}</span>
+          </span>
+        </div>
       </section>
 
-      <div className="grid gap-12 lg:grid-cols-2">
+      <div className="grid gap-6">
         {transfers.length > 0 && (
-          <section>
-            <SectionTitle aside={formatMoney(analysis.internal_transfers_excluded ?? '0')}>{t('st.transfers')}</SectionTitle>
-            <p className="mb-3 text-sm text-muted-foreground">{t('st.transfersNote')}</p>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>{t('col.date')}</TableHead>
-                  <TableHead>{t('col.from')}</TableHead>
-                  <TableHead>{t('col.to')}</TableHead>
-                  <TableHead className="text-right">{t('col.amount')}</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {transfers.map((x) => (
-                  <TableRow key={x.outflow_tx_id}>
-                    <TableCell className="figures">{formatDate(x.transfer_date)}</TableCell>
-                    <TableCell>{accountNames[x.outflow_account] ?? x.outflow_account}</TableCell>
-                    <TableCell>{accountNames[x.inflow_account] ?? x.inflow_account}</TableCell>
-                    <TableCell className="text-right">
-                      <Money value={x.amount} />
-                    </TableCell>
+          <section className="rounded-xl border bg-card p-5 md:p-6">
+            <SectionTitle
+              aside={
+                <span className="rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-semibold text-primary figures">
+                  {t("st.excluded", { amount: formatMoney(analysis.internal_transfers_excluded ?? "0") })}
+                </span>
+              }
+            >
+              <div className="flex items-center gap-2">
+                
+                <span>{t("st.transfers")}</span>
+              </div>
+            </SectionTitle>
+
+            <p className="mb-4 text-xs sm:text-sm text-muted-foreground">
+              {t("st.transfersNote")}
+            </p>
+
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow className="border-border/60 hover:bg-transparent">
+                    <TableHead className="w-[85px] text-xs">
+                      {t("col.date")}
+                    </TableHead>
+
+                    <TableHead className="text-xs">{t("st.flow")}</TableHead>
+
+                    <TableHead className="w-[110px] text-right text-xs">
+                      {t("col.amount")}
+                    </TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHeader>
+
+                <TableBody>
+                  {transfers.map((x) => (
+                    <TableRow
+                      key={x.outflow_tx_id}
+                      className="border-border/40"
+                    >
+                      <TableCell className="figures text-xs text-muted-foreground py-2.5">
+                        {formatDate(x.transfer_date)}
+                      </TableCell>
+
+                      <TableCell className="py-2.5">
+                        <div className="flex items-center gap-1.5 text-xs font-medium text-foreground">
+                          <span className="truncate max-w-[110px] sm:max-w-none">
+                            {accountNames[x.outflow_account] ??
+                              x.outflow_account}
+                          </span>
+
+                          <ArrowRight className="h-3 w-3 text-muted-foreground shrink-0" />
+
+                          <span className="truncate max-w-[110px] sm:max-w-none">
+                            {accountNames[x.inflow_account] ?? x.inflow_account}
+                          </span>
+                        </div>
+                      </TableCell>
+
+                      <TableCell className="text-right py-2.5">
+                        <Money
+                          value={x.amount}
+                          className="font-semibold text-foreground text-xs"
+                        />
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
           </section>
         )}
 
-        <section>
-          <SectionTitle aside={t('count.rows', { n: analysis.rejected_rows.length })}>{t('st.rejected')}</SectionTitle>
-          <p className="mb-3 text-sm text-muted-foreground">{t('st.rejectedNote')}</p>
-          {analysis.rejected_rows.length > 0 && (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>{t('col.row')}</TableHead>
-                  <TableHead>{t('col.reason')}</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {analysis.rejected_rows.map((r) => (
-                  <TableRow key={r.row_number}>
-                    <TableCell className="figures">{r.row_number}</TableCell>
-                    <TableCell>{t(`reason.${r.reason_code}` as Key)}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+        <section
+          className={cn(
+            "rounded-xl border bg-card p-5 md:p-6",
+            transfers.length === 0 && "lg:col-span-2",
           )}
+        >
+          <SectionTitle
+            aside={
+              <div className="flex items-center gap-2">
+                {(analysis?.rejected_rows ?? []).length > 0 ? (
+                  <>
+                    <span className="rounded-md border border-warning/30 bg-warning/10 px-2 py-0.5 text-xs font-medium text-warning-text figures">
+                      {t("st.pending", { n: (analysis?.rejected_rows ?? []).length })}
+                    </span>
+
+                    <Button
+                      size="sm"
+
+                      variant="outline"
+
+                      className="h-7 px-2.5 text-xs border-primary/40 text-primary hover:bg-primary/10 gap-1.5 font-medium shadow-2xs"
+
+                      onClick={handleResolveAll}
+
+                      title={t("st.resolveAllTitle")}
+                    >
+                      <CheckCheck className="h-3.5 w-3.5" />
+
+                      <span>{t("st.resolveAll")}</span>
+                    </Button>
+                  </>
+                ) : (
+                  <span className="inline-flex items-center gap-1 rounded-md border border-good/30 bg-good/10 px-2 py-0.5 text-xs font-medium text-good-text">
+                    <CheckCircle2 className="h-3.5 w-3.5" />
+                    {t("st.allClear")}
+                  </span>
+                )}
+              </div>
+            }
+          >
+            <div className="flex items-center gap-2">
+              
+              <span>{t("st.rejected")}</span>
+            </div>
+          </SectionTitle>
+
+          <AnimatePresence>
+            {repairNotice && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+
+                animate={{ opacity: 1, height: "auto" }}
+
+                exit={{ opacity: 0, height: 0 }}
+
+                className="mb-3.5 flex items-center gap-2 rounded-lg border border-primary/30 bg-primary/10 px-3 py-2 text-xs font-medium text-primary"
+              >
+                <CheckCheck className="h-3.5 w-3.5 shrink-0" />
+
+                <span>{repairNotice}</span>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* Statement Tie-Out & Opening Reserves Strip */}
+
+          <div className="mb-5 border-y py-4">
+            <div className="grid grid-cols-3 gap-4">
+              <div>
+                <span className="block text-xs text-muted-foreground">
+                  {t("st.opening")}
+                </span>
+
+                <span className="text-base font-semibold text-foreground figures">
+                  {formatMoney(openingNum.toFixed(2))}
+                </span>
+              </div>
+
+              <div>
+                <span className="block text-xs text-muted-foreground">
+                  {t("st.net")}
+                </span>
+
+                <span
+                  className={cn(
+                    "text-base font-semibold figures",
+                    netChangeNum >= 0 ? "text-good-text" : "text-critical-text",
+                  )}
+                >
+                  {netChangeNum >= 0 ? "+" : ""}
+                  {formatMoney(netChangeNum.toFixed(2))}
+                </span>
+              </div>
+
+              <div>
+                <span className="block text-xs text-muted-foreground">
+                  {t("st.closing")}
+                </span>
+
+                <span className="text-base font-semibold text-foreground figures">
+                  {formatMoney(closingNum.toFixed(2))}
+                </span>
+              </div>
+
+            </div>
+          </div>
+
+          {(analysis?.rejected_rows ?? []).length > 0 ? (
+            <>
+              <p className="mb-4 text-xs sm:text-sm text-muted-foreground">
+                {t("st.rejectedNote")}
+              </p>
+
+              <div className="overflow-x-auto">
+                <Table className="w-full">
+                  <TableHeader>
+                    <TableRow className="border-border/60 hover:bg-transparent">
+                      <TableHead className="w-[68px] text-xs px-2.5 py-2">
+                        {t("col.row")}
+                      </TableHead>
+
+                      <TableHead className="w-[115px] text-xs px-2.5 py-2">
+                        {t("col.reason")}
+                      </TableHead>
+
+                      <TableHead className="text-xs px-2.5 py-2">
+                        {t("st.colEntry")}
+                      </TableHead>
+
+                      <TableHead className="w-[85px] text-right text-xs px-2.5 py-2">
+                        {t("st.colImpact")}
+                      </TableHead>
+
+                      <TableHead className="w-[125px] text-right text-xs px-2.5 py-2">
+                        <span className="sr-only">{t("st.colAction")}</span>
+                      </TableHead>
+                    </TableRow>
+                  </TableHeader>
+
+                  <TableBody>
+                    {(analysis?.rejected_rows ?? []).map((r) => {
+                      const fix = r.suggested_fix;
+
+                      const isDup =
+                        r.reason_code === "DUPLICATE_TRANSACTION_ID";
+
+                      const isDate = r.reason_code === "INVALID_DATE";
+
+                      return (
+                        <TableRow
+                          key={r.row_number}
+                          className="border-border/40"
+                        >
+                          <TableCell className="figures text-xs font-medium text-muted-foreground py-2.5 px-2.5">
+                            {r.row_number}
+                          </TableCell>
+
+                          <TableCell className="text-xs py-2.5 px-2.5">
+                            {isDup ? (
+                              <span className="inline-flex items-center gap-1 font-medium text-[11px] px-1.5 py-0.5 rounded border whitespace-nowrap border-border bg-muted text-ink-2">
+                                <CopyX className="h-3 w-3 shrink-0" />
+                                {t("reason.DUPLICATE_TRANSACTION_ID")}
+                              </span>
+                            ) : isDate ? (
+                              <span className="inline-flex items-center gap-1 font-medium text-[11px] px-1.5 py-0.5 rounded border whitespace-nowrap border-warning/30 bg-warning/10 text-warning-text">
+                                <CalendarX2 className="h-3 w-3 shrink-0" />
+                                {t("reason.INVALID_DATE")}
+                              </span>
+                            ) : (
+                              <span className="inline-flex items-center gap-1 font-medium text-[11px] px-1.5 py-0.5 rounded border whitespace-nowrap border-critical/30 bg-critical/10 text-critical-text">
+                                <AlertCircle className="h-3 w-3 shrink-0" />
+
+                                {t(`reason.${r.reason_code}` as Key)}
+                              </span>
+                            )}
+                          </TableCell>
+
+                          <TableCell className="text-xs py-2.5 px-2.5">
+                            <div className="flex flex-col min-w-0 max-w-[200px] sm:max-w-[320px]">
+                              <span className="figures text-foreground font-medium text-xs truncate">
+                                {fix?.posted_on ? formatDate(fix.posted_on, true) : t("st.unparsed")}
+
+                                {fix?.description && (
+                                  <span className="font-sans font-normal text-muted-foreground ml-1.5">
+                                    • {fix.description}
+                                  </span>
+                                )}
+                              </span>
+
+                              <span className="text-[11px] text-muted-foreground truncate mt-0.5">
+                                {t(isDup ? "st.dupNote" : isDate ? "st.dateNote" : "st.otherNote")}
+                              </span>
+                            </div>
+                          </TableCell>
+
+                          <TableCell className="text-right py-2.5 px-2.5 text-xs figures">
+                            {isDup ? (
+                              <span
+                                className="text-muted-foreground"
+                                title={t("st.dupImpactTitle")}
+                              >
+                                {formatMoney("0")}
+                              </span>
+                            ) : fix?.amount ? (
+                              <span
+                                className={cn(
+                                  fix.amount.trim().startsWith("-")
+                                    ? "text-critical-text"
+                                    : "text-good-text",
+                                )}
+                              >
+                                {formatMoney(fix.amount)}
+                              </span>
+                            ) : (
+                              <span className="text-muted-foreground">—</span>
+                            )}
+                          </TableCell>
+
+                          <TableCell className="text-right py-2.5 px-2.5">
+                            <div className="flex items-center justify-end gap-1.5">
+                              {isDup ? (
+                                <Button
+                                  size="sm"
+
+                                  variant="outline"
+
+                                  className="h-7 px-2.5 text-xs gap-1 font-medium"
+
+                                  onClick={() => handleExcludeDuplicate(r)}
+
+                                  title={t("st.excludeTitle")}
+                                >
+                                  <Ban className="h-3 w-3" />
+
+                                  <span>{t("st.excludeDup")}</span>
+                                </Button>
+                              ) : isDate && fix ? (
+                                <Button
+                                  size="sm"
+
+                                  variant="outline"
+
+                                  className="h-7 px-2.5 text-xs border-primary/30 text-primary hover:bg-primary/10 gap-1 font-medium shadow-2xs"
+
+                                  onClick={() => handleNormalizeDate(r)}
+
+                                  title={t("st.normalizeTitle")}
+                                >
+                                  <Check className="h-3 w-3" />
+
+                                  <span>{t("st.acceptFormat")}</span>
+                                </Button>
+                              ) : fix ? (
+                                <Button
+                                  size="sm"
+
+                                  variant="outline"
+
+                                  className="h-7 px-2.5 text-xs border-primary/30 text-primary hover:bg-primary/10 gap-1 font-medium shadow-2xs"
+
+                                  onClick={() => handleQuickFix(r)}
+                                >
+                                  <Check className="h-3 w-3" />
+
+                                  <span>{t("st.applyFix")}</span>
+                                </Button>
+                              ) : null}
+
+                              <Button
+                                size="sm"
+
+                                variant="ghost"
+
+                                className="h-7 w-7 p-0 text-muted-foreground hover:text-foreground hover:bg-accent shrink-0"
+
+                                onClick={() => openEditModal(r)}
+
+                                title={t("st.editRow")}
+                              >
+                                <Pencil className="h-3.5 w-3.5" />
+
+                                <span className="sr-only">{t("st.editRow")}</span>
+                              </Button>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
+                  </TableBody>
+                </Table>
+              </div>
+            </>
+          ) : (
+            <div className="mt-3 flex items-start gap-3 rounded-xl border border-good/20 bg-good/5 p-4 text-sm">
+              <CheckCircle2 className="h-5 w-5 text-good-text shrink-0 mt-0.5" />
+
+              <div className="min-w-0">
+                <p className="font-medium text-foreground text-sm">
+                  {t("st.cleanTitle")}
+                </p>
+
+                <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">
+                  {t("st.cleanBody")}
+                </p>
+              </div>
+            </div>
+          )}
+
+          {/* Inline Edit Modal */}
+
+          <Dialog
+            open={editingRow !== null}
+            onOpenChange={(open) => !open && setEditingRow(null)}
+          >
+            <DialogContent className="sm:max-w-md">
+              <DialogHeader>
+                <DialogTitle className="flex items-center gap-2">
+                  <Pencil className="h-4 w-4 text-primary" />
+
+                  {t("st.reconcileTitle", { n: editingRow?.row_number ?? 0 })}
+                </DialogTitle>
+
+                <DialogDescription>{t("st.reconcileDesc")}</DialogDescription>
+              </DialogHeader>
+
+              <div className="space-y-4 py-2">
+                {editingRow?.raw_line && (
+                  <div className="rounded-lg bg-muted/50 p-2.5 text-xs">
+                    <p className="text-muted-foreground font-mono text-[11px] mb-1">
+                      {t("st.rawRow")}
+                    </p>
+
+                    <code className="text-foreground break-all">
+                      {editingRow.raw_line}
+                    </code>
+                  </div>
+                )}
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1">
+                    <label className="text-xs font-medium text-foreground">
+                      {t("col.date")}
+                    </label>
+
+                    <Input
+                      type="text"
+
+                      value={editDate}
+
+                      onChange={(e) => setEditDate(e.target.value)}
+
+                      placeholder="YYYY-MM-DD"
+
+                      className="font-mono text-xs"
+                    />
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="text-xs font-medium text-foreground">
+                      {t("col.amount")}
+                    </label>
+
+                    <Input
+                      type="text"
+
+                      value={editAmount}
+
+                      onChange={(e) => setEditAmount(e.target.value)}
+
+                      placeholder="-100.00"
+
+                      className="font-mono text-xs"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-xs font-medium text-foreground">
+                    {t("quickCash.descLabel")}
+                  </label>
+
+                  <Input
+                    type="text"
+
+                    value={editDesc}
+
+                    onChange={(e) => setEditDesc(e.target.value)}
+
+                    placeholder={t("quickCash.descPlaceholder")}
+
+                    className="text-xs"
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-xs font-medium text-foreground">
+                    {t("st.txId")}
+                  </label>
+
+                  <Input
+                    type="text"
+
+                    value={editId}
+
+                    onChange={(e) => setEditId(e.target.value)}
+
+                    placeholder="tx_001"
+
+                    className="font-mono text-xs"
+                  />
+                </div>
+              </div>
+
+              {editError && (
+                <div className="rounded-md border border-destructive/30 bg-destructive/10 px-3 py-2 text-xs font-medium text-destructive">
+                  {editError}
+                </div>
+              )}
+
+              <DialogFooter className="gap-2 sm:gap-0 sm:justify-between">
+                <Button
+                  variant="outline"
+
+                  size="sm"
+
+                  className="text-destructive hover:bg-destructive/10 border-destructive/30"
+
+                  onClick={() => {
+                    if (editingRow) {
+                      handleExcludeDuplicate(editingRow);
+
+                      setEditingRow(null);
+                    }
+                  }}
+                >
+                  {t("st.excludeRow")}
+                </Button>
+
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setEditingRow(null)}
+                  >
+                    {t("quickCash.cancel")}
+                  </Button>
+
+                  <Button size="sm" onClick={saveEditModal} className="gap-1.5">
+                    <Check className="h-3.5 w-3.5" />
+
+                    {t("st.saveReconcile")}
+                  </Button>
+                </div>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
         </section>
       </div>
 
-      {/* Spending by category comes only with the sample company until the backend returns categories. */}
-      {sample && (
-        <section>
-          <SectionTitle aside={t('common.range', { from: formatDate(analysis.start_date!), to: formatDate(analysis.end_date!) })}>{t('st.spend')}</SectionTitle>
-          <p className="mb-4 max-w-2xl text-sm text-muted-foreground">{t('st.spendNote')}</p>
-          <ul className="space-y-3">
-            {SPENDING.map((s) => (
-              <li key={s.category} className="grid grid-cols-[140px_1fr_110px] items-center gap-4 text-sm">
-                <span>{t(`cat.${s.category}` as Key)}</span>
-                <span className="h-2 rounded-full bg-muted">
-                  <motion.span
-                    className="block h-2 origin-left rounded-full bg-series-1"
-                    initial={{ scaleX: 0 }}
-                    animate={{ scaleX: s.cents / maxSpend }}
-                    transition={spring.gentle}
-                  />
-                </span>
-                <Money value={s.amount} className="text-right" />
-              </li>
-            ))}
-          </ul>
-        </section>
-      )}
+      {/* Spending by category / Outflow Breakdown */}
+
+      <section className="rounded-xl border bg-card p-5 md:p-6">
+        <SectionTitle
+          aside={
+            sample ? (
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-muted px-2.5 py-0.5 text-xs font-medium text-muted-foreground">
+                {t("common.range", {
+                  from: formatDate(analysis.start_date!),
+                  to: formatDate(analysis.end_date!),
+                })}
+              </span>
+            ) : (
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-semibold text-primary">
+                {t("fig.out")}:{" "}
+                <Money
+                  value={
+                    analysis.operational_outflows ??
+                    analysis.gross_outflows ??
+                    "0"
+                  }
+                />
+              </span>
+            )
+          }
+        >
+          <div className="flex items-center gap-2">
+            
+            <span>{t("st.spend")}</span>
+          </div>
+        </SectionTitle>
+
+        {sample ? (
+          <>
+            <p className="mb-5 max-w-2xl text-xs sm:text-sm text-muted-foreground">
+              {t("st.spendNote")}
+            </p>
+
+            <ul className="space-y-3.5">
+              {SPENDING.map((s) => {
+                const pct =
+                  totalSpend > 0
+                    ? ((s.cents / totalSpend) * 100).toFixed(1)
+                    : "0";
+
+                return (
+                  <li
+                    key={s.category}
+                    className="grid grid-cols-[110px_1fr_135px] sm:grid-cols-[140px_1fr_150px] items-center gap-3 sm:gap-4 text-xs sm:text-sm"
+                  >
+                    <span className="font-medium text-foreground truncate">
+                      {t(`cat.${s.category}` as Key)}
+                    </span>
+
+                    <div className="relative h-2 w-full overflow-hidden rounded-full bg-muted/80">
+                      <motion.div
+                        className="absolute inset-y-0 left-0 rounded-full bg-primary"
+
+                        initial={{ width: 0 }}
+
+                        animate={{ width: `${(s.cents / maxSpend) * 100}%` }}
+
+                        transition={spring.gentle}
+                      />
+                    </div>
+
+                    <div className="flex items-baseline justify-end gap-2 text-right">
+                      <Money
+                        value={s.amount}
+                        className="font-semibold text-foreground"
+                      />
+
+                      <span className="w-12 text-right text-xs text-muted-foreground figures">
+                        {pct}%
+                      </span>
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
+          </>
+        ) : analysis.recurring_obligations &&
+          analysis.recurring_obligations.length > 0 ? (
+          <>
+            <p className="mb-5 max-w-2xl text-xs sm:text-sm text-muted-foreground">
+              {t("st.recurringNote")}
+            </p>
+
+            <ul className="space-y-3.5">
+              {analysis.recurring_obligations.map((ob) => {
+                const amtNum = parseFloat(ob.amount || "0");
+
+                const totalOut = parseFloat(
+                  analysis.operational_outflows ??
+                    analysis.gross_outflows ??
+                    "1",
+                );
+
+                const pctVal =
+                  totalOut > 0 ? ((amtNum / totalOut) * 100).toFixed(1) : "0";
+
+                const label = t(ob.category === "PAYROLL" ? "cat.payroll" : ob.category === "RENT" ? "cat.rent" : "cat.debt");
+
+                return (
+                  <li
+                    key={ob.category}
+                    className="grid grid-cols-[120px_1fr_135px] sm:grid-cols-[160px_1fr_150px] items-center gap-3 sm:gap-4 text-xs sm:text-sm"
+                  >
+                    <div className="min-w-0">
+                      <span className="font-medium text-foreground truncate block">
+                        {label}
+                      </span>
+
+                      <span className="text-[11px] text-muted-foreground">
+                        {t("st.dayMonthly", { n: ob.day_of_month })}
+                      </span>
+                    </div>
+
+                    <div className="relative h-2 w-full overflow-hidden rounded-full bg-muted/80">
+                      <motion.div
+                        className="absolute inset-y-0 left-0 rounded-full bg-primary"
+
+                        initial={{ width: 0 }}
+
+                        animate={{
+                          width: `${Math.min(100, (amtNum / (totalOut || 1)) * 100)}%`,
+                        }}
+
+                        transition={spring.gentle}
+                      />
+                    </div>
+
+                    <div className="flex items-baseline justify-end gap-2 text-right">
+                      <Money
+                        value={ob.amount}
+                        className="font-semibold text-foreground"
+                      />
+
+                      <span className="w-12 text-right text-xs text-muted-foreground figures">
+                        {pctVal}%
+                      </span>
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
+          </>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 rounded-xl border border-border/50 bg-background/50 p-4 text-sm">
+            <div>
+              <p className="text-xs text-muted-foreground">
+                {t("fig.out")}
+              </p>
+
+              <Money
+                value={
+                  analysis.operational_outflows ??
+                  analysis.gross_outflows ??
+                  "0"
+                }
+                className="text-base font-semibold text-foreground"
+              />
+
+              <p className="text-[11px] text-muted-foreground mt-0.5">
+                {t("fig.ownNote")}
+              </p>
+            </div>
+
+            <div>
+              <p className="text-xs text-muted-foreground">{t("fig.in")}</p>
+
+              <Money
+                value={analysis.gross_inflows ?? "0"}
+                className="text-base font-semibold text-good-text"
+              />
+
+              <p className="text-[11px] text-muted-foreground mt-0.5">
+                {t("st.beforeTransfers")}
+              </p>
+            </div>
+
+            <div>
+              <p className="text-xs text-muted-foreground">{t("fig.burn")}</p>
+
+              <Money
+                value={analysis.average_daily_burn}
+                className="text-base font-semibold text-foreground"
+              />
+
+              <p className="text-[11px] text-muted-foreground mt-0.5">
+                {analysis.runway_days === null ? t("quickCash.noBurn") : t("st.runwayDays", { n: analysis.runway_days })}
+              </p>
+            </div>
+          </div>
+        )}
+      </section>
 
       <section className="border-t pt-8">
-        <Dialog>
-          <DialogTrigger asChild>
-            <Button variant="outline">{t('st.remove')}</Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>{t('st.removeTitle')}</DialogTitle>
-              <DialogDescription>{t('st.removeBody')}</DialogDescription>
-            </DialogHeader>
-            <DialogFooter>
-              <DialogClose asChild>
-                <Button variant="outline">{t('st.keep')}</Button>
-              </DialogClose>
-              <DialogClose asChild>
-                <Button variant="destructive" onClick={clearData}>
-                  {t('st.remove')}
-                </Button>
-              </DialogClose>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-xl border border-destructive/20 bg-destructive/5 p-4 sm:p-5">
+          <div className="min-w-0">
+            <p className="text-sm font-medium text-destructive">
+              {t("st.removeTitle")}
+            </p>
+
+            <p className="mt-0.5 text-xs text-muted-foreground">
+              {t("st.removeBody")}
+            </p>
+          </div>
+
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button
+                variant="outline"
+                size="sm"
+                className="shrink-0 border-destructive/30 text-destructive hover:bg-destructive/10"
+              >
+                {t("st.remove")}
+              </Button>
+            </DialogTrigger>
+
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>{t("st.removeTitle")}</DialogTitle>
+
+                <DialogDescription>{t("st.removeBody")}</DialogDescription>
+              </DialogHeader>
+
+              <DialogFooter>
+                <DialogClose asChild>
+                  <Button variant="outline">{t("st.keep")}</Button>
+                </DialogClose>
+
+                <DialogClose asChild>
+                  <Button variant="destructive" onClick={clearData}>
+                    {t("st.remove")}
+                  </Button>
+                </DialogClose>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        </div>
       </section>
     </motion.div>
   );
 }
 
-type Incoming = { kind: 'sample' } | { kind: 'live'; files: File[] };
+type Incoming = { kind: "sample" } | { kind: "live"; files: File[] };
 
 export default function StatementsPage() {
   const state = useData(
     () => ANALYSIS,
+
     (live) => live.analysis,
   );
+
   const { loadSample, source } = useWorkspace();
+
   const { t } = useT();
+
   const [incoming, setIncoming] = useState<Incoming | null>(null);
 
   return (
     <div>
-      <PageHeader title={t('nav.statements')} description={t('st.desc')} actions={<QuickCashDialog />} />
-      <div className="space-y-12">
+      <PageHeader
+        title={t("nav.statements")}
+
+        description={t("st.desc")}
+
+        actions={
+          state.status === "ready" ? (
+            <QuickCashDialog
+              trigger={
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="gap-1.5 shadow-2xs"
+                >
+                  <Coins className="h-3.5 w-3.5 text-primary" />
+
+                  <span>{t("quickCash.trigger")}</span>
+                </Button>
+              }
+            />
+          ) : undefined
+        }
+      />
+
+      <div className="space-y-10">
         <AnimatePresence mode="wait" initial={false}>
-          {incoming?.kind === 'live' ? (
-            <LiveAnalyzing key="live" files={incoming.files} onDone={() => setIncoming(null)} onCancel={() => setIncoming(null)} />
-          ) : incoming?.kind === 'sample' ? (
+          {incoming?.kind === "live" ? (
+            <LiveAnalyzing
+              key="live"
+              files={incoming.files}
+              onDone={() => setIncoming(null)}
+              onCancel={() => setIncoming(null)}
+            />
+          ) : incoming?.kind === "sample" ? (
             <SampleAnalyzing
               key="sample"
+
               onDone={() => {
                 loadSample();
+
                 setIncoming(null);
               }}
             />
+          ) : state.status === "ready" ? (
+            <motion.div
+              key="compact-drop"
+              exit={{ opacity: 0 }}
+              transition={fade}
+            >
+              <CompactDropzone
+                onFiles={(files) => setIncoming({ kind: "live", files })}
+              />
+            </motion.div>
           ) : (
             <motion.div key="drop" exit={{ opacity: 0 }} transition={fade}>
-              <Dropzone onFiles={(files) => setIncoming({ kind: 'live', files })} />
+              <Dropzone
+                onFiles={(files) => setIncoming({ kind: "live", files })}
+              />
+
               {/* Direct entry or sample company */}
+
               <div className="mt-3 flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-center text-sm text-muted-foreground">
                 <QuickCashDialog
                   defaultMode="SET_BALANCE"
+
                   trigger={
-                    <button type="button" className="py-2 font-medium text-foreground underline underline-offset-2">
-                      {t('quickCash.triggerDirect')}
+                    <button
+                      type="button"
+                      className="py-2 font-medium text-foreground underline underline-offset-2"
+                    >
+                      {t("quickCash.triggerDirect")}
                     </button>
                   }
                 />
-                {(state.status === 'empty' || source === 'live') && (
+
+                {(state.status === "empty" || source === "live") && (
                   <span>
-                    <span aria-hidden className="mr-3">•</span>
-                    {t(state.status === 'empty' ? 'st.noFiles' : 'lv.showingYours')}{' '}
-                    <button type="button" onClick={() => setIncoming({ kind: 'sample' })} className="py-2 font-medium text-foreground underline underline-offset-2">
-                      {t('st.useSample')}
+                    <span aria-hidden className="mr-3">
+                      •
+                    </span>
+                    {t(
+                      state.status === "empty"
+                        ? "st.noFiles"
+                        : "lv.showingYours",
+                    )}{" "}
+                    <button
+                      type="button"
+                      onClick={() => setIncoming({ kind: "sample" })}
+                      className="py-2 font-medium text-foreground underline underline-offset-2"
+                    >
+                      {t("st.useSample")}
                     </button>
                   </span>
                 )}
@@ -481,9 +2014,15 @@ export default function StatementsPage() {
           )}
         </AnimatePresence>
 
-        {!incoming && state.status === 'loading' && <LoadingBlock rows={4} />}
-        {!incoming && state.status === 'error' && <ErrorState message={state.message} retry={state.retry} />}
-        {!incoming && state.status === 'ready' && <Results analysis={state.data} sample={source === 'sample'} />}
+        {!incoming && state.status === "loading" && <LoadingBlock rows={4} />}
+
+        {!incoming && state.status === "error" && (
+          <ErrorState message={state.message} retry={state.retry} />
+        )}
+
+        {!incoming && state.status === "ready" && (
+          <Results analysis={state.data} sample={source === "sample"} />
+        )}
       </div>
     </div>
   );

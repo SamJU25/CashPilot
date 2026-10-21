@@ -38,9 +38,11 @@ export function setMoneyCurrency(currency: string) {
   displayCurrency = currency;
 }
 
-export function formatMoney(value: string, currency = displayCurrency, { signed = false, cents = true }: MoneyOptions = {}): string {
-  const negative = value.trim().startsWith('-');
-  const [intPart, fracPart = ''] = value.trim().replace(/^[-+]/, '').split('.');
+export function formatMoney(value: string | number | null | undefined, currency = displayCurrency, { signed = false, cents = true }: MoneyOptions = {}): string {
+  if (value === null || value === undefined) return `${currencySymbol(currency)}0.00`;
+  const str = typeof value === 'number' ? value.toFixed(2) : String(value);
+  const negative = str.trim().startsWith('-');
+  const [intPart, fracPart = ''] = str.trim().replace(/^[-+]/, '').split('.');
   const grouped = (intPart || '0').replace(/\B(?=(\d{3})+(?!\d))/g, ',');
   const frac = cents ? `.${fracPart.padEnd(2, '0').slice(0, 2)}` : '';
   const sign = negative ? '−' : signed ? '+' : '';
@@ -82,8 +84,12 @@ function formatter(withYear: boolean) {
 }
 
 /** "2026-10-28" -> "Oct 28" / "10月28日" / "28 oct" (year optional), in the selected language. */
-export function formatDate(iso: string, withYear = false): string {
-  return formatter(withYear).format(new Date(`${iso.slice(0, 10)}T00:00:00Z`));
+export function formatDate(iso: string | null | undefined, withYear = false): string {
+  if (!iso) return '';
+  const clean = String(iso).slice(0, 10);
+  const time = Date.parse(`${clean}T00:00:00Z`);
+  if (isNaN(time)) return String(iso);
+  return formatter(withYear).format(new Date(time));
 }
 
 export function formatDateTime(iso: string): string {

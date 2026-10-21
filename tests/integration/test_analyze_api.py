@@ -303,6 +303,29 @@ def test_analyze_adjust_inflow():
     assert body["document_format"] == "MANUAL"
 
 
+def test_analyze_summary_with_recurring_obligations():
+    payload = {
+        "current_balance": "45000.00",
+        "monthly_burn": "15000.00",
+        "currency": "USD",
+        "as_of_date": "2026-10-15",
+        "recurring_payroll": "8000.00",
+        "payroll_day_of_month": 28,
+        "recurring_rent": "3000.00",
+        "rent_day_of_month": 1,
+    }
+    response = client.post("/api/v1/analyze/summary", json=payload)
+    assert response.status_code == 200
+    body = response.json()
+    assert body["current_balance"] == "45000.00"
+    assert body["recurring_obligations"] is not None
+    assert len(body["recurring_obligations"]) == 2
+    cats = {o["category"] for o in body["recurring_obligations"]}
+    assert "PAYROLL" in cats and "RENT" in cats
+    assert body["forecast"]["detected_recurring_payroll"] == "8000.00"
+    assert body["forecast"]["detected_recurring_rent"] == "3000.00"
+
+
 def test_analyze_adjust_outflow():
     payload = {
         "current_balance": "10000.00",
@@ -352,6 +375,7 @@ def test_analyze_summary_balance_only():
     assert body["runway_days"] == 90
     assert body["cash_status"] == "WATCH"
     assert body["document_format"] == "MANUAL"
+
 
 
 

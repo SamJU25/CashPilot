@@ -70,7 +70,6 @@ function NavLinks({ onNavigate, id = 'desktop' }: { onNavigate?: () => void; id?
                       }
                       onNavigate?.();
                     }}
-                    prefetch={true}
                     aria-current={active ? 'page' : undefined}
                     className={cn(
                       'relative flex h-9 items-center gap-2.5 rounded-md px-3 text-sm transition-colors',
@@ -107,7 +106,6 @@ function RailFooter() {
     <div className="border-t pt-3">
       <Link
         href="/settings"
-        prefetch={true}
         className={cn(
           'flex h-9 items-center gap-2.5 rounded-md px-3 text-sm text-ink-2 transition-colors hover:bg-muted hover:text-foreground',
           pathname.startsWith('/settings') && 'bg-card font-medium text-foreground shadow-[0_0_0_1px_rgb(var(--border))]',
@@ -173,7 +171,7 @@ function DemoBadge({ compact }: { compact?: boolean }) {
   if (compact) {
     return (
       <div className="flex items-center gap-1.5 rounded-full border border-warning/30 bg-warning/10 px-2.5 py-1 text-xs text-warning-text">
-        <span className="size-1.5 shrink-0 rounded-full bg-warning animate-pulse" aria-hidden />
+        <span className="size-1.5 shrink-0 rounded-full bg-warning" aria-hidden />
         <span className="font-medium text-[11px] sm:text-xs">{t('rail.demoMode')}</span>
         <button
           type="button"
@@ -190,7 +188,7 @@ function DemoBadge({ compact }: { compact?: boolean }) {
   return (
     <div className="mx-1 flex items-center justify-between gap-2 rounded-lg border border-warning/30 bg-warning/10 px-2.5 py-2 text-xs text-warning-text">
       <div className="flex items-center gap-2 min-w-0">
-        <span className="size-1.5 shrink-0 rounded-full bg-warning animate-pulse" aria-hidden />
+        <span className="size-1.5 shrink-0 rounded-full bg-warning" aria-hidden />
         <div className="min-w-0">
           <p className="font-semibold leading-tight text-foreground/90 truncate">{t('rail.demoMode')}</p>
           <p className="text-[10px] text-muted-foreground truncate">{t('rail.demoActive')}</p>

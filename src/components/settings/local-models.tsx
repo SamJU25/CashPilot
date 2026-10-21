@@ -182,28 +182,41 @@ function FitTag({ fit }: { fit: Fit | null }) {
 
 function MemoryMeter({ label, detail, total, free }: { label: string; detail?: string | null; total: number; free: number }) {
   const { t } = useT();
-  const used = Math.min(total, Math.max(0, total - free));
-  const pct = total > 0 ? (used / total) * 100 : 0;
-  // Near-full memory is the state worth flagging; the label below says it in words too.
-  const high = pct >= 90;
+  const safeTotal = Math.max(0, total);
+  const freeClamped = Math.min(safeTotal, Math.max(0, free));
+  const used = Math.min(safeTotal, Math.max(0, safeTotal - freeClamped));
+  const usedPct = safeTotal > 0 ? (used / safeTotal) * 100 : 0;
+
+  // Plenty free reads calm; only near-full memory is worth colour.
+  const tier = usedPct >= 85 ? 'high' : usedPct >= 65 ? 'medium' : 'low';
+  const tierStyle = {
+    low: { bar: 'bg-primary', track: 'bg-primary/15' },
+    medium: { bar: 'bg-warning', track: 'bg-warning/20' },
+    high: { bar: 'bg-critical', track: 'bg-critical/20' },
+  }[tier];
+
   return (
     <div className="min-w-0">
       <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-0.5 text-xs">
         <span className="min-w-0 truncate font-medium text-foreground">{label}</span>
-        <span className="figures shrink-0 text-ink-2">
-          {t('lm.memFree', { free: free.toFixed(1), total: total.toFixed(1) })}{high && <span className="text-warning-text">{t('lm.almostFull')}</span>}
+        <span className="figures shrink-0">
+          <span className="text-ink-2">{t('lm.memFree', { free: freeClamped.toFixed(1), total: safeTotal.toFixed(1) })}</span>
+          {tier === 'high' && <span className="font-medium text-critical-text">{t('lm.almostFull')}</span>}
         </span>
       </div>
       <div
         role="meter"
         aria-label={t('lm.memInUse', { label })}
         aria-valuemin={0}
-        aria-valuemax={total}
+        aria-valuemax={safeTotal}
         aria-valuenow={Number(used.toFixed(1))}
-        aria-valuetext={t('lm.memValue', { used: used.toFixed(1), free: free.toFixed(1), total: total.toFixed(1) })}
-        className={cn('mt-1.5 h-2 overflow-hidden rounded-full', high ? 'bg-warning/20' : 'bg-primary/15')}
+        aria-valuetext={t('lm.memValue', { used: used.toFixed(1), free: freeClamped.toFixed(1), total: safeTotal.toFixed(1) })}
+        className={cn('mt-1.5 h-2 overflow-hidden rounded-full', tierStyle.track)}
       >
-        <div className={cn('h-full rounded-full transition-[width] duration-300', high ? 'bg-warning' : 'bg-primary')} style={{ width: `${pct}%` }} />
+        <div
+          className={cn('h-full rounded-full transition-[width] duration-300', tierStyle.bar)}
+          style={{ width: `${Math.min(100, Math.max(0, usedPct))}%` }}
+        />
       </div>
       {detail && <p className="mt-1 truncate text-[11px] text-muted-foreground">{detail}</p>}
     </div>

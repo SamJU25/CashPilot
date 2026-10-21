@@ -8,6 +8,7 @@ module.exports = {
     extend: {
       fontFamily: {
         sans: ['var(--font-sans)', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans SC', 'Nirmala UI', 'Kohinoor Devanagari', 'Noto Sans Devanagari', 'Kohinoor Bangla', 'Noto Sans Bengali', 'system-ui', 'Segoe UI', 'sans-serif'],
+        display: ['var(--font-display)', 'var(--font-sans)', 'PingFang SC', 'Microsoft YaHei', 'system-ui', 'sans-serif'],
         mono: ['var(--font-mono)', 'ui-monospace', 'Consolas', 'monospace'],
       },
       fontSize: {
@@ -32,6 +33,7 @@ module.exports = {
         serious: { DEFAULT: token('serious'), text: token('serious-text') },
         critical: { DEFAULT: token('critical'), text: token('critical-text') },
         series: { 1: token('s1'), 2: token('s2'), 3: token('s3'), 4: token('s4') },
+        flap: { DEFAULT: token('flap'), ink: token('flap-ink') },
       },
       borderRadius: {
         lg: 'var(--radius)',

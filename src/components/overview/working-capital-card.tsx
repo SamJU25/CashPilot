@@ -1,11 +1,13 @@
 'use client';
 
+import Link from 'next/link';
 import { Activity, ArrowRightLeft, Clock, HelpCircle, ShieldCheck } from 'lucide-react';
 import { motion } from 'motion/react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Money, SectionTitle } from '@/components/common/bits';
 import { spring } from '@/lib/motion';
-import { formatMoney } from '@/lib/format';
+import { debtServiceCoverage } from '@/lib/dscr';
+import { formatMoney, stringToCents } from '@/lib/format';
 import { useT } from '@/lib/i18n';
 import { cn } from '@/lib/utils';
 import type { CashAnalysis, WorkingCapitalStatus } from '@/lib/types';
@@ -29,13 +31,29 @@ const STATUS_CONFIG: Record<WorkingCapitalStatus, { cls: string; labelKey: strin
 };
 
 export function WorkingCapitalCard({ analysis: a }: { analysis: CashAnalysis }) {
-  const { t } = useT();
-  const ccc = a.cash_conversion_cycle_days ?? 41;
+  const { t, rich } = useT();
+  const hasCcc = a.cash_conversion_cycle_days !== null && a.cash_conversion_cycle_days !== undefined;
+  const ccc = a.cash_conversion_cycle_days ?? 0;
   const statusKey = a.working_capital_status ?? 'WORKING_CAPITAL_TRAP';
   const cfg = STATUS_CONFIG[statusKey] ?? STATUS_CONFIG.WORKING_CAPITAL_TRAP;
   const transfers = formatMoney(a.internal_transfers_excluded ?? '0');
+  const transferCents = stringToCents(a.internal_transfers_excluded ?? '0');
   const grossIn = formatMoney(a.gross_inflows ?? a.operational_inflows ?? '0');
   const grossOut = formatMoney(a.gross_outflows ?? a.operational_outflows ?? '0');
+
+  const dscrData = (() => {
+    const ratio = debtServiceCoverage(a);
+    if (ratio === null) {
+      return { value: '—', badge: t('wc.dscrNoDebt'), badgeCls: 'bg-muted text-muted-foreground border-border', desc: t('wc.dscrNoDebtBody') };
+    }
+    const amount = formatMoney(a.forecast!.detected_recurring_debt!);
+    // A negative ratio has no useful magnitude: operations leave nothing for the loan.
+    if (ratio <= 0) return { value: t('wc.dscrNotCovered'), valueCls: 'text-2xl text-critical-text', badge: '< 1.00x', badgeCls: 'bg-critical/15 text-critical-text border-critical/30', desc: t('wc.dscrNegativeBody', { amount }) };
+    const value = `${ratio.toFixed(2)}x`;
+    if (ratio >= 1.25) return { value, badge: '≥ 1.25x', badgeCls: 'bg-good/10 text-good-text border-good/30', desc: t('wc.dscrGoodBody', { amount }) };
+    if (ratio >= 1) return { value, badge: '≥ 1.00x', badgeCls: 'bg-warning/15 text-warning-text border-warning/30', desc: t('wc.dscrThinBody', { amount }) };
+    return { value, badge: '< 1.00x', badgeCls: 'bg-critical/15 text-critical-text border-critical/30', desc: t('wc.dscrShortBody', { amount }) };
+  })();
 
   return (
     <section className="mt-10">
@@ -70,16 +88,42 @@ export function WorkingCapitalCard({ analysis: a }: { analysis: CashAnalysis }) 
                 </PopoverContent>
               </Popover>
             </div>
-            <div className="mt-3 flex items-baseline gap-2">
-              <span className="figures text-3xl font-semibold tracking-tight">{ccc}</span>
-              <span className="text-sm text-muted-foreground">{t('chart.days', { n: ccc })}</span>
-            </div>
+            {hasCcc ? (
+              <div className="mt-3 flex items-baseline gap-2">
+                <span className="figures text-3xl font-semibold tracking-tight">{ccc}</span>
+                <span className="text-sm text-muted-foreground">{t('set.days')}</span>
+              </div>
+            ) : (
+              <div className="mt-3 flex items-baseline gap-2">
+                <span className="figures text-3xl font-semibold tracking-tight text-muted-foreground">—</span>
+                <span className="text-xs text-muted-foreground">{t('wc.noCcc')}</span>
+              </div>
+            )}
           </div>
           <div className="mt-4 pt-3 border-t">
-            <span className={cn('inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-medium', cfg.cls)}>
-              {t(cfg.labelKey as any)}
-            </span>
-            <p className="mt-1.5 text-xs text-muted-foreground">{t(cfg.descKey as any)}</p>
+            {hasCcc ? (
+              <>
+                <span className={cn('inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-medium', cfg.cls)}>
+                  {t(cfg.labelKey as any)}
+                </span>
+                <p className="mt-1.5 text-xs text-muted-foreground">{t(cfg.descKey as any)}</p>
+              </>
+            ) : (
+              <>
+                <span className="inline-flex items-center rounded-full border border-border bg-muted/60 px-2 py-0.5 text-xs font-medium text-muted-foreground">
+                  {t('wc.needsInvoices')}
+                </span>
+                <p className="mt-1.5 text-xs text-muted-foreground">
+                  {rich('wc.needsInvoicesBody', {
+                    link: (
+                      <Link href="/receivables" className="underline underline-offset-2 hover:text-foreground">
+                        {t('nav.receivables')}
+                      </Link>
+                    ),
+                  })}
+                </p>
+              </>
+            )}
           </div>
         </motion.div>
 
@@ -96,17 +140,17 @@ export function WorkingCapitalCard({ analysis: a }: { analysis: CashAnalysis }) 
                 <ShieldCheck className="size-3.5 text-primary" aria-hidden />
                 {t('wc.dscr')}
               </span>
-              <span className="figures text-xs font-medium text-good-text bg-good/10 rounded px-1.5 py-0.5">
-                {t('wc.dscrBenchmark')}
+              <span className={cn('figures shrink-0 whitespace-nowrap text-xs font-medium rounded px-1.5 py-0.5 border', dscrData.badgeCls)}>
+                {dscrData.badge}
               </span>
             </div>
-            <div className="mt-3 flex items-baseline gap-2">
-              <span className="figures text-3xl font-semibold tracking-tight">1.38x</span>
+            <div className="mt-3 flex flex-wrap items-baseline gap-x-2 gap-y-1">
+              <span className={cn('figures whitespace-nowrap font-semibold tracking-tight', 'valueCls' in dscrData ? dscrData.valueCls : 'text-3xl')}>{dscrData.value}</span>
               <span className="text-xs text-muted-foreground">{t('wc.dscrPrime')}</span>
             </div>
           </div>
           <div className="mt-4 pt-3 border-t">
-            <p className="text-xs text-muted-foreground">{t('wc.dscrDesc')}</p>
+            <p className="text-xs text-muted-foreground">{dscrData.desc}</p>
           </div>
         </motion.div>
 
@@ -138,7 +182,9 @@ export function WorkingCapitalCard({ analysis: a }: { analysis: CashAnalysis }) 
           </div>
           <div className="mt-4 pt-3 border-t">
             <p className="text-xs text-muted-foreground">
-              {t('wc.sweepsExcluded', { amount: transfers })}
+              {transferCents > 0
+                ? t('wc.sweepsExcluded', { amount: transfers })
+                : t('wc.noSweeps')}
             </p>
           </div>
         </motion.div>

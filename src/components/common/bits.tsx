@@ -12,7 +12,7 @@ export function PageHeader({ title, description, actions }: { title: string; des
   return (
     <header className="flex flex-col gap-4 pb-8 sm:flex-row sm:items-end sm:justify-between">
       <div>
-        <h1 className="text-2xl font-semibold tracking-tight">{title}</h1>
+        <h1 className="font-display text-[2rem] font-semibold leading-tight tracking-tight">{title}</h1>
         {description && <p className="mt-1 max-w-2xl text-sm text-muted-foreground">{description}</p>}
       </div>
       {actions && <div className="flex shrink-0 gap-2">{actions}</div>}
@@ -23,7 +23,7 @@ export function PageHeader({ title, description, actions }: { title: string; des
 export function SectionTitle({ children, aside }: { children: React.ReactNode; aside?: React.ReactNode }) {
   return (
     <div className="mb-4 flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
-      <h2 className="shrink-0 text-base font-semibold">{children}</h2>
+      <h2 className="shrink-0 font-display text-xl font-semibold tracking-tight">{children}</h2>
       {aside && <div className="text-sm text-muted-foreground">{aside}</div>}
     </div>
   );

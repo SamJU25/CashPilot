@@ -240,3 +240,28 @@ def test_forecast_triages_each_distinct_memo_once(monkeypatch):
     calculate_predictive_cash(Decimal("5000.00"), Decimal("50.00"), rows)
     triage = [c for c in calls if c.domain.value == "EXPENSE_TRIAGE"]
     assert len(triage) == 1
+
+
+def test_periodic_outflow_detection_without_keywords():
+    from services.calculations.predictive_cash import detect_obligations
+
+    # Cryptic memos without any "rent", "payroll", or "debt" words across 2 consecutive months
+    rows = [
+        make_tx(1, date(2026, 1, 28), "-5200.00", desc="WIRE TRF REF 849302"),
+        make_tx(2, date(2026, 2, 28), "-5200.00", desc="WIRE TRF REF 991203"),
+        make_tx(3, date(2026, 1, 1), "-2800.00", desc="AUTO DEBIT 77102"),
+        make_tx(4, date(2026, 2, 1), "-2800.00", desc="AUTO DEBIT 77102"),
+    ]
+    detected = detect_obligations(rows)
+    by_cat = {ob.category: (ob.average_amount, ob.primary_day_of_month) for ob in detected}
+    assert "PAYROLL" in by_cat
+    assert by_cat["PAYROLL"] == (Decimal("5200.00"), 28)
+    assert "RENT" in by_cat
+    assert by_cat["RENT"] == (Decimal("2800.00"), 1)
+
+
+def test_accounting_subscription_is_not_payroll():
+    from services.calculations.predictive_cash import PAYROLL_PATTERN
+
+    assert not PAYROLL_PATTERN.search("INTUIT QBOOKS ONLINE")
+    assert PAYROLL_PATTERN.search("Intuit Payroll 0928")

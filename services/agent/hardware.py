@@ -75,9 +75,47 @@ def _gpu_torch() -> Optional[dict]:
         return None
 
 
+def _gpu_apple_silicon() -> Optional[dict]:
+    try:
+        import platform
+
+        if platform.system() == "Darwin" and platform.machine() == "arm64":
+            out = subprocess.run(["sysctl", "-n", "machdep.cpu.brand_string"], capture_output=True, text=True, timeout=2)
+            name = out.stdout.strip() if out.returncode == 0 and out.stdout.strip() else "Apple Silicon"
+            import psutil
+
+            vm = psutil.virtual_memory()
+            return {"name": f"{name} (Unified Memory / Metal)", "total": vm.total / GB, "free": vm.available / GB}
+    except Exception:
+        pass
+    return None
+
+
+def _gpu_amd_rocm() -> Optional[dict]:
+    try:
+        import json
+
+        out = subprocess.run(
+            ["rocm-smi", "--showmeminfo", "vram", "--json"],
+            capture_output=True,
+            text=True,
+            timeout=3,
+        )
+        if out.returncode == 0 and out.stdout.strip():
+            data = json.loads(out.stdout)
+            for card, info in data.items():
+                if "VRAM Total Memory (B)" in info and "VRAM Total Used Memory (B)" in info:
+                    total = float(info["VRAM Total Memory (B)"]) / GB
+                    used = float(info["VRAM Total Used Memory (B)"]) / GB
+                    return {"name": f"AMD Radeon ({card})", "total": total, "free": max(0.0, total - used)}
+    except Exception:
+        pass
+    return None
+
+
 def probe_hardware() -> dict:
     ram_total, ram_free = _ram()
-    gpu = _gpu_nvidia_smi() or _gpu_torch()
+    gpu = _gpu_nvidia_smi() or _gpu_torch() or _gpu_apple_silicon() or _gpu_amd_rocm()
     r = lambda v: round(v, 1) if v is not None else None
     return {
         "ram_total_gb": r(ram_total),

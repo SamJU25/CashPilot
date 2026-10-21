@@ -664,6 +664,12 @@ class SummaryAnalysisRequest(BaseModel):
     as_of_date: Optional[date] = None
     alert_threshold_days: int = Field(default=30, gt=0)
     account_name: Optional[str] = Field(default="Operating Account", max_length=80)
+    recurring_payroll: Optional[Decimal] = Field(default=None, ge=0, max_digits=18, decimal_places=4)
+    payroll_day_of_month: Optional[int] = Field(default=28, ge=1, le=31)
+    recurring_rent: Optional[Decimal] = Field(default=None, ge=0, max_digits=18, decimal_places=4)
+    rent_day_of_month: Optional[int] = Field(default=1, ge=1, le=31)
+    recurring_debt: Optional[Decimal] = Field(default=None, ge=0, max_digits=18, decimal_places=4)
+    debt_day_of_month: Optional[int] = Field(default=15, ge=1, le=31)
 
 
 @router.post("/analyze/adjust", response_model=CashAnalysisResponse)
@@ -725,7 +731,8 @@ async def adjust_cash(
     decision_res = DecisionEngineRegistry.get_instance().evaluate(decision_req)
     cash_status = decision_res.selected_choice
 
-    forecast, projection = _forecast_block(new_balance, burn, as_of, [])
+    manual_obs: list[DetectedObligation] = []
+    forecast, projection = _forecast_block(new_balance, burn, as_of, manual_obs)
     gross_in = _format_money(payload.amount) if payload.adjustment_type == "INFLOW" else "0.00"
 
     # The chat answers from the session statement, so the entry is added there as a dated row.
@@ -760,6 +767,7 @@ async def adjust_cash(
         alert_boundary_date=alert_boundary_date,
         accounts_breakdown=accounts_out,
         document_format="MANUAL",
+        recurring_obligations=_obligations_out(manual_obs) if manual_obs else None,
         forecast=forecast,
         projection=projection,
     )
@@ -805,7 +813,33 @@ async def analyze_summary(
     decision_res = DecisionEngineRegistry.get_instance().evaluate(decision_req)
     cash_status = decision_res.selected_choice
 
-    forecast, projection = _forecast_block(payload.current_balance, burn, as_of, [])
+    manual_obs: list[DetectedObligation] = []
+    if payload.recurring_payroll and payload.recurring_payroll > 0:
+        manual_obs.append(
+            DetectedObligation(
+                category="PAYROLL",
+                average_amount=payload.recurring_payroll.quantize(Decimal("0.01"), rounding=ROUND_HALF_UP),
+                primary_day_of_month=payload.payroll_day_of_month or 28,
+            )
+        )
+    if payload.recurring_rent and payload.recurring_rent > 0:
+        manual_obs.append(
+            DetectedObligation(
+                category="RENT",
+                average_amount=payload.recurring_rent.quantize(Decimal("0.01"), rounding=ROUND_HALF_UP),
+                primary_day_of_month=payload.rent_day_of_month or 1,
+            )
+        )
+    if payload.recurring_debt and payload.recurring_debt > 0:
+        manual_obs.append(
+            DetectedObligation(
+                category="DEBT_SERVICE",
+                average_amount=payload.recurring_debt.quantize(Decimal("0.01"), rounding=ROUND_HALF_UP),
+                primary_day_of_month=payload.debt_day_of_month or 15,
+            )
+        )
+
+    forecast, projection = _forecast_block(payload.current_balance, burn, as_of, manual_obs)
     # A typed balance replaces whatever statement the session held; the typed spend travels with it.
     declared = burn if (payload.daily_burn is not None or payload.monthly_burn is not None) else None
     stored = _record_in_session(
@@ -847,6 +881,7 @@ async def analyze_summary(
         alert_boundary_date=alert_boundary_date,
         accounts_breakdown=accounts,
         document_format="MANUAL",
+        recurring_obligations=_obligations_out(manual_obs) if manual_obs else None,
         forecast=forecast,
         projection=projection,
     )

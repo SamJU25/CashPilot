@@ -3,7 +3,7 @@
 import { Info } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Money } from '@/components/common/bits';
-import { formatDate, formatMoney } from '@/lib/format';
+import { formatDate, formatMoney, stringToCents } from '@/lib/format';
 import { useT } from '@/lib/i18n';
 import type { CashAnalysis } from '@/lib/types';
 
@@ -18,7 +18,12 @@ interface Figure {
 export function KeyFigures({ analysis }: { analysis: CashAnalysis }) {
   const a = analysis;
   const { t } = useT();
+  const manual = a.document_format === 'MANUAL';
+  const hasInflow = stringToCents(a.operational_inflows ?? a.gross_inflows ?? '0') !== 0;
+  const hasOutflow = stringToCents(a.operational_outflows ?? a.gross_outflows ?? '0') !== 0;
   const transfers = formatMoney(a.internal_transfers_excluded ?? '0');
+  const safeStart = a.start_date || a.end_date || new Date().toISOString().slice(0, 10);
+  const safeEnd = a.end_date || safeStart;
   const figures: Figure[] = [
     {
       label: t('fig.cash'),
@@ -36,15 +41,15 @@ export function KeyFigures({ analysis }: { analysis: CashAnalysis }) {
     },
     {
       label: t('fig.in'),
-      value: a.operational_inflows ?? '0',
-      note: t('fig.ownNote'),
-      how: t('fig.inHow', { from: formatDate(a.start_date!), to: formatDate(a.end_date!) }),
+      value: a.operational_inflows ?? a.gross_inflows ?? '0',
+      note: manual && !hasInflow ? t('fig.notTyped') : t('fig.ownNote'),
+      how: t('fig.inHow', { from: formatDate(safeStart), to: formatDate(safeEnd) }),
       formula: t('fig.inFormula', { amount: transfers }),
     },
     {
       label: t('fig.out'),
-      value: a.operational_outflows ?? '0',
-      note: t('fig.ownNote'),
+      value: a.operational_outflows ?? a.gross_outflows ?? '0',
+      note: manual && !hasOutflow ? t('fig.notTyped') : t('fig.ownNote'),
       how: t('fig.outHow'),
       formula: t('fig.outFormula', { amount: transfers }),
     },
@@ -67,7 +72,7 @@ export function KeyFigures({ analysis }: { analysis: CashAnalysis }) {
               </PopoverContent>
             </Popover>
           </dt>
-          <dd className="mt-1 text-xl font-semibold tracking-tight">
+          <dd className="mt-1 font-display text-2xl font-semibold tracking-tight">
             <Money value={f.value} />
           </dd>
           <dd className="text-xs text-muted-foreground">{f.note}</dd>

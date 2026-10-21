@@ -21,13 +21,13 @@ function ScoreScale({ score }: { score: number }) {
   return (
     <div>
       <div className="relative">
-        <div className="flex h-2 gap-0.5 overflow-hidden rounded-full">
+        <div className="flex h-1.5 gap-0.5 overflow-hidden rounded-full">
           <span className="w-[40%] bg-critical/40" />
           <span className="w-[30%] bg-warning/50" />
           <span className="w-[30%] bg-good/50" />
         </div>
         <motion.span
-          className="absolute -top-1 h-4 w-0.5 rounded bg-foreground"
+          className="absolute -top-1 h-3.5 w-0.5 rounded bg-foreground"
           style={{ left: `${score}%` }}
           initial={{ opacity: 0, scaleY: 0.4 }}
           animate={{ opacity: 1, scaleY: 1 }}
@@ -44,16 +44,20 @@ function ScoreScale({ score }: { score: number }) {
   );
 }
 
-function OfferRow({ o, needCents, drafted, sample }: { o: FinancingOption; needCents: number; drafted: boolean; sample: boolean }) {
+function OfferRow({ o, needCents, drafted, best, sample }: { o: FinancingOption; needCents: number; drafted: boolean; best: boolean; sample: boolean }) {
   const cost = costToBorrow(needCents, o.apr_percent);
   const { t } = useT();
   // The lender's own wording is translated for the sample offers; live offers carry it as quoted_as.
   const quoteIndex = sample ? OPTIONS.findIndex((x) => x.provider === o.provider) : -1;
   return (
-    <li className={cn('grid gap-4 py-5 md:grid-cols-[1.4fr_1fr_1fr_auto] md:items-center', o.is_predatory && 'relative before:absolute before:inset-y-4 before:-left-3 before:w-0.5 before:rounded before:bg-critical')}>
+    <li className={cn('relative grid gap-4 px-5 py-5 sm:px-6 md:grid-cols-[1.5fr_1fr_1fr_auto] md:items-center', o.is_predatory && 'bg-critical/5')}>
+      {o.is_predatory && <span className="absolute inset-y-0 left-0 w-0.5 bg-critical" aria-hidden />}
       <div>
-        <p className="font-medium">{o.provider}</p>
-        <p className="text-sm text-muted-foreground">
+        <p className="flex flex-wrap items-center gap-2 font-medium">
+          {o.provider}
+          {best && <span className="rounded-full bg-accent px-2 py-0.5 text-xs font-medium text-accent-foreground">{t('fund.best')}</span>}
+        </p>
+        <p className="mt-0.5 text-sm text-muted-foreground">
           {t('fund.offerMeta', { product: t(`product.${o.product_type}` as Key), amount: formatMoney(o.max_amount, undefined, { cents: false }), days: o.term_days })}
         </p>
         {o.is_predatory && (
@@ -64,22 +68,21 @@ function OfferRow({ o, needCents, drafted, sample }: { o: FinancingOption; needC
         )}
       </div>
       <div>
-        <p className={cn('figures text-2xl font-semibold tracking-tight', o.is_predatory && 'text-critical-text')}>{o.apr_percent}%</p>
+        <p className={cn('figures font-display text-3xl font-semibold tracking-tight', o.is_predatory && 'text-critical-text')}>{o.apr_percent}%</p>
         <p className="text-xs text-muted-foreground">
           {quoteIndex >= 0 || o.quoted_as ? t('fund.trueApr', { quote: quoteIndex >= 0 ? t(`quote.${quoteIndex}` as Key) : o.quoted_as! }) : t('lv.trueApr')}
         </p>
       </div>
       <div>
-        <Money value={centsToString(cost)} className="text-base font-medium" />
-        <p className="text-xs text-muted-foreground">{t('fund.cost', { amount: formatMoney(centsToString(needCents), undefined, { cents: false }), days: COMPARE_DAYS })}</p>
+        <Money value={centsToString(cost)} className="font-display text-2xl font-semibold tracking-tight" />
+        <p className="text-xs text-muted-foreground">{t('fund.costShort')}</p>
       </div>
-      <div className="md:text-right">
-        {drafted ? (
+      <div className="flex items-center gap-3 md:flex-col md:items-end md:gap-1.5">
+        <span className="figures text-sm text-muted-foreground">{t('fund.fit', { n: o.suitability_score })}</span>
+        {drafted && (
           <Button asChild size="sm">
             <Link href="/assistant">{t('fund.review')}</Link>
           </Button>
-        ) : (
-          <span className="text-sm text-muted-foreground">{t('fund.fit', { n: o.suitability_score })}</span>
         )}
       </div>
     </li>
@@ -99,15 +102,7 @@ export default function FundingPage() {
     <PageHeader
       title={t('nav.funding')}
       description={t('fund.desc')}
-      actions={
-        state.status === 'ready' ? (
-          <UnderwritingDossierDialog
-            dossier={state.data.dossier}
-            options={state.data.options}
-            forecast={state.data.forecast}
-          />
-        ) : null
-      }
+      actions={state.status === 'ready' ? <UnderwritingDossierDialog dossier={state.data.dossier} options={state.data.options} forecast={state.data.forecast} /> : null}
     />
   );
 
@@ -130,61 +125,63 @@ export default function FundingPage() {
   const needCents = stringToCents(f?.recommended_bridge_amount ?? d.max_qualified_limit);
   const drafted = intents.find((i) => i.status === 'STAGED_PENDING_HITL')?.target_identifier;
   const sorted = [...options].sort((a, b) => Number(a.is_predatory) - Number(b.is_predatory) || b.suitability_score - a.suitability_score);
+  const bestProvider = sorted.find((o) => !o.is_predatory)?.provider;
 
   return (
     <div>
       {header}
-      <section className="grid gap-10 rounded-xl border bg-card p-6 lg:grid-cols-[1.2fr_1fr]">
-        <div>
-          <p className="text-sm text-muted-foreground">{t('fund.score')}</p>
-          <p className="mt-1 flex items-baseline gap-2">
-            <span className="figures text-4xl font-semibold tracking-tight">{d.liquidity_score}</span>
-            <span className="text-sm text-muted-foreground">{t('fund.outOf', { tier: t(`risk.${d.risk_tier}` as Key) })}</span>
-          </p>
-          <div className="mt-5 max-w-md">
-            <ScoreScale score={d.liquidity_score ?? 0} />
-          </div>
-          {/* The backend's proposal is English only; the sample company's is translated. */}
-          <p className="mt-5 max-w-lg text-sm text-ink-2">{source === 'sample' ? t('fund.proposal', { amount: formatMoney(d.max_qualified_limit) }) : d.conditional_proposal}</p>
-        </div>
-        <dl className="grid grid-cols-2 content-start gap-x-6 gap-y-5 text-sm">
-          {f?.projected_deficit_date && (
+
+      <section className="overflow-hidden rounded-xl border bg-card">
+        <div className="grid gap-8 p-6 sm:p-8 lg:grid-cols-3">
+          {f?.projected_deficit_date ? (
             <div>
-              <dt className="text-muted-foreground">{t('fund.need')}</dt>
-              <dd className="mt-0.5 text-lg font-semibold">
-                <Money value={f.recommended_bridge_amount} />
-              </dd>
-              <dd className="text-xs text-muted-foreground">{t('fund.needNote', { date: formatDate(f.projected_deficit_date) })}</dd>
+              <p className="text-sm text-muted-foreground">{t('fund.need')}</p>
+              <Money value={f.recommended_bridge_amount} className="mt-1 block font-display text-[2.5rem] font-semibold leading-none tracking-tight" />
+              <p className="mt-2 text-sm text-ink-2">{t('fund.needNote', { date: formatDate(f.projected_deficit_date) })}</p>
             </div>
-          )}
+          ) : null}
           <div>
-            <dt className="text-muted-foreground">{t('fund.max')}</dt>
-            <dd className="mt-0.5 text-lg font-semibold">
-              <Money value={d.max_qualified_limit} />
-            </dd>
+            <p className="text-sm text-muted-foreground">{t('fund.max')}</p>
+            <Money value={d.max_qualified_limit} className="mt-1 block font-display text-[2.5rem] font-semibold leading-none tracking-tight" />
+            {/* The backend's proposal is English only; the sample company's is translated. */}
+            <p className="mt-2 max-w-sm text-sm text-ink-2">{source === 'sample' ? t('fund.proposal', { amount: formatMoney(d.max_qualified_limit) }) : d.conditional_proposal}</p>
           </div>
           <div>
+            <p className="text-sm text-muted-foreground">{t('fund.score')}</p>
+            <p className="mt-1 flex items-baseline gap-2">
+              <span className="figures font-display text-[2.5rem] font-semibold leading-none tracking-tight">{d.liquidity_score}</span>
+              <span className="text-sm text-muted-foreground">{t('fund.outOf', { tier: t(`risk.${d.risk_tier}` as Key) })}</span>
+            </p>
+            <div className="mt-4 max-w-xs">
+              <ScoreScale score={d.liquidity_score ?? 0} />
+            </div>
+          </div>
+        </div>
+        <dl className="grid grid-cols-1 gap-4 border-t bg-muted/30 px-6 py-4 text-sm sm:grid-cols-3 sm:px-8">
+          <div className="flex items-baseline justify-between gap-3 sm:block">
             <dt className="text-muted-foreground">{t('fund.dab')}</dt>
-            <dd className="mt-0.5">
+            <dd className="font-medium sm:mt-0.5">
               <Money value={d.daily_average_balance} />
             </dd>
           </div>
-          <div>
+          <div className="flex items-baseline justify-between gap-3 sm:block">
             <dt className="text-muted-foreground">{t('fund.steady')}</dt>
-            <dd className="mt-0.5">{t(source === 'sample' ? 'fund.steadyVal' : 'lv.varies', { pct: Math.round(Number(d.revenue_volatility_cv) * 100) })}</dd>
+            <dd className="font-medium sm:mt-0.5">{t(source === 'sample' ? 'fund.steadyVal' : 'lv.varies', { pct: Math.round(Number(d.revenue_volatility_cv) * 100) })}</dd>
           </div>
-          <div>
+          <div className="flex items-baseline justify-between gap-3 sm:block">
             <dt className="text-muted-foreground">{t('fund.nsf')}</dt>
-            <dd className="mt-0.5 figures">{d.nsf_count}</dd>
+            <dd className="figures font-medium sm:mt-0.5">{d.nsf_count}</dd>
           </div>
         </dl>
       </section>
 
-      <section className="mt-12">
-        <SectionTitle aside={t('count.offers', { n: options.length })}>{t('fund.offers')}</SectionTitle>
-        <ul className="divide-y border-y">
+      <section className="mt-10">
+        <SectionTitle aside={t('fund.costBasis', { amount: formatMoney(centsToString(needCents), undefined, { cents: false }), days: COMPARE_DAYS })}>
+          {t('fund.offers')}
+        </SectionTitle>
+        <ul className="divide-y overflow-hidden rounded-xl border bg-card">
           {sorted.map((o) => (
-            <OfferRow key={o.provider} o={o} needCents={needCents} drafted={o.provider === drafted} sample={source === 'sample'} />
+            <OfferRow key={o.provider} o={o} needCents={needCents} drafted={o.provider === drafted} best={o.provider === bestProvider} sample={source === 'sample'} />
           ))}
         </ul>
         <p className="mt-4 flex max-w-2xl items-start gap-2 text-sm text-muted-foreground">

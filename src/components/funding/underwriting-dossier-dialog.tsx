@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Download, FileCheck2, Printer, ShieldCheck } from 'lucide-react';
+import { FileCheck2, Printer } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -14,9 +14,10 @@ import {
 } from '@/components/ui/dialog';
 import { Money } from '@/components/common/bits';
 import { formatDate, formatMoney } from '@/lib/format';
-import { COMPANY } from '@/lib/mock/demo';
+import { debtServiceCoverage } from '@/lib/dscr';
+import { ANALYSIS, COMPANY } from '@/lib/mock/demo';
 import { useWorkspace } from '@/lib/workspace';
-import { useT } from '@/lib/i18n';
+import { useT, type Key } from '@/lib/i18n';
 import type { FinancingOption, Forecast, UnderwritingDossier } from '@/lib/types';
 
 export function UnderwritingDossierDialog({
@@ -30,9 +31,11 @@ export function UnderwritingDossierDialog({
 }) {
   const [open, setOpen] = useState(false);
   const { t } = useT();
-  const { source, homeCurrency } = useWorkspace();
+  const { source, live } = useWorkspace();
   const companyName = source === 'sample' ? COMPANY : t('lv.company');
   const today = new Date().toISOString().slice(0, 10);
+  const analysis = source === 'sample' ? ANALYSIS : live.analysis;
+  const dscr = analysis ? debtServiceCoverage(analysis) : null;
 
   const handlePrint = () => {
     window.print();
@@ -73,7 +76,7 @@ export function UnderwritingDossierDialog({
               </div>
               <div className="text-right">
                 <span className="figures inline-flex rounded-full border bg-muted px-2.5 py-1 text-xs font-semibold">
-                  {t('fund.liquidityGrade', { score: d.liquidity_score ?? 61, tier: d.risk_tier })}
+                  {t('fund.liquidityGrade', { score: d.liquidity_score ?? '–', tier: t(`risk.${d.risk_tier}` as Key) })}
                 </span>
               </div>
             </div>
@@ -103,14 +106,15 @@ export function UnderwritingDossierDialog({
 
               <div className="rounded-md border bg-muted/20 p-3">
                 <p className="text-[11px] text-muted-foreground">{t('wc.dscr')}</p>
-                <p className="mt-1 figures text-base font-semibold">1.38x</p>
-                <p className="text-[10px] text-good-text">{t('fund.meetsBenchmark')}</p>
+                <p className="mt-1 figures text-base font-semibold">{dscr === null ? '—' : dscr <= 0 ? t('wc.dscrNotCovered') : `${dscr.toFixed(2)}x`}</p>
+                <p className={dscr !== null && dscr >= 1.25 ? 'text-[10px] text-good-text' : 'text-[10px] text-muted-foreground'}>
+                  {t(dscr === null ? 'wc.dscrNoDebt' : dscr >= 1.25 ? 'fund.meetsBenchmark' : 'fund.belowBenchmark')}
+                </p>
               </div>
 
               <div className="rounded-md border bg-muted/20 p-3">
                 <p className="text-[11px] text-muted-foreground">{t('fund.steady')}</p>
-                <p className="mt-1 figures text-base font-semibold">{d.revenue_volatility_cv ?? '0.14'} CV</p>
-                <p className="text-[10px] text-muted-foreground">{d.volatility_tier ?? 'STABLE'}</p>
+                <p className="mt-1 figures text-base font-semibold">{t('lv.varies', { pct: Math.round(Number(d.revenue_volatility_cv) * 100) })}</p>
               </div>
             </div>
           </div>
@@ -123,7 +127,7 @@ export function UnderwritingDossierDialog({
                 <span className="figures font-bold">{formatMoney(f.recommended_bridge_amount)}</span>
               </div>
               <p className="mt-1 text-muted-foreground">
-                {t('fund.deficitRoot', { trigger: f.primary_deficit_trigger ?? 'PAYROLL' })}
+                {t('fund.deficitRoot', { trigger: t(`trigger.${f.primary_deficit_trigger ?? 'OPERATING_BURN'}` as Key) })}
               </p>
             </div>
           )}
@@ -159,15 +163,6 @@ export function UnderwritingDossierDialog({
                 </tbody>
               </table>
             </div>
-          </div>
-
-          {/* Consortium Audit Seal */}
-          <div className="flex items-center justify-between rounded-md border bg-muted/10 p-3 text-xs text-muted-foreground">
-            <div className="flex items-center gap-2">
-              <ShieldCheck className="size-4 text-good" aria-hidden />
-              <span>{t('fund.consortiumAuditProof')}</span>
-            </div>
-            <span className="font-mono text-[11px]">FISCO BCOS #10482910</span>
           </div>
         </div>
 

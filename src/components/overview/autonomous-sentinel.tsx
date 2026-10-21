@@ -1,372 +1,176 @@
 'use client';
 
+import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
-import {
-  AlertTriangle,
-  CheckCircle2,
-  Cpu,
-  Minus,
-  Plus,
-  Zap,
-} from 'lucide-react';
-import { formatDate, formatMoney } from '@/lib/format';
-import { useT, type Key } from '@/lib/i18n';
-import { spring, fade } from '@/lib/motion';
-import { useWorkspace } from '@/lib/workspace';
+import { motion } from 'motion/react';
+import { AlertTriangle, CheckCircle2, Minus, Plus } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
+import { SplitFlap } from '@/components/common/split-flap';
+import { centsToString, formatDate, formatMoney } from '@/lib/format';
+import { useT } from '@/lib/i18n';
+import { addDaysIso, todayIso } from '@/lib/live-forecast';
+import { spring } from '@/lib/motion';
+import { useIntents, useWorkspace } from '@/lib/workspace';
 import { cn } from '@/lib/utils';
 import type { CashAnalysis } from '@/lib/types';
 import { api, type SentinelTelemetry } from '@/lib/api';
 import { TODAY } from '@/lib/mock/demo';
 
-function daysBetween(a: string, b: string) {
-  const msA = Date.parse(a);
-  const msB = Date.parse(b);
-  if (Number.isNaN(msA) || Number.isNaN(msB)) return 0;
-  return Math.round((msB - msA) / 86_400_000);
-}
+const MIN_DAYS = 1;
+const MAX_DAYS = 120;
+const PRESETS = [14, 30, 45, 60];
 
-function addDays(baseDate: string, days: number): string {
-  const ms = Date.parse(baseDate.includes('T') ? baseDate : `${baseDate}T00:00:00Z`);
-  if (Number.isNaN(ms)) return '';
-  const d = new Date(ms + days * 86_400_000);
-  return d.toISOString().split('T')[0];
-}
+const clockTime = (iso: string) => new Date(iso).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
+/** Early warning: how far away the shortfall is, the window that triggers a drafted request, and when it last checked. */
 export function AutonomousSentinel({ analysis: a }: { analysis: CashAnalysis }) {
-  const { t } = useT();
-  const { alertThresholdDays, update } = useWorkspace();
-
-  const [isEvaluating, setIsEvaluating] = useState(false);
-  const [lastAuditTime, setLastAuditTime] = useState<string>('Just now');
+  const { t, rich } = useT();
+  const { alertThresholdDays, update, source } = useWorkspace();
+  const pending = useIntents().find((i) => i.status === 'STAGED_PENDING_HITL');
   const [telemetry, setTelemetry] = useState<SentinelTelemetry | null>(null);
-  const [thresholdInput, setThresholdInput] = useState(String(alertThresholdDays));
+  const [offline, setOffline] = useState(false);
+  const [draft, setDraft] = useState(String(alertThresholdDays));
 
-  useEffect(() => {
-    setThresholdInput(String(alertThresholdDays));
-  }, [alertThresholdDays]);
+  useEffect(() => setDraft(String(alertThresholdDays)), [alertThresholdDays]);
 
+  // The daemon sweeps on its own interval; this only reads its last result.
   useEffect(() => {
     let mounted = true;
-    const fetchTelemetry = async () => {
-      try {
-        const data = await api.sentinelHeartbeat();
-        if (mounted) {
-          setTelemetry(data);
-          if (data.last_sweep_at) {
-            const dt = new Date(data.last_sweep_at);
-            setLastAuditTime(dt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }));
-          }
-        }
-      } catch {
-        // Sentinel daemon offline or server starting
-      }
-    };
-    fetchTelemetry();
-    const interval = setInterval(fetchTelemetry, 15_000);
+    const read = () =>
+      api
+        .sentinelHeartbeat()
+        .then((d) => mounted && (setTelemetry(d), setOffline(false)))
+        .catch(() => mounted && setOffline(true));
+    read();
+    const id = window.setInterval(read, 15_000);
     return () => {
       mounted = false;
-      clearInterval(interval);
+      window.clearInterval(id);
     };
   }, []);
 
-  const f = a.forecast ?? null;
-  const deficitDate = f?.projected_deficit_date ?? a.projected_depletion_date;
-  const daysUntilDeficit = deficitDate ? Math.max(0, daysBetween(TODAY, deficitDate)) : (a.runway_days ?? 90);
-  const runwayDays = daysUntilDeficit;
-
-  const isTriggered = runwayDays <= alertThresholdDays;
-  const deltaDays = Math.abs(alertThresholdDays - runwayDays);
-
-  // Automatically re-evaluate and sync background telemetry whenever threshold changes
+  // A changed window is checked straight away rather than at the next sweep.
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsEvaluating(true);
-      api.sentinelEvaluate()
-        .then((res) => {
-          if (res.timestamp) {
-            const dt = new Date(res.timestamp);
-            setLastAuditTime(dt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }));
-          }
-          return api.sentinelHeartbeat();
-        })
-        .then((data) => {
-          if (data) setTelemetry(data);
-        })
-        .catch(() => {})
-        .finally(() => setIsEvaluating(false));
+    const timer = window.setTimeout(() => {
+      api.sentinelEvaluate().then(() => api.sentinelHeartbeat()).then(setTelemetry).catch(() => {});
     }, 400);
-    return () => clearTimeout(timer);
+    return () => window.clearTimeout(timer);
   }, [alertThresholdDays]);
 
-  const handleAdjustThreshold = (delta: number) => {
-    const next = Math.max(1, Math.min(120, alertThresholdDays + delta));
-    update({ alertThresholdDays: next });
-    setThresholdInput(String(next));
-  };
+  const today = source === 'sample' ? TODAY : todayIso();
+  const f = a.forecast ?? null;
+  const shortDate = f?.has_projected_deficit ? f.projected_deficit_date : a.projected_depletion_date;
+  const days = shortDate ? Math.max(0, Math.round((Date.parse(shortDate) - Date.parse(today)) / 86_400_000)) : null;
+  const inside = days !== null && days <= alertThresholdDays;
+  const state = days === 0 ? 'out' : inside ? 'inside' : 'clear';
 
-  const anchorDate = a.end_date || TODAY;
-  const targetDate = addDays(anchorDate, alertThresholdDays);
-  const targetFormattedDate = targetDate ? formatDate(targetDate) : '';
+  const setDays = (n: number) => update({ alertThresholdDays: Math.max(MIN_DAYS, Math.min(MAX_DAYS, n)) });
+  const scale = Math.max(60, alertThresholdDays * 1.25, (days ?? 0) * 1.25);
+  const at = (n: number) => `${Math.min(100, (n / scale) * 100)}%`;
 
-  const numInputVal = parseInt(thresholdInput, 10);
-  const isUnderMin = !Number.isNaN(numInputVal) && numInputVal < 1;
-  const isOverMax = !Number.isNaN(numInputVal) && numInputVal > 120;
-  const isInputEmpty = thresholdInput.trim() === '';
-
-  const deficitFormattedDate = deficitDate ? formatDate(deficitDate) : 'Nov 28, 2026';
-
-  // Relative percentages for the comparison bar
-  const maxDisplayDays = Math.max(60, alertThresholdDays * 1.4, runwayDays * 1.4);
-  const runwayPct = Math.min(100, Math.max(5, (runwayDays / maxDisplayDays) * 100));
-  const thresholdPct = Math.min(100, Math.max(5, (alertThresholdDays / maxDisplayDays) * 100));
+  const tone = {
+    out: { icon: AlertTriangle, text: 'text-critical-text', bar: 'bg-critical', label: t('sen.out') },
+    inside: { icon: AlertTriangle, text: 'text-warning-text', bar: 'bg-warning', label: t('sen.inside') },
+    clear: { icon: CheckCircle2, text: 'text-good-text', bar: 'bg-good', label: t('sen.clear') },
+  }[state];
 
   return (
-    <motion.section
-      initial={{ opacity: 0, y: 12 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={spring.gentle}
-      className="mt-8 overflow-hidden rounded-2xl border bg-card/95 backdrop-blur-md shadow-xs"
-      aria-label={t('sentinel.title')}
-    >
-      {/* 1. Header Bar with Live Indicator */}
-      <div className="flex flex-col gap-3 border-b bg-muted/30 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex items-center gap-3 min-w-0">
-          <div className="flex size-9 shrink-0 items-center justify-center rounded-xl border border-primary/30 bg-primary/10 text-primary">
-            <Cpu className="size-4.5" aria-hidden />
-          </div>
-          <div className="min-w-0">
-            <div className="flex items-center gap-2">
-              <h2 className="text-sm font-semibold tracking-tight text-foreground truncate">
-                {t('sentinel.title')}
-              </h2>
-              <span className="flex items-center gap-1.5 rounded-full border border-primary/30 bg-primary/10 px-2 py-0.5 text-[10px] font-medium text-primary">
-                <span className="size-1.5 rounded-full bg-primary animate-pulse" aria-hidden />
-                <span>{telemetry?.daemon_status === 'STOPPED' ? 'DAEMON PAUSED' : t('sentinel.active')}</span>
-              </span>
-              {telemetry && (
-                <span className="hidden sm:inline-block font-mono text-[10px] text-muted-foreground border-l border-border/60 pl-2">
-                  Cycle #{telemetry.cycle_count} · {telemetry.interval_seconds}s cadence
-                </span>
-              )}
-            </div>
-            <p className="text-xs text-muted-foreground truncate">
-              {isEvaluating ? t('sentinel.evaluating') : t('sentinel.lastAudit', { time: lastAuditTime })}
-              {telemetry?.last_sweep_summary && (
-                <span className="ml-1.5 text-[11px] text-ink-2 font-mono">
-                  ({telemetry.last_sweep_summary.tenants_audited} sessions scanned · {telemetry.last_sweep_summary.actions_staged} auto-staged)
-                </span>
-              )}
+    <div className="space-y-4">
+      <section className="grid gap-px overflow-hidden rounded-xl border bg-border lg:grid-cols-[1.4fr_1fr]">
+        <div className="bg-card p-6 sm:p-8">
+          <p className={cn('flex items-center gap-2 text-sm font-medium', tone.text)}>
+            <tone.icon className="size-4" aria-hidden />
+            {tone.label}
+          </p>
+          <h2 className="mt-4 font-display text-4xl font-semibold leading-tight tracking-tight sm:text-5xl">
+            {days === null ? t('sen.noShortfall') : rich('sen.runsShortIn', { n: <SplitFlap text={String(days)} /> })}
+          </h2>
+          {days !== null && shortDate && (
+            <p className="mt-4 max-w-[56ch] text-base leading-relaxed text-ink-2">
+              {state === 'clear'
+                ? t('sen.clearBody', { date: formatDate(shortDate), n: days - alertThresholdDays, window: alertThresholdDays })
+                : t(pending ? 'sen.insideBodyDraft' : 'sen.insideBody', { date: formatDate(shortDate), window: alertThresholdDays })}
             </p>
-          </div>
-        </div>
+          )}
+          {inside && pending && (
+            <Button asChild className="mt-6">
+              <Link href="/assistant">{t('ov.hero.review', { amount: formatMoney(centsToString(pending.amount_cents), undefined, { cents: false }) })}</Link>
+            </Button>
+          )}
 
-        <div className="flex items-center gap-2 self-start sm:self-auto font-mono text-[11px] text-muted-foreground">
-          <span>Continuous In-Process Daemon</span>
-        </div>
-      </div>
-
-      {/* 2. Buffer Comparison Gauge */}
-      <div className="p-5 sm:p-6 space-y-6">
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {/* Card A: Current Projected Runway */}
-          <div className="rounded-xl border bg-background/50 p-4">
-            <div className="flex items-center justify-between text-xs text-muted-foreground">
-              <span>Current Runway</span>
-              <span className="font-mono text-[10px] uppercase tracking-wider">Forecast</span>
-            </div>
-            <div className="mt-2 flex items-baseline gap-2">
-              <span className={cn('figures text-3xl font-bold tracking-tight', runwayDays <= 0 ? 'text-destructive' : 'text-foreground')}>
-                {runwayDays <= 0 ? 0 : runwayDays}
-              </span>
-              <span className="text-xs text-muted-foreground">
-                {runwayDays <= 0 ? 'days remaining (depleted)' : 'days until deficit'}
-              </span>
-            </div>
-            <p className={cn('mt-2 text-xs truncate', runwayDays <= 0 ? 'text-destructive font-medium' : 'text-ink-2')}>
-              {runwayDays <= 0 ? 'Cash buffer depleted today · Overdraft imminent' : `Shortfall on ${deficitFormattedDate}`}
-            </p>
-          </div>
-
-          {/* Card B: Warning Threshold with Editable Input, Presets, and Target Date */}
-          <div className="rounded-xl border bg-background/50 p-4">
-            <div className="flex items-center justify-between text-xs text-muted-foreground">
-              <span>Warning Threshold</span>
-              <span className="font-mono text-[10px] uppercase tracking-wider text-primary">Policy Rule</span>
-            </div>
-            <div className="mt-2 flex items-center justify-between">
-              <div className="flex items-center gap-1.5 min-w-0">
-                <input
-                  type="text"
-                  inputMode="numeric"
-                  pattern="[0-9]*"
-                  value={thresholdInput}
-                  onChange={(e) => {
-                    const raw = e.target.value.replace(/[^0-9]/g, '');
-                    setThresholdInput(raw);
-                    const val = parseInt(raw, 10);
-                    if (!Number.isNaN(val) && val >= 1 && val <= 120) {
-                      update({ alertThresholdDays: val });
-                    }
-                  }}
-                  onBlur={() => {
-                    const val = parseInt(thresholdInput, 10);
-                    if (Number.isNaN(val) || val < 1) {
-                      update({ alertThresholdDays: 1 });
-                      setThresholdInput('1');
-                    } else if (val > 120) {
-                      update({ alertThresholdDays: 120 });
-                      setThresholdInput('120');
-                    }
-                  }}
-                  className={cn(
-                    'figures w-14 h-9 rounded-md border bg-background px-1 text-center text-2xl font-bold tracking-tight text-foreground focus:outline-hidden focus:ring-1 tabular-nums transition-colors [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none',
-                    isUnderMin || isOverMax || isInputEmpty
-                      ? 'border-warning/70 focus:border-warning focus:ring-warning'
-                      : 'border-input/60 focus:border-primary focus:ring-primary'
-                  )}
-                  aria-label="Warning threshold days"
-                />
-                <span className="text-xs text-muted-foreground leading-tight">
-                  days safety target
-                </span>
+          {days !== null && (
+            <div className="mt-8" aria-hidden>
+              <div className="relative h-2 rounded-full bg-muted">
+                <motion.div className={cn('absolute inset-y-0 left-0 rounded-full', tone.bar)} initial={false} animate={{ width: at(days) }} transition={spring.gentle} />
+                <motion.div className="absolute -inset-y-1.5 w-0.5 rounded bg-foreground" initial={false} animate={{ left: at(alertThresholdDays) }} transition={spring.snappy} />
               </div>
-              <div className="flex items-center gap-1 shrink-0">
-                <button
-                  type="button"
-                  onClick={() => handleAdjustThreshold(-5)}
-                  disabled={alertThresholdDays <= 1}
-                  className="flex size-7 items-center justify-center rounded-md border bg-card hover:bg-muted text-foreground transition-colors active:scale-95 disabled:opacity-35 disabled:cursor-not-allowed"
-                  title={alertThresholdDays <= 1 ? 'Minimum 1 day threshold reached' : 'Decrease threshold by 5 days'}
-                  aria-label="Decrease threshold"
-                >
-                  <Minus className="size-3.5" />
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleAdjustThreshold(5)}
-                  disabled={alertThresholdDays >= 120}
-                  className="flex size-7 items-center justify-center rounded-md border bg-card hover:bg-muted text-foreground transition-colors active:scale-95 disabled:opacity-35 disabled:cursor-not-allowed"
-                  title={alertThresholdDays >= 120 ? 'Maximum 120 days horizon reached' : 'Increase threshold by 5 days'}
-                  aria-label="Increase threshold"
-                >
-                  <Plus className="size-3.5" />
-                </button>
+              <div className="relative mt-2 h-4 text-xs text-muted-foreground">
+                <span className="absolute left-0">{t('sen.today')}</span>
+                <motion.span className="absolute -translate-x-1/2 whitespace-nowrap font-medium text-foreground" initial={false} animate={{ left: at(alertThresholdDays) }} transition={spring.snappy}>
+                  {t('sen.warnAt', { n: alertThresholdDays })}
+                </motion.span>
               </div>
             </div>
-
-            {/* Target Date or Exception Feedback */}
-            {isUnderMin ? (
-              <p className="mt-2 text-xs text-warning-text font-medium truncate">
-                ⚠️ Minimum threshold is 1 day
-              </p>
-            ) : isOverMax ? (
-              <p className="mt-2 text-xs text-warning-text font-medium truncate">
-                ⚠️ Max horizon is 120 days (treasury policy)
-              </p>
-            ) : isInputEmpty ? (
-              <p className="mt-2 text-xs text-muted-foreground truncate">
-                Enter between 1 and 120 days
-              </p>
-            ) : (
-              <p className="mt-2 text-xs text-ink-2 truncate">
-                Buffer through <span className="font-medium text-foreground">{targetFormattedDate}</span>
-              </p>
-            )}
-
-            {/* Quick Preset Pills */}
-            <div className="mt-2.5 flex items-center gap-1.5 pt-2 border-t border-border/40">
-              <span className="text-[10px] uppercase font-mono text-muted-foreground mr-0.5">Presets:</span>
-              {[14, 30, 45, 60].map((days) => (
-                <button
-                  key={days}
-                  type="button"
-                  onClick={() => {
-                    update({ alertThresholdDays: days });
-                    setThresholdInput(String(days));
-                  }}
-                  className={cn(
-                    'rounded-md px-2 py-0.5 text-[11px] font-mono transition-colors',
-                    alertThresholdDays === days
-                      ? 'bg-primary/15 text-primary font-semibold border border-primary/30'
-                      : 'bg-muted/50 text-muted-foreground hover:bg-muted hover:text-foreground border border-transparent'
-                  )}
-                >
-                  {days}d
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Card C: Sentinel Decision State */}
-          <div className={cn(
-            'rounded-xl border p-4 sm:col-span-2 lg:col-span-1 transition-colors',
-            runwayDays <= 0 ? 'border-destructive/40 bg-destructive/10' : isTriggered ? 'border-warning/40 bg-warning/10' : 'border-good/30 bg-good/5'
-          )}>
-            <div className="flex items-center justify-between text-xs">
-              <span className={cn('font-semibold uppercase tracking-wider text-[10px]',
-                runwayDays <= 0 ? 'text-destructive font-bold' : isTriggered ? 'text-warning-text' : 'text-good-text'
-              )}>
-                {runwayDays <= 0 ? 'Critical Deficit · Out of Cash' : isTriggered ? 'Trigger Condition Met' : 'Solvent & Protected'}
-              </span>
-              {runwayDays <= 0 ? (
-                <AlertTriangle className="size-4 text-destructive shrink-0" aria-hidden />
-              ) : isTriggered ? (
-                <AlertTriangle className="size-4 text-warning-text shrink-0" aria-hidden />
-              ) : (
-                <CheckCircle2 className="size-4 text-good-text shrink-0" aria-hidden />
-              )}
-            </div>
-            <p className="mt-2 text-base font-semibold text-foreground">
-              {runwayDays <= 0
-                ? '0 days left · Intervention required'
-                : isTriggered
-                  ? t('sentinel.deltaTriggered', { n: deltaDays })
-                  : t('sentinel.deltaSafe', { n: deltaDays })}
-            </p>
-            <p className="mt-1 text-xs text-muted-foreground">
-              {runwayDays <= 0
-                ? 'Cash buffer fully depleted. Autonomous bridge line proposal staged in Tier 2.'
-                : isTriggered
-                  ? 'Automated liquidity protocol initiated. Staged proposal waiting.'
-                  : 'Cash buffer safely covers all projected obligations.'}
-            </p>
-          </div>
+          )}
         </div>
 
-        {/* Visual Comparison Gauge Bar */}
-        <div className="space-y-1.5 rounded-xl border bg-muted/20 p-3.5">
-          <div className="flex items-center justify-between text-xs text-muted-foreground">
-            <span>Buffer Horizon Progress</span>
-            <span className="font-mono text-[11px]">
-              {runwayDays}d runway / {alertThresholdDays}d threshold
-            </span>
+        <div className="bg-card p-6 sm:p-8">
+          <h3 className="font-display text-xl font-semibold tracking-tight">{t('sen.window')}</h3>
+          <p className="mt-1 text-sm text-muted-foreground">{t('sen.windowBody')}</p>
+
+          <div className="mt-6 flex items-center gap-3">
+            <Button variant="outline" size="icon" onClick={() => setDays(alertThresholdDays - 1)} disabled={alertThresholdDays <= MIN_DAYS} aria-label={t('sen.fewer')}>
+              <Minus aria-hidden />
+            </Button>
+            <label className="flex items-baseline gap-2">
+              <input
+                inputMode="numeric"
+                value={draft}
+                onChange={(e) => {
+                  const raw = e.target.value.replace(/[^0-9]/g, '').slice(0, 3);
+                  setDraft(raw);
+                  const n = Number(raw);
+                  if (n >= MIN_DAYS && n <= MAX_DAYS) update({ alertThresholdDays: n });
+                }}
+                onBlur={() => setDays(Number(draft) || MIN_DAYS)}
+                className="figures h-12 w-20 rounded-lg border bg-background text-center font-display text-3xl font-semibold focus-visible:border-primary"
+                aria-label={t('sen.window')}
+              />
+              <span className="text-sm text-muted-foreground">{t('set.days')}</span>
+            </label>
+            <Button variant="outline" size="icon" onClick={() => setDays(alertThresholdDays + 1)} disabled={alertThresholdDays >= MAX_DAYS} aria-label={t('sen.more')}>
+              <Plus aria-hidden />
+            </Button>
           </div>
-          <div className="relative h-2.5 w-full overflow-hidden rounded-full bg-muted">
-            {/* Threshold target marker */}
-            <div
-              className="absolute top-0 bottom-0 z-10 w-1 bg-foreground/60 shadow-xs"
-              style={{ left: `${thresholdPct}%` }}
-              title={`Warning threshold: ${alertThresholdDays} days`}
-            />
-            {/* Current Runway Bar */}
-            <motion.div
-              initial={{ width: 0 }}
-              animate={{ width: `${runwayPct}%` }}
-              transition={spring.gentle}
-              className={cn(
-                'h-full rounded-full transition-colors',
-                runwayDays <= 0 ? 'bg-destructive' : isTriggered ? 'bg-warning' : 'bg-good'
-              )}
-            />
-          </div>
-          <div className="flex items-center justify-between text-[10.5px] text-muted-foreground">
-            <span>0 days</span>
-            <span className="font-medium text-foreground">Target: {alertThresholdDays}d</span>
-            <span>{Math.round(maxDisplayDays)} days</span>
-          </div>
+
+          <ToggleGroup
+            type="single"
+            variant="outline"
+            size="sm"
+            value={PRESETS.includes(alertThresholdDays) ? String(alertThresholdDays) : ''}
+            onValueChange={(v) => v && setDays(Number(v))}
+            className="mt-4 justify-start"
+            aria-label={t('sen.presets')}
+          >
+            {PRESETS.map((n) => (
+              <ToggleGroupItem key={n} value={String(n)} className="figures px-3">
+                {t('chart.days', { n })}
+              </ToggleGroupItem>
+            ))}
+          </ToggleGroup>
+
+          <p className="mt-5 text-sm text-ink-2">{t('sen.windowMeans', { date: formatDate(addDaysIso(today, alertThresholdDays), true) })}</p>
         </div>
-      </div>
-    </motion.section>
+      </section>
+
+      <p className="text-sm text-muted-foreground">
+        {offline
+          ? t('sen.offline')
+          : telemetry?.last_sweep_at
+            ? t('sen.lastCheck', { time: clockTime(telemetry.last_sweep_at), n: Math.round(telemetry.interval_seconds) })
+            : t('sen.starting')}
+      </p>
+    </div>
   );
 }

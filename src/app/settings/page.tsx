@@ -542,21 +542,6 @@ function PreferencesSection() {
       <Row title={t('set.currency')} description={t('set.currencyDesc')}>
         <CurrencyCombobox value={ws.homeCurrency} onChange={(v) => ws.update({ homeCurrency: v })} />
       </Row>
-      <Row title={t('set.threshold')} description={t('set.thresholdDesc')} htmlFor="threshold">
-        <div className="flex items-center gap-2">
-          <Input
-            id="threshold"
-            type="number"
-            inputMode="numeric"
-            min={1}
-            max={365}
-            value={ws.alertThresholdDays}
-            onChange={(e) => ws.update({ alertThresholdDays: Math.max(1, Math.min(365, Number(e.target.value) || 1)) })}
-            className="figures w-24"
-          />
-          <span className="text-sm text-muted-foreground">{t('set.days')}</span>
-        </div>
-      </Row>
       <Row title={t('set.theme')} description={t('set.themeDesc')}>
         <ToggleGroup type="single" variant="outline" value={ws.theme} onValueChange={(v) => v && ws.update({ theme: v as Theme })} aria-label={t('set.theme')} className="justify-start">
           <ToggleGroupItem value="system" className="px-4">{t('theme.system')}</ToggleGroupItem>

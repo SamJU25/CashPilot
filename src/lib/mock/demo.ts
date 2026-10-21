@@ -3,7 +3,7 @@
 // shortcut: the forecast mirrors services/calculations/predictive_cash.py in simplified form; replace
 // with the proposed GET /analyze/series and a scenario endpoint when the backend ships them.
 
-import { centsToString, formatDate, formatMoney } from '@/lib/format';
+import { centsToString, formatDate, formatMoney, stringToCents } from '@/lib/format';
 import type { T } from '@/lib/i18n';
 import type {
   AccountSeries,
@@ -12,7 +12,9 @@ import type {
   DeficitSeverity,
   FinancingOption,
   Forecast,
+  LiveForecast,
   ReceivablesAgeing,
+  RecurringObligation,
   StagedActionIntent,
   UnderwritingDossier,
 } from '@/lib/types';
@@ -59,7 +61,7 @@ export const FILES: StatementFile[] = [
   { file_name: 'chase_operating_august.csv', account_id: 'Account_1', start: '2026-08-01', end: '2026-08-31' },
   { file_name: 'chase_operating_september.csv', account_id: 'Account_1', start: '2026-09-01', end: '2026-09-30' },
   { file_name: 'svb_payroll_august.csv', account_id: 'Account_2', start: '2026-08-01', end: '2026-08-31' },
-  { file_name: 'svb_payroll_september.csv', account_id: 'Account_2', start: '2026-09-08', end: '2026-09-30' },
+  { file_name: 'svb_payroll_september.csv', account_id: 'Account_2', start: '2026-09-01', end: '2026-09-30' },
 ];
 
 export const DEFAULT_ACCOUNT_NAMES: Record<string, string> = {
@@ -147,13 +149,14 @@ export interface Scenario {
   cutPct: number;
   extraMonthlyCents: number;
   collectInvoice: boolean;
+  selectedDebtorId?: string;
 }
 
-export const BASE_SCENARIO: Scenario = { cutPct: 0, extraMonthlyCents: 0, collectInvoice: false };
+export const BASE_SCENARIO: Scenario = { cutPct: 0, extraMonthlyCents: 0, collectInvoice: false, selectedDebtorId: 'ALL' };
 
 export interface Projection {
   points: { date: string; cents: number }[];
-  forecast: Forecast;
+  forecast: LiveForecast;
 }
 
 function severityFor(days: number | null): DeficitSeverity {
@@ -183,7 +186,10 @@ export function project(s: Scenario): Projection {
         dayTrigger = ob.category;
       }
     }
-    if (s.collectInvoice && date === OVERDUE_INVOICE.expected) balance += OVERDUE_INVOICE.cents;
+    if (s.collectInvoice && date === OVERDUE_INVOICE.expected) {
+      const debtor = RECEIVABLES.top_debtors.find((d) => d.customer_name === s.selectedDebtorId);
+      balance += stringToCents(s.selectedDebtorId === 'ALL' ? RECEIVABLES.total_overdue : (debtor?.overdue_amount ?? centsToString(OVERDUE_INVOICE.cents)));
+    }
     points.push({ date, cents: balance });
     if (balance < 0 && deficitDay === null) {
       deficitDay = i;
@@ -197,6 +203,7 @@ export function project(s: Scenario): Projection {
   return {
     points,
     forecast: {
+      anchor_date: ANCHOR,
       has_projected_deficit: deficitDay !== null,
       severity: severityFor(deficitDay),
       days_until_deficit: deficitDay,
@@ -234,9 +241,45 @@ export const ANALYSIS: CashAnalysis = {
   currency: CURRENCY,
   accepted_count: TXS.length,
   rejected_rows: [
-    { row_number: 37, reason_code: 'INVALID_DATE' },
-    { row_number: 112, reason_code: 'INVALID_DATE' },
-    { row_number: 208, reason_code: 'DUPLICATE_TRANSACTION_ID' },
+    {
+      row_number: 37,
+      reason_code: 'INVALID_DATE',
+      account_id: 'Account_1',
+      raw_line: 'tx_0037,31/08/2026,-420.50,USD,Office Depot Supplies',
+      suggested_fix: {
+        posted_on: '2026-08-31',
+        amount: '-420.50',
+        description: 'Office Depot Supplies',
+        transaction_id: 'tx_0037',
+        explanation: 'Format DD/MM/YYYY as ISO 2026-08-31',
+      },
+    },
+    {
+      row_number: 112,
+      reason_code: 'INVALID_DATE',
+      account_id: 'Account_2',
+      raw_line: 'tx_0112,09-15-2026,-150.00,USD,Cloudflare Edge DNS',
+      suggested_fix: {
+        posted_on: '2026-09-15',
+        amount: '-150.00',
+        description: 'Cloudflare Edge DNS',
+        transaction_id: 'tx_0112',
+        explanation: 'Format MM-DD-YYYY as ISO 2026-09-15',
+      },
+    },
+    {
+      row_number: 208,
+      reason_code: 'DUPLICATE_TRANSACTION_ID',
+      account_id: 'Account_1',
+      raw_line: 'tx_0045,2026-09-22,-85.00,USD,Stripe Merchant Processing',
+      suggested_fix: {
+        posted_on: '2026-09-22',
+        amount: '-85.00',
+        description: 'Stripe Merchant Processing',
+        transaction_id: 'tx_0045',
+        explanation: 'Statement overlap duplicate (tx_0045). Exclude to prevent double-counting -$85.00.',
+      },
+    },
   ],
   current_balance: centsToString(CLOSING_TOTAL),
   net_period_change: centsToString(CLOSING_TOTAL - OPENING_TOTAL),
@@ -273,11 +316,15 @@ export const ANALYSIS: CashAnalysis = {
     inflow_account: 'Account_2',
     transfer_date: t.date,
   })),
-  calendar_gaps: ['Calendar gap of 7 unrecorded days between 2026-08-31 and 2026-09-08 in Account_2.'],
+  calendar_gaps: [],
   has_overlaps_deduped: true,
   operational_inflows: centsToString(GROSS_IN - TRANSFER_VOLUME),
   operational_outflows: centsToString(GROSS_OUT - TRANSFER_VOLUME),
   document_format: 'CSV',
+  forecast: BASE.forecast,
+  recurring_obligations: RECURRING.map((r) => ({ category: r.category as RecurringObligation['category'], amount: centsToString(r.cents), day_of_month: r.day })),
+  balance_history: TOTAL_SERIES.map((s) => ({ date: s.date, balance: centsToString(s.cents) })),
+  projection: BASE.points.map((p) => ({ date: p.date, balance: centsToString(p.cents) })),
 };
 
 export const SPENDING = (() => {

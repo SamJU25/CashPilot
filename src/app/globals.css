@@ -6,24 +6,26 @@
 @layer base {
   :root {
     color-scheme: light;
-    --background: 241 244 242;
-    --foreground: 11 27 52;
-    --ink-2: 68 83 106;
+    /* Chart paper: cool grey-blue ground, white instrument panels, deep ink. */
+    --background: 238 241 245;
+    --foreground: 16 24 38;
+    --ink-2: 70 84 104;
     --card: 255 255 255;
-    --card-foreground: 11 27 52;
+    --card-foreground: 16 24 38;
     --popover: 255 255 255;
-    --popover-foreground: 11 27 52;
-    --primary: 12 122 85;
+    --popover-foreground: 16 24 38;
+    /* Cockpit convention: cyan marks values the owner sets or acts on; green stays a status colour. */
+    --primary: 10 104 135;
     --primary-foreground: 255 255 255;
-    --secondary: 232 237 240;
-    --secondary-foreground: 11 27 52;
-    --muted: 232 237 240;
-    --muted-foreground: 88 102 124;
-    --accent: 225 242 234;
-    --accent-foreground: 9 96 66;
-    --border: 222 228 232;
-    --input: 204 213 220;
-    --ring: 12 122 85;
+    --secondary: 228 233 239;
+    --secondary-foreground: 16 24 38;
+    --muted: 228 233 239;
+    --muted-foreground: 92 106 126;
+    --accent: 222 238 244;
+    --accent-foreground: 8 82 107;
+    --border: 218 224 232;
+    --input: 200 209 220;
+    --ring: 10 104 135;
     --good: 12 163 12;
     --good-text: 0 99 0;
     --warning: 250 178 25;
@@ -36,37 +38,46 @@
     --s2: 235 104 52;
     --s3: 27 175 122;
     --s4: 237 161 0;
-    --radius: 0.5rem;
+    --flap: 18 26 38;
+    --flap-ink: 245 247 250;
+    --radius: 0.625rem;
   }
 
   .dark {
     color-scheme: dark;
-    --background: 7 16 31;
-    --foreground: 232 238 245;
-    --ink-2: 185 197 214;
-    --card: 11 27 52;
-    --card-foreground: 232 238 245;
-    --popover: 15 33 60;
-    --popover-foreground: 232 238 245;
-    --primary: 118 229 178;
-    --primary-foreground: 5 34 24;
-    --secondary: 21 39 66;
-    --secondary-foreground: 232 238 245;
-    --muted: 21 39 66;
-    --muted-foreground: 143 159 182;
-    --accent: 15 54 46;
-    --accent-foreground: 150 232 196;
-    --border: 30 49 78;
-    --input: 43 63 94;
-    --ring: 118 229 178;
-    --good-text: 12 163 12;
-    --warning-text: 250 178 25;
-    --serious-text: 236 131 90;
-    --critical-text: 236 110 110;
+    /* Cockpit: blue-graphite ground, panels one step lighter. */
+    --background: 9 13 19;
+    --foreground: 228 233 238;
+    --ink-2: 176 186 198;
+    --card: 16 22 31;
+    --card-foreground: 228 233 238;
+    --popover: 21 29 40;
+    --popover-foreground: 228 233 238;
+    --primary: 94 203 232;
+    --primary-foreground: 3 30 40;
+    --secondary: 26 35 47;
+    --secondary-foreground: 228 233 238;
+    --muted: 26 35 47;
+    --muted-foreground: 136 150 167;
+    --accent: 12 42 52;
+    --accent-foreground: 142 220 240;
+    --border: 32 42 56;
+    --input: 44 56 72;
+    --ring: 94 203 232;
+    --good: 34 197 94;
+    --good-text: 74 222 128;
+    --warning: 245 158 11;
+    --warning-text: 251 191 36;
+    --serious: 249 115 22;
+    --serious-text: 251 146 60;
+    --critical: 239 68 68;
+    --critical-text: 248 113 113;
     --s1: 57 135 229;
     --s2: 217 89 38;
     --s3: 25 158 112;
     --s4: 201 133 0;
+    --flap: 26 35 48;
+    --flap-ink: 240 244 247;
   }
 
   * {

@@ -4,6 +4,13 @@ import { useState } from 'react';
 import { ArrowDownLeft, ArrowUpRight, Coins } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
 import {
   Dialog,
@@ -20,6 +27,7 @@ import { latestBalances, useCashChange } from '@/lib/use-cash-change';
 import { useWorkspace } from '@/lib/workspace';
 import { useT } from '@/lib/i18n';
 import { centsToString, formatMoney, stringToCents } from '@/lib/format';
+import { todayIso } from '@/lib/live-forecast';
 import { cn } from '@/lib/utils';
 
 type Mode = 'INFLOW' | 'OUTFLOW' | 'SET_BALANCE';
@@ -49,6 +57,7 @@ export function QuickCashDialog({ trigger, variant = 'outline', size = 'default'
   const [err, setErr] = useState<string | null>(null);
   const [accountSel, setAccountSel] = useState('');
   const [newName, setNewName] = useState('');
+  const [effectiveDate, setEffectiveDate] = useState(todayIso);
 
   // The sample company's figures never mix with the owner's own entries.
   const ownAnalysis = source === 'live' ? live.analysis : undefined;
@@ -95,6 +104,7 @@ export function QuickCashDialog({ trigger, variant = 'outline', size = 'default'
         description: desc.trim() || undefined,
         accountId,
         customBurn,
+        effectiveDate,
       });
       setOpen(false);
       setAmount('');
@@ -130,27 +140,33 @@ export function QuickCashDialog({ trigger, variant = 'outline', size = 'default'
           </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-5 pt-2">
-          {/* Account: an existing one, or a new one (its balance is set from the amount). */}
+        <form onSubmit={handleSubmit} className="space-y-4 pt-1">
+          {/* Account selector */}
           {!pooled && (
             <div className="space-y-1.5">
               <Label htmlFor="qc-account" className="text-xs font-medium text-muted-foreground">
                 {t('quickCash.account')}
               </Label>
               {accounts.length > 0 && (
-                <select
-                  id="qc-account"
-                  value={selected}
-                  onChange={(e) => setAccountSel(e.target.value)}
-                  className="h-9 w-full rounded-md border bg-background px-2 text-sm"
-                >
-                  {accounts.map((a) => (
-                    <option key={a.id} value={a.id}>
-                      {label(a.id)} ({formatMoney(a.balance)})
-                    </option>
-                  ))}
-                  <option value={NEW_ACCOUNT}>{t('quickCash.newAccount')}</option>
-                </select>
+                <Select value={selected} onValueChange={(val) => setAccountSel(val)}>
+                  <SelectTrigger
+                    id="qc-account"
+                    className="h-10 w-full rounded-lg border-input/60 bg-card/60 px-3 text-sm font-medium text-foreground transition-colors hover:border-input focus-visible:ring-1 focus-visible:ring-primary shadow-2xs"
+                  >
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="bg-popover border-border/80 text-popover-foreground shadow-xl">
+                    {accounts.map((a) => (
+                      <SelectItem key={a.id} value={a.id} className="cursor-pointer text-xs">
+                        <span className="font-medium mr-2 text-foreground">{label(a.id)}</span>
+                        <span className="font-mono text-muted-foreground figures">({formatMoney(a.balance)})</span>
+                      </SelectItem>
+                    ))}
+                    <SelectItem value={NEW_ACCOUNT} className="cursor-pointer text-xs text-primary font-medium">
+                      + {t('quickCash.newAccount')}
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
               )}
               {isNew && (
                 <Input
@@ -161,23 +177,23 @@ export function QuickCashDialog({ trigger, variant = 'outline', size = 'default'
                   aria-label={t('quickCash.accountName')}
                   value={newName}
                   onChange={(e) => setNewName(e.target.value)}
-                  className="text-base sm:text-sm"
+                  className="text-sm mt-1"
                 />
               )}
               {nameTaken && <p className="text-xs text-critical-text">{t('quickCash.nameTaken')}</p>}
             </div>
           )}
 
-          {/* Mode Switcher: a new account starts from a set balance. */}
-          <div className={cn('grid grid-cols-3 gap-1 rounded-lg border bg-muted/40 p-1 text-xs font-medium', isNew && 'pointer-events-none opacity-50')} aria-disabled={isNew}>
+          {/* Mode Switcher */}
+          <div className={cn('grid grid-cols-3 gap-1 rounded-xl border border-border/70 bg-muted/40 p-1 text-xs font-medium', isNew && 'pointer-events-none opacity-50')} aria-disabled={isNew}>
             <button
               type="button"
               onClick={() => setMode('INFLOW')}
               className={cn(
-                'flex items-center justify-center gap-1.5 rounded-md py-2 transition-all',
-                mode === 'INFLOW'
+                'flex items-center justify-center gap-1.5 rounded-lg py-2 transition-all',
+                effectiveMode === 'INFLOW'
                   ? 'bg-background text-good-text shadow-sm font-semibold'
-                  : 'text-muted-foreground hover:text-foreground'
+                  : 'text-muted-foreground hover:text-foreground hover:bg-background/40'
               )}
             >
               <ArrowDownLeft className="h-3.5 w-3.5" />
@@ -187,10 +203,10 @@ export function QuickCashDialog({ trigger, variant = 'outline', size = 'default'
               type="button"
               onClick={() => setMode('OUTFLOW')}
               className={cn(
-                'flex items-center justify-center gap-1.5 rounded-md py-2 transition-all',
-                mode === 'OUTFLOW'
+                'flex items-center justify-center gap-1.5 rounded-lg py-2 transition-all',
+                effectiveMode === 'OUTFLOW'
                   ? 'bg-background text-warning-text shadow-sm font-semibold'
-                  : 'text-muted-foreground hover:text-foreground'
+                  : 'text-muted-foreground hover:text-foreground hover:bg-background/40'
               )}
             >
               <ArrowUpRight className="h-3.5 w-3.5" />
@@ -200,10 +216,10 @@ export function QuickCashDialog({ trigger, variant = 'outline', size = 'default'
               type="button"
               onClick={() => setMode('SET_BALANCE')}
               className={cn(
-                'flex items-center justify-center gap-1.5 rounded-md py-2 transition-all',
-                mode === 'SET_BALANCE'
+                'flex items-center justify-center gap-1.5 rounded-lg py-2 transition-all',
+                effectiveMode === 'SET_BALANCE'
                   ? 'bg-background text-foreground shadow-sm font-semibold'
-                  : 'text-muted-foreground hover:text-foreground'
+                  : 'text-muted-foreground hover:text-foreground hover:bg-background/40'
               )}
             >
               <Coins className="h-3.5 w-3.5" />
@@ -211,24 +227,37 @@ export function QuickCashDialog({ trigger, variant = 'outline', size = 'default'
             </button>
           </div>
 
-          {/* Amount input */}
-          <div className="space-y-1.5">
-            <Label htmlFor="qc-amount" className="text-xs font-medium text-muted-foreground">
-              {t('quickCash.amount')} ({currency})
-            </Label>
-            <div className="relative">
+          {/* Amount & Transaction Date side-by-side */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div className="space-y-1.5">
+              <Label htmlFor="qc-amount" className="text-xs font-medium text-muted-foreground">
+                {t('quickCash.amount')} ({currency})
+              </Label>
               <Input
-                id="qc-amount"
-                type="number"
-                inputMode="decimal"
-                step="0.01"
-                min="0"
+                  id="qc-amount"
+                  type="text"
+                  inputMode="decimal"
+                  required
+                  autoFocus
+                  placeholder="0.00"
+                  value={amount}
+                  onChange={(e) => setAmount(e.target.value.replace(/[^0-9.]/g, ''))}
+                  className="font-mono text-base font-semibold tabular-nums tracking-tight"
+                />
+            </div>
+
+            <div className="space-y-1.5">
+              <Label htmlFor="qc-date" className="text-xs font-medium text-muted-foreground">
+                {t('quickCash.date')}
+              </Label>
+              <Input
+                id="qc-date"
+                type="date"
                 required
-                autoFocus
-                placeholder="0.00"
-                value={amount}
-                onChange={(e) => setAmount(e.target.value)}
-                className="font-mono text-lg tabular-nums tracking-tight"
+                max={todayIso()}
+                value={effectiveDate}
+                onChange={(e) => setEffectiveDate(e.target.value)}
+                className="figures text-sm"
               />
             </div>
           </div>
@@ -248,18 +277,16 @@ export function QuickCashDialog({ trigger, variant = 'outline', size = 'default'
             />
           </div>
 
-          {/* Daily burn configuration when setting initial balance or refining */}
-          {(!live.analysis || mode === 'SET_BALANCE') && (
+          {/* Burn is asked for on a first entry, or when the baseline balance is reset. */}
+          {(!ownAnalysis || effectiveMode === 'SET_BALANCE') && (
             <div className="space-y-1.5">
               <Label htmlFor="qc-burn" className="text-xs font-medium text-muted-foreground">
                 {t('quickCash.dailyBurn')} ({t('quickCash.perDay', { currency })})
               </Label>
               <Input
                 id="qc-burn"
-                type="number"
+                type="text"
                 inputMode="decimal"
-                step="0.01"
-                min="0"
                 placeholder={ownAnalysis?.average_daily_burn ?? '0.00'}
                 value={customBurn}
                 onChange={(e) => setCustomBurn(e.target.value)}
@@ -269,10 +296,10 @@ export function QuickCashDialog({ trigger, variant = 'outline', size = 'default'
           )}
 
           {/* Live Impact Preview Card */}
-          <div className="rounded-lg border bg-muted/30 p-3.5 space-y-2 text-xs">
+          <div className="rounded-xl border border-border/70 bg-card/60 p-3.5 space-y-2 text-xs">
             <div className="flex items-center justify-between text-muted-foreground">
               <span>{t('quickCash.current')}</span>
-              <span className="font-mono font-medium text-foreground tabular-nums">
+              <span className="font-mono font-medium text-foreground figures">
                 {formatMoney(centsToString(accountCents))}
               </span>
             </div>
@@ -280,7 +307,7 @@ export function QuickCashDialog({ trigger, variant = 'outline', size = 'default'
               <span>{t('quickCash.projected')}</span>
               <span
                 className={cn(
-                  'font-mono tabular-nums font-semibold',
+                  'font-mono tabular-nums font-semibold text-sm',
                   accountAfter >= accountCents ? 'text-good-text' : 'text-warning-text'
                 )}
               >
@@ -288,21 +315,23 @@ export function QuickCashDialog({ trigger, variant = 'outline', size = 'default'
               </span>
             </div>
             {showTotal && (
-              <div className="flex items-center justify-between text-muted-foreground">
+              <div className="flex items-center justify-between text-muted-foreground pt-1.5 border-t border-border/40">
                 <span>{t('quickCash.total')}</span>
                 <span className="font-mono tabular-nums">
                   {formatMoney(currBalance)} → <strong className="text-foreground">{formatMoney(centsToString(totalAfter))}</strong>
                 </span>
               </div>
             )}
-            <div className="flex items-center justify-between pt-1 border-t text-muted-foreground">
+            <div className="flex items-center justify-between pt-1.5 border-t border-border/40 text-muted-foreground">
               <span>{t('quickCash.runway')}</span>
               {projectedRunway === null ? (
                 <span>{t('quickCash.noBurn')}</span>
               ) : (
                 <span className="font-mono tabular-nums">
                   {currentRunway !== null ? `${t('quickCash.days', { n: currentRunway })} → ` : ''}
-                  <strong className="text-foreground">{t('quickCash.days', { n: projectedRunway })}</strong>
+                  <strong className={cn('font-semibold', projectedRunway >= (currentRunway ?? 0) ? 'text-good-text' : 'text-warning-text')}>
+                    {t('quickCash.days', { n: projectedRunway })}
+                  </strong>
                 </span>
               )}
             </div>

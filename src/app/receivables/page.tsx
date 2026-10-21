@@ -2,7 +2,7 @@
 
 import { useRef, useState } from 'react';
 import { motion } from 'motion/react';
-import { Upload } from 'lucide-react';
+import { Fingerprint, Upload } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
@@ -19,16 +19,17 @@ import type { Debtor } from '@/lib/types';
 import { useT, type Key } from '@/lib/i18n';
 import { ReminderDialog } from '@/components/receivables/reminder-dialog';
 import { BlockchainVerifyDialog } from '@/components/receivables/blockchain-verify-dialog';
-import { ShieldCheck } from 'lucide-react';
 
-// Ordinal ramp (dataviz sequential blue, steps 250 to 650); "not yet due" stays neutral.
+// Lateness escalates from caution to critical; "not yet due" stays neutral.
 const BUCKET_COLORS: Record<string, string> = {
   current: 'rgb(var(--muted-foreground) / 0.35)',
-  d1_30: '#86b6ef',
-  d31_60: '#3987e5',
-  d61_90: '#1c5cab',
-  d90_plus: '#104281',
+  d1_30: 'rgb(var(--warning) / 0.7)',
+  d31_60: 'rgb(var(--serious))',
+  d61_90: 'rgb(var(--critical))',
+  d90_plus: 'rgb(var(--critical-text))',
 };
+
+const pct = (v: string) => Math.round(Number(v));
 
 /** Sends an invoice export to /analyze/invoices; the ageing report replaces any earlier one. */
 function InvoiceUpload({
@@ -127,22 +128,22 @@ export default function ReceivablesPage() {
         {!sample && <InvoiceUpload variant="outline" />}
       </div>
 
-      <dl className="mt-8 grid grid-cols-2 gap-y-6 lg:grid-cols-4 lg:divide-x">
+      <dl className="mt-8 grid grid-cols-2 gap-y-6 rounded-xl border bg-card px-5 py-5 sm:px-6 lg:grid-cols-4 lg:divide-x">
         {[
           { label: t('rec.owed'), value: <Money value={r.total_ar} /> },
-          { label: t('rec.overdue'), value: <Money value={r.total_overdue} />, note: t('rec.overdueNote', { pct: r.overdue_ratio_pct }) },
+          { label: t('rec.overdue'), value: <Money value={r.total_overdue} />, note: t('rec.overdueNote', { pct: pct(r.overdue_ratio_pct) }) },
           { label: t('rec.avgLate'), value: <span className="figures">{r.weighted_average_days_overdue}</span>, note: t('rec.weighted') },
-          { label: t('rec.largest'), value: <span className="figures">{r.top_1_concentration_pct}%</span>, note: top?.customer_name },
+          { label: t('rec.largest'), value: <span className="figures">{pct(r.top_1_concentration_pct)}%</span>, note: top?.customer_name },
         ].map((f) => (
           <div key={f.label} className="lg:px-6 lg:first:pl-0">
             <dt className="text-sm text-muted-foreground">{f.label}</dt>
-            <dd className="mt-1 text-xl font-semibold tracking-tight">{f.value}</dd>
+            <dd className="mt-1 font-display text-2xl font-semibold tracking-tight">{f.value}</dd>
             {f.note && <dd className="text-xs text-muted-foreground">{f.note}</dd>}
           </div>
         ))}
       </dl>
 
-      <section className="mt-12">
+      <section className="mt-10 rounded-xl border bg-card p-5 sm:p-6">
         <SectionTitle aside={t('rec.asOf', { date: formatDate(r.as_of_date, true) })}>{t('rec.howLate')}</SectionTitle>
         <div className="flex h-3 w-full gap-0.5 overflow-hidden rounded-full" role="img" aria-label={t('rec.barAria')}>
           {buckets
@@ -177,7 +178,7 @@ export default function ReceivablesPage() {
         </ul>
       </section>
 
-      <section className="mt-12">
+      <section className="mt-6 rounded-xl border bg-card p-5 sm:p-6">
         <SectionTitle>{t('rec.customers')}</SectionTitle>
         {/* Phones get one card per customer, so the reminder button never sits off-screen in a wide table. */}
         <ul className="divide-y rounded-lg border md:hidden">
@@ -187,7 +188,7 @@ export default function ReceivablesPage() {
               <li key={d.customer_name} className="space-y-3 p-4">
                 <div className="flex items-baseline justify-between gap-3">
                   <p className="font-medium">{d.customer_name}</p>
-                  <p className="figures shrink-0 text-xs text-muted-foreground">{t('col.share')} {d.share_of_total_ar}%</p>
+                  <p className="figures shrink-0 text-xs text-muted-foreground">{t('col.share')} {pct(d.share_of_total_ar)}%</p>
                 </div>
                 <dl className="grid grid-cols-3 gap-2 text-sm">
                   <div>
@@ -210,8 +211,8 @@ export default function ReceivablesPage() {
                     onClick={() => setVerifying(d)}
                     className="flex-1 justify-center gap-1.5 text-xs text-muted-foreground border hover:text-foreground"
                   >
-                    <ShieldCheck className="size-3.5 text-good" aria-hidden />
-                    <span className="font-mono text-[11px]">{t('rec.verifiedBadge')}</span>
+                    <Fingerprint className="size-3.5" aria-hidden />
+                    {t('rec.blockchainAudit')}
                   </Button>
                   {late && (
                     <Button variant="outline" size="sm" className="flex-1" onClick={() => setDrafting(d)}>
@@ -247,7 +248,7 @@ export default function ReceivablesPage() {
                     {Number(d.overdue_amount) > 0 ? <Money value={d.overdue_amount} /> : <span className="text-muted-foreground">{t('rec.none')}</span>}
                   </TableCell>
                   <TableCell className={`figures text-right ${d.max_days_overdue > 45 ? 'text-critical-text' : ''}`}>{d.max_days_overdue || '–'}</TableCell>
-                  <TableCell className="figures text-right">{d.share_of_total_ar}%</TableCell>
+                  <TableCell className="figures text-right">{pct(d.share_of_total_ar)}%</TableCell>
                   <TableCell>
                     <Button
                       variant="ghost"
@@ -255,8 +256,8 @@ export default function ReceivablesPage() {
                       onClick={() => setVerifying(d)}
                       className="h-8 gap-1.5 px-2 text-xs font-normal text-muted-foreground hover:text-foreground"
                     >
-                      <ShieldCheck className="size-3.5 text-good" aria-hidden />
-                      <span className="font-mono text-[11px]">{t('rec.verifiedBadge')}</span>
+                      <Fingerprint className="size-3.5" aria-hidden />
+                      {t('rec.verifiedBadge')}
                     </Button>
                   </TableCell>
                   <TableCell>
@@ -273,7 +274,7 @@ export default function ReceivablesPage() {
         </div>
       </section>
 
-      <section className="mt-12 border-t pt-10">
+      <section className="mt-10">
         <SectionTitle>{t('rec.next')}</SectionTitle>
         <ol className="max-w-2xl list-decimal space-y-2 pl-5 text-sm text-ink-2 marker:text-muted-foreground">
           {sample ? (

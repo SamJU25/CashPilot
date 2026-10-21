@@ -1,10 +1,12 @@
 import type { Metadata } from 'next';
-import { IBM_Plex_Mono, IBM_Plex_Sans } from 'next/font/google';
+import { Barlow_Semi_Condensed, IBM_Plex_Mono, IBM_Plex_Sans } from 'next/font/google';
 import { AppShell } from '@/components/shell/app-shell';
 import { Providers } from '@/components/shell/providers';
 import './globals.css';
 
 const sans = IBM_Plex_Sans({ subsets: ['latin'], weight: ['400', '500', '600'], variable: '--font-sans', display: 'swap' });
+// Signage face for headlines and the departure-board figures; body stays Plex for its language coverage.
+const display = Barlow_Semi_Condensed({ subsets: ['latin'], weight: ['500', '600'], variable: '--font-display', display: 'swap' });
 const mono = IBM_Plex_Mono({ subsets: ['latin'], weight: ['400', '500'], variable: '--font-mono', display: 'swap' });
 
 const THEME_SCRIPT = `try{var t=(JSON.parse(localStorage.getItem('copilot.workspace.v1')||'{}').theme)||'system';if(t==='dark'||(t==='system'&&matchMedia('(prefers-color-scheme: dark)').matches))document.documentElement.classList.add('dark')}catch(e){}`;
@@ -17,7 +19,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${sans.variable} ${mono.variable}`} suppressHydrationWarning>
+    <html lang="en" className={`${sans.variable} ${display.variable} ${mono.variable}`} suppressHydrationWarning>
       <head>
         {/* Applies the saved theme before first paint; the provider takes over after hydration. */}
         <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />

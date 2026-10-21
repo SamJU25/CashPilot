@@ -93,17 +93,6 @@ export function AssistantInspector({
             )}
           </button>
         </div>
-
-        <div className="flex items-center gap-1.5 text-[11px] font-medium text-muted-foreground pr-1">
-          <span
-            className={cn(
-              'size-1.5 rounded-full',
-              hasData ? 'bg-good animate-pulse' : 'bg-muted-foreground'
-            )}
-            aria-hidden
-          />
-          <span>{hasData ? (source === 'sample' ? 'Demo Active' : 'Live Ledger') : 'No Data'}</span>
-        </div>
       </div>
 
       {/* Switchable Section Panels */}

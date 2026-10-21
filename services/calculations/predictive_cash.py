@@ -47,10 +47,24 @@ class PredictiveDeficitResult:
     explanation: str = ""
 
 
-PAYROLL_PATTERN = re.compile(r"\b(payroll|salary|salaries|wages|stipend|direct\s*dep|gusto|adp|paychex)\b", re.IGNORECASE)
+PAYROLL_PATTERN = re.compile(
+    r"\b(payroll|salary|salaries|wages|stipend|direct\s*dep|gusto|adp|paychex|rippling|"
+    r"quickbooks\s*payroll|workday|intuit\s*payroll|zenefits|justworks|bamboohr|"
+    r"ceridian|trinet|paycom|paylocity|wage|net\s*pay|staff\s*comp)\b",
+    re.IGNORECASE,
+)
 # "property tax" and "equipment lease" are not rent; whole words keep "current"/"parent" out.
-RENT_PATTERN = re.compile(r"\b(rent|(?<!equipment\s)lease|property\s+management|landlord|realty|storage)\b", re.IGNORECASE)
-DEBT_PATTERN = re.compile(r"\b(loan|principal|debt\s*service|amortization|equipment\s*lease|note\s*pay(?:able)?)\b", re.IGNORECASE)
+RENT_PATTERN = re.compile(
+    r"\b(rent|(?<!equipment\s)lease|property\s+management|landlord|realty|storage|"
+    r"real\s*estate|commercial\s*rent|wework|regus|office\s*space|premises|suite\s*lease|building\s*lease)\b",
+    re.IGNORECASE,
+)
+DEBT_PATTERN = re.compile(
+    r"\b(loan|principal|debt\s*service|amortization|equipment\s*lease|note\s*pay(?:able)?|"
+    r"sba(?:\s*loan)?|line\s*of\s*credit|revolver|interest\s*pmt|mca|ondeck|kabbage|"
+    r"fundbox|merchant\s*cash|term\s*loan|credit\s*facility)\b",
+    re.IGNORECASE,
+)
 # Checked in order so each outflow lands in exactly one obligation.
 OBLIGATION_PATTERNS = (("DEBT_SERVICE", DEBT_PATTERN), ("PAYROLL", PAYROLL_PATTERN), ("RENT", RENT_PATTERN))
 
@@ -116,11 +130,83 @@ def _detect_obligation(
     )
 
 
+def _detect_periodic_outflows(
+    rows: Sequence[DemoTransaction],
+    existing_categories: set[str],
+) -> list[DetectedObligation]:
+    """Detects recurring monthly outflows that lack explicit memo keywords.
+
+    Groups negative outflows with similar amounts (+/- 5%) occurring on approximately
+    the same day of the month (+/- 2 days) across at least 2 distinct calendar months.
+    """
+    outflows = [r for r in rows if r.amount < 0]
+    if len(outflows) < 2:
+        return []
+
+    candidates: list[list[DemoTransaction]] = []
+    used_ids: set[str] = set()
+
+    for i, tx1 in enumerate(outflows):
+        if tx1.transaction_id in used_ids:
+            continue
+        amt1 = abs(tx1.amount)
+        if amt1 <= Decimal("50.00"):  # Ignore incidental micro fees
+            continue
+        cluster = [tx1]
+        for tx2 in outflows[i + 1 :]:
+            if tx2.transaction_id in used_ids:
+                continue
+            amt2 = abs(tx2.amount)
+            if abs(amt1 - amt2) / max(amt1, amt2) <= Decimal("0.05"):
+                day_diff = abs(tx1.posted_on.day - tx2.posted_on.day)
+                if day_diff <= 2 or day_diff >= 28:
+                    cluster.append(tx2)
+
+        distinct_months = {(t.posted_on.year, t.posted_on.month) for t in cluster}
+        if len(distinct_months) >= 2:
+            candidates.append(cluster)
+            for t in cluster:
+                used_ids.add(t.transaction_id)
+
+    inferred: list[DetectedObligation] = []
+    for cluster in candidates:
+        avg_amt = sum((abs(t.amount) for t in cluster), Decimal("0")) / Decimal(len(cluster))
+        days = [t.posted_on.day for t in cluster]
+        primary_day = max(set(days), key=days.count)
+
+        if primary_day >= 24 and "PAYROLL" not in existing_categories:
+            cat = "PAYROLL"
+            existing_categories.add("PAYROLL")
+        elif primary_day <= 5 and "RENT" not in existing_categories:
+            cat = "RENT"
+            existing_categories.add("RENT")
+        elif "DEBT_SERVICE" not in existing_categories:
+            cat = "DEBT_SERVICE"
+            existing_categories.add("DEBT_SERVICE")
+        else:
+            continue
+
+        inferred.append(
+            DetectedObligation(
+                category=cat,
+                average_amount=avg_amt.quantize(Decimal("0.01"), rounding=ROUND_HALF_UP),
+                primary_day_of_month=primary_day,
+            )
+        )
+
+    return inferred
+
+
 def detect_obligations(rows: Sequence[DemoTransaction], cache: Optional[dict] = None) -> list[DetectedObligation]:
     """Recurring payroll, rent and debt service found in the statement, in that order."""
     cache = {} if cache is None else cache
-    found = (_detect_obligation(rows, category, cache) for category in ("PAYROLL", "RENT", "DEBT_SERVICE"))
-    return [ob for ob in found if ob is not None]
+    found = [_detect_obligation(rows, category, cache) for category in ("PAYROLL", "RENT", "DEBT_SERVICE")]
+    detected = [ob for ob in found if ob is not None]
+    existing = {ob.category for ob in detected}
+    if len(existing) < 3:
+        periodic = _detect_periodic_outflows(rows, existing)
+        detected.extend(periodic)
+    return detected
 
 
 def simulate_balances(

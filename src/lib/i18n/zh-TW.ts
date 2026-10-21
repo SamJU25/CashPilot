@@ -302,7 +302,7 @@ export const zhTW: Partial<Record<Key, string>> = {
   'risk.NEAR_PRIME': '次優',
   'risk.HIGH_RISK': '高風險',
   'scale.high': '高風險',
-  'scale.cond': '有條件',
+  'scale.cond': '接近優質',
   'scale.prime': '優質',
   'fund.proposal': '若以逾期的 Northwind 發票作為擔保，可取得最高 {amount} 的營運資金額度。',
   'fund.need': '您需要',

@@ -1,6 +1,6 @@
 ---
 trigger: always_on
-description: Auto-apply Superpowers engineering methodology: spec alignment before code, root-cause debugging, and fresh verification before completion.
+description: "Auto-apply Superpowers engineering methodology: spec alignment before code, root-cause debugging, and fresh verification before completion."
 ---
 
 # Superpowers Engineering Methodology

@@ -14,18 +14,33 @@ import { ApiError } from '@/lib/api';
 import { addDaysIso, liveHistory, liveProjection, runScenario, todayIso } from '@/lib/live-forecast';
 import { WhatIf } from '@/components/overview/what-if';
 import { centsToString, formatDate, formatMoney, stringToCents } from '@/lib/format';
-import { ANALYSIS, ANCHOR, BASE, BASE_SCENARIO, COMPANY, INTENTS, OVERDUE_INVOICE, SERIES, TODAY, TOTAL_SERIES, project, type Projection, type Scenario } from '@/lib/mock/demo';
+import { ANALYSIS, ANCHOR, BASE, BASE_SCENARIO, COMPANY, INTENTS, OVERDUE_INVOICE, RECEIVABLES, SERIES, TODAY, TOTAL_SERIES, project, type Projection, type Scenario } from '@/lib/mock/demo';
 import { spring } from '@/lib/motion';
 import { useData } from '@/lib/use-data';
 import { useIntents, useWorkspace } from '@/lib/workspace';
 import type { CashAnalysis } from '@/lib/types';
 import { useT, type Key } from '@/lib/i18n';
 import { QuickCashDialog } from '@/components/overview/quick-cash-dialog';
+import { ShortfallHero } from '@/components/overview/hero';
+import { SplitFlap } from '@/components/common/split-flap';
 
 const SAMPLE_HISTORY: ChartHistory = {
   total: TOTAL_SERIES,
   accounts: SERIES.map((s) => ({ account_id: s.account_id, points: s.points.map((p) => ({ date: p.date, cents: p.balance === null ? null : stringToCents(p.balance) })) })),
 };
+
+/** Page-level tools: entering cash and refreshing statements sit with the page, away from the decision buttons. */
+function PageTools() {
+  const { t } = useT();
+  return (
+    <>
+      <QuickCashDialog size="sm" />
+      <Button asChild size="sm" variant="ghost">
+        <Link href="/statements">{t('ov.hero.update')}</Link>
+      </Button>
+    </>
+  );
+}
 
 function Welcome() {
   const { loadSample } = useWorkspace();
@@ -53,7 +68,7 @@ function Welcome() {
  * levers join once the backend sends the forecast and series (handoff items 1 to 3).
  */
 function LiveOverview({ analysis: a }: { analysis: CashAnalysis }) {
-  const { t, rich, lang } = useT();
+  const { t, rich } = useT();
   const { live, alertThresholdDays } = useWorkspace();
   const pending = useIntents().find((i) => i.status === 'STAGED_PENDING_HITL');
   const today = todayIso();
@@ -65,11 +80,40 @@ function LiveOverview({ analysis: a }: { analysis: CashAnalysis }) {
   const [scenarioError, setScenarioError] = useState<string | null>(null);
   const changed = scenario.cutPct > 0 || scenario.extraMonthlyCents > 0 || scenario.collectInvoice;
 
-  // The collection lever needs a known overdue amount and states its one assumption: payment a week out.
+  // The collection lever supports all overdue receivables or specific delinquent debtors.
+  const debtors = useMemo(() => {
+    if (!live.receivables) return [];
+    return (live.receivables.top_debtors ?? []).filter((d) => stringToCents(d.overdue_amount) > 0);
+  }, [live.receivables]);
+
   const overdue = live.receivables && stringToCents(live.receivables.total_overdue) > 0 ? live.receivables.total_overdue : null;
   const collectDate = f ? addDaysIso(f.anchor_date > today ? f.anchor_date : today, 7) : today;
+
+  const collectOptions = useMemo(() => {
+    if (!overdue) return [];
+    const opts = [{ id: 'ALL', name: t('whatif.allOverdue'), amount: overdue }];
+    for (const d of debtors) {
+      opts.push({ id: d.customer_name, name: d.customer_name, amount: d.overdue_amount });
+    }
+    return opts;
+  }, [overdue, debtors, t]);
+
+  const activeDebtorId = scenario.selectedDebtorId ?? 'ALL';
+  const chosenAmount = useMemo(() => {
+    if (!overdue) return '0.00';
+    if (activeDebtorId === 'ALL') return overdue;
+    const match = debtors.find((d) => d.customer_name === activeDebtorId);
+    return match ? match.overdue_amount : overdue;
+  }, [overdue, activeDebtorId, debtors]);
+
   const collect = overdue
-    ? { label: t('lv.collect'), note: t('lv.collectNote', { amount: formatMoney(overdue), date: formatDate(collectDate) }) }
+    ? {
+        label: t('lv.collect'),
+        note: t('lv.collectNote', { amount: formatMoney(chosenAmount), date: formatDate(collectDate) }),
+        options: collectOptions,
+        selectedId: activeDebtorId,
+        onSelect: (id: string) => setScenario((prev) => ({ ...prev, selectedDebtorId: id })),
+      }
     : null;
 
   // Levers re-run the forecast on the backend; a short pause keeps slider drags from flooding it.
@@ -80,7 +124,7 @@ function LiveOverview({ analysis: a }: { analysis: CashAnalysis }) {
     }
     let cancelled = false;
     const timer = window.setTimeout(() => {
-      runScenario(a, scenario, overdue ? { date: collectDate, amount: overdue } : null)
+      runScenario(a, scenario, overdue ? { date: collectDate, amount: chosenAmount } : null)
         .then((r) => !cancelled && (setResult(r), setScenarioError(null)))
         .catch((e) => !cancelled && setScenarioError(e instanceof ApiError ? e.message : t('common.timeout')));
     }, 250);
@@ -90,88 +134,49 @@ function LiveOverview({ analysis: a }: { analysis: CashAnalysis }) {
     };
     // a, base and the collection inputs change together with the analysis.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [scenario, a]);
+  }, [scenario, a, chosenAmount, collectDate]);
 
   // A typed-in balance with no spend gives no runway; saying "covers 90 days" would be a claim with no basis.
   const manual = a.document_format === 'MANUAL';
   const noBurn = stringToCents(a.average_daily_burn) <= 0;
-  const shortDate = f?.has_projected_deficit ? f.projected_deficit_date : null;
-  const headline = shortDate
-    ? t('ov.hero.short', { date: formatDate(shortDate) })
-    : a.runway_days !== null
-      ? t('lv.hero.runway', { n: a.runway_days })
+  const fallback =
+    a.runway_days !== null
+      ? rich('lv.hero.runway', { n: <SplitFlap text={String(a.runway_days)} /> })
       : manual && noBurn
         ? t('lv.hero.noBurn')
         : t('ov.hero.safe');
-  const triggerAmount = f
-    ? ({ PAYROLL: f.detected_recurring_payroll, RENT: f.detected_recurring_rent, DEBT_SERVICE: f.detected_recurring_debt } as Record<string, string | null>)[f.primary_deficit_trigger ?? ''] ?? null
-    : null;
-  const daysFromToday = shortDate ? Math.round((Date.parse(shortDate) - Date.parse(today)) / 86_400_000) : null;
-  const shortNode = f ? <Money value={f.projected_shortfall_amount} className="font-medium text-critical-text" /> : null;
   const basis = manual
     ? t(noBurn ? 'lv.hero.manual' : 'lv.hero.manualBurn', { date: formatDate(a.end_date!, true), burn: formatMoney(a.average_daily_burn) })
     : t('lv.hero.basis', { from: formatDate(a.start_date!), to: formatDate(a.end_date!, true), burn: formatMoney(a.average_daily_burn) });
 
   return (
-    <div className="space-y-12">
-      <motion.section initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={spring.smooth} aria-labelledby="hero">
-        {f && (
-          <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
-            <SeverityBadge severity={f.severity} />
-          </div>
-        )}
-        <h1 id="hero" className="mt-3 text-3xl font-semibold tracking-tight text-balance sm:text-[2.5rem] sm:leading-[1.15]">
-          {headline}
-        </h1>
-        {shortDate && f && (
-          <p className="mt-3 max-w-2xl text-base text-ink-2">
-            {triggerAmount
-              ? rich('ov.hero.why', { trigger: t(`trigger.${f.primary_deficit_trigger}` as Key), amount: <Money value={triggerAmount} />, short: shortNode })
-              : rich('ov.hero.whyBurn', { short: shortNode })}
-            {lang.startsWith('zh') ? '' : ' '}
-            {daysFromToday !== null && daysFromToday >= 0 && t('ov.hero.days', { n: daysFromToday })}
-          </p>
-        )}
-        <p className="mt-3 max-w-2xl text-sm text-muted-foreground">{basis}</p>
-        <div className="mt-6 flex flex-wrap gap-3">
-          {pending && (
-            <Button asChild>
-              <Link href="/assistant">{t('ov.hero.review', { amount: formatMoney(centsToString(pending.amount_cents), undefined, { cents: false }) })}</Link>
+    <div className="space-y-8">
+      <ShortfallHero
+        forecast={changed && result ? result.forecast : f}
+        baseForecast={f}
+        changed={changed && !!result}
+        today={today}
+        fallback={fallback}
+        alertThresholdDays={alertThresholdDays}
+        tools={<PageTools />}
+        actions={
+          <>
+            {pending && (
+              <Button asChild size="lg">
+                <Link href="/assistant">{t('ov.hero.review', { amount: formatMoney(centsToString(pending.amount_cents), undefined, { cents: false }) })}</Link>
+              </Button>
+            )}
+            <Button asChild size="lg" variant={pending ? 'outline' : 'default'}>
+              <Link href="/funding">{t('ov.hero.compare')}</Link>
             </Button>
-          )}
-          <QuickCashDialog variant="default" />
-          <Button asChild variant="outline">
-            <Link href="/funding">{t('ov.hero.compare')}</Link>
-          </Button>
-          <Button asChild variant="ghost">
-            <Link href="/statements">{t('ov.hero.update')}</Link>
-          </Button>
-        </div>
-      </motion.section>
+          </>
+        }
+        basis={<span>{basis}</span>}
+      />
 
-      {f?.has_projected_deficit && daysFromToday !== null && daysFromToday <= alertThresholdDays && (
-        <motion.div
-          initial={{ opacity: 0, y: 6 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 rounded-xl border border-warning/30 bg-warning/10 px-4 py-3 text-xs text-warning-text shadow-xs"
-        >
-          <div className="flex items-center gap-2.5 min-w-0">
-            <span className="size-2 shrink-0 rounded-full bg-warning animate-pulse" aria-hidden />
-            <div className="min-w-0">
-              <span className="font-semibold text-foreground mr-1.5">Autonomous Sentinel Alert:</span>
-              <span className="text-muted-foreground">
-                Runway ({daysFromToday}d) is below your {alertThresholdDays}d warning threshold.
-              </span>
-            </div>
-          </div>
-          <Button asChild size="sm" variant="outline" className="h-7 text-xs shrink-0 border-warning/40 text-foreground hover:bg-warning/20">
-            <Link href="/sentinel">
-              <span>Open Sentinel</span>
-              <span className="ml-1 text-[11px] font-mono">→</span>
-            </Link>
-          </Button>
-        </motion.div>
-      )}
+      <section aria-label={t('ov.figuresAria')} className="rounded-xl border bg-card px-5 py-5 sm:px-6">
+        <KeyFigures analysis={a} />
+      </section>
 
       {base && f ? (
         <section className="grid gap-px overflow-hidden rounded-xl border bg-border xl:grid-cols-[1fr_320px]" aria-label={t('ov.forecastAria')}>
@@ -192,10 +197,7 @@ function LiveOverview({ analysis: a }: { analysis: CashAnalysis }) {
         <p className="rounded-lg border border-dashed px-4 py-3 text-sm text-muted-foreground">{t('lv.noForecast')}</p>
       )}
 
-      <section aria-label={t('ov.figuresAria')}>
-        <KeyFigures analysis={a} />
-        <WorkingCapitalCard analysis={a} />
-      </section>
+      <WorkingCapitalCard analysis={a} />
     </div>
   );
 }
@@ -219,96 +221,56 @@ function OverviewSkeleton() {
   );
 }
 
-export default function OverviewPage() {
-  const state = useData(() => ({ analysis: ANALYSIS, base: BASE }));
-  const { accountNames, intentStatus, source, live, alertThresholdDays } = useWorkspace();
+function SampleOverview({ analysis, base }: { analysis: CashAnalysis; base: Projection }) {
+  const { accountNames, intentStatus, alertThresholdDays } = useWorkspace();
   const [scenario, setScenario] = useState<Scenario>(BASE_SCENARIO);
   const result = useMemo(() => project(scenario), [scenario]);
-  const { t, rich, lang } = useT();
+  const { t } = useT();
 
-  if (source === 'live') return live.analysis ? <LiveOverview analysis={live.analysis} /> : <Welcome />;
-  if (state.status === 'empty') return <Welcome />;
-  if (state.status === 'loading') return <OverviewSkeleton />;
-  if (state.status === 'error') return <ErrorState message={state.message} retry={state.retry} />;
-
-  const { analysis, base } = state.data;
   const f = base.forecast;
   const changed = scenario.cutPct > 0 || scenario.extraMonthlyCents > 0 || scenario.collectInvoice;
-  const daysFromToday = f.projected_deficit_date ? Math.round((Date.parse(f.projected_deficit_date) - Date.parse(TODAY)) / 86_400_000) : null;
-  const triggerAmount = { PAYROLL: f.detected_recurring_payroll, RENT: f.detected_recurring_rent, DEBT_SERVICE: f.detected_recurring_debt }[f.primary_deficit_trigger ?? ''] ?? null;
   const pending = INTENTS.find((i) => (intentStatus[i.id] ?? i.status) === 'STAGED_PENDING_HITL');
-  const shortNode = <Money value={f.projected_shortfall_amount} className="font-medium text-critical-text" />;
+
+  const sampleDebtors = RECEIVABLES.top_debtors.filter((d) => stringToCents(d.overdue_amount) > 0);
+  const sampleCollectOptions = [
+    { id: 'ALL', name: t('whatif.allOverdue'), amount: RECEIVABLES.total_overdue },
+    ...sampleDebtors.map((d) => ({ id: d.customer_name, name: d.customer_name, amount: d.overdue_amount })),
+  ];
+  const activeSampleDebtorId = scenario.selectedDebtorId ?? 'ALL';
+  const sampleDebtor = sampleDebtors.find((d) => d.customer_name === activeSampleDebtorId);
+  const chosenSampleAmount = activeSampleDebtorId === 'ALL' ? RECEIVABLES.total_overdue : (sampleDebtor?.overdue_amount ?? centsToString(OVERDUE_INVOICE.cents));
+  // "All" quotes the oldest invoice's lateness.
+  const chosenSampleDays = sampleDebtor?.max_days_overdue ?? Math.max(...sampleDebtors.map((d) => d.max_days_overdue));
 
   return (
-    <div className="space-y-12">
-      <motion.section initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={spring.smooth} aria-labelledby="hero">
-        <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
-          <span>{COMPANY}</span>
-          <SeverityBadge severity={f.severity} />
-        </div>
-        {f.has_projected_deficit ? (
+    <div className="space-y-8">
+      <ShortfallHero
+        forecast={changed ? result.forecast : f}
+        baseForecast={f}
+        changed={changed}
+        today={TODAY}
+        company={COMPANY}
+        fallback={t('ov.hero.safe')}
+        alertThresholdDays={alertThresholdDays}
+        tools={<PageTools />}
+        actions={
           <>
-            <h1 id="hero" className="mt-3 text-3xl font-semibold tracking-tight text-balance sm:text-[2.5rem] sm:leading-[1.15]">
-              {t('ov.hero.short', { date: formatDate(f.projected_deficit_date!) })}
-            </h1>
-            <p className="mt-3 max-w-2xl text-base text-ink-2">
-              {triggerAmount
-                ? rich('ov.hero.why', {
-                    trigger: t(`trigger.${f.primary_deficit_trigger}` as Key),
-                    amount: <Money value={triggerAmount} />,
-                    short: shortNode,
-                  })
-                : rich('ov.hero.whyBurn', { short: shortNode })}
-              {lang.startsWith('zh') ? '' : ' '}
-              {daysFromToday !== null && daysFromToday >= 0 && t('ov.hero.days', { n: daysFromToday })}
-            </p>
-          </>
-        ) : (
-          <h1 id="hero" className="mt-3 text-3xl font-semibold tracking-tight text-balance sm:text-[2.5rem]">
-            {t('ov.hero.safe')}
-          </h1>
-        )}
-        <div className="mt-6 flex flex-wrap gap-3">
-          {pending && (
-            <Button asChild>
-              <Link href="/assistant">{t('ov.hero.review', { amount: formatMoney(centsToString(pending.amount_cents), undefined, { cents: false }) })}</Link>
+            {pending && (
+              <Button asChild size="lg">
+                <Link href="/assistant">{t('ov.hero.review', { amount: formatMoney(centsToString(pending.amount_cents), undefined, { cents: false }) })}</Link>
+              </Button>
+            )}
+            <Button asChild size="lg" variant={pending ? 'outline' : 'default'}>
+              <Link href="/funding">{t('ov.hero.compare')}</Link>
             </Button>
-          )}
-          <Button asChild variant="outline">
-            <Link href="/funding">{t('ov.hero.compare')}</Link>
-          </Button>
-        </div>
-        <p className="mt-4 text-xs text-muted-foreground">
-          {t('ov.hero.basis', { n: analysis.accounts_breakdown?.length ?? 1, from: formatDate(analysis.start_date!), to: formatDate(analysis.end_date!, true) })}{' '}
-          <Link href="/statements" className="underline underline-offset-2 hover:text-foreground">
-            {t('ov.hero.update')}
-          </Link>
-        </p>
-      </motion.section>
+          </>
+        }
+        basis={<span>{t('ov.hero.basis', { n: analysis.accounts_breakdown?.length ?? 1, from: formatDate(analysis.start_date!), to: formatDate(analysis.end_date!, true) })}</span>}
+      />
 
-      {f.has_projected_deficit && daysFromToday !== null && daysFromToday <= alertThresholdDays && (
-        <motion.div
-          initial={{ opacity: 0, y: 6 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 rounded-xl border border-warning/30 bg-warning/10 px-4 py-3 text-xs text-warning-text shadow-xs"
-        >
-          <div className="flex items-center gap-2.5 min-w-0">
-            <span className="size-2 shrink-0 rounded-full bg-warning animate-pulse" aria-hidden />
-            <div className="min-w-0">
-              <span className="font-semibold text-foreground mr-1.5">Autonomous Sentinel Alert:</span>
-              <span className="text-muted-foreground">
-                Runway ({daysFromToday}d) is below your {alertThresholdDays}d warning threshold.
-              </span>
-            </div>
-          </div>
-          <Button asChild size="sm" variant="outline" className="h-7 text-xs shrink-0 border-warning/40 text-foreground hover:bg-warning/20">
-            <Link href="/sentinel">
-              <span>Open Sentinel</span>
-              <span className="ml-1 text-[11px] font-mono">→</span>
-            </Link>
-          </Button>
-        </motion.div>
-      )}
+      <section aria-label={t('ov.figuresAria')} className="rounded-xl border bg-card px-5 py-5 sm:px-6">
+        <KeyFigures analysis={analysis} />
+      </section>
 
       <section className="grid gap-px overflow-hidden rounded-xl border bg-border xl:grid-cols-[1fr_320px]" aria-label={t('ov.forecastAria')}>
         <div className="bg-card p-5 sm:p-6">
@@ -329,17 +291,29 @@ export default function OverviewPage() {
             base={base}
             result={result}
             collect={{
-              label: t('whatif.collect', { name: OVERDUE_INVOICE.customer }),
-              note: t('whatif.collectNote', { amount: formatMoney(centsToString(OVERDUE_INVOICE.cents)), days: OVERDUE_INVOICE.days_overdue, date: formatDate(OVERDUE_INVOICE.expected) }),
+              label: t('lv.collect'),
+              note: t('whatif.collectNote', { amount: formatMoney(chosenSampleAmount), days: chosenSampleDays, date: formatDate(OVERDUE_INVOICE.expected) }),
+              options: sampleCollectOptions,
+              selectedId: activeSampleDebtorId,
+              onSelect: (id: string) => setScenario((prev) => ({ ...prev, selectedDebtorId: id })),
             }}
           />
         </div>
       </section>
 
-      <section aria-label={t('ov.figuresAria')}>
-        <KeyFigures analysis={analysis} />
-        <WorkingCapitalCard analysis={analysis} />
-      </section>
+      <WorkingCapitalCard analysis={analysis} />
     </div>
   );
+}
+
+export default function OverviewPage() {
+  const state = useData(() => ({ analysis: ANALYSIS, base: BASE }));
+  const { source, live } = useWorkspace();
+
+  if (source === 'live') return live.analysis ? <LiveOverview analysis={live.analysis} /> : <Welcome />;
+  if (state.status === 'empty') return <Welcome />;
+  if (state.status === 'loading') return <OverviewSkeleton />;
+  if (state.status === 'error') return <ErrorState message={state.message} retry={state.retry} />;
+
+  return <SampleOverview analysis={state.data.analysis} base={state.data.base} />;
 }
