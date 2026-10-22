@@ -4,6 +4,7 @@ import { DEFAULT_PROVIDER_MODELS } from '@/lib/providers';
 // chat and drafted actions stay in one backend session. Money stays a decimal string end to end.
 
 import type { BalanceAt, CashAnalysis, LiveForecast, RecurringObligation, FinancingOption, ReceivablesAgeing, StagedActionIntent, UnderwritingDossier } from '@/lib/types';
+export type { CashAnalysis };
 
 export const API_URL = (process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:8000').replace(/\/$/, '');
 const SESSION_KEY = 'cashpilot.session.v1';
@@ -225,7 +226,46 @@ export const api = {
     }, 30_000),
   sentinelHeartbeat: () => request<SentinelTelemetry>('/api/v1/sentinel/heartbeat', {}, 5_000),
   sentinelEvaluate: () => request<SentinelEvaluationResult>('/api/v1/sentinel/evaluate', { method: 'POST' }, 15_000),
+  plaidLinkToken: () =>
+    request<{ link_token: string; expiration: string; sandbox_simulated?: boolean }>('/api/v1/plaid/link-token', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({}),
+    }),
+  plaidExchangeToken: (body: { public_token: string; institution_name?: string; institution_id?: string; accounts?: PlaidAccount[] }) =>
+    request<{ success: boolean; item_id: string; institution_name: string; analysis: CashAnalysis; accounts: PlaidAccount[] }>('/api/v1/plaid/exchange-token', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    }),
+  plaidAccounts: () =>
+    request<{ items: PlaidInstitution[]; connected_institutions: number; total_accounts: number; sandbox_simulated: boolean }>('/api/v1/plaid/accounts'),
+  plaidSync: () =>
+    request<CashAnalysis>('/api/v1/plaid/sync', { method: 'POST' }),
+  plaidDisconnect: (itemId: string) =>
+    request<{ success: boolean; item_id: string }>(`/api/v1/plaid/items/${encodeURIComponent(itemId)}`, { method: 'DELETE' }),
 };
+
+export interface PlaidAccount {
+  account_id: string;
+  name: string;
+  official_name?: string | null;
+  type: string;
+  subtype: string;
+  balance: number | null;
+  currency: string;
+  institution_name?: string;
+}
+
+export interface PlaidInstitution {
+  item_id: string;
+  institution_name: string;
+  institution_id: string;
+  connected_at: string;
+  last_synced_at: string;
+  status: string;
+  accounts: PlaidAccount[];
+}
 
 /** A model from fetch-models; `installed`, `repo_id` and `quant` are set for local GGUF models only. */
 export interface LocalModel {

@@ -62,6 +62,7 @@ import { ApiError, api } from "@/lib/api";
 
 import { QuickCashDialog } from "@/components/overview/quick-cash-dialog";
 import { EntriesLedger } from "@/components/overview/entries-ledger";
+import { PlaidButton } from "@/components/statements/plaid-button";
 
 import { ANALYSIS, FILES, SERIES, SPENDING, buildRuns } from "@/lib/mock/demo";
 
@@ -1831,10 +1832,14 @@ export default function StatementsPage() {
               key="compact-drop"
               exit={{ opacity: 0 }}
               transition={fade}
+              className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center"
             >
-              <CompactDropzone
-                onFiles={(files) => setIncoming({ kind: "live", files })}
-              />
+              <div className="flex-1 min-w-0">
+                <CompactDropzone
+                  onFiles={(files) => setIncoming({ kind: "live", files })}
+                />
+              </div>
+              <PlaidButton variant="outline" className="h-auto py-3.5 px-4 shrink-0 sm:self-stretch" />
             </motion.div>
           ) : (
             <motion.div key="drop" exit={{ opacity: 0 }} transition={fade}>
@@ -1844,7 +1849,9 @@ export default function StatementsPage() {
 
               {/* Direct entry or sample company */}
 
-              <div className="mt-3 flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-center text-sm text-muted-foreground">
+              <div className="mt-4 flex flex-wrap items-center justify-center gap-3 text-center text-sm text-muted-foreground">
+                <PlaidButton variant="default" size="default" />
+                <span className="text-muted-foreground/40 hidden sm:inline">•</span>
                 <QuickCashDialog
                   defaultMode="SET_BALANCE"
 
