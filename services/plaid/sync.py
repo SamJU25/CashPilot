@@ -30,7 +30,11 @@ from services.plaid.storage import plaid_storage
 logger = logging.getLogger(__name__)
 
 
-def _format_money(value: Decimal) -> str:
+def _format_money(value: Any) -> str:
+    if value is None:
+        return "0.00"
+    if not isinstance(value, Decimal):
+        value = Decimal(str(value))
     return format(value.quantize(Decimal("0.01"), rounding=ROUND_HALF_UP), "f")
 
 

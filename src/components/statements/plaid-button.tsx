@@ -1,8 +1,10 @@
 'use client';
 
 import { useState } from 'react';
-import { Landmark, CheckCircle2, RotateCw, ShieldCheck, ArrowRight } from 'lucide-react';
+import { Landmark, RotateCw, ShieldCheck, Key, ExternalLink, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import {
   Dialog,
   DialogContent,
@@ -10,7 +12,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { api, type CashAnalysis, type PlaidAccount } from '@/lib/api';
+import { api, type CashAnalysis } from '@/lib/api';
 import { useWorkspace } from '@/lib/workspace';
 import { useT } from '@/lib/i18n';
 import { cn } from '@/lib/utils';
@@ -27,30 +29,6 @@ declare global {
   }
 }
 
-const SANDBOX_INSTITUTIONS = [
-  {
-    id: 'ins_svb',
-    name: 'Silicon Valley Bank',
-    type: 'Commercial Banking',
-    accounts: 'Operating Checking & Money Market',
-    logoBg: 'bg-blue-600',
-  },
-  {
-    id: 'ins_chase',
-    name: 'Chase Commercial',
-    type: 'Business Treasury',
-    accounts: 'Payroll & Operating Checking',
-    logoBg: 'bg-sky-700',
-  },
-  {
-    id: 'ins_mercury',
-    name: 'Mercury Treasury',
-    type: 'Startup & Tech Banking',
-    accounts: 'Checking & Treasury Reserve',
-    logoBg: 'bg-indigo-600',
-  },
-];
-
 export function PlaidButton({
   variant = 'outline',
   size = 'default',
@@ -65,51 +43,95 @@ export function PlaidButton({
   const { t } = useT();
   const { update, setLive, accountNames } = useWorkspace();
   const [busy, setBusy] = useState(false);
-  const [modalOpen, setModalOpen] = useState(false);
+  const [configModalOpen, setConfigModalOpen] = useState(false);
+  const [clientId, setClientId] = useState('');
+  const [secret, setSecret] = useState('');
+  const [env, setEnv] = useState<'sandbox' | 'development' | 'production'>('development');
   const [error, setError] = useState<string | null>(null);
+
+  const openPlaidLinkWithToken = async (linkToken: string) => {
+    if (!window.Plaid) {
+      const script = document.createElement('script');
+      script.src = 'https://cdn.plaid.com/link/v2/stable/link-initialize.js';
+      script.async = true;
+      document.body.appendChild(script);
+      await new Promise((resolve) => {
+        script.onload = resolve;
+      });
+    }
+
+    const handler = window.Plaid?.create({
+      token: linkToken,
+      onSuccess: async (public_token, metadata) => {
+        await handleExchange(
+          public_token,
+          metadata?.institution?.name || 'Connected Bank',
+          metadata?.institution?.institution_id || 'ins_live'
+        );
+      },
+      onExit: () => setBusy(false),
+    });
+
+    handler?.open();
+  };
 
   const handleOpenLink = async () => {
     setBusy(true);
     setError(null);
     try {
-      const res = await api.plaidLinkToken();
-      if (res.sandbox_simulated) {
-        // Open local sandbox selection dialog
-        setModalOpen(true);
-      } else {
-        // Open live Plaid Link script
-        if (!window.Plaid) {
-          const script = document.createElement('script');
-          script.src = 'https://cdn.plaid.com/link/v2/stable/link-initialize.js';
-          script.async = true;
-          document.body.appendChild(script);
-          await new Promise((resolve) => {
-            script.onload = resolve;
-          });
-        }
-        const handler = window.Plaid?.create({
-          token: res.link_token,
-          onSuccess: async (public_token, metadata) => {
-            await handleExchange(public_token, metadata?.institution?.name, metadata?.institution?.institution_id);
-          },
-          onExit: () => setBusy(false),
-        });
-        handler?.open();
+      const status = await api.plaidStatus();
+      if (!status.configured) {
+        // Needs Plaid credentials
+        setConfigModalOpen(true);
+        setBusy(false);
+        return;
       }
+
+      const res = await api.plaidLinkToken();
+      await openPlaidLinkWithToken(res.link_token);
     } catch (e: any) {
-      setError(e?.message || 'Could not reach Open Banking service.');
-    } finally {
+      // If server returned not configured, show config modal
+      if (e?.code === 'PLAID_NOT_CONFIGURED' || e?.status === 400) {
+        setConfigModalOpen(true);
+      } else {
+        setError(e?.message || 'Could not connect to Open Banking service.');
+      }
       setBusy(false);
     }
   };
 
-  const handleExchange = async (publicToken: string, institutionName?: string, institutionId?: string) => {
+  const handleSaveAndConnect = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!clientId.trim() || !secret.trim()) {
+      setError('Please provide both Plaid Client ID and Secret.');
+      return;
+    }
+
+    setBusy(true);
+    setError(null);
+    try {
+      await api.plaidSaveConfig({
+        client_id: clientId.trim(),
+        secret: secret.trim(),
+        env,
+      });
+
+      const res = await api.plaidLinkToken();
+      setConfigModalOpen(false);
+      await openPlaidLinkWithToken(res.link_token);
+    } catch (e: any) {
+      setError(e?.message || 'Failed to initialize Plaid connection.');
+      setBusy(false);
+    }
+  };
+
+  const handleExchange = async (publicToken: string, institutionName: string, institutionId: string) => {
     setBusy(true);
     try {
       const res = await api.plaidExchangeToken({
         public_token: publicToken,
-        institution_name: institutionName || 'Connected Bank',
-        institution_id: institutionId || 'ins_default',
+        institution_name: institutionName,
+        institution_id: institutionId,
       });
 
       const newNames = { ...accountNames };
@@ -134,7 +156,6 @@ export function PlaidButton({
         intentDecidedAt: {},
       });
 
-      setModalOpen(false);
       onConnected?.(res.analysis);
     } catch (e: any) {
       setError(e?.message || 'Failed to exchange bank connection token.');
@@ -156,54 +177,101 @@ export function PlaidButton({
         <span>{busy ? t('plaid.connecting') : t('plaid.connect')}</span>
       </Button>
 
-      {/* Sandbox Institution Picker Modal */}
-      <Dialog open={modalOpen} onOpenChange={setModalOpen}>
+      {/* Real Plaid API Configuration Modal (Shown when credentials are not yet set in .env) */}
+      <Dialog open={configModalOpen} onOpenChange={setConfigModalOpen}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <div className="flex items-center gap-2">
               <Landmark className="size-5 text-primary" />
               <DialogTitle className="text-base font-semibold">
-                {t('plaid.modalTitle')}
+                Connect Real Bank Account
               </DialogTitle>
             </div>
             <DialogDescription className="text-xs text-muted-foreground">
-              {t('plaid.modalDesc')}
+              CashPilot connects directly to over 12,000 commercial and personal financial institutions via Plaid Open Banking.
             </DialogDescription>
           </DialogHeader>
 
-          <div className="space-y-2.5 py-3">
-            {SANDBOX_INSTITUTIONS.map((inst) => (
-              <button
-                key={inst.id}
-                type="button"
-                disabled={busy}
-                onClick={() => handleExchange(`public-sandbox-${inst.id}`, inst.name, inst.id)}
-                className="group flex w-full items-center justify-between rounded-xl border border-border/60 bg-card p-3.5 text-left transition-all hover:border-primary/50 hover:bg-accent/40 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+          <form onSubmit={handleSaveAndConnect} className="space-y-3.5 py-2">
+            <div className="space-y-1.5">
+              <Label htmlFor="plaid-client-id" className="text-xs font-medium">
+                Plaid Client ID
+              </Label>
+              <Input
+                id="plaid-client-id"
+                type="text"
+                value={clientId}
+                onChange={(e) => setClientId(e.target.value)}
+                placeholder="e.g. 5f8b9d..."
+                className="font-mono text-xs"
+                required
+              />
+            </div>
+
+            <div className="space-y-1.5">
+              <Label htmlFor="plaid-secret" className="text-xs font-medium">
+                Plaid Secret
+              </Label>
+              <Input
+                id="plaid-secret"
+                type="password"
+                value={secret}
+                onChange={(e) => setSecret(e.target.value)}
+                placeholder="Plaid secret key"
+                className="font-mono text-xs"
+                required
+              />
+            </div>
+
+            <div className="space-y-1.5">
+              <Label htmlFor="plaid-env" className="text-xs font-medium">
+                Environment
+              </Label>
+              <select
+                id="plaid-env"
+                value={env}
+                onChange={(e) => setEnv(e.target.value as any)}
+                className="w-full rounded-md border border-input bg-background px-3 py-2 text-xs text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
               >
-                <div className="flex items-center gap-3 min-w-0">
-                  <div className={cn('flex size-9 shrink-0 items-center justify-center rounded-lg text-white font-bold text-xs', inst.logoBg)}>
-                    {inst.name.slice(0, 2).toUpperCase()}
-                  </div>
-                  <div className="min-w-0">
-                    <p className="font-medium text-sm text-foreground truncate">{inst.name}</p>
-                    <p className="text-xs text-muted-foreground truncate">{inst.accounts}</p>
-                  </div>
-                </div>
-                <ArrowRight className="size-4 text-muted-foreground/60 transition-transform group-hover:translate-x-0.5 group-hover:text-primary shrink-0" />
-              </button>
-            ))}
-          </div>
+                <option value="development">Development (Connect Real Live Bank Accounts)</option>
+                <option value="sandbox">Sandbox (Plaid Test Credentials)</option>
+                <option value="production">Production</option>
+              </select>
+            </div>
 
-          <div className="flex items-center gap-2 rounded-lg border border-primary/20 bg-primary/5 p-2.5 text-xs text-muted-foreground">
-            <ShieldCheck className="size-4 text-primary shrink-0" />
-            <span>{t('plaid.readOnlyBadge')}</span>
-          </div>
+            <div className="rounded-lg border border-primary/20 bg-primary/5 p-3 text-xs text-muted-foreground space-y-1.5">
+              <div className="flex items-center gap-1.5 font-medium text-foreground">
+                <ShieldCheck className="size-4 text-primary shrink-0" />
+                <span>Tier 1 Read-Only Security</span>
+              </div>
+              <p className="text-[11px] leading-relaxed">
+                CashPilot only observes transaction history and balances. It cannot move funds, initiate wires, or store bank login passwords.
+              </p>
+            </div>
 
-          {error && (
-            <p className="mt-2 text-xs text-critical-text font-medium" role="alert">
-              {error}
-            </p>
-          )}
+            <div className="pt-1 flex items-center justify-between text-xs text-muted-foreground">
+              <a
+                href="https://dashboard.plaid.com/signup"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1 text-primary underline underline-offset-2 hover:text-primary/80"
+              >
+                <span>Get free Plaid keys</span>
+                <ExternalLink className="size-3" />
+              </a>
+              <Button type="submit" size="sm" disabled={busy} className="gap-2">
+                {busy && <RotateCw className="size-3.5 animate-spin" />}
+                <span>Connect Real Bank</span>
+                <ArrowRight className="size-3.5" />
+              </Button>
+            </div>
+
+            {error && (
+              <p className="text-xs text-destructive font-medium" role="alert">
+                {error}
+              </p>
+            )}
+          </form>
         </DialogContent>
       </Dialog>
     </>

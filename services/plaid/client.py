@@ -1,15 +1,12 @@
-"""Plaid API Client with Automatic Sandbox Mock Fallback.
+"""Plaid API Client for Open Banking Integration.
 Handles Link token creation, public token exchange, account metadata,
-and read-only transaction synchronization.
+and read-only transaction synchronization via the official Plaid REST API.
 """
 
 from __future__ import annotations
 
 import logging
 import os
-import uuid
-from datetime import date, timedelta
-from decimal import Decimal
 from typing import Any
 
 import httpx
@@ -35,8 +32,7 @@ class PlaidError(Exception):
 
 class PlaidClient:
     """Async client for Plaid Open Banking REST API.
-    Operates in live mode when PLAID_CLIENT_ID and PLAID_SECRET are configured;
-    otherwise provides a zero-config deterministic sandbox simulator.
+    Operates strictly against the real Plaid API endpoints.
     """
 
     def __init__(
@@ -45,6 +41,15 @@ class PlaidClient:
         secret: str | None = None,
         env: str | None = None,
     ):
+        self.configure(client_id, secret, env)
+
+    def configure(
+        self,
+        client_id: str | None = None,
+        secret: str | None = None,
+        env: str | None = None,
+    ) -> None:
+        """Update client credentials and environment."""
         self.client_id = (client_id or os.getenv("PLAID_CLIENT_ID") or "").strip()
         self.secret = (secret or os.getenv("PLAID_SECRET") or "").strip()
         self.env = (env or os.getenv("PLAID_ENV") or "sandbox").strip().lower()
@@ -53,7 +58,7 @@ class PlaidClient:
 
     @property
     def is_live(self) -> bool:
-        """True if configured with real Plaid API credentials."""
+        """True if configured with Plaid API credentials."""
         return self._is_live
 
     def _headers(self) -> dict[str, str]:
@@ -63,6 +68,15 @@ class PlaidClient:
             "PLAID-SECRET": self.secret,
         }
 
+    def _ensure_configured(self) -> None:
+        if not self._is_live:
+            raise PlaidError(
+                "Plaid credentials (PLAID_CLIENT_ID and PLAID_SECRET) are not configured. "
+                "To connect live bank accounts, configure your Plaid keys.",
+                error_code="PLAID_NOT_CONFIGURED",
+                status_code=400,
+            )
+
     async def create_link_token(
         self,
         client_user_id: str,
@@ -70,14 +84,7 @@ class PlaidClient:
         products: list[str] | None = None,
     ) -> dict[str, Any]:
         """Creates a Link token for the frontend Plaid Link modal."""
-        if not self._is_live:
-            # Deterministic sandbox token
-            return {
-                "link_token": f"link-sandbox-{uuid.uuid4().hex[:16]}",
-                "expiration": (date.today() + timedelta(days=1)).isoformat() + "T00:00:00Z",
-                "request_id": f"req-{uuid.uuid4().hex[:8]}",
-                "sandbox_simulated": True,
-            }
+        self._ensure_configured()
 
         payload = {
             "client_id": self.client_id,
@@ -104,15 +111,8 @@ class PlaidClient:
                 raise PlaidError(f"Plaid network error: {exc}", error_code="NETWORK_ERROR")
 
     async def exchange_public_token(self, public_token: str) -> dict[str, Any]:
-        """Exchanges public_token from the frontend modal for a permanent access_token."""
-        if not self._is_live or public_token.startswith("public-sandbox-") or "mock" in public_token:
-            item_id = f"item-sandbox-{uuid.uuid4().hex[:8]}"
-            return {
-                "access_token": f"access-sandbox-{uuid.uuid4().hex[:24]}",
-                "item_id": item_id,
-                "request_id": f"req-{uuid.uuid4().hex[:8]}",
-                "sandbox_simulated": True,
-            }
+        """Exchanges public_token from the Plaid Link modal for a permanent access_token."""
+        self._ensure_configured()
 
         payload = {
             "client_id": self.client_id,
@@ -135,36 +135,8 @@ class PlaidClient:
                 raise PlaidError(f"Plaid network error: {exc}", error_code="NETWORK_ERROR")
 
     async def get_accounts(self, access_token: str) -> list[dict[str, Any]]:
-        """Retrieves read-only account balance and metadata."""
-        if not self._is_live or access_token.startswith("access-sandbox-"):
-            return [
-                {
-                    "account_id": "acc_svb_ops_01",
-                    "name": "Operating Checking",
-                    "official_name": "Silicon Valley Commercial Checking",
-                    "type": "depository",
-                    "subtype": "checking",
-                    "balances": {
-                        "available": 29922.08,
-                        "current": 29922.08,
-                        "iso_currency_code": "USD",
-                    },
-                    "institution_name": "Silicon Valley Bank",
-                },
-                {
-                    "account_id": "acc_chase_payroll_02",
-                    "name": "Payroll Account",
-                    "official_name": "Chase Total Business Checking",
-                    "type": "depository",
-                    "subtype": "checking",
-                    "balances": {
-                        "available": 12450.00,
-                        "current": 12450.00,
-                        "iso_currency_code": "USD",
-                    },
-                    "institution_name": "Chase Bank",
-                },
-            ]
+        """Retrieves read-only account balance and metadata from Plaid."""
+        self._ensure_configured()
 
         payload = {
             "client_id": self.client_id,
@@ -195,93 +167,9 @@ class PlaidClient:
         """Incremental transaction sync using Plaid /transactions/sync endpoint.
         Returns added, modified, removed transactions and next_cursor.
         """
-        if not self._is_live or access_token.startswith("access-sandbox-"):
-            # Deterministic simulation with 60 days of business transactions
-            today = date.today()
-            simulated_txs = [
-                # Account 1: SVB Operating
-                {
-                    "transaction_id": "tx_svb_001",
-                    "account_id": "acc_svb_ops_01",
-                    "amount": -15000.00,  # Plaid convention: negative is credit/inflow
-                    "date": (today - timedelta(days=25)).isoformat(),
-                    "name": "Client Acme Corp Inflow",
-                    "category": ["Deposit", "Sales"],
-                    "iso_currency_code": "USD",
-                    "pending": False,
-                },
-                {
-                    "transaction_id": "tx_svb_002",
-                    "account_id": "acc_svb_ops_01",
-                    "amount": 3200.00,  # Plaid convention: positive is debit/outflow
-                    "date": (today - timedelta(days=20)).isoformat(),
-                    "name": "AWS Cloud Hosting",
-                    "category": ["Utilities", "Technology"],
-                    "iso_currency_code": "USD",
-                    "pending": False,
-                },
-                {
-                    "transaction_id": "tx_svb_003",
-                    "account_id": "acc_svb_ops_01",
-                    "amount": 5000.00,  # Outflow: Inter-account transfer to Chase Payroll
-                    "date": (today - timedelta(days=15)).isoformat(),
-                    "name": "Transfer to Chase Payroll",
-                    "category": ["Transfer", "Internal"],
-                    "iso_currency_code": "USD",
-                    "pending": False,
-                },
-                {
-                    "transaction_id": "tx_svb_004",
-                    "account_id": "acc_svb_ops_01",
-                    "amount": -8500.00,  # Inflow
-                    "date": (today - timedelta(days=8)).isoformat(),
-                    "name": "Global Tech Subscription Revenue",
-                    "category": ["Deposit", "Sales"],
-                    "iso_currency_code": "USD",
-                    "pending": False,
-                },
-                {
-                    "transaction_id": "tx_svb_005",
-                    "account_id": "acc_svb_ops_01",
-                    "amount": 1450.00,  # Outflow
-                    "date": (today - timedelta(days=2)).isoformat(),
-                    "name": "Office Supplies & Software",
-                    "category": ["Supplies"],
-                    "iso_currency_code": "USD",
-                    "pending": False,
-                },
-                # Account 2: Chase Payroll
-                {
-                    "transaction_id": "tx_chase_001",
-                    "account_id": "acc_chase_payroll_02",
-                    "amount": -5000.00,  # Inflow: Transfer received from SVB Operating
-                    "date": (today - timedelta(days=15)).isoformat(),
-                    "name": "Transfer from SVB Operating",
-                    "category": ["Transfer", "Internal"],
-                    "iso_currency_code": "USD",
-                    "pending": False,
-                },
-                {
-                    "transaction_id": "tx_chase_002",
-                    "account_id": "acc_chase_payroll_02",
-                    "amount": 4200.00,  # Outflow: Payroll run
-                    "date": (today - timedelta(days=14)).isoformat(),
-                    "name": "Gusto Payroll Disbursement",
-                    "category": ["Payroll"],
-                    "iso_currency_code": "USD",
-                    "pending": False,
-                },
-            ]
-            return {
-                "added": simulated_txs,
-                "modified": [],
-                "removed": [],
-                "next_cursor": "cur_sandbox_done",
-                "has_more": False,
-                "sandbox_simulated": True,
-            }
+        self._ensure_configured()
 
-        payload = {
+        payload: dict[str, Any] = {
             "client_id": self.client_id,
             "secret": self.secret,
             "access_token": access_token,

@@ -226,6 +226,14 @@ export const api = {
     }, 30_000),
   sentinelHeartbeat: () => request<SentinelTelemetry>('/api/v1/sentinel/heartbeat', {}, 5_000),
   sentinelEvaluate: () => request<SentinelEvaluationResult>('/api/v1/sentinel/evaluate', { method: 'POST' }, 15_000),
+  plaidStatus: () =>
+    request<{ configured: boolean; env: string; client_id_prefix: string | null }>('/api/v1/plaid/status'),
+  plaidSaveConfig: (body: { client_id: string; secret: string; env?: string }) =>
+    request<{ success: boolean; configured: boolean; env: string }>('/api/v1/plaid/config', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    }),
   plaidLinkToken: () =>
     request<{ link_token: string; expiration: string; sandbox_simulated?: boolean }>('/api/v1/plaid/link-token', {
       method: 'POST',

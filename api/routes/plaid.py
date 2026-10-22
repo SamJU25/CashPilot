@@ -45,12 +45,54 @@ class ExchangeTokenResponse(BaseModel):
     accounts: list[dict[str, Any]]
 
 
+class PlaidConfigPayload(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    client_id: str
+    secret: str
+    env: Optional[str] = "sandbox"
+
+
 class PlaidWebhookPayload(BaseModel):
     model_config = ConfigDict(extra="ignore")
     webhook_type: Optional[str] = None
     webhook_code: Optional[str] = None
     item_id: Optional[str] = None
     error: Optional[Any] = None
+
+
+@router.get("/status")
+async def get_plaid_status() -> dict[str, Any]:
+    """Returns Plaid live connection configuration status."""
+    return {
+        "configured": plaid_client.is_live,
+        "env": plaid_client.env,
+        "client_id_prefix": plaid_client.client_id[:4] + "..." if plaid_client.client_id else None,
+    }
+
+
+@router.post("/config", response_model=None)
+async def save_plaid_config(
+    req: PlaidConfigPayload,
+    x_tenant_token: Optional[str] = Header(default=None, alias="X-Tenant-Token"),
+    authorization: Optional[str] = Header(default=None, alias="Authorization"),
+    x_tenant_id: Optional[str] = Header(default=None, alias="X-Tenant-ID"),
+) -> dict[str, Any] | JSONResponse:
+    """Configures Plaid credentials for connecting real bank accounts."""
+    try:
+        resolve_tenant_identity(
+            x_tenant_token=x_tenant_token,
+            authorization=authorization,
+            x_tenant_id=x_tenant_id,
+        )
+    except TenantTokenError as exc:
+        return JSONResponse(status_code=401, content={"error": {"code": "INVALID_TOKEN", "message": str(exc)}})
+
+    plaid_client.configure(client_id=req.client_id, secret=req.secret, env=req.env or "sandbox")
+    return {
+        "success": True,
+        "configured": plaid_client.is_live,
+        "env": plaid_client.env,
+    }
 
 
 @router.post("/link-token", response_model=None)
