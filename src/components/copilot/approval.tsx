@@ -87,7 +87,7 @@ function useRequestText(intent: StagedActionIntent) {
   const sample = source === 'sample';
   const analysis = sample ? ANALYSIS : live.analysis;
   const dossier = sample ? DOSSIER : live.underwrite?.dossier;
-  const f = sample ? BASE.forecast : null;
+  const f = sample ? BASE.forecast : (live.analysis?.forecast ?? null);
   const from = analysis?.start_date ? formatDate(analysis.start_date) : '–';
   const to = analysis?.end_date ? formatDate(analysis.end_date, true) : '–';
   const money = (v: string | undefined | null) => (v ? formatMoney(v) : '–');
