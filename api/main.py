@@ -40,7 +40,6 @@ from api.routes.agent import router as agent_router
 from api.routes.decision import router as decision_router
 from api.routes.auth import router as auth_router
 from api.routes.sentinel import router as sentinel_router
-from api.routes.plaid import router as plaid_router
 
 @asynccontextmanager
 async def lifespan(_: FastAPI):
@@ -126,7 +125,6 @@ app.include_router(agent_router)
 app.include_router(decision_router)
 app.include_router(auth_router)
 app.include_router(sentinel_router)
-app.include_router(plaid_router)
 
 
 from api.routes.health import get_health_status

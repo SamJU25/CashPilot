@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { motion } from 'motion/react';
-import { AlertCircle, AlertTriangle, Check, CheckCircle2, ChevronsUpDown, ExternalLink, Globe, Landmark, RotateCw, Search, ShieldCheck, Trash2 } from 'lucide-react';
+import { AlertCircle, AlertTriangle, Check, CheckCircle2, ChevronsUpDown, ExternalLink, Globe, RotateCw, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -29,8 +29,7 @@ import { LANGUAGES, useT, type Key, type Lang } from '@/lib/i18n';
 import { useHardware } from '@/lib/local-models';
 import { fade } from '@/lib/motion';
 import { DEFAULT_PROVIDER_MODELS, PROVIDERS, providerName } from '@/lib/providers';
-import { PlaidButton } from '@/components/statements/plaid-button';
-import { ApiError, api, llmConfig, type PlaidInstitution } from '@/lib/api';
+import { ApiError, api, llmConfig } from '@/lib/api';
 import { cn } from '@/lib/utils';
 import { useWorkspace, type Theme } from '@/lib/workspace';
 import { WORLD_CURRENCIES } from '@/lib/currencies';
@@ -49,7 +48,6 @@ The reply you see has the real names put back.`;
 
 const SECTIONS: { id: string; label: Key; description?: Key }[] = [
   { id: 'ai', label: 'set.ai', description: 'set.aiDesc' },
-  { id: 'banking', label: 'set.banking', description: 'set.bankingDesc' },
   { id: 'privacy', label: 'set.privacy', description: 'set.privacyDesc' },
   { id: 'prefs', label: 'set.prefs', description: 'set.prefsDesc' },
   { id: 'about', label: 'set.about' },
@@ -454,233 +452,6 @@ function AiSection() {
   );
 }
 
-function BankingSection() {
-  const { t } = useT();
-  const ws = useWorkspace();
-  const [loading, setLoading] = useState(true);
-  const [syncing, setSyncing] = useState(false);
-  const [items, setItems] = useState<PlaidInstitution[]>([]);
-  const [error, setError] = useState<string | null>(null);
-  const [disconnectingId, setDisconnectingId] = useState<string | null>(null);
-  const [syncResult, setSyncResult] = useState<string | null>(null);
-
-  const fetchAccounts = useCallback(async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      const res = await api.plaidAccounts();
-      setItems(res.items || []);
-    } catch (e: any) {
-      setError(e?.message || 'Failed to load connected bank accounts.');
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    fetchAccounts();
-  }, [fetchAccounts]);
-
-  const handleSync = async () => {
-    setSyncing(true);
-    setSyncResult(null);
-    try {
-      const analysis = await api.plaidSync();
-      ws.setLive({
-        analysis,
-        underwrite: undefined,
-        receivables: undefined,
-        intents: [],
-        entries: [],
-      });
-      ws.update({
-        hasData: true,
-        source: 'live',
-        homeCurrency: analysis.currency || 'USD',
-      });
-      setSyncResult('Synchronized successfully');
-      await fetchAccounts();
-    } catch (e: any) {
-      setError(e?.message || 'Sync failed.');
-    } finally {
-      setSyncing(false);
-    }
-  };
-
-  const handleDisconnect = async (itemId: string) => {
-    setDisconnectingId(itemId);
-    try {
-      await api.plaidDisconnect(itemId);
-      await fetchAccounts();
-    } catch (e: any) {
-      setError(e?.message || 'Disconnect failed.');
-    } finally {
-      setDisconnectingId(null);
-    }
-  };
-
-  if (loading) {
-    return (
-      <div className="space-y-4 py-4">
-        <Skeleton className="h-28 w-full rounded-xl" />
-        <Skeleton className="h-28 w-full rounded-xl" />
-      </div>
-    );
-  }
-
-  return (
-    <div className="space-y-6 pt-4">
-      {/* Overview and Connect action */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-xl border border-border/60 bg-card p-5">
-        <div>
-          <h3 className="text-base font-semibold">{t('plaid.connectedTitle')}</h3>
-          <p className="mt-1 text-sm text-muted-foreground">{t('plaid.connectedDesc')}</p>
-        </div>
-        <div className="flex items-center gap-3">
-          {items.length > 0 && (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleSync}
-              disabled={syncing}
-              className="gap-2"
-            >
-              <RotateCw className={cn('size-4', syncing && 'animate-spin')} />
-              <span>{syncing ? t('plaid.syncing') : t('plaid.sync')}</span>
-            </Button>
-          )}
-          <PlaidButton
-            variant="default"
-            size="sm"
-            onConnected={() => {
-              fetchAccounts();
-            }}
-          />
-        </div>
-      </div>
-
-      {syncResult && (
-        <div className="flex items-center gap-2 rounded-lg border border-emerald-500/20 bg-emerald-500/10 p-3 text-sm text-emerald-600 dark:text-emerald-400">
-          <CheckCircle2 className="size-4 shrink-0" />
-          <span>{syncResult}</span>
-        </div>
-      )}
-
-      {error && (
-        <div className="flex items-center gap-2 rounded-lg border border-destructive/20 bg-destructive/10 p-3 text-sm text-destructive">
-          <AlertCircle className="size-4 shrink-0" />
-          <span>{error}</span>
-        </div>
-      )}
-
-      {/* Empty State */}
-      {items.length === 0 ? (
-        <div className="rounded-xl border border-dashed border-border p-8 text-center">
-          <div className="mx-auto flex size-12 items-center justify-center rounded-xl bg-muted text-muted-foreground">
-            <Landmark className="size-6" />
-          </div>
-          <h4 className="mt-3 text-sm font-semibold">{t('plaid.noAccounts')}</h4>
-          <p className="mt-1 text-xs text-muted-foreground max-w-sm mx-auto">
-            Link your business checking or treasury accounts to enable automatic balance monitoring and multi-account cash reconciliation.
-          </p>
-          <div className="mt-4">
-            <PlaidButton onConnected={() => fetchAccounts()} />
-          </div>
-        </div>
-      ) : (
-        <div className="space-y-4">
-          {items.map((item) => (
-            <div key={item.item_id} className="rounded-xl border border-border/70 bg-card overflow-hidden">
-              <div className="flex items-center justify-between border-b border-border/50 bg-muted/30 px-5 py-3.5">
-                <div className="flex items-center gap-3">
-                  <div className="flex size-8 items-center justify-center rounded-lg bg-primary/10 text-primary font-bold text-xs">
-                    <Landmark className="size-4" />
-                  </div>
-                  <div>
-                    <h4 className="text-sm font-semibold">{item.institution_name}</h4>
-                    <p className="text-[11px] text-muted-foreground">
-                      {item.last_synced_at ? t('plaid.lastSynced', { time: new Date(item.last_synced_at).toLocaleDateString() }) : 'Connected'}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-2">
-                  <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2.5 py-0.5 text-[11px] font-medium text-emerald-600 dark:text-emerald-400">
-                    <ShieldCheck className="size-3" />
-                    Read-only
-                  </span>
-                  <Dialog>
-                    <DialogTrigger asChild>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        disabled={disconnectingId === item.item_id}
-                        className="h-8 px-2 text-muted-foreground hover:text-destructive"
-                      >
-                        <Trash2 className="size-4" />
-                        <span className="sr-only">{t('plaid.disconnect')}</span>
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent>
-                      <DialogHeader>
-                        <DialogTitle>{t('plaid.confirmDisconnectTitle')}</DialogTitle>
-                        <DialogDescription>
-                          {t('plaid.confirmDisconnectDesc', { name: item.institution_name })}
-                        </DialogDescription>
-                      </DialogHeader>
-                      <DialogFooter>
-                        <DialogClose asChild>
-                          <Button variant="outline">{t('plaid.keep')}</Button>
-                        </DialogClose>
-                        <DialogClose asChild>
-                          <Button
-                            variant="destructive"
-                            onClick={() => handleDisconnect(item.item_id)}
-                          >
-                            {t('plaid.disconnect')}
-                          </Button>
-                        </DialogClose>
-                      </DialogFooter>
-                    </DialogContent>
-                  </Dialog>
-                </div>
-              </div>
-
-              <div className="divide-y divide-border/40 px-5">
-                {item.accounts.map((acc) => (
-                  <div key={acc.account_id} className="flex items-center justify-between py-3 text-sm">
-                    <div className="min-w-0">
-                      <p className="font-medium text-foreground truncate">{acc.name}</p>
-                      <p className="text-xs text-muted-foreground capitalize">{acc.subtype || acc.type}</p>
-                    </div>
-                    <div className="text-right">
-                      <span className="font-mono tabular-nums font-medium text-foreground">
-                        {acc.balance !== null ? `$${acc.balance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : '—'}
-                      </span>
-                      <p className="text-[11px] text-muted-foreground">{acc.currency}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {/* Security Guarantee Banner */}
-      <div className="flex items-start gap-3 rounded-xl border border-primary/20 bg-primary/5 p-4 text-xs text-muted-foreground">
-        <ShieldCheck className="size-5 text-primary shrink-0 mt-0.5" />
-        <div>
-          <p className="font-semibold text-foreground">Tier 1 Read-Only Guarantee</p>
-          <p className="mt-1 leading-relaxed">
-            All Open Banking integrations are strictly read-only observation feeds. CashPilot does not store bank login credentials, cannot initiate wires or withdrawals, and uses Fernet AES-128-CBC encryption sealed at rest.
-          </p>
-        </div>
-      </div>
-    </div>
-  );
-}
-
 function PrivacySection() {
   const ws = useWorkspace();
   const { t } = useT();
@@ -883,7 +654,6 @@ export default function SettingsPage() {
           <TabsContent key={s.id} value={s.id} className="mt-6 min-w-0 lg:mt-0">
             <SectionHeading title={s.id === 'about' ? t('set.aboutTitle') : t(s.label)} description={s.description && t(s.description)} />
             {s.id === 'ai' && <AiSection />}
-            {s.id === 'banking' && <BankingSection />}
             {s.id === 'privacy' && <PrivacySection />}
             {s.id === 'prefs' && <PreferencesSection />}
             {s.id === 'about' && <AboutSection />}
