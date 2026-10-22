@@ -21,6 +21,7 @@ import { recordedTotals } from '@/lib/use-cash-change';
 import type { CashAnalysis } from '@/lib/types';
 import { useT, type Key } from '@/lib/i18n';
 import { QuickCashDialog } from '@/components/overview/quick-cash-dialog';
+import { PlaidButton } from '@/components/statements/plaid-button';
 import { ShortfallHero } from '@/components/overview/hero';
 import { CashFlowDetail } from '@/components/overview/cash-bridge';
 import { SplitFlap } from '@/components/common/split-flap';
@@ -42,7 +43,8 @@ function Welcome() {
       <h1 className="text-3xl font-semibold tracking-tight text-balance sm:text-4xl">{t('ov.welcome.title')}</h1>
       <p className="mt-4 text-base text-ink-2">{t('ov.welcome.body')}</p>
       <div className="mt-8 flex flex-wrap gap-3">
-        <Button asChild size="lg">
+        <PlaidButton size="lg" />
+        <Button asChild size="lg" variant="outline">
           <Link href="/statements">{t('common.add')}</Link>
         </Button>
         <QuickCashDialog defaultMode="SET_BALANCE" size="lg" trigger={<Button variant="outline" size="lg">{t('quickCash.triggerDirect')}</Button>} />
@@ -154,6 +156,7 @@ function LiveOverview({ analysis: a }: { analysis: CashAnalysis }) {
             alertThresholdDays={alertThresholdDays}
             actions={
               <>
+                <PlaidButton size="lg" variant="outline" />
                 {pending && (
                   <Button asChild size="lg">
                     <Link href="/assistant">{t('ov.hero.review', { amount: formatMoney(centsToString(pending.amount_cents), undefined, { cents: false }) })}</Link>
@@ -263,6 +266,7 @@ function SampleOverview({ analysis, base }: { analysis: CashAnalysis; base: Proj
             alertThresholdDays={alertThresholdDays}
             actions={
               <>
+                <PlaidButton size="lg" variant="outline" />
                 {pending && (
                   <Button asChild size="lg">
                     <Link href="/assistant">{t('ov.hero.review', { amount: formatMoney(centsToString(pending.amount_cents), undefined, { cents: false }) })}</Link>

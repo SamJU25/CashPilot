@@ -27,6 +27,7 @@ import { cn } from '@/lib/utils';
 import { useT, type Key } from '@/lib/i18n';
 import { CashPilotMark, Wordmark } from '@/components/shell/brand';
 import { QuickCashDialog } from '@/components/overview/quick-cash-dialog';
+import { PlaidButton } from '@/components/statements/plaid-button';
 import { formatDate } from '@/lib/format';
 import { todayIso } from '@/lib/live-forecast';
 import { ANALYSIS, TODAY } from '@/lib/mock/demo';
@@ -380,6 +381,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 </div>
                 <DemoBadge />
                 <RecordButton />
+                <PlaidButton variant="outline" size="sm" className="w-full justify-start gap-2 h-9 text-xs font-normal" />
               </div>
               <div className="flex-1">
                 <NavLinks />
