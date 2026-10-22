@@ -1,7 +1,8 @@
 # CashPilot
 
-> **Autonomous AI Financial Participant & Treasury Copilot for Small & Medium Enterprises**  
-> *FinTechathon 2026 Topic E: AI as a Financial Participant | Tsinghua University PBCSF & WeBank*
+**The Autonomous AI Chief Financial Officer & Treasury Operating System for Growing Businesses.**
+
+CashPilot connects to your business bank accounts, detects hidden cash crunches weeks before payroll is due, standardizes predatory financing terms, and prepares pre-qualified credit lines in real time. Built with banking-grade deterministic Decimal arithmetic, on-device local AI inference, and an owner-sent Three-Tier security gate where money never moves without your signature.
 
 [![CI](https://github.com/SamJU25/CashPilot/actions/workflows/ci.yml/badge.svg)](https://github.com/SamJU25/CashPilot/actions/workflows/ci.yml)
 [![Tests](https://img.shields.io/badge/pytest-1022_passed-brightgreen.svg)](tests/)
@@ -12,13 +13,11 @@
 [![Solidity 0.8.20](https://img.shields.io/badge/Solidity-0.8.20-363636.svg)](contracts/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-**Audited Technical Baseline (2026-10-22)**: **1,022 automated tests passing (1 POSIX-only skip)** across multi-format statement ingestion (CSV and PDF), 25+ deterministic financial calculation routines in pure Python `decimal.Decimal`, dynamic semantic intent routing (FastEmbed ONNX), on-device local GGUF inference (Qwen 2.5 / Llama 3.2 text models via llama.cpp), Universal Cloud LLM Bridge with live dynamic model discovery across 7 providers, Three-Tier Security Gate with owner-sent Tier 3 requests (no execution route), zero-PII execution tracing, and a Next.js 14 executive cockpit with 8 functional workspaces.
-
 ---
 
-## 1. Why CashPilot Exists: The Working Capital Trap
+## The Reality: Why Profitable Businesses Fail
 
-Over 82% of small business failures are not caused by lack of sales or negative margins—they happen because of **cash flow timing mismatches**. A company can close $100,000 in profitable contracts today, yet go bankrupt next month when payroll bounces because enterprise clients take 60 days to pay while suppliers demand payment in 30 days.
+Over 82% of small business bankruptcies happen to profitable companies. The killer is the **Cash Conversion Cycle**—the dead time between paying suppliers and collecting from customers.
 
 ```
        [Raw Materials Purchased]         [Finished Goods Delivered]         [Customer Cash Collected]
@@ -34,21 +33,79 @@ Over 82% of small business failures are not caused by lack of sales or negative 
   ==> THE 75-DAY CASH CHASM: Cash Conversion Cycle (CCC) = DIO (45) + DSO (60) - DPO (30) = 75 Days
 ```
 
-Traditional commercial banks take 4 to 8 weeks to underwrite working capital loans and reject up to 80% of applicants due to a lack of physical real estate collateral. Accounting software only reports what already happened in the past.
+Traditional commercial banks take 4 to 8 weeks to underwrite working capital loans and reject up to 80% of applicants due to a lack of physical real estate collateral. Accounting software only shows what happened last month.
 
-**CashPilot bridges this gap as an active 24/7 financial participant**:
-1. **Reads Reality in Seconds**: Ingests messy, multi-account bank statements (CSV/PDF) and ties out running balances down to the exact cent.
-2. **Forecasts the Deficit**: Simulates forward daily balances across 30/60/90-day horizons to pinpoint the exact date payroll will bounce before it happens.
-3. **Underwrites Without Collateral**: Implements WeBank-style digital transaction underwriting using Daily Average Balance (DAB) and revenue volatility indices.
-4. **Protects the Owner**: Standardizes predatory loan factor rates into true Annual Percentage Rate (APR) and isolates money movement behind an owner-sent Three-Tier security gate.
+**CashPilot changes how companies manage working capital**:
+1. **Reads Reality in Seconds**: Drop in bank statement CSVs or PDFs. CashPilot audits running balances down to the exact cent across all your accounts.
+2. **Predicts the Crunch**: Forward-simulates daily liquidity over 30, 60, and 90-day horizons to pinpoint the exact day cash drops below zero.
+3. **Underwrites Without Collateral**: Replaces audited balance sheets with transactional digital underwriting (Daily Average Balance, cash flow volatility, and payment stability).
+4. **Levels the Playing Field**: Unmasks predatory financing factor rates into true Annual Percentage Rate (APR) so you never pay hidden fees.
 
 ---
 
-## 2. Visual Architecture
+## Product Tour: 8 Specialized Treasury Workspaces
+
+CashPilot ships with **8 dedicated workspaces** compiled in Next.js 14, styled in a precision cockpit theme with Emil Kowalski spring motion transitions and monospace tabular numbers:
+
+```
+┌─────────────────┬────────────────────────────────────────────────────────┐
+│ Workspace       │ Core Capability                                        │
+├─────────────────┼────────────────────────────────────────────────────────┤
+│ Overview        │ Runway gauge, 90-day cash curve, and owner audit ledger│
+│ Assistant       │ Streaming AI CFO grounded in deterministic calculation │
+│ Workstation     │ Live 7-stage cognitive blueprint with execution traces │
+│ Early Warning   │ 30/60/90-day predictive shortfall alerts with sliders  │
+│ Funding         │ Underwriting marketplace with True APR & loan filter   │
+│ Approvals       │ Three-Tier human-in-the-loop proposal staging queue    │
+│ Receivables     │ Aging matrix & SHA-256 consortium double-pledge defense│
+│ Statements      │ Multi-account ingestion with contra-transfer removal   │
+└─────────────────┴────────────────────────────────────────────────────────┘
+```
+
+### 1. Overview (`/`)
+- **Runway & Cash Horizon**: Live gauge displaying days of cash remaining alongside the 90-day trajectory curve.
+- **Dynamic Cash Bridge**: Visual breakdown of starting cash, operating inflows, operating outflows, and net period change.
+- **Owner Entries Ledger**: Immutable audit log of manual adjustments with single-click reversal entries so cash history stays balanced.
+
+### 2. Live Workstation (`/workstation`)
+- **Interactive Execution Blueprint**: Visualizes the complete 7-stage reasoning path (`Ask -> Guard -> Route -> Agent -> Work -> Knowledge -> Answer`).
+- **Telemetry Inspection**: Click any node to inspect execution times, ZenEngine rule IDs, confidence scores, and knowledge card matches.
+- **Zero-PII Trace Context Engine**: Captures full timing and rule trees without storing customer statement rows or message text.
+
+### 3. Early Warning Sentinel (`/sentinel`)
+- **Cash Crunch Early Warning**: Forward simulation identifying the exact day liquidity dips below zero and computing the exact bridge loan required.
+- **Dynamic Window Sliders**: Adjust early warning horizons from 15 to 90 days with instant recalculation of risk profiles.
+
+### 4. AI Treasury Assistant (`/assistant`)
+- **Anti-Slop Grounded Answers**: An AI financial advisor grounded strictly in deterministic calculations without hallucinations.
+- **Live Financial Telemetry**: Side panel displaying live Cash Balance, Cash Runway, Daily Burn, and Period Change with status pips.
+- **Privacy Shield**: Pre-flight regex redacting IBANs, routing numbers, and contact details before data reaches external LLMs.
+
+### 5. Funding Marketplace (`/funding`)
+- **Digital Underwriting (0–100 Score)**: Scores liquidity stability based on Daily Average Balance (DAB) and revenue volatility.
+- **True APR Normalization**: Converts opaque factor rates (e.g., 1.15x) into standardized APR for transparent comparison.
+- **Predatory Loan Quarantine**: Facilities exceeding 36% APR are quarantined in the "Avoid this offer" section.
+
+### 6. Human-In-The-Loop Approvals (`/approvals`)
+- **Non-Destructive Staging**: AI drafts credit applications, factoring terms, and vendor notices into an immutable staging queue.
+- **Owner-Sent Invariant**: The system never executes money movements. The business owner reviews the pre-filled request (`POST /api/v1/actions/{id}/prepare`) and transmits it themselves.
+
+### 7. Statements & Portfolio Consolidator (`/statements`)
+- **Balance Tie-Out Verification**: Validates statements mathematically ($Opening + Inflows - Outflows == Closing$).
+- **Multi-Account Auto-Clustering**: Merges sequential monthly statements and separates distinct accounts automatically.
+- **Contra-Transfer Elimination**: Detects internal sweeps (e.g., Chase Operating $\to$ SVB Payroll) and subtracts them from revenue and burn calculations.
+
+### 8. B2B Receivables & Anti-Double-Financing (`/receivables`)
+- **Aging Invoices Matrix**: Buckets outstanding invoices into Current, 1–30, 31–60, 61–90, and 90+ day tiers.
+- **Consortium Blockchain Verification**: Cryptographic SHA-256 invoice hashing checked against `InvoiceRegistry.sol` on FISCO BCOS to prevent double-pledging across lenders.
+
+---
+
+## System Architecture
 
 ```mermaid
 flowchart TD
-    subgraph Ingestion ["1. Multi-Account Statement Ingestion"]
+    subgraph Ingestion ["1. Multi-Account Ingestion"]
         CSV[CSV Statements] --> Consolidator[Portfolio Consolidator]
         PDF[PDF Statements] --> PDFParser[PDF Extractor]
         PDFParser --> Consolidator
@@ -95,56 +152,13 @@ flowchart TD
 
 ---
 
-## 3. Core Capabilities & Workspaces
+## Deterministic FinTech Engine
 
-CashPilot provides **8 functional workspaces** compiled via Next.js 14 App Router, built with Emil Kowalski spring motion transitions and strict monospace tabular numbers:
-
-### 1. Overview Dashboard (`/`)
-- **Real-Time Cash Runway**: Circular dial gauge and 90-day cash progression curve comparing baseline burn against scenario overlays.
-- **Dynamic Cash Bridge**: Decomposes opening balance, operating inflows, operating outflows, and closing treasury totals.
-- **Owner Entries Ledger**: An immutable audit ledger for manual cash adjustments, featuring single-click offsetting reversal entries so backend statements and audit logs never fall out of sync.
-
-### 2. Live Workstation & Cognitive Blueprint (`/workstation`)
-- **Interactive Execution Blueprint**: Renders the complete 7-stage cognitive pipeline (`Ask -> Guard -> Route -> Agent -> Work -> Knowledge -> Answer`).
-- **Deep Execution Tracing**: Click on any node to view real millisecond timings, matched ZenEngine decision table rules, confidence thresholds, tool execution statuses, and knowledge card retrieval scores.
-- **Zero-PII Contextvar Engine**: Captures execution order and timings via `services/agent/trace.py` without storing customer statement rows or message text.
-
-### 3. Early Warning Sentinel (`/sentinel`)
-- **Forward Shortfall Pinpointing**: Daily closing balance simulation identifying the exact day liquidity falls below zero and computing the exact bridge amount needed.
-- **Customizable Threshold Sliders**: Adjust early warning windows from 15 to 90 days with instant recalculation of deficit risks.
-
-### 4. AI Treasury Assistant (`/assistant`)
-- **Anti-Slop Grounded Reasoning**: Dynamic CFO responses grounded exclusively in deterministic calculation context without hallucinations or fabricated bullet points.
-- **Live Financial Telemetry**: Side-panel telemetry showing Cash Balance, Cash Runway, Daily Burn, and Period Change styled in cockpit typography with live pulsating alert indicators.
-- **Privacy Shield**: Pre-flight regex redacting IBANs, routing numbers, and contact details before data reaches external LLMs.
-
-### 5. Funding Marketplace & Digital Underwriting (`/funding`)
-- **WeBank-Style Continuous Liquidity Score (0–100)**: Evaluates revenue volatility, transaction counts, and Daily Average Balance (DAB) rather than relying on stale annual balance sheets.
-- **Truth-in-Lending APR Conversion**: Converts misleading merchant cash advance factor rates (e.g., 1.15x) into annualized APR.
-- **Predatory Loan Quarantine**: Any facility with APR > 36% is automatically stripped from the primary options grid and segregated into the "Avoid this offer" warning banner.
-
-### 6. Human-In-The-Loop Approvals (`/approvals`)
-- **Immutable Staging Queue**: View proposals drafted by the AI agent (credit applications, factoring agreements, vendor notifications).
-- **Zero Auto-Execution Invariant**: Tier 3 financial transactions are never executed by the system. The owner reviews the pre-filled request (`POST /api/v1/actions/{id}/prepare`) and transmits it themselves.
-
-### 7. Statements & Portfolio Consolidator (`/statements`)
-- **Multi-Account Auto-Clustering**: Automatically connects sequential monthly statements using balance tie-outs ($Opening_B == Closing_A \pm \$0.01$).
-- **Contra-Transfer Elimination**: Detects internal wire sweeps between accounts (e.g., transferring $10,000 from Chase Operating to SVB Payroll) and excludes them from revenue and burn calculations.
-- **Row-Level Error Provenance**: Flags corrupt rows with exact failure codes (`INVALID_DATE`, `INVALID_AMOUNT`, `INVALID_ROW_SHAPE`, `DUPLICATE_TRANSACTION_ID`).
-
-### 8. B2B Receivables & Consortium Blockchain (`/receivables`)
-- **Aging Invoices Matrix**: Classifies unpaid customer invoices into Current, 1–30, 31–60, 61–90, and 90+ day aging buckets.
-- **Anti-Double-Financing Defense**: Generates deterministic SHA-256 hashes of B2B invoices and checks them against the consortium ledger (`InvoiceRegistry.sol` on FISCO BCOS) to prevent multiple lenders from factoring the same asset.
-
----
-
-## 4. Pure Deterministic FinTech Engine
-
-All monetary and treasury calculations reside in `services/calculations/` and execute in pure Python `decimal.Decimal` with `ROUND_HALF_UP` rounding. LLMs are strictly forbidden from performing mathematical approximations:
+All monetary calculations execute in isolated Python routines (`services/calculations/`) using `decimal.Decimal` with `ROUND_HALF_UP` rounding. LLMs are never used for arithmetic:
 
 | Financial Routine | Module | Formula / Mechanics |
 |---|---|---|
-| **Daily Average Balance (DAB)** | `services/calculations/dab.py` | Calendar carry-forward across non-banking days: $\text{DAB} = \frac{1}{N} \sum_{t=1}^N \text{Balance}_t$ |
+| **Daily Average Balance (DAB)** | `services/calculations/dab.py` | Carry-forward over weekends/holidays: $\text{DAB} = \frac{1}{N} \sum_{t=1}^N \text{Balance}_t$ |
 | **Cash Conversion Cycle (CCC)** | `services/calculations/working_capital.py` | $\text{CCC} = \text{DSO} + \text{DIO} - \text{DPO}$ |
 | **Revenue Inflow Volatility (CV)** | `services/calculations/predictive_cash.py` | $CV = \frac{\sigma_{\text{weekly}}}{\mu_{\text{weekly}}}$ mapped to LOW / MEDIUM / HIGH / CRITICAL |
 | **Debt Coverage (DSCR & FCCR)** | `services/calculations/credit.py` | $\text{DSCR} = \frac{\text{Net Operating Income}}{\text{Total Debt Service}}$ |
@@ -155,9 +169,36 @@ All monetary and treasury calculations reside in `services/calculations/` and ex
 
 ---
 
-## 5. Quickstart Setup Guide
+## The Three-Tier Security Gate
 
-### Option 1: Fast Docker Launch (Recommended)
+Every action endpoint requires a signed tenant token minted via `POST /api/v1/auth/token`. CashPilot enforces a strict physical separation between intelligence and fund movement:
+
+```
+┌────────────────────────────────────────────────────────────────────────┐
+│ TIER 1: AUTONOMOUS OBSERVATION (Read-Only)                             │
+│ CSV/PDF statement ingestion, 25+ Decimal ratios, runway forecasting.   │
+└───────────────────────────────────┬────────────────────────────────────┘
+                                    │
+                                    ▼
+┌────────────────────────────────────────────────────────────────────────┐
+│ TIER 2: STAGING QUEUE (Queue Only — Zero Capital Movement)             │
+│ Financing proposals and reminders drafted in a Fernet-sealed ledger.   │
+└───────────────────────────────────┬────────────────────────────────────┘
+                                    │
+                                    ▼
+┌────────────────────────────────────────────────────────────────────────┐
+│ TIER 3: OWNER-SENT REQUEST (Never Executed by System)                  │
+│ CashPilot prepares the request draft at POST /api/v1/actions/{id}/     │
+│ prepare. The business owner transmits it themselves. Zero payment      │
+│ credentials stored in the system = Zero prompt injection drain risk.   │
+└────────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## Quickstart & Deployment
+
+### Option 1: One-Command Docker Launch (Recommended)
 
 Requires [Docker Desktop](https://www.docker.com/products/docker-desktop/) or Docker Engine with Docker Compose.
 
@@ -169,7 +210,7 @@ cd CashPilot
 # 2. Copy the environment template
 cp .env.example .env
 
-# 3. Launch isolated multi-stage containers
+# 3. Launch all services in isolated containers
 docker compose up --build -d
 ```
 
@@ -178,10 +219,10 @@ docker compose up --build -d
 - **Interactive OpenAPI Documentation**: Open <http://localhost:8000/docs>
 
 ```bash
-# View live container logs
+# View live logs
 docker compose logs -f
 
-# Stop containers
+# Tear down
 docker compose down
 ```
 
@@ -232,34 +273,7 @@ CashPilot adapts seamlessly to your environment:
 
 ---
 
-## 6. The Three-Tier Human-In-The-Loop Security Gate
-
-Every action endpoint requires a verified tenant token issued by `POST /api/v1/auth/token`. CashPilot enforces a strict physical separation between analysis and execution:
-
-```
-┌────────────────────────────────────────────────────────────────────────┐
-│ TIER 1: AUTONOMOUS OBSERVATION (Read-Only)                             │
-│ CSV/PDF statement ingestion, 25+ Decimal ratios, runway forecasting.   │
-└───────────────────────────────────┬────────────────────────────────────┘
-                                    │
-                                    ▼
-┌────────────────────────────────────────────────────────────────────────┐
-│ TIER 2: STAGING QUEUE (Queue Only — Zero Capital Movement)             │
-│ Financing proposals and reminders drafted in a Fernet-sealed ledger.   │
-└───────────────────────────────────┬────────────────────────────────────┘
-                                    │
-                                    ▼
-┌────────────────────────────────────────────────────────────────────────┐
-│ TIER 3: OWNER-SENT REQUEST (Never Executed by System)                  │
-│ CashPilot prepares the request draft at POST /api/v1/actions/{id}/     │
-│ prepare. The business owner transmits it themselves. Zero payment      │
-│ credentials stored in the system = Zero prompt injection drain risk.   │
-└────────────────────────────────────────────────────────────────────────┘
-```
-
----
-
-## 7. Automated Test Suite & Verification
+## Automated Verification Suite
 
 Run the full deterministic verification suite from the repository root:
 
@@ -287,7 +301,7 @@ tests/e2e/               2 passed            (Full Multi-Statement Ingestion to 
 
 ---
 
-## 8. Documentation Index
+## Documentation Index
 
 | Specification | Focus & Technical Scope |
 |---|---|
@@ -299,8 +313,8 @@ tests/e2e/               2 passed            (Full Multi-Statement Ingestion to 
 
 ---
 
-## 9. License & Academic Attribution
+## Origin & License
 
-Developed for **FinTechathon 2026 Topic E: AI as a Financial Participant**, organized by Tsinghua University PBCSF and WeBank.
+Developed for FinTechathon 2026 (Tsinghua University PBCSF & WeBank).
 
 Distributed under the MIT License. See [`LICENSE`](LICENSE) for complete terms.
