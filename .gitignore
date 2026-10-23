@@ -86,5 +86,9 @@ dataset/
 
 
 
+# Rust / Tauri
+src-tauri/target/
+src-tauri/gen/
+
 # Next.js local env files hold the dev enrollment key
 .env*.local

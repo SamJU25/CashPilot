@@ -2920,5 +2920,17 @@
     "seen": 1792784164.2489266,
     "ast_hash": "8c66eddd6dfc40ae1da5508af7b9dacf",
     "semantic_hash": ""
+  },
+  "src/app/privacy/page.tsx": {
+    "mtime": 1792787017.3611617,
+    "seen": 1792787095.204749,
+    "ast_hash": "024780335b1e5674674d39c81d4f7f61",
+    "semantic_hash": ""
+  },
+  "src/app/terms/page.tsx": {
+    "mtime": 1792787027.7625458,
+    "seen": 1792787095.2053285,
+    "ast_hash": "a162c76a816b3db05dcefa0410164b20",
+    "semantic_hash": ""
   }
 }
