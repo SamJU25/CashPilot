@@ -112,8 +112,8 @@ function RunList({ title, runs, current, onPick }: { title: string; runs: Record
 
 export default function WorkstationPage() {
   const { t } = useT();
-  const { source, loadSample } = useWorkspace();
-  const isDemo = source === 'sample';
+  const { source, hasData, loadSample } = useWorkspace();
+  const isDemo = hasData && source === 'sample';
   const [own, setOwn] = useState<RecordedRun[]>([]);
   const [current, setCurrent] = useState<string>('');
   const [selected, setSelected] = useState<string | null>(null);

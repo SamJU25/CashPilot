@@ -65,7 +65,7 @@ interface Prefs {
 
 const DEFAULTS: Prefs = {
   hasData: false,
-  source: 'sample',
+  source: 'live',
   accountNames: DEFAULT_ACCOUNT_NAMES,
   theme: 'system',
   homeCurrency: 'USD',
@@ -98,7 +98,12 @@ const WorkspaceContext = createContext<Workspace | null>(null);
 function read(): Prefs {
   try {
     const raw = window.localStorage.getItem(STORAGE_KEY);
-    if (raw) return { ...DEFAULTS, ...JSON.parse(raw) };
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      const merged: Prefs = { ...DEFAULTS, ...parsed };
+      if (!merged.hasData) merged.source = 'live';
+      return merged;
+    }
   } catch {
     // Unreadable storage falls through to defaults.
   }
@@ -179,7 +184,7 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
     // The backend keeps the session's statement until told otherwise; a failed call still drops it from this tab.
     api.clearSession().catch(() => {}).finally(resetSession);
     setLiveState(NO_LIVE);
-    setPrefs((p) => ({ ...p, hasData: false, source: 'sample', accountNames: DEFAULT_ACCOUNT_NAMES, intentStatus: {}, intentDecidedAt: {} }));
+    setPrefs((p) => ({ ...p, hasData: false, source: 'live', accountNames: DEFAULT_ACCOUNT_NAMES, intentStatus: {}, intentDecidedAt: {} }));
   }, [prefs.source]);
 
   const value = useMemo(

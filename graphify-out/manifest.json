@@ -966,9 +966,9 @@
     "semantic_hash": ""
   },
   "package.json": {
-    "mtime": 1792788460.7213247,
-    "seen": 1792793024.0589366,
-    "ast_hash": "c92e8c4241d4f74bffdb2d398609da7e",
+    "mtime": 1792794959.9308124,
+    "seen": 1792796615.096731,
+    "ast_hash": "d31c0c95063d77269a81295fcd5c5ae4",
     "semantic_hash": ""
   },
   "CLAUDE.md": {
@@ -1128,9 +1128,9 @@
     "semantic_hash": ""
   },
   "next.config.js": {
-    "mtime": 1792520946.8566668,
-    "seen": 1792521033.6582174,
-    "ast_hash": "d8055d76e8bd201022cea4535179f8cc",
+    "mtime": 1792794048.9277122,
+    "seen": 1792796615.0967274,
+    "ast_hash": "351eb9dcacdd65f895711a758db80e19",
     "semantic_hash": ""
   },
   "services/calculations/cash_analysis.py": {
@@ -2484,9 +2484,9 @@
     "semantic_hash": ""
   },
   "src/lib/i18n/en.ts": {
-    "mtime": 1792705550.1507032,
-    "seen": 1792705674.7612503,
-    "ast_hash": "55e8ffc5b8d1fddc15b48cdbbf94ee5f",
+    "mtime": 1792795682.4413085,
+    "seen": 1792796615.1179984,
+    "ast_hash": "4d8b04c149bb276cb2f75f3b7d37880b",
     "semantic_hash": ""
   },
   "src/lib/i18n/es.ts": {
@@ -2604,9 +2604,9 @@
     "semantic_hash": ""
   },
   "src/lib/workspace.tsx": {
-    "mtime": 1792662556.8281548,
-    "seen": 1792663170.7016048,
-    "ast_hash": "4c30af6a569c40c942238d924b2faec0",
+    "mtime": 1792796316.5629635,
+    "seen": 1792796615.1207955,
+    "ast_hash": "177c8cf67e061884a6e0fc04a76c2c2c",
     "semantic_hash": ""
   },
   "docs/GLOSSARY.md": {
@@ -2778,9 +2778,9 @@
     "semantic_hash": ""
   },
   "src/app/workstation/page.tsx": {
-    "mtime": 1792660265.0609307,
-    "seen": 1792660436.943925,
-    "ast_hash": "bae34d6e0eb0a156bd24a44d9fc98564",
+    "mtime": 1792796104.8148894,
+    "seen": 1792796615.1103845,
+    "ast_hash": "f8b48420028bec179c9e29ff1cb3de77",
     "semantic_hash": ""
   },
   "src/components/overview/entries-ledger.tsx": {
@@ -2934,9 +2934,9 @@
     "semantic_hash": ""
   },
   "src-tauri/Cargo.toml": {
-    "mtime": 1792792605.157017,
-    "seen": 1792793024.0719826,
-    "ast_hash": "f9ff697ace18bfcaf289b1ac3beaba0d",
+    "mtime": 1792794997.3042362,
+    "seen": 1792796615.1080313,
+    "ast_hash": "9150c1b7c408f63aeea0217a253ec4d6",
     "semantic_hash": ""
   },
   "src-tauri/build.rs": {
@@ -2946,9 +2946,9 @@
     "semantic_hash": ""
   },
   "src-tauri/capabilities/default.json": {
-    "mtime": 1792788414.6247168,
-    "seen": 1792793024.0719874,
-    "ast_hash": "dcc896286d4c8d8fe9df24827d50d027",
+    "mtime": 1792795015.4004672,
+    "seen": 1792796615.10816,
+    "ast_hash": "ef34246e3244ec2eadcf5299340fee9c",
     "semantic_hash": ""
   },
   "src-tauri/src/commands.rs": {
@@ -2958,9 +2958,9 @@
     "semantic_hash": ""
   },
   "src-tauri/src/lib.rs": {
-    "mtime": 1792792685.5952146,
-    "seen": 1792793024.0719912,
-    "ast_hash": "d4e9aa85fb2adac652333fa47ade76d7",
+    "mtime": 1792795043.6343274,
+    "seen": 1792796615.1082938,
+    "ast_hash": "36f94f7539504285817426b3df2c0008",
     "semantic_hash": ""
   },
   "src-tauri/src/main.rs": {
@@ -2970,15 +2970,15 @@
     "semantic_hash": ""
   },
   "src-tauri/tauri.conf.json": {
-    "mtime": 1792788473.7164757,
-    "seen": 1792793024.071995,
-    "ast_hash": "8d0ce0a46e4833b8b0990fda2cadf9f7",
+    "mtime": 1792795029.833106,
+    "seen": 1792796615.1084242,
+    "ast_hash": "24dcb11a284220e60c207be426d59f36",
     "semantic_hash": ""
   },
   "src/lib/native.ts": {
-    "mtime": 1792792705.3741355,
-    "seen": 1792793024.0854425,
-    "ast_hash": "74469c9b63a78a0d3e2a9a806dac3966",
+    "mtime": 1792795127.015975,
+    "seen": 1792796615.1199412,
+    "ast_hash": "8cb624d36ca1d8d03e6446e061afd1d4",
     "semantic_hash": ""
   },
   "src-tauri/icons/128x128.png": {
