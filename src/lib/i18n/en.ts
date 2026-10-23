@@ -154,6 +154,8 @@ export const en = {
   'be.openingFrom': 'Balance from {bank} email',
   'wk.title': 'Workstation',
   'wk.desc': 'How CashPilot answered: the agents, tools, decisions and knowledge cards it used, drawn from the record of each run.',
+  'wk.emptyTitle': 'No Live Agent Runs Yet',
+  'wk.emptyBody': 'Ask the Assistant a financial question to view the live multi-agent trace, ZenEngine rule tables, and tool execution blueprint here.',
   'wk.yours': 'Your questions',
   'wk.examples': 'Example runs on the sample company',
   'wk.askHint': 'Ask the Assistant a question and its run appears here.',

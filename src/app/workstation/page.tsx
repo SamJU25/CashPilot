@@ -1,7 +1,8 @@
 'use client';
 
+import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
-import { RotateCcw } from 'lucide-react';
+import { RotateCcw, Workflow } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { PageHeader } from '@/components/common/bits';
 import { Blueprint } from '@/components/workstation/blueprint';
@@ -10,6 +11,7 @@ import { SAMPLE_RUNS } from '@/lib/mock/traces';
 import { RUNS_EVENT, readRuns, type RecordedRun } from '@/lib/runs';
 import { formatDateTime } from '@/lib/format';
 import { useT, type Key } from '@/lib/i18n';
+import { useWorkspace } from '@/lib/workspace';
 import { cn } from '@/lib/utils';
 
 function Legend() {
@@ -110,8 +112,10 @@ function RunList({ title, runs, current, onPick }: { title: string; runs: Record
 
 export default function WorkstationPage() {
   const { t } = useT();
+  const { source, loadSample } = useWorkspace();
+  const isDemo = source === 'sample';
   const [own, setOwn] = useState<RecordedRun[]>([]);
-  const [current, setCurrent] = useState<string>(SAMPLE_RUNS[0].id);
+  const [current, setCurrent] = useState<string>('');
   const [selected, setSelected] = useState<string | null>(null);
   const [playKey, setPlayKey] = useState(0);
 
@@ -119,22 +123,57 @@ export default function WorkstationPage() {
     const load = () => {
       const runs = readRuns();
       setOwn(runs);
-      if (runs[0]) setCurrent((c) => (c.startsWith('sample-') ? runs[0].id : c));
+      if (runs[0]) {
+        setCurrent(runs[0].id);
+      } else if (isDemo) {
+        setCurrent(SAMPLE_RUNS[0].id);
+      }
     };
     load();
     window.addEventListener(RUNS_EVENT, load);
     return () => window.removeEventListener(RUNS_EVENT, load);
-  }, []);
+  }, [isDemo]);
 
-  const run = [...own, ...SAMPLE_RUNS].find((r) => r.id === current) ?? SAMPLE_RUNS[0];
-  const steps = useMemo(() => stepsOf(run.trace), [run]);
-  const stats = summary(run.trace);
+  // When demo mode is active, include sample runs. Otherwise, only user runs are shown.
+  const availableRuns = useMemo(() => {
+    return isDemo ? [...own, ...SAMPLE_RUNS] : own;
+  }, [isDemo, own]);
+
+  const run = availableRuns.find((r) => r.id === current) ?? availableRuns[0] ?? null;
+  const steps = useMemo(() => (run ? stepsOf(run.trace) : []), [run]);
+  const stats = useMemo(() => (run ? summary(run.trace) : null), [run]);
   const step = steps.find((s) => s.key === selected) ?? null;
   const pick = (id: string) => {
     setCurrent(id);
     setSelected(null);
     setPlayKey((k) => k + 1);
   };
+
+  // If not in demo mode and no live user runs exist, display a clean empty guidance state
+  if (!isDemo && own.length === 0) {
+    return (
+      <div>
+        <PageHeader title={t('wk.title')} description={t('wk.desc')} />
+        <div className="mt-8 rounded-xl border border-dashed bg-card/50 px-6 py-16 text-center">
+          <Workflow className="mx-auto size-12 text-muted-foreground/50" aria-hidden />
+          <h2 className="mt-4 font-display text-lg font-semibold">{t('wk.emptyTitle')}</h2>
+          <p className="mx-auto mt-2 max-w-md text-sm text-muted-foreground">
+            {t('wk.emptyBody')}
+          </p>
+          <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+            <Button asChild>
+              <Link href="/assistant">{t('nav.assistant')}</Link>
+            </Button>
+            <Button variant="outline" onClick={() => loadSample()}>
+              {t('ov.welcome.sample')}
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!run || !stats) return null;
 
   return (
     <div>
@@ -143,8 +182,8 @@ export default function WorkstationPage() {
       <div className="space-y-4">
         <aside className="space-y-3">
           <RunList title={t('wk.yours')} runs={own} current={run.id} onPick={pick} />
-          <RunList title={t('wk.examples')} runs={SAMPLE_RUNS} current={run.id} onPick={pick} />
-          {own.length === 0 && <p className="text-xs text-muted-foreground">{t('wk.askHint')}</p>}
+          {isDemo && <RunList title={t('wk.examples')} runs={SAMPLE_RUNS} current={run.id} onPick={pick} />}
+          {own.length === 0 && isDemo && <p className="text-xs text-muted-foreground">{t('wk.askHint')}</p>}
         </aside>
 
         <section className="min-w-0 overflow-hidden rounded-xl border bg-card">
