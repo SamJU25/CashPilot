@@ -6,7 +6,8 @@ Issues and validates HMAC-SHA256 signed tenant identity tokens.
 from __future__ import annotations
 
 from typing import Optional
-from fastapi import APIRouter, Header, HTTPException, status
+import os
+from fastapi import APIRouter, Header, HTTPException, Request, status
 from pydantic import BaseModel, ConfigDict, Field
 
 from services.security.tenant_token import (
@@ -98,3 +99,32 @@ async def verify_token(
             detail=f"Invalid tenant authentication token: {exc}",
             headers={"WWW-Authenticate": "Bearer"},
         )
+
+
+@router.post(
+    "/local-session",
+    response_model=TokenResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Issue Desktop / Localhost Session Token",
+    description="Allows local desktop application loopback sessions to obtain an authenticated tenant token.",
+)
+async def local_session_token(request: Request) -> TokenResponse:
+    client_host = request.client.host if request.client else ""
+    is_loopback = client_host in ("127.0.0.1", "::1", "localhost") or not client_host
+    open_session = os.getenv("CASHPILOT_OPEN_SESSION", "").strip() in ("1", "true", "yes")
+
+    if not is_loopback and not open_session:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Local session token issuance only permitted from loopback interface."
+        )
+
+    tenant_id = os.getenv("TENANT_ENROLLMENT_TENANT_ID", "SME-LOCAL-DEV").strip()
+    ttl = 86400 * 30
+    token = issue_tenant_token(tenant_id=tenant_id, ttl_seconds=ttl)
+    return TokenResponse(
+        access_token=token,
+        token_type="Bearer",
+        tenant_id=tenant_id,
+        expires_in=ttl,
+    )

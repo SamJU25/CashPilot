@@ -31,32 +31,62 @@ pub fn run() {
       app.handle().plugin(tauri_plugin_updater::Builder::new().build())?;
 
       // 3. Supervised Python financial engine
-      let project_root = if std::path::Path::new("../api/main.py").exists() {
-        std::path::PathBuf::from("..")
+      let exe_dir = std::env::current_exe().ok().and_then(|p| p.parent().map(|d| d.to_path_buf()));
+      let project_root = if let Some(ref dir) = exe_dir {
+        if dir.join("api/main.py").exists() {
+          dir.clone()
+        } else if dir.join("../api/main.py").exists() {
+          dir.join("..")
+        } else if dir.join("../../api/main.py").exists() {
+          dir.join("../..")
+        } else {
+          std::path::PathBuf::from(".")
+        }
       } else {
         std::path::PathBuf::from(".")
       };
 
-      let py_bin = if cfg!(windows) { "python" } else { "python3" };
-      match Command::new(py_bin)
-        .current_dir(&project_root)
-        .env("PYTHONPATH", ".")
-        .args(["-m", "api.main"])
-        .spawn()
-      {
-        Ok(child) => {
-          log::info!("Python financial engine started with PID: {}", child.id());
-          *app.state::<EngineProcess>().0.lock().unwrap() = Some(child);
+      let py_candidates = if cfg!(windows) {
+        vec!["python", "py", "python3"]
+      } else {
+        vec!["python3", "python"]
+      };
+
+      let mut spawned = false;
+      for py in &py_candidates {
+        let mut cmd = Command::new(py);
+        cmd.current_dir(&project_root)
+          .env("PYTHONPATH", ".")
+          .args(["-m", "api.main"]);
+
+        #[cfg(windows)]
+        {
+          use std::os::windows::process::CommandExt;
+          // CREATE_NO_WINDOW ensures background execution without flashing console
+          cmd.creation_flags(0x08000000);
         }
-        Err(err) => {
-          log::warn!("Could not auto-spawn Python engine: {err}. Backend may already be running independently.");
+
+        match cmd.spawn() {
+          Ok(child) => {
+            log::info!("Python financial engine started using '{py}' with PID: {}", child.id());
+            *app.state::<EngineProcess>().0.lock().unwrap() = Some(child);
+            spawned = true;
+            break;
+          }
+          Err(err) => {
+            log::debug!("Failed candidate '{py}': {err}");
+          }
         }
+      }
+
+      if !spawned {
+        log::warn!("Could not auto-spawn Python engine candidates. Backend may be running independently.");
       }
 
       Ok(())
     })
     .on_window_event(|window, event| {
-      if let WindowEvent::Destroyed = event {
+      if matches!(event, WindowEvent::CloseRequested { .. } | WindowEvent::Destroyed) {
         if let Some(mut child) = window.state::<EngineProcess>().0.lock().unwrap().take() {
           log::info!("Terminating supervised Python financial engine...");
           let _ = child.kill();

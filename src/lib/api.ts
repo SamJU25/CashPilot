@@ -45,7 +45,20 @@ let tokenPromise: Promise<string | null> | null = null;
 function tenantToken(): Promise<string | null> {
   tokenPromise ??= fetch('/api/session', { method: 'POST' })
     .then(async (r) => (r.ok ? ((await r.json()) as { token: string }).token : null))
-    .catch(() => null);
+    .catch(() => null)
+    .then(async (token) => {
+      if (token) return token;
+      try {
+        const res = await fetch(`${API_URL}/api/v1/auth/local-session`, { method: 'POST' });
+        if (res.ok) {
+          const data = (await res.json()) as { access_token: string };
+          return data.access_token;
+        }
+      } catch {
+        // Fall through
+      }
+      return null;
+    });
   return tokenPromise;
 }
 
@@ -78,11 +91,25 @@ async function request<T>(path: string, init: RequestInit = {}, timeoutMs = TIME
   try {
     res = await fetch(API_URL + path, { ...init, headers, signal });
   } catch (e) {
-    if (init.signal?.aborted || (e instanceof DOMException && e.name === 'AbortError')) {
-      throw e;
+    // If the server is still booting up (e.g. desktop launch), retry GET requests once after a brief pause
+    if ((!init.method || init.method.toUpperCase() === 'GET') && !init.signal?.aborted) {
+      await new Promise((r) => setTimeout(r, 800));
+      try {
+        res = await fetch(API_URL + path, { ...init, headers, signal });
+      } catch (retryErr) {
+        if (init.signal?.aborted || (retryErr instanceof DOMException && retryErr.name === 'AbortError')) {
+          throw retryErr;
+        }
+        if (retryErr instanceof DOMException && retryErr.name === 'TimeoutError') throw new ApiError(0, 'TIMEOUT', `The CashPilot server did not answer within ${timeoutMs / 1000} seconds.`);
+        throw new ApiError(0, 'UNREACHABLE', 'The CashPilot server did not answer. Check that it is running.');
+      }
+    } else {
+      if (init.signal?.aborted || (e instanceof DOMException && e.name === 'AbortError')) {
+        throw e;
+      }
+      if (e instanceof DOMException && e.name === 'TimeoutError') throw new ApiError(0, 'TIMEOUT', `The CashPilot server did not answer within ${timeoutMs / 1000} seconds.`);
+      throw new ApiError(0, 'UNREACHABLE', 'The CashPilot server did not answer. Check that it is running.');
     }
-    if (e instanceof DOMException && e.name === 'TimeoutError') throw new ApiError(0, 'TIMEOUT', `The CashPilot server did not answer within ${timeoutMs / 1000} seconds.`);
-    throw new ApiError(0, 'UNREACHABLE', 'The CashPilot server did not answer. Check that it is running.');
   }
   if (res.status === 401) tokenPromise = null;
   const body = await res.json().catch(() => null);

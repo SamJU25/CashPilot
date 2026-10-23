@@ -100,7 +100,7 @@ app = FastAPI(
 # moves to 3001+ when 3000 is taken, and a blocked origin shows the whole app as offline.
 allowed_origins_env = os.getenv("ALLOWED_ORIGINS")
 origins = [origin.strip() for origin in allowed_origins_env.split(",") if origin.strip()] if allowed_origins_env else []
-origin_regex = None if allowed_origins_env else r"^http://(localhost|127\.0\.0\.1)(:\d+)?$"
+origin_regex = None if allowed_origins_env else r"^(http://(localhost|127\.0\.0\.1)(:\d+)?|https?://tauri\.localhost|tauri://localhost)$"
 
 from api.rate_limit import TokenBucketRateLimiter
 
@@ -146,3 +146,10 @@ async def root():
         "docs": "/docs",
         "health": "/api/v1/health"
     }
+
+
+if __name__ == "__main__":
+    import uvicorn
+    host = os.getenv("HOST", "127.0.0.1")
+    port = int(os.getenv("PORT", "8000"))
+    uvicorn.run("api.main:app", host=host, port=port, reload=False)
