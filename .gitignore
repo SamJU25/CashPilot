@@ -54,6 +54,7 @@ temp/
 graphify-out/cache/ast/
 graphify-out/cache/*.tmp
 graphify-out/.pending_changes
+graphify-out/20*/
 
 # Internal Team Notes & Informal Materials
 TEAM_CHEAT_SHEET*
