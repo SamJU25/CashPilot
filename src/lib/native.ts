@@ -1,4 +1,5 @@
 import { invoke } from '@tauri-apps/api/core';
+import { check } from '@tauri-apps/plugin-updater';
 
 export const isNativeDesktop = (): boolean => {
   return typeof window !== 'undefined' && '__TAURI_INTERNALS__' in window;
@@ -7,6 +8,49 @@ export const isNativeDesktop = (): boolean => {
 export interface EngineStatus {
   is_running: boolean;
   pid: number | null;
+}
+
+export interface UpdateInfo {
+  available: boolean;
+  version?: string;
+  notes?: string;
+}
+
+/**
+ * Checks for over-the-air updates from GitHub Releases.
+ */
+export async function nativeCheckForUpdates(): Promise<UpdateInfo> {
+  if (!isNativeDesktop()) return { available: false };
+  try {
+    const update = await check();
+    if (update) {
+      return {
+        available: true,
+        version: update.version,
+        notes: update.body ?? undefined,
+      };
+    }
+  } catch (err) {
+    console.warn('Update check failed:', err);
+  }
+  return { available: false };
+}
+
+/**
+ * Downloads and applies the latest update, then prompts for relaunch.
+ */
+export async function nativeInstallUpdate(): Promise<boolean> {
+  if (!isNativeDesktop()) return false;
+  try {
+    const update = await check();
+    if (update) {
+      await update.downloadAndInstall();
+      return true;
+    }
+  } catch (err) {
+    console.error('Failed to download/install update:', err);
+  }
+  return false;
 }
 
 /**

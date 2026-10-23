@@ -89,6 +89,10 @@ dataset/
 # Rust / Tauri
 src-tauri/target/
 src-tauri/gen/
+src-tauri/*.key
+src-tauri/*.key.pub
+CashPilot.exe
+*.exe
 
 # Next.js local env files hold the dev enrollment key
 .env*.local

@@ -18,6 +18,7 @@ pub fn run() {
       commands::delete_secret
     ])
     .setup(|app| {
+      // 1. Logging plugin
       if cfg!(debug_assertions) {
         app.handle().plugin(
           tauri_plugin_log::Builder::default()
@@ -26,9 +27,23 @@ pub fn run() {
         )?;
       }
 
-      // Auto-start Python financial engine
+      // 2. Over-the-air auto-updater plugin
+      app.handle().plugin(tauri_plugin_updater::Builder::new().build())?;
+
+      // 3. Supervised Python financial engine
+      let project_root = if std::path::Path::new("../api/main.py").exists() {
+        std::path::PathBuf::from("..")
+      } else {
+        std::path::PathBuf::from(".")
+      };
+
       let py_bin = if cfg!(windows) { "python" } else { "python3" };
-      match Command::new(py_bin).args(["api/main.py"]).spawn() {
+      match Command::new(py_bin)
+        .current_dir(&project_root)
+        .env("PYTHONPATH", ".")
+        .args(["-m", "api.main"])
+        .spawn()
+      {
         Ok(child) => {
           log::info!("Python financial engine started with PID: {}", child.id());
           *app.state::<EngineProcess>().0.lock().unwrap() = Some(child);

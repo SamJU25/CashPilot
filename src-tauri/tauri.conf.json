@@ -35,8 +35,21 @@
       "icons/icon.icns",
       "icons/icon.ico"
     ],
-    "android": {
-      "debugApplicationIdSuffix": ".debug"
+    "windows": {
+      "nsis": {
+        "installerIcon": "icons/icon.ico",
+        "headerImage": "icons/128x128.png",
+        "sidebarImage": "icons/128x128@2x.png",
+        "installMode": "currentUser"
+      }
+    }
+  },
+  "plugins": {
+    "updater": {
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEMyNjNDNDdGQTRDQkEzNDgKUldSSW84dWtmOFJqd2lGem54Zm0wMGM1eTBnaGtGZi8rUWZ1aFZ3QmxKSXN6eFRCdHl3YVNsbm4K",
+      "endpoints": [
+        "https://github.com/SamJU25/CashPilot/releases/latest/download/latest.json"
+      ]
     }
   }
 }
