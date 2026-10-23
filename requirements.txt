@@ -19,6 +19,9 @@ pypdf>=5.1.0
 
 cryptography>=42.0.0
 
+# Bank alert mailbox password lives in the OS credential store, never in .data/
+keyring>=25.0.0
+
 # Numerical arithmetic & local FastEmbed ONNX semantic routing
 numpy>=1.26.0
 fastembed>=0.3.0

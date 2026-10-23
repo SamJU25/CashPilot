@@ -1,7 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { ArrowDownLeft, ArrowUpRight, Scale, Undo2 } from 'lucide-react';
+import Link from 'next/link';
+import { ArrowDownLeft, ArrowUpRight, Mail, Scale, Undo2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Money, SectionTitle } from '@/components/common/bits';
 import { ApiError } from '@/lib/api';
@@ -72,6 +73,13 @@ export function EntriesLedger() {
                 <p className="text-xs text-muted-foreground">
                   {formatDate(e.date, true)}, {accountNames[e.accountId] ?? e.accountId}
                   {done && <span className="ml-2 rounded-full bg-muted px-1.5 py-0.5 text-[11px] font-medium text-ink-2">{t('led.reversed')}</span>}
+                  {e.alertId && (
+                    <Link href="/bank-emails" className="ml-2 inline-flex items-center gap-1 rounded-full bg-primary/10 px-1.5 py-0.5 text-[11px] font-medium text-primary hover:bg-primary/15" title={t('led.fromEmailHint')}>
+                      <Mail className="size-3" aria-hidden />
+                      {t('led.fromEmail')}
+                    </Link>
+                  )}
+                  {e.transfer && <span className="ml-2 rounded-full bg-muted px-1.5 py-0.5 text-[11px] font-medium text-ink-2">{t('be.transfer')}</span>}
                 </p>
               </div>
               <div className="text-right">

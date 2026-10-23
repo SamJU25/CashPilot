@@ -70,84 +70,77 @@ export const humanize = (name: string) =>
 
 export const formatMs = (ms: number) => (ms >= 1000 ? `${(ms / 1000).toFixed(1)} s` : ms >= 10 ? `${Math.round(ms)} ms` : `${ms.toFixed(1)} ms`);
 
-/* ---- Stage layout: steps placed by the kind of work they are, so every run spreads across the sheet. */
+/* ---- Architecture map: the whole system is always drawn; a run lights up the parts it used. */
 
-export const STAGES = ['ask', 'guard', 'route', 'agent', 'work', 'knowledge', 'answer'] as const;
-export type Stage = (typeof STAGES)[number];
+// Real inventory, checked against the backend by tests/unit/test_workstation_inventory.py:
+// knowledge/cards/*.md, the tools each subagent imports, and the DecisionDomain count.
+export const KNOWLEDGE_FILES = [
+  'app_safety.md',
+  'cash_liquidity.md',
+  'credit_debt.md',
+  'financing.md',
+  'marketing_strategy.md',
+  'profitability_unit_economics.md',
+  'underwriting_risk.md',
+  'working_capital.md',
+] as const;
 
-export function stageOf(s: Step): Stage {
-  if (s.kind === 'agent') return 'agent';
-  if (s.kind === 'tool') return 'work';
-  if (s.kind === 'card') return 'knowledge';
+export const DECISION_DOMAINS = 15;
+
+/** Card files to draw: the known ones plus any a newer backend read that this list has not caught up with. */
+export const knowledgeFiles = (steps: Step[]) => [
+  ...new Set([...KNOWLEDGE_FILES, ...steps.filter((s) => s.kind === 'card' && s.detail.file).map((s) => s.detail.file)]),
+];
+
+export const AGENT_TOOLS: Record<Exclude<Lane, 'supervisor'>, { count: number; examples: string[] }> = {
+  liquidity: { count: 16, examples: ['tool_analyze_cash_flow', 'tool_run_cash_scenario', 'tool_calculate_ccc'] },
+  credit: { count: 17, examples: ['tool_calculate_dscr', 'tool_underwrite_credit', 'tool_calculate_loan_amortization'] },
+  risk: { count: 14, examples: ['tool_calculate_break_even', 'tool_calculate_client_concentration', 'tool_calculate_ltv_cac'] },
+};
+
+/** Where a step is drawn: one of the supervisor's sub-boxes, or a subagent's panel. */
+export type Zone = 'guard' | 'intent' | 'persona' | 'direct' | Exclude<Lane, 'supervisor'>;
+
+export function zoneOf(s: Step): Zone {
   if (s.name === 'SECURITY_GATE') return 'guard';
-  if (s.name === 'INTENT_ROUTING' || s.name === 'AGENT_PERSONA') return 'route';
-  return 'work';
+  if (s.name === 'INTENT_ROUTING') return 'intent';
+  if (s.name === 'AGENT_PERSONA') return 'persona';
+  return s.lane === 'supervisor' ? 'direct' : s.lane;
 }
 
-/** A drawn node: a step, or one of the synthetic ends (the question, the answer, "the supervisor kept it"). */
-export interface Node {
+export type EngineFamily = 'rules' | 'model' | 'fallback';
+export const engineFamily = (s: Step): EngineFamily | null =>
+  s.detail.fallback === 'true' ? 'fallback' : s.detail.engine?.startsWith('zen') ? 'rules' : s.detail.engine?.startsWith('system-one') ? 'model' : s.detail.engine ? 'fallback' : null;
+
+/** A connector between parts of the map. `at` is the step index that lights it; numbered ones are the signal path. */
+export interface Link {
   id: string;
-  stage: Stage;
-  step: Step | null;
-  synthetic?: 'ask' | 'answer' | 'kept';
-  x: number;
-  y: number;
-}
-
-export interface Band {
-  stage: Stage;
-  y: number;
-  h: number;
-}
-
-export interface Geometry {
-  width: number;
-  labelW: number;
-  nodeW: number;
-  nodeH: number;
-  gapX: number;
-  gapY: number;
-  pad: number;
+  kind: 'ask' | 'handoff' | 'knowledge' | 'engine' | 'answer';
+  to: Zone | 'answer';
+  from?: Zone;
+  at: number;
+  n?: number;
 }
 
 /**
- * Places nodes in stage bands, top to bottom, each band filled left to right in the order the run
- * reached them and wrapped onto further rows when full. The returned order is the signal path:
- * the question, every step in time order, then the answer.
+ * The connectors a run lit, in the order it lit them: the question into the supervisor, a handoff to
+ * each subagent, knowledge read by each part, decisions referred to the engine, and the answer out.
  */
-export function layoutStages(steps: Step[], g: Geometry): { nodes: Node[]; bands: Band[]; height: number } {
-  const ordered: Omit<Node, 'x' | 'y'>[] = [{ id: 'ask', stage: 'ask', step: null, synthetic: 'ask' }];
-  const handedOff = steps.some((s) => s.kind === 'agent');
-  let keptAdded = false;
-  for (const s of steps) {
-    const stage = stageOf(s);
-    // No handoff means the supervisor did the work itself; say so where a specialist would be.
-    if (!handedOff && !keptAdded && (stage === 'work' || stage === 'knowledge')) {
-      ordered.push({ id: 'kept', stage: 'agent', step: null, synthetic: 'kept' });
-      keptAdded = true;
+export function linksOf(steps: Step[]): Link[] {
+  const links: Link[] = [{ id: 'ask', kind: 'ask', to: 'guard', at: 0 }];
+  const seen = new Set<string>();
+  let last: Zone = 'direct';
+  steps.forEach((s, i) => {
+    const z = zoneOf(s);
+    const add = (l: Link) => !seen.has(l.id) && (seen.add(l.id), links.push(l));
+    if (s.kind === 'agent' && s.lane !== 'supervisor') {
+      add({ id: `handoff-${s.lane}`, kind: 'handoff', to: s.lane, at: i });
+      last = s.lane;
     }
-    ordered.push({ id: s.key, stage, step: s });
-  }
-  ordered.push({ id: 'answer', stage: 'answer', step: null, synthetic: 'answer' });
-
-  const perRow = Math.max(1, Math.floor((g.width - g.labelW - g.pad + g.gapX) / (g.nodeW + g.gapX)));
-  const bands: Band[] = [];
-  const nodes: Node[] = [];
-  let y = g.pad;
-  for (const stage of STAGES) {
-    const inBand = ordered.filter((n) => n.stage === stage);
-    if (inBand.length === 0) continue;
-    const rows = Math.ceil(inBand.length / perRow);
-    const h = rows * g.nodeH + (rows - 1) * g.gapY + g.pad * 2;
-    bands.push({ stage, y, h });
-    inBand.forEach((n, i) => {
-      const row = Math.floor(i / perRow);
-      const col = i % perRow;
-      nodes.push({ ...n, x: g.labelW + col * (g.nodeW + g.gapX), y: y + g.pad + row * (g.nodeH + g.gapY) });
-    });
-    y += h;
-  }
-  // Back to path order for drawing connectors.
-  const byId = new Map(nodes.map((n) => [n.id, n]));
-  return { nodes: ordered.map((n) => byId.get(n.id)!), bands, height: y + g.pad };
+    if (s.kind === 'card') add({ id: `kn-${z}`, kind: 'knowledge', to: z === 'guard' || z === 'intent' || z === 'persona' ? 'direct' : z, at: i });
+    if (s.kind === 'decision') add({ id: `eng-${z === 'guard' || z === 'intent' || z === 'persona' ? 'sup' : z}`, kind: 'engine', to: z, at: i });
+  });
+  links.push({ id: 'answer', kind: 'answer', from: last, to: 'answer', at: steps.length });
+  let n = 0;
+  return links.sort((a, b) => a.at - b.at).map((l) => (l.kind === 'engine' ? l : { ...l, n: ++n }));
 }

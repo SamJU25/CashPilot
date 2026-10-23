@@ -25,6 +25,10 @@ export interface CashEntry {
   previousBalance?: string;
   /** Set on a reversal: the entry it cancels. */
   reverses?: string;
+  /** The bank alert email this entry came from; unconfirmed until a statement covers its date. */
+  alertId?: string;
+  /** Money moved between two of the owner's accounts: balances change, but it is not income or spending. */
+  transfer?: boolean;
 }
 
 export interface LiveData {

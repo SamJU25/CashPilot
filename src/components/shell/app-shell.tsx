@@ -16,6 +16,7 @@ import {
   ReceiptText,
   Settings2,
   Workflow,
+  Mail,
   ShieldCheck,
 } from 'lucide-react';
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
@@ -28,6 +29,7 @@ import { useT, type Key } from '@/lib/i18n';
 import { CashPilotMark, Wordmark } from '@/components/shell/brand';
 import { QuickCashDialog } from '@/components/overview/quick-cash-dialog';
 import { formatDate } from '@/lib/format';
+import { BankEmailSync } from '@/lib/bank-emails';
 import { todayIso } from '@/lib/live-forecast';
 import { ANALYSIS, TODAY } from '@/lib/mock/demo';
 
@@ -44,6 +46,7 @@ const NAV: { href: string; label: Key; icon: typeof LineChart }[][] = [
   [
     { href: '/', label: 'nav.overview', icon: LineChart },
     { href: '/statements', label: 'nav.statements', icon: FileText },
+    { href: '/bank-emails', label: 'nav.bankEmails', icon: Mail },
     { href: '/receivables', label: 'nav.receivables', icon: ReceiptText },
     { href: '/funding', label: 'nav.funding', icon: Landmark },
   ],
@@ -427,6 +430,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           )}
         >
           <SessionEndedBanner />
+          <BankEmailSync />
           {children}
         </main>
       </div>

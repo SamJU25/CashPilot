@@ -145,6 +145,20 @@
     100% { offset-distance: 100%; opacity: 0; }
   }
 
+  /* A dot travelling along a connector on the Bank emails privacy diagram. */
+  .be-signal {
+    animation: be-signal 1.8s cubic-bezier(0.45, 0, 0.25, 1) infinite;
+  }
+  @keyframes be-signal {
+    0% { left: 0; opacity: 0; }
+    15% { opacity: 1; }
+    85% { opacity: 1; }
+    100% { left: calc(100% - 5px); opacity: 0; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .be-signal { animation: none; opacity: 0; }
+  }
+
   .figures {
     font-variant-numeric: tabular-nums lining-nums;
   }

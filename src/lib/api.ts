@@ -90,7 +90,7 @@ async function request<T>(path: string, init: RequestInit = {}, timeoutMs = TIME
     // Routes answer either {error:{code,message}} or FastAPI's {detail}.
     // FastAPI validation errors arrive as a list; the first one's message is the readable part.
     const detail = typeof body?.detail === 'string' ? body.detail : Array.isArray(body?.detail) ? body.detail[0]?.msg : undefined;
-    const err = body?.error ?? { code: `HTTP_${res.status}`, message: detail ?? res.statusText };
+    const err = body?.error ?? (body?.detail?.code ? body.detail : { code: `HTTP_${res.status}`, message: detail ?? res.statusText });
     throw new ApiError(res.status, err.code, err.message);
   }
   return body as T;
@@ -106,6 +106,82 @@ const form = (entries: [string, string | Blob, string?][]) => {
 const BUCKET_KEYS: Record<string, string> = { CURRENT: 'current', '1_30': 'd1_30', '31_60': 'd31_60', '61_90': 'd61_90', OVER_90: 'd90_plus' };
 
 export type AnalyzeResponse = CashAnalysis & { normalized_csv?: string | null };
+
+// services/mail: the read-only bank alerts mailbox.
+export interface MailAlert {
+  id: string;
+  bank: string;
+  bank_domain: string;
+  account_tail: string;
+  currency: string;
+  direction: 'IN' | 'OUT';
+  amount: string;
+  balance_after: string | null;
+  occurred_on: string;
+  counterparty: string | null;
+  verified: boolean;
+  review: 'no_account' | 'no_direction' | 'unverified_sender' | 'unlisted_bank' | null;
+  resolved: 'accept' | 'dismiss' | null;
+  status: 'ready' | 'waiting' | 'ignored' | 'review' | 'dismissed';
+  /** Balance arithmetic did not follow from the previous alert: this much is unexplained. */
+  gap: string | null;
+  transfer_with: string | null;
+}
+export interface MailAccount {
+  key: string;
+  bank: string;
+  bank_domain: string;
+  tail: string;
+  currency: string;
+  status: 'pending' | 'use' | 'ignore';
+  target: string | null;
+  balance: string | null;
+  alerts: number;
+  last_seen?: string;
+}
+export interface MailState {
+  connection: { address: string; host: string; port: number; username: string; name: string; oauth: 'google' | 'microsoft' | null; verifies_sender: boolean; last_sync: string | null; last_error: string | null } | null;
+  banks: Record<string, { name: string; currency: string }>;
+  trusted: string[];
+  accounts: MailAccount[];
+  alerts: MailAlert[];
+  result?: { read: number; added: number };
+}
+/** IMAP settings found from an address the way Thunderbird finds them (services/mail/discover.py). */
+export interface MailSettings {
+  host: string;
+  port: number;
+  username: string;
+  source: 'provider' | 'ispdb' | 'mx' | 'guess';
+  name: string;
+  /** The provider only allows sign-in through its own window; an app password will not work. */
+  oauth_only: boolean;
+  verifies_sender: boolean;
+  secret_kind: 'app_password' | 'auth_code' | 'password';
+  /** Browser sign-in is set up on this computer for this provider. */
+  oauth: 'google' | 'microsoft' | null;
+}
+
+const json = (method: string, body?: unknown): RequestInit => ({
+  method,
+  headers: { 'Content-Type': 'application/json' },
+  body: body === undefined ? undefined : JSON.stringify(body),
+});
+
+export const mailApi = {
+  banks: () => request<{ banks: { domain: string; name: string; currency: string }[] }>('/api/v1/mail/banks'),
+  discover: (address: string) => request<{ settings: MailSettings | null }>('/api/v1/mail/discover', json('POST', { address })),
+  state: () => request<MailState>('/api/v1/mail/state'),
+  connect: (body: { address: string; secret: string; host: string; port: number; username: string; name: string }) => request<MailState>('/api/v1/mail/connect', json('POST', body)),
+  disconnect: () => request<MailState>('/api/v1/mail/connect', { method: 'DELETE' }),
+  sync: () => request<MailState>('/api/v1/mail/sync', { method: 'POST' }),
+  oauthStart: (body: { address: string; host: string; username: string; name: string; return_to?: string }) => request<{ url: string }>('/api/v1/mail/oauth/start', json('POST', body)),
+  decideAccount: (key: string, status: MailAccount['status'], target?: string) =>
+    request<MailState>(`/api/v1/mail/accounts/${encodeURIComponent(key)}`, json('PUT', { status, target })),
+  decideAlert: (id: string, action: 'accept' | 'dismiss' | 'trust') => request<MailState>(`/api/v1/mail/alerts/${encodeURIComponent(id)}`, json('PUT', { action })),
+  addBank: (body: { domain: string; name: string; currency: string }) => request<MailState>('/api/v1/mail/banks', json('POST', body)),
+  removeBank: (domain: string) => request<MailState>(`/api/v1/mail/banks/${encodeURIComponent(domain)}`, { method: 'DELETE' }),
+};
 
 export const api = {
   analyze: (files: File[], alertThresholdDays: number) =>

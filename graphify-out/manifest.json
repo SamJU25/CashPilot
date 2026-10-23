@@ -984,9 +984,9 @@
     "semantic_hash": ""
   },
   "requirements.txt": {
-    "mtime": 1792512215.8381329,
-    "seen": 1792519063.513119,
-    "ast_hash": "2ea41cbd30e010353910c867c7261116",
+    "mtime": 1792662430.6615584,
+    "seen": 1792663170.7286582,
+    "ast_hash": "09b14043d3faeaf4b9e040f8e873eddc",
     "semantic_hash": ""
   },
   ".agent/workflows/graphify.md": {
@@ -1026,9 +1026,9 @@
     "semantic_hash": ""
   },
   "api/main.py": {
-    "mtime": 1792634406.3821726,
-    "seen": 1792634776.022401,
-    "ast_hash": "9fe7796a90315fa1c459ac10806abdef",
+    "mtime": 1792662430.6615584,
+    "seen": 1792663170.6785023,
+    "ast_hash": "864f7212791d2d0865f668bdc33a29fd",
     "semantic_hash": ""
   },
   "api/routes/__init__.py": {
@@ -2148,9 +2148,9 @@
     "semantic_hash": ""
   },
   "src/app/statements/page.tsx": {
-    "mtime": 1792634566.323567,
-    "seen": 1792634776.0373638,
-    "ast_hash": "19677067777273108ff9064f649292c7",
+    "mtime": 1792663097.444548,
+    "seen": 1792663170.6922371,
+    "ast_hash": "712b57142198194ed1540afc0583e5e4",
     "semantic_hash": ""
   },
   "src/components/common/bits.tsx": {
@@ -2220,9 +2220,9 @@
     "semantic_hash": ""
   },
   "src/components/shell/app-shell.tsx": {
-    "mtime": 1792634542.2967749,
-    "seen": 1792634776.0404716,
-    "ast_hash": "a8aea3d04cccded24edd913b0e8032d2",
+    "mtime": 1792662729.0693855,
+    "seen": 1792663170.695305,
+    "ast_hash": "55d8bb20e55f4c2f021862a9f0ac3525",
     "semantic_hash": ""
   },
   "src/components/shell/brand.tsx": {
@@ -2448,9 +2448,9 @@
     "semantic_hash": ""
   },
   "src/lib/api.ts": {
-    "mtime": 1792634481.573673,
-    "seen": 1792634776.0433404,
-    "ast_hash": "dd47e2d0368bc3a7711469753c552143",
+    "mtime": 1792705550.1496508,
+    "seen": 1792705674.7603378,
+    "ast_hash": "9f2d8006a23d16a38d26df49c555fa88",
     "semantic_hash": ""
   },
   "src/lib/currencies.ts": {
@@ -2484,9 +2484,9 @@
     "semantic_hash": ""
   },
   "src/lib/i18n/en.ts": {
-    "mtime": 1792634664.4830692,
-    "seen": 1792634776.0441356,
-    "ast_hash": "4d8dd430f06fac5856438178ee6d8f03",
+    "mtime": 1792705550.1507032,
+    "seen": 1792705674.7612503,
+    "ast_hash": "55e8ffc5b8d1fddc15b48cdbbf94ee5f",
     "semantic_hash": ""
   },
   "src/lib/i18n/es.ts": {
@@ -2586,9 +2586,9 @@
     "semantic_hash": ""
   },
   "src/lib/use-cash-change.ts": {
-    "mtime": 1792621125.3876681,
-    "seen": 1792624256.502598,
-    "ast_hash": "c999489da5b0b60fd22708cc81a8aa06",
+    "mtime": 1792662956.294088,
+    "seen": 1792663170.7013955,
+    "ast_hash": "a5da91fa16984fce5c1a76435d702fc0",
     "semantic_hash": ""
   },
   "src/lib/use-data.ts": {
@@ -2604,9 +2604,9 @@
     "semantic_hash": ""
   },
   "src/lib/workspace.tsx": {
-    "mtime": 1792620677.5138526,
-    "seen": 1792624256.5028162,
-    "ast_hash": "4d6861321009954acd984e13176dbd25",
+    "mtime": 1792662556.8281548,
+    "seen": 1792663170.7016048,
+    "ast_hash": "4c30af6a569c40c942238d924b2faec0",
     "semantic_hash": ""
   },
   "docs/GLOSSARY.md": {
@@ -2778,15 +2778,15 @@
     "semantic_hash": ""
   },
   "src/app/workstation/page.tsx": {
-    "mtime": 1792623777.6471045,
-    "seen": 1792624256.4950387,
-    "ast_hash": "7c7937f6da5fa86d309795dcaf2ee70e",
+    "mtime": 1792660265.0609307,
+    "seen": 1792660436.943925,
+    "ast_hash": "bae34d6e0eb0a156bd24a44d9fc98564",
     "semantic_hash": ""
   },
   "src/components/overview/entries-ledger.tsx": {
-    "mtime": 1792621179.0520775,
-    "seen": 1792624256.4967241,
-    "ast_hash": "4282b46da43167f0294eea0ee8afdb5a",
+    "mtime": 1792662803.3987768,
+    "seen": 1792663170.6943083,
+    "ast_hash": "e8a61e485bfcd2422a633073aaac19dc",
     "semantic_hash": ""
   },
   "src/components/ui/date-picker.tsx": {
@@ -2796,15 +2796,15 @@
     "semantic_hash": ""
   },
   "src/components/workstation/blueprint.tsx": {
-    "mtime": 1792624961.7392924,
-    "seen": 1792632335.6518261,
-    "ast_hash": "814a4c2cde0f18a125117cb346b740da",
+    "mtime": 1792660340.3579748,
+    "seen": 1792660436.9494534,
+    "ast_hash": "91aa6024af1e28292c6343ea10a0921c",
     "semantic_hash": ""
   },
   "src/components/workstation/model.ts": {
-    "mtime": 1792624830.8005662,
-    "seen": 1792632335.651829,
-    "ast_hash": "cee3e1d6429487a0fdc90fa04361885c",
+    "mtime": 1792660216.601977,
+    "seen": 1792660436.949456,
+    "ast_hash": "66ddeb2fbb2f61f18394107eca0b6d7f",
     "semantic_hash": ""
   },
   "src/lib/mock/traces.ts": {
@@ -2823,6 +2823,114 @@
     "mtime": 1792623413.011879,
     "seen": 1792624256.5098274,
     "ast_hash": "83765e9f76cc71ca14ee5e2c62195061",
+    "semantic_hash": ""
+  },
+  "tests/unit/test_workstation_inventory.py": {
+    "mtime": 1792660223.782715,
+    "seen": 1792660436.9600837,
+    "ast_hash": "d44af4fb5ab3b2466c13289dae5abac7",
+    "semantic_hash": ""
+  },
+  "api/routes/mail.py": {
+    "mtime": 1792771492.8188968,
+    "seen": 1792783955.4062836,
+    "ast_hash": "2a7076f80eac262daf7d1d4d78647200",
+    "semantic_hash": ""
+  },
+  "services/mail/__init__.py": {
+    "mtime": 1792662323.5687828,
+    "seen": 1792663170.689925,
+    "ast_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "semantic_hash": ""
+  },
+  "services/mail/banks.py": {
+    "mtime": 1792705996.9970624,
+    "seen": 1792706125.0237746,
+    "ast_hash": "7060a5b76e8d1543194f578a05ef2a7a",
+    "semantic_hash": ""
+  },
+  "services/mail/parser.py": {
+    "mtime": 1792706040.623386,
+    "seen": 1792706125.0239952,
+    "ast_hash": "df8c1db871a5011a947704a56a06e3a8",
+    "semantic_hash": ""
+  },
+  "services/mail/store.py": {
+    "mtime": 1792705550.148616,
+    "seen": 1792705674.7522995,
+    "ast_hash": "1c5245c13afee76d81a8ad9dff4a90b8",
+    "semantic_hash": ""
+  },
+  "services/mail/sync.py": {
+    "mtime": 1792771478.50109,
+    "seen": 1792783955.4190667,
+    "ast_hash": "57cbd966ca3df193ecd2e6f873fec743",
+    "semantic_hash": ""
+  },
+  "src/app/bank-emails/page.tsx": {
+    "mtime": 1792705550.15179,
+    "seen": 1792705674.7536883,
+    "ast_hash": "c545f2d43988edabe1ea356b0d88e904",
+    "semantic_hash": ""
+  },
+  "src/lib/bank-emails.tsx": {
+    "mtime": 1792662956.294088,
+    "seen": 1792663170.6984155,
+    "ast_hash": "b5c869019b2c2ead589b23120d50a013",
+    "semantic_hash": ""
+  },
+  "tests/unit/test_mail_parser.py": {
+    "mtime": 1792706011.9917736,
+    "seen": 1792706125.0414827,
+    "ast_hash": "451a97933390debebc160667bc80cf18",
+    "semantic_hash": ""
+  },
+  "tests/unit/test_mail_sync.py": {
+    "mtime": 1792663966.3990612,
+    "seen": 1792705674.7688844,
+    "ast_hash": "38079868c4245592abc2bffffe803be3",
+    "semantic_hash": ""
+  },
+  "services/mail/discover.py": {
+    "mtime": 1792704710.5883281,
+    "seen": 1792705674.7522938,
+    "ast_hash": "a30148664c4bcadb28834f0b7ff1a9cc",
+    "semantic_hash": ""
+  },
+  "services/mail/oauth.py": {
+    "mtime": 1792664234.3888006,
+    "seen": 1792705674.7522955,
+    "ast_hash": "993985e82036eeb2e77f7b45142f5cac",
+    "semantic_hash": ""
+  },
+  "tests/unit/test_mail_discover.py": {
+    "mtime": 1792663696.470559,
+    "seen": 1792705674.7688777,
+    "ast_hash": "ebc818e6b359c48dbf0b8060cb4ba050",
+    "semantic_hash": ""
+  },
+  "tests/unit/test_mail_oauth.py": {
+    "mtime": 1792664234.4522932,
+    "seen": 1792705674.7688801,
+    "ast_hash": "9bb999b626fccc991fb9bc62a7c02a3a",
+    "semantic_hash": ""
+  },
+  "docs/bank-emails-oauth.md": {
+    "mtime": 1792784142.7189581,
+    "seen": 1792784164.2489266,
+    "ast_hash": "8c66eddd6dfc40ae1da5508af7b9dacf",
+    "semantic_hash": ""
+  },
+  "src/app/privacy/page.tsx": {
+    "mtime": 1792787017.3611617,
+    "seen": 1792787095.204749,
+    "ast_hash": "024780335b1e5674674d39c81d4f7f61",
+    "semantic_hash": ""
+  },
+  "src/app/terms/page.tsx": {
+    "mtime": 1792787027.7625458,
+    "seen": 1792787095.2053285,
+    "ast_hash": "a162c76a816b3db05dcefa0410164b20",
     "semantic_hash": ""
   }
 }

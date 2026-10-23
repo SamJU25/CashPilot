@@ -28,7 +28,7 @@ export function recordedTotals(entries: CashEntry[]): { inCents: number; outCent
   let inCents = 0;
   let outCents = 0;
   for (const e of entries) {
-    if (cancelled.has(e.id)) continue;
+    if (cancelled.has(e.id) || e.transfer) continue;
     if (e.mode === 'INFLOW') inCents += stringToCents(e.amount);
     if (e.mode === 'OUTFLOW') outCents += stringToCents(e.amount);
   }
@@ -47,6 +47,10 @@ export interface CashChange {
   effectiveDate?: string;
   /** The entry this change cancels, when it is a reversal. */
   reverses?: string;
+  alertId?: string;
+  transfer?: boolean;
+  /** Currency for a workspace this change starts; an existing one keeps its own. */
+  currency?: string;
 }
 
 export function useCashChange() {
@@ -63,13 +67,15 @@ export function useCashChange() {
     date: c.effectiveDate ?? new Date().toISOString().slice(0, 10),
     previousBalance,
     reverses: c.reverses,
+    alertId: c.alertId,
+    transfer: c.transfer,
   });
 
   return async function apply(c: CashChange) {
     const custom = c.customBurn?.trim() || '';
     const burn = custom || ownAnalysis?.average_daily_burn || '';
     const daily_burn = burn || undefined;
-    const currency = ownAnalysis?.currency ?? homeCurrency;
+    const currency = ownAnalysis?.currency ?? c.currency ?? homeCurrency;
 
     if (!ownAnalysis) {
       // First entry: the owner's typed balance starts their own workspace, replacing the sample company.

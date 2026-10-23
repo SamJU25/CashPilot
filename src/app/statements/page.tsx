@@ -590,9 +590,12 @@ function AccountRow({
   analysis: CashAnalysis;
   history: { date: string; cents: number }[];
 }) {
-  const { accountNames, renameAccount } = useWorkspace();
+  const { accountNames, renameAccount, live } = useWorkspace();
   const { t, lang } = useT();
   const manual = analysis.document_format === "MANUAL";
+  // An account whose entries all came from bank alert emails was not typed in.
+  const own = (live.entries ?? []).filter((e) => e.accountId === id);
+  const fromEmail = own.length > 0 && own.every((e) => e.alertId);
   const files = [...allFiles.filter((f) => f.account_id === id)].sort((a, b) =>
     (a.start || "").localeCompare(b.start || ""),
   );
@@ -659,7 +662,7 @@ function AccountRow({
             <Pencil className="pointer-events-none absolute right-2 size-3.5 text-muted-foreground/70 opacity-0 transition-opacity group-hover:opacity-100 group-focus-within:opacity-100" aria-hidden />
           </div>
           <p className="text-xs text-muted-foreground">
-            {manual ? t("st.enteredByYou") : `${t("count.files", { n: files.length })}, ${t("count.tx", { n: txCount })}`}, {analysis.currency}
+            {manual ? t(fromEmail ? "st.fromEmails" : "st.enteredByYou") : `${t("count.files", { n: files.length })}, ${t("count.tx", { n: txCount })}`}, {analysis.currency}
           </p>
         </div>
         <div className="shrink-0 text-right">
@@ -682,7 +685,7 @@ function AccountRow({
       )}
 
       {manual ? (
-        <p className="mt-3 border-t pt-3 text-xs text-muted-foreground">{t("st.manualNote")}</p>
+        <p className="mt-3 border-t pt-3 text-xs text-muted-foreground">{t(fromEmail ? "st.emailNote" : "st.manualNote")}</p>
       ) : (
       <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 border-t pt-3 text-xs">
         {gaps.length > 0 ? (

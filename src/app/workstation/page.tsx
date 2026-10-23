@@ -29,6 +29,9 @@ function Legend() {
       {item(<rect x={-5} y={-5} width={10} height={10} fill="none" stroke={stroke} strokeWidth={1.5} />, 'wk.lg.tool')}
       {item(<rect x={-6} y={-4} width={12} height={8} rx={1.5} fill="none" stroke={stroke} strokeWidth={1.25} strokeDasharray="2.5 1.5" />, 'wk.lg.card')}
       {item(<circle r={5} fill="none" stroke={stroke} strokeWidth={1.5} />, 'wk.lg.handoff')}
+      {item(<path d="M -8 0 H 8" stroke={stroke} strokeWidth={1.6} />, 'wk.lg.path')}
+      {item(<path d="M -8 0 H 8" stroke="rgb(var(--s4))" strokeWidth={1.2} strokeDasharray="5 3" />, 'wk.lg.read')}
+      {item(<path d="M -8 0 H 8" stroke="rgb(var(--ink-2))" strokeWidth={1.2} strokeDasharray="2 3" />, 'wk.lg.refer')}
     </div>
   );
 }
@@ -81,18 +84,18 @@ function RunList({ title, runs, current, onPick }: { title: string; runs: Record
   const { t } = useT();
   if (runs.length === 0) return null;
   return (
-    <div>
-      <p className="px-2 pb-2 text-xs font-medium text-muted-foreground">{title}</p>
-      <ul className="space-y-1">
+    <div className="min-w-0">
+      <p className="pb-2 text-xs font-medium text-muted-foreground">{title}</p>
+      <ul className="flex gap-2 overflow-x-auto pb-1">
         {runs.map((r) => {
           const s = summary(r.trace);
           return (
-            <li key={r.id}>
+            <li key={r.id} className="w-60 shrink-0">
               <button
                 type="button"
                 onClick={() => onPick(r.id)}
                 aria-current={r.id === current}
-                className={cn('w-full rounded-lg px-3 py-2.5 text-left transition-colors', r.id === current ? 'bg-accent text-accent-foreground' : 'hover:bg-muted')}
+                className={cn('h-full w-full rounded-lg border px-3 py-2.5 text-left transition-colors', r.id === current ? 'border-primary bg-accent text-accent-foreground' : 'bg-card hover:bg-muted')}
               >
                 <span className="line-clamp-2 text-sm font-medium">{r.question}</span>
                 <span className="mt-0.5 block text-xs text-muted-foreground">{t('wk.runMeta', { n: r.trace.length, ms: formatMs(s.ms) })}</span>
@@ -137,11 +140,11 @@ export default function WorkstationPage() {
     <div>
       <PageHeader title={t('wk.title')} description={t('wk.desc')} />
 
-      <div className="grid gap-4 lg:grid-cols-[17rem_minmax(0,1fr)]">
-        <aside className="space-y-5 rounded-xl border bg-card p-3 lg:self-start">
+      <div className="space-y-4">
+        <aside className="space-y-3">
           <RunList title={t('wk.yours')} runs={own} current={run.id} onPick={pick} />
           <RunList title={t('wk.examples')} runs={SAMPLE_RUNS} current={run.id} onPick={pick} />
-          {own.length === 0 && <p className="px-2 text-xs text-muted-foreground">{t('wk.askHint')}</p>}
+          {own.length === 0 && <p className="text-xs text-muted-foreground">{t('wk.askHint')}</p>}
         </aside>
 
         <section className="min-w-0 overflow-hidden rounded-xl border bg-card">
