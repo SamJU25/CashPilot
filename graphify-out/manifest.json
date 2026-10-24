@@ -2898,9 +2898,9 @@
     "semantic_hash": ""
   },
   "services/mail/oauth.py": {
-    "mtime": 1792801212.6345396,
-    "seen": 1792801533.3882074,
-    "ast_hash": "4ee834f2fff9a93f3dd09dbd3d4a19ac",
+    "mtime": 1792802087.6241295,
+    "seen": 1792802304.6967168,
+    "ast_hash": "7ad820a994f2cecf714f1ed1748e20ed",
     "semantic_hash": ""
   },
   "tests/unit/test_mail_discover.py": {

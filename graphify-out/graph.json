@@ -781,7 +781,7 @@
       "file_type": "code",
       "norm_label": "oautherror",
       "source_file": "services/mail/oauth.py",
-      "source_location": "L84"
+      "source_location": "L87"
     },
     {
       "id": "services_mail_oauth_oauthprovider",
@@ -794,7 +794,7 @@
       "file_type": "code",
       "norm_label": "oauthprovider",
       "source_file": "services/mail/oauth.py",
-      "source_location": "L29"
+      "source_location": "L32"
     },
     {
       "id": "services_mail_oauth_pending",
@@ -807,7 +807,7 @@
       "file_type": "code",
       "norm_label": "pending",
       "source_file": "services/mail/oauth.py",
-      "source_location": "L136"
+      "source_location": "L139"
     },
     {
       "id": "src_components_overview_cash_bridge_step",
@@ -5796,7 +5796,7 @@
       "file_type": "code",
       "norm_label": "provider_for()",
       "source_file": "services/mail/oauth.py",
-      "source_location": "L90"
+      "source_location": "L93"
     },
     {
       "id": "services_mail_store_tenant_lock",
@@ -8388,7 +8388,7 @@
       "file_type": "code",
       "norm_label": "configured()",
       "source_file": "services/mail/oauth.py",
-      "source_location": "L121"
+      "source_location": "L124"
     },
     {
       "id": "services_mail_oauth_exchange",
@@ -8400,7 +8400,7 @@
       "file_type": "code",
       "norm_label": "exchange()",
       "source_file": "services/mail/oauth.py",
-      "source_location": "L213"
+      "source_location": "L219"
     },
     {
       "id": "services_mail_oauth_get_client_id",
@@ -8412,7 +8412,7 @@
       "file_type": "code",
       "norm_label": "get_client_id()",
       "source_file": "services/mail/oauth.py",
-      "source_location": "L98"
+      "source_location": "L101"
     },
     {
       "id": "services_mail_oauth_get_client_secret",
@@ -8424,7 +8424,7 @@
       "file_type": "code",
       "norm_label": "get_client_secret()",
       "source_file": "services/mail/oauth.py",
-      "source_location": "L107"
+      "source_location": "L110"
     },
     {
       "id": "services_mail_oauth_is_thunderbird_active",
@@ -8436,7 +8436,7 @@
       "file_type": "code",
       "norm_label": "is_thunderbird_active()",
       "source_file": "services/mail/oauth.py",
-      "source_location": "L116"
+      "source_location": "L119"
     },
     {
       "id": "services_mail_oauth_ms_tenant",
@@ -8448,7 +8448,7 @@
       "file_type": "code",
       "norm_label": "_ms_tenant()",
       "source_file": "services/mail/oauth.py",
-      "source_location": "L40"
+      "source_location": "L43"
     },
     {
       "id": "services_mail_oauth_oautherror_init",
@@ -8460,7 +8460,7 @@
       "file_type": "code",
       "norm_label": ".__init__()",
       "source_file": "services/mail/oauth.py",
-      "source_location": "L85"
+      "source_location": "L88"
     },
     {
       "id": "services_mail_oauth_redirect_uri",
@@ -8472,7 +8472,7 @@
       "file_type": "code",
       "norm_label": "redirect_uri()",
       "source_file": "services/mail/oauth.py",
-      "source_location": "L129"
+      "source_location": "L132"
     },
     {
       "id": "services_mail_oauth_refresh",
@@ -8484,7 +8484,7 @@
       "file_type": "code",
       "norm_label": "refresh()",
       "source_file": "services/mail/oauth.py",
-      "source_location": "L221"
+      "source_location": "L227"
     },
     {
       "id": "services_mail_oauth_start",
@@ -8496,7 +8496,7 @@
       "file_type": "code",
       "norm_label": "start()",
       "source_file": "services/mail/oauth.py",
-      "source_location": "L151"
+      "source_location": "L154"
     },
     {
       "id": "services_mail_oauth_take",
@@ -8508,7 +8508,7 @@
       "file_type": "code",
       "norm_label": "take()",
       "source_file": "services/mail/oauth.py",
-      "source_location": "L182"
+      "source_location": "L185"
     },
     {
       "id": "services_mail_oauth_thunderbird_enabled",
@@ -8520,7 +8520,7 @@
       "file_type": "code",
       "norm_label": "thunderbird_enabled()",
       "source_file": "services/mail/oauth.py",
-      "source_location": "L94"
+      "source_location": "L97"
     },
     {
       "id": "services_mail_oauth_token",
@@ -8532,7 +8532,7 @@
       "file_type": "code",
       "norm_label": "_token()",
       "source_file": "services/mail/oauth.py",
-      "source_location": "L191"
+      "source_location": "L194"
     },
     {
       "id": "services_mail_oauth_url",
@@ -8544,7 +8544,7 @@
       "file_type": "code",
       "norm_label": "_url()",
       "source_file": "services/mail/oauth.py",
-      "source_location": "L125"
+      "source_location": "L128"
     },
     {
       "id": "services_mail_oauth_xoauth2",
@@ -8556,7 +8556,7 @@
       "file_type": "code",
       "norm_label": "xoauth2()",
       "source_file": "services/mail/oauth.py",
-      "source_location": "L227"
+      "source_location": "L233"
     },
     {
       "id": "tests_unit_test_mail_oauth_env",
@@ -34570,7 +34570,7 @@
       "source_location": "L1"
     },
     {
-      "id": "services_mail_oauth_rationale_152",
+      "id": "services_mail_oauth_rationale_155",
       "label": "Returns the provider's sign-in URL; the state in it ties the answer back to\u2026",
       "_origin": "ast",
       "community": 177,
@@ -34578,10 +34578,10 @@
       "file_type": "rationale",
       "norm_label": "returns the provider's sign-in url; the state in it ties the answer back to...",
       "source_file": "services/mail/oauth.py",
-      "source_location": "L152"
+      "source_location": "L155"
     },
     {
-      "id": "services_mail_oauth_rationale_183",
+      "id": "services_mail_oauth_rationale_186",
       "label": "The sign-in this answer belongs to; each state works once and expires after ten\u2026",
       "_origin": "ast",
       "community": 177,
@@ -34589,10 +34589,10 @@
       "file_type": "rationale",
       "norm_label": "the sign-in this answer belongs to; each state works once and expires after ten...",
       "source_file": "services/mail/oauth.py",
-      "source_location": "L183"
+      "source_location": "L186"
     },
     {
-      "id": "services_mail_oauth_rationale_214",
+      "id": "services_mail_oauth_rationale_220",
       "label": "(access_token, refresh_token) for the code the provider sent back.",
       "_origin": "ast",
       "community": 177,
@@ -34600,10 +34600,10 @@
       "file_type": "rationale",
       "norm_label": "(access_token, refresh_token) for the code the provider sent back.",
       "source_file": "services/mail/oauth.py",
-      "source_location": "L214"
+      "source_location": "L220"
     },
     {
-      "id": "services_mail_oauth_rationale_222",
+      "id": "services_mail_oauth_rationale_228",
       "label": "A fresh access token, and the refresh token to keep (Microsoft rotates it;\u2026",
       "_origin": "ast",
       "community": 177,
@@ -34611,10 +34611,10 @@
       "file_type": "rationale",
       "norm_label": "a fresh access token, and the refresh token to keep (microsoft rotates it;...",
       "source_file": "services/mail/oauth.py",
-      "source_location": "L222"
+      "source_location": "L228"
     },
     {
-      "id": "services_mail_oauth_rationale_228",
+      "id": "services_mail_oauth_rationale_234",
       "label": "The SASL XOAUTH2 string; imaplib base64-encodes it.",
       "_origin": "ast",
       "community": 177,
@@ -34622,7 +34622,7 @@
       "file_type": "rationale",
       "norm_label": "the sasl xoauth2 string; imaplib base64-encodes it.",
       "source_file": "services/mail/oauth.py",
-      "source_location": "L228"
+      "source_location": "L234"
     },
     {
       "id": "tests_unit_test_mail_oauth_rationale_1",
@@ -78862,7 +78862,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/mail/oauth.py",
-      "source_location": "L122",
+      "source_location": "L125",
       "weight": 1.0
     },
     {
@@ -78874,7 +78874,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/mail/oauth.py",
-      "source_location": "L215",
+      "source_location": "L221",
       "weight": 1.0
     },
     {
@@ -78886,7 +78886,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/mail/oauth.py",
-      "source_location": "L217",
+      "source_location": "L223",
       "weight": 1.0
     },
     {
@@ -78898,7 +78898,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/mail/oauth.py",
-      "source_location": "L102",
+      "source_location": "L105",
       "weight": 1.0
     },
     {
@@ -78910,7 +78910,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/mail/oauth.py",
-      "source_location": "L111",
+      "source_location": "L114",
       "weight": 1.0
     },
     {
@@ -78922,7 +78922,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/mail/oauth.py",
-      "source_location": "L118",
+      "source_location": "L121",
       "weight": 1.0
     },
     {
@@ -78934,7 +78934,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/mail/oauth.py",
-      "source_location": "L86",
+      "source_location": "L89",
       "weight": 1.0
     },
     {
@@ -78946,7 +78946,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/mail/oauth.py",
-      "source_location": "L130",
+      "source_location": "L133",
       "weight": 1.0
     },
     {
@@ -78958,7 +78958,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/mail/oauth.py",
-      "source_location": "L223",
+      "source_location": "L229",
       "weight": 1.0
     },
     {
@@ -78970,7 +78970,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/mail/oauth.py",
-      "source_location": "L153",
+      "source_location": "L156",
       "weight": 1.0
     },
     {
@@ -78982,7 +78982,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/mail/oauth.py",
-      "source_location": "L154",
+      "source_location": "L157",
       "weight": 1.0
     },
     {
@@ -78994,7 +78994,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/mail/oauth.py",
-      "source_location": "L159",
+      "source_location": "L162",
       "weight": 1.0
     },
     {
@@ -79006,7 +79006,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/mail/oauth.py",
-      "source_location": "L164",
+      "source_location": "L167",
       "weight": 1.0
     },
     {
@@ -79018,7 +79018,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/mail/oauth.py",
-      "source_location": "L166",
+      "source_location": "L169",
       "weight": 1.0
     },
     {
@@ -79030,7 +79030,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/mail/oauth.py",
-      "source_location": "L179",
+      "source_location": "L182",
       "weight": 1.0
     },
     {
@@ -79042,7 +79042,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/mail/oauth.py",
-      "source_location": "L187",
+      "source_location": "L190",
       "weight": 1.0
     },
     {
@@ -79054,7 +79054,19 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/mail/oauth.py",
-      "source_location": "L193",
+      "source_location": "L196",
+      "weight": 1.0
+    },
+    {
+      "source": "services_mail_oauth_token",
+      "target": "services_mail_oauth_get_client_secret",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "services/mail/oauth.py",
+      "source_location": "L197",
       "weight": 1.0
     },
     {
@@ -79066,7 +79078,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/mail/oauth.py",
-      "source_location": "L199",
+      "source_location": "L203",
       "weight": 1.0
     },
     {
@@ -79078,7 +79090,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/mail/oauth.py",
-      "source_location": "L202",
+      "source_location": "L206",
       "weight": 1.0
     },
     {
@@ -79090,7 +79102,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "services/mail/oauth.py",
-      "source_location": "L126",
+      "source_location": "L129",
       "weight": 1.0
     },
     {
@@ -109079,7 +109091,7 @@
       "confidence_score": 1.0,
       "context": "generic_arg",
       "source_file": "services/mail/oauth.py",
-      "source_location": "L213",
+      "source_location": "L219",
       "weight": 1.0
     },
     {
@@ -109091,7 +109103,7 @@
       "confidence_score": 1.0,
       "context": "generic_arg",
       "source_file": "services/mail/oauth.py",
-      "source_location": "L221",
+      "source_location": "L227",
       "weight": 1.0
     },
     {
@@ -109103,7 +109115,7 @@
       "confidence_score": 1.0,
       "context": "generic_arg",
       "source_file": "services/mail/oauth.py",
-      "source_location": "L191",
+      "source_location": "L194",
       "weight": 1.0
     },
     {
@@ -118588,7 +118600,7 @@
     },
     {
       "source": "services_mail_oauth",
-      "target": "os",
+      "target": "logging",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -118600,7 +118612,7 @@
     },
     {
       "source": "services_mail_oauth",
-      "target": "secrets",
+      "target": "os",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -118612,7 +118624,7 @@
     },
     {
       "source": "services_mail_oauth",
-      "target": "threading",
+      "target": "secrets",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -118624,7 +118636,7 @@
     },
     {
       "source": "services_mail_oauth",
-      "target": "time",
+      "target": "threading",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -118636,6 +118648,18 @@
     },
     {
       "source": "services_mail_oauth",
+      "target": "time",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "services/mail/oauth.py",
+      "source_location": "L20",
+      "weight": 1.0
+    },
+    {
+      "source": "services_mail_oauth",
       "target": "httpx",
       "relation": "imports",
       "_origin": "ast",
@@ -118643,7 +118667,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "services/mail/oauth.py",
-      "source_location": "L24",
+      "source_location": "L25",
       "weight": 1.0
     },
     {
@@ -140459,7 +140483,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "services/mail/oauth.py",
-      "source_location": "L20",
+      "source_location": "L21",
       "weight": 1.0
     },
     {
@@ -140471,7 +140495,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "services/mail/oauth.py",
-      "source_location": "L21",
+      "source_location": "L22",
       "weight": 1.0
     },
     {
@@ -140483,7 +140507,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "services/mail/oauth.py",
-      "source_location": "L22",
+      "source_location": "L23",
       "weight": 1.0
     },
     {
@@ -152602,7 +152626,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "services/mail/oauth.py",
-      "source_location": "L213",
+      "source_location": "L219",
       "weight": 1.0
     },
     {
@@ -153574,7 +153598,7 @@
       "confidence_score": 1.0,
       "context": "return_type",
       "source_file": "services/mail/oauth.py",
-      "source_location": "L182",
+      "source_location": "L185",
       "weight": 1.0
     },
     {
@@ -176895,13 +176919,24 @@
     },
     {
       "source": "services_mail_oauth",
+      "target": "services_mail_oauth_get_client_id",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "services/mail/oauth.py",
+      "source_location": "L101",
+      "weight": 1.0
+    },
+    {
+      "source": "services_mail_oauth",
       "target": "services_mail_oauth_get_client_secret",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "services/mail/oauth.py",
-      "source_location": "L107",
+      "source_location": "L110",
       "weight": 1.0
     },
     {
@@ -176912,7 +176947,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "services/mail/oauth.py",
-      "source_location": "L116",
+      "source_location": "L119",
       "weight": 1.0
     },
     {
@@ -176923,7 +176958,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "services/mail/oauth.py",
-      "source_location": "L121",
+      "source_location": "L124",
       "weight": 1.0
     },
     {
@@ -176934,7 +176969,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "services/mail/oauth.py",
-      "source_location": "L125",
+      "source_location": "L128",
       "weight": 1.0
     },
     {
@@ -176945,7 +176980,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "services/mail/oauth.py",
-      "source_location": "L129",
+      "source_location": "L132",
       "weight": 1.0
     },
     {
@@ -176956,7 +176991,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "services/mail/oauth.py",
-      "source_location": "L136",
+      "source_location": "L139",
       "weight": 1.0
     },
     {
@@ -176967,7 +177002,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "services/mail/oauth.py",
-      "source_location": "L151",
+      "source_location": "L154",
       "weight": 1.0
     },
     {
@@ -176978,7 +177013,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "services/mail/oauth.py",
-      "source_location": "L182",
+      "source_location": "L185",
       "weight": 1.0
     },
     {
@@ -176989,7 +177024,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "services/mail/oauth.py",
-      "source_location": "L191",
+      "source_location": "L194",
       "weight": 1.0
     },
     {
@@ -177000,7 +177035,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "services/mail/oauth.py",
-      "source_location": "L213",
+      "source_location": "L219",
       "weight": 1.0
     },
     {
@@ -177011,7 +177046,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "services/mail/oauth.py",
-      "source_location": "L221",
+      "source_location": "L227",
       "weight": 1.0
     },
     {
@@ -177022,7 +177057,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "services/mail/oauth.py",
-      "source_location": "L227",
+      "source_location": "L233",
       "weight": 1.0
     },
     {
@@ -177033,7 +177068,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "services/mail/oauth.py",
-      "source_location": "L29",
+      "source_location": "L32",
       "weight": 1.0
     },
     {
@@ -177044,7 +177079,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "services/mail/oauth.py",
-      "source_location": "L40",
+      "source_location": "L43",
       "weight": 1.0
     },
     {
@@ -177055,7 +177090,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "services/mail/oauth.py",
-      "source_location": "L84",
+      "source_location": "L87",
       "weight": 1.0
     },
     {
@@ -177066,7 +177101,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "services/mail/oauth.py",
-      "source_location": "L90",
+      "source_location": "L93",
       "weight": 1.0
     },
     {
@@ -177077,18 +177112,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "services/mail/oauth.py",
-      "source_location": "L94",
-      "weight": 1.0
-    },
-    {
-      "source": "services_mail_oauth",
-      "target": "services_mail_oauth_get_client_id",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "services/mail/oauth.py",
-      "source_location": "L98",
+      "source_location": "L97",
       "weight": 1.0
     },
     {
@@ -193639,7 +193663,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "services/mail/oauth.py",
-      "source_location": "L84",
+      "source_location": "L87",
       "weight": 1.0
     },
     {
@@ -193650,7 +193674,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "services/mail/oauth.py",
-      "source_location": "L29",
+      "source_location": "L32",
       "weight": 1.0
     },
     {
@@ -195729,7 +195753,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "services/mail/oauth.py",
-      "source_location": "L85",
+      "source_location": "L88",
       "weight": 1.0
     },
     {
@@ -202861,58 +202885,58 @@
       "weight": 1.0
     },
     {
-      "source": "services_mail_oauth_rationale_152",
+      "source": "services_mail_oauth_rationale_155",
       "target": "services_mail_oauth_start",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "services/mail/oauth.py",
-      "source_location": "L152",
+      "source_location": "L155",
       "weight": 1.0
     },
     {
-      "source": "services_mail_oauth_rationale_183",
+      "source": "services_mail_oauth_rationale_186",
       "target": "services_mail_oauth_take",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "services/mail/oauth.py",
-      "source_location": "L183",
+      "source_location": "L186",
       "weight": 1.0
     },
     {
-      "source": "services_mail_oauth_rationale_214",
+      "source": "services_mail_oauth_rationale_220",
       "target": "services_mail_oauth_exchange",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "services/mail/oauth.py",
-      "source_location": "L214",
+      "source_location": "L220",
       "weight": 1.0
     },
     {
-      "source": "services_mail_oauth_rationale_222",
+      "source": "services_mail_oauth_rationale_228",
       "target": "services_mail_oauth_refresh",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "services/mail/oauth.py",
-      "source_location": "L222",
+      "source_location": "L228",
       "weight": 1.0
     },
     {
-      "source": "services_mail_oauth_rationale_228",
+      "source": "services_mail_oauth_rationale_234",
       "target": "services_mail_oauth_xoauth2",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "services/mail/oauth.py",
-      "source_location": "L228",
+      "source_location": "L234",
       "weight": 1.0
     },
     {
@@ -211455,5 +211479,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "0b809b371cf000482d63abe5b4452587af74897f"
+  "built_at_commit": "c9cd44df77ac67f4ca11dd9b481a91331fd250d3"
 }

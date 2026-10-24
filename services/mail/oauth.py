@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import base64
 import hashlib
+import logging
 import os
 import secrets
 import threading
@@ -22,6 +23,8 @@ from typing import NamedTuple, Optional
 from urllib.parse import urlencode
 
 import httpx
+
+logger = logging.getLogger(__name__)
 
 PENDING_TTL_S = 600
 
@@ -191,8 +194,9 @@ def take(state: str) -> Pending:
 def _token(provider: str, data: dict, client: Optional[httpx.Client] = None) -> dict:
     p = PROVIDERS[provider]
     data = {"client_id": get_client_id(provider), **data}
-    if p.client_secret_env and os.getenv(p.client_secret_env):
-        data["client_secret"] = os.environ[p.client_secret_env].strip()
+    secret = get_client_secret(provider)
+    if secret:
+        data["client_secret"] = secret
     own = client is None
     client = client or httpx.Client(timeout=15)
     try:
@@ -206,7 +210,9 @@ def _token(provider: str, data: dict, client: Optional[httpx.Client] = None) -> 
     if r.status_code != 200 or "access_token" not in body:
         # invalid_grant: the owner revoked access, or the token expired from disuse.
         code = "revoked" if body.get("error") == "invalid_grant" else "token_failed"
-        raise OAuthError(code, f"{p.label} did not accept the sign-in ({body.get('error', r.status_code)}).")
+        detail = body.get("error_description") or body.get("error") or r.status_code
+        logger.warning("%s token exchange failed (status=%s): %s", p.label, r.status_code, body)
+        raise OAuthError(code, f"{p.label} did not accept the sign-in ({detail}).")
     return body
 
 

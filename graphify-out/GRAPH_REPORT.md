@@ -1,17 +1,17 @@
 # Graph Report - SME Finance Copilot  (2026-10-24)
 
 ## Corpus Check
-- 487 files · ~357,595 words
+- 487 files · ~357,616 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 28 file(s) not represented in the graph (top: .csv 14, (none) 7, .example 1)
 
 ## Summary
-- 5557 nodes · 12538 edges · 447 communities (302 shown, 145 thin omitted)
+- 5557 nodes · 12540 edges · 447 communities (302 shown, 145 thin omitted)
 - Extraction: 97% EXTRACTED · 3% INFERRED · 0% AMBIGUOUS · INFERRED: 344 edges (avg confidence: 0.94)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `0b809b37`
+- Built from commit: `c9cd44df`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -1703,9 +1703,9 @@ Nodes (9): os, In-memory and persistent session store for Autonomous SME Finance
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `CashPilot: Master Security Architecture (`security.md`)` connect `mask_pii` to `AGENTS.md`?**
-  _High betweenness centrality (0.050) - this node is a cross-community bridge._
 - **Why does `LocalTransformersEngine` connect `LocalTransformersEngine` to `mask_pii`, `DecisionDomain`, `test_backend_hardening.py`, `main.py`, `agent.py`, `LocalSLMEngine`, `query_external_llm`, `local_transformers.py`, `llm_bridge.py`, `2. Deterministic FinTech Engine (25+ Core Routines)`, `supervisor.py`, `2. Subagent Suites Directory (57 Specialized Subagents)`, `test_hf_catalog.py`, `DynamicModelCatalog`?**
+  _High betweenness centrality (0.050) - this node is a cross-community bridge._
+- **Why does `CashPilot: Master Security Architecture (`security.md`)` connect `mask_pii` to `AGENTS.md`?**
   _High betweenness centrality (0.050) - this node is a cross-community bridge._
 - **Why does `6. LLM Connection Security & Data Privacy` connect `mask_pii` to `LocalTransformersEngine`?**
   _High betweenness centrality (0.033) - this node is a cross-community bridge._
