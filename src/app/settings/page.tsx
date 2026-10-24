@@ -51,6 +51,7 @@ const SECTIONS: { id: string; label: Key; description?: Key }[] = [
   { id: 'ai', label: 'set.ai', description: 'set.aiDesc' },
   { id: 'privacy', label: 'set.privacy', description: 'set.privacyDesc' },
   { id: 'prefs', label: 'set.prefs', description: 'set.prefsDesc' },
+  { id: 'updates', label: 'set.updatesTitle', description: 'set.updatesDesc' },
   { id: 'about', label: 'set.about' },
 ];
 
@@ -798,6 +799,19 @@ function AboutSection() {
   );
 }
 
+function UpdatesSection() {
+  const [version, setVersion] = useState<string | null | undefined>(undefined);
+  useEffect(() => {
+    api.health().then((h) => setVersion(h.version)).catch(() => setVersion(null));
+  }, []);
+
+  return (
+    <div className="pt-1">
+      <AppUpdaterCard currentVersion={version} />
+    </div>
+  );
+}
+
 const isSection = (id: string) => SECTIONS.some((s) => s.id === id);
 
 export default function SettingsPage() {
@@ -832,9 +846,12 @@ export default function SettingsPage() {
             <TabsTrigger
               key={s.id}
               value={s.id}
-              className="h-9 shrink-0 justify-start rounded-md px-3 text-sm font-medium text-ink-2 transition-colors hover:bg-muted/60 hover:text-foreground data-[state=active]:bg-muted data-[state=active]:text-foreground data-[state=active]:shadow-none"
+              className="h-9 shrink-0 justify-between rounded-md px-3 text-sm font-medium text-ink-2 transition-colors hover:bg-muted/60 hover:text-foreground data-[state=active]:bg-muted data-[state=active]:text-foreground data-[state=active]:shadow-none"
             >
-              {t(s.label)}
+              <span>{t(s.label)}</span>
+              {s.id === 'updates' && (
+                <span className="flex size-1.5 rounded-full bg-primary" aria-hidden />
+              )}
             </TabsTrigger>
           ))}
         </TabsList>
@@ -845,6 +862,7 @@ export default function SettingsPage() {
             {s.id === 'ai' && <AiSection />}
             {s.id === 'privacy' && <PrivacySection />}
             {s.id === 'prefs' && <PreferencesSection />}
+            {s.id === 'updates' && <UpdatesSection />}
             {s.id === 'about' && <AboutSection />}
           </TabsContent>
         ))}

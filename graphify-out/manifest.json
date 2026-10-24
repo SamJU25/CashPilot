@@ -2142,9 +2142,9 @@
     "semantic_hash": ""
   },
   "src/app/settings/page.tsx": {
-    "mtime": 1792821611.5003474,
-    "seen": 1792821705.3191218,
-    "ast_hash": "f23cba24289f05329b9987be0a1638e8",
+    "mtime": 1792821863.9096115,
+    "seen": 1792821917.3974679,
+    "ast_hash": "26575033e0fccd6dec0cd4b56643afb4",
     "semantic_hash": ""
   },
   "src/app/statements/page.tsx": {
