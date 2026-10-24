@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import html
 import re
+import threading
 from typing import Literal, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Request
@@ -567,8 +568,35 @@ async def connect(payload: ConnectRequest, tenant: str = Depends(require_tenant)
         return MailStore(tenant).view()
 
 
+_active_syncs: dict[str, threading.Event] = {}
+_syncs_guard = threading.Lock()
+
+
+def signal_sync_abort(tenant: str) -> None:
+    with _syncs_guard:
+        event = _active_syncs.get(tenant)
+        if event:
+            event.set()
+
+
+def register_sync(tenant: str) -> threading.Event:
+    with _syncs_guard:
+        if tenant in _active_syncs:
+            _active_syncs[tenant].set()
+        event = threading.Event()
+        _active_syncs[tenant] = event
+        return event
+
+
+def unregister_sync(tenant: str, event: threading.Event) -> None:
+    with _syncs_guard:
+        if _active_syncs.get(tenant) is event:
+            _active_syncs.pop(tenant, None)
+
+
 @router.delete("/connect")
 def disconnect(address: Optional[str] = None, tenant: str = Depends(require_tenant)) -> dict:
+    signal_sync_abort(tenant)
     with tenant_lock(tenant):
         store = MailStore(tenant)
         store.disconnect(address)
@@ -578,18 +606,66 @@ def disconnect(address: Optional[str] = None, tenant: str = Depends(require_tena
 
 @router.post("/sync")
 async def run_sync(tenant: str = Depends(require_tenant)) -> dict:
+    abort_event = register_sync(tenant)
+
     def work() -> dict:
-        with tenant_lock(tenant):
-            store = MailStore(tenant)
+        try:
+            with tenant_lock(tenant):
+                store = MailStore(tenant)
+                conns = store.data.get("connections") or ([store.data["connection"]] if store.data.get("connection") else [])
+                if not conns:
+                    raise MailError("not_connected", "No alerts mailbox is connected.")
+
             try:
-                result = sync(store)
+                result = sync(store, abort_event=abort_event)
             except MailError as exc:
-                if store.data["connection"]:
-                    store.data["connection"]["last_error"] = exc.code
-                    store.save()
+                if not abort_event.is_set():
+                    with tenant_lock(tenant):
+                        fresh = MailStore(tenant)
+                        if fresh.data.get("connection"):
+                            fresh.data["connection"]["last_error"] = exc.code
+                            fresh.save()
                 raise
-            store.save()
-            return {**store.view(), "result": result}
+
+            if abort_event.is_set():
+                return MailStore(tenant).view()
+
+            with tenant_lock(tenant):
+                if abort_event.is_set():
+                    return MailStore(tenant).view()
+                fresh = MailStore(tenant)
+                conns_now = fresh.data.get("connections") or ([fresh.data["connection"]] if fresh.data.get("connection") else [])
+                if not conns_now:
+                    return fresh.view()
+
+                fresh.data["cursor"].update(store.data["cursor"])
+                existing_ids = {a["id"] for a in fresh.data["alerts"]}
+                for a in store.data["alerts"]:
+                    if a["id"] not in existing_ids:
+                        fresh.data["alerts"].append(a)
+                from services.mail.store import MAX_ALERTS
+                fresh.data["alerts"] = fresh.data["alerts"][-MAX_ALERTS:]
+
+                for k, acc in store.data["accounts"].items():
+                    if k not in fresh.data["accounts"]:
+                        fresh.data["accounts"][k] = acc
+
+                for fresh_c in fresh.data.get("connections", []):
+                    for store_c in store.data.get("connections", []):
+                        if fresh_c.get("address", "").lower() == store_c.get("address", "").lower():
+                            if store_c.get("last_sync"):
+                                fresh_c["last_sync"] = store_c["last_sync"]
+                            fresh_c["last_error"] = store_c.get("last_error")
+
+                if fresh.data.get("connection") and store.data.get("connection"):
+                    if store.data["connection"].get("last_sync"):
+                        fresh.data["connection"]["last_sync"] = store.data["connection"]["last_sync"]
+                    fresh.data["connection"]["last_error"] = store.data["connection"].get("last_error")
+
+                fresh.save()
+                return {**fresh.view(), "result": result}
+        finally:
+            unregister_sync(tenant, abort_event)
 
     try:
         return await run_in_threadpool(work)

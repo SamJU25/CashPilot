@@ -36,7 +36,7 @@ import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, Di
 import { PageHeader, SectionTitle } from '@/components/common/bits';
 import { ErrorState, LoadingBlock } from '@/components/common/states';
 import { mailApi, type MailAccount, type MailAlert, type MailSettings, type MailState } from '@/lib/api';
-import { NEW_ACCOUNT, POLL_MS, checkMail, holdReason, mailDo, newAccountId, useMail } from '@/lib/bank-emails';
+import { NEW_ACCOUNT, POLL_MS, checkMail, disconnectMail, holdReason, mailDo, newAccountId, useMail } from '@/lib/bank-emails';
 import { formatDate, formatMoney } from '@/lib/format';
 import { useT, type Key } from '@/lib/i18n';
 import { latestBalances, useCashChange } from '@/lib/use-cash-change';
@@ -621,11 +621,21 @@ function StatusStrip({ state }: { state: MailState }) {
   const mail = useMail();
   const now = useNow();
   const [addingMailbox, setAddingMailbox] = useState(false);
+  const [disconnecting, setDisconnecting] = useState<string | null>(null);
   const conn = state.connection!;
   const connections = state.connections && state.connections.length > 0 ? state.connections : [conn];
   const failing = !!conn.last_error;
   const checked = mail.checkedAt ?? (conn.last_sync ? Date.parse(conn.last_sync) : null);
   const nextIn = checked ? Math.max(0, Math.round((checked + POLL_MS - now) / 1000)) : null;
+
+  const handleDisconnect = async (address?: string) => {
+    setDisconnecting(address ?? 'all');
+    try {
+      await disconnectMail(address);
+    } finally {
+      setDisconnecting(null);
+    }
+  };
 
   return (
     <div className="space-y-2.5">
@@ -685,7 +695,8 @@ function StatusStrip({ state }: { state: MailState }) {
 
           <Dialog>
             <DialogTrigger asChild>
-              <Button variant="ghost" size="sm" className="text-muted-foreground">
+              <Button variant="ghost" size="sm" className="text-muted-foreground" disabled={!!disconnecting}>
+                {disconnecting === 'all' ? <RefreshCw className="mr-1.5 size-3.5 animate-spin" /> : null}
                 {t('be.disconnect')}
               </Button>
             </DialogTrigger>
@@ -699,7 +710,12 @@ function StatusStrip({ state }: { state: MailState }) {
                   <Button variant="outline">{t('be.keep')}</Button>
                 </DialogClose>
                 <DialogClose asChild>
-                  <Button variant="destructive" onClick={() => mailDo(() => mailApi.disconnect())}>
+                  <Button
+                    variant="destructive"
+                    disabled={!!disconnecting}
+                    onClick={() => handleDisconnect()}
+                  >
+                    {disconnecting === 'all' ? <RefreshCw className="mr-1.5 size-3.5 animate-spin" /> : null}
                     {t('be.disconnect')}
                   </Button>
                 </DialogClose>
@@ -719,12 +735,13 @@ function StatusStrip({ state }: { state: MailState }) {
               <span className="font-mono text-[11px]">{c.address}</span>
               <button
                 type="button"
-                onClick={() => mailDo(() => mailApi.disconnect(c.address))}
-                className="ml-1 text-muted-foreground hover:text-critical-text"
+                disabled={!!disconnecting}
+                onClick={() => handleDisconnect(c.address)}
+                className="ml-1 text-muted-foreground hover:text-critical-text disabled:opacity-50"
                 title={`Disconnect ${c.address}`}
                 aria-label={`Disconnect ${c.address}`}
               >
-                <X className="size-3" />
+                {disconnecting === c.address ? <RefreshCw className="size-3 animate-spin" /> : <X className="size-3" />}
               </button>
             </div>
           ))}

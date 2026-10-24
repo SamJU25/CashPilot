@@ -11,10 +11,11 @@ import logging
 import re
 import socket
 import ssl
+import threading
 from datetime import date, datetime, timedelta, timezone
 from email import message_from_bytes
 from email.policy import compat32
-from typing import Callable
+from typing import Callable, Optional
 
 from services.mail.banks import BANKS
 from services.mail.discover import needs_id_command, public_ips, stamps_auth_results
@@ -121,10 +122,12 @@ def _candidate_folders(box: imaplib.IMAP4) -> list[str]:
     return folders
 
 
-def _scan_folder(box: imaplib.IMAP4, last: int, since: str, stamps: bool, extra: dict, store: MailStore) -> tuple[int, int, int]:
+def _scan_folder(box: imaplib.IMAP4, last: int, since: str, stamps: bool, extra: dict, store: MailStore, abort_event: Optional[threading.Event] = None) -> tuple[int, int, int]:
     uids: set[int] = set()
     # 1. Search known bank domains
     for domain in [*BANKS, *store.data["banks"]]:
+        if abort_event and abort_event.is_set():
+            return len(uids), 0, last
         query = ["UID", f"{last + 1}:*", "FROM", f'"{domain}"'] if last else ["SINCE", since, "FROM", f'"{domain}"']
         try:
             typ, data = box.uid("SEARCH", *query)
@@ -134,6 +137,8 @@ def _scan_folder(box: imaplib.IMAP4, last: int, since: str, stamps: bool, extra:
             continue
     # 2. Also search candidate alert subjects for unlisted/regional banks
     for kw in SUBJECT_KEYWORDS:
+        if abort_event and abort_event.is_set():
+            return len(uids), 0, last
         is_ascii = all(ord(c) < 128 for c in kw)
         if is_ascii:
             query = ["UID", f"{last + 1}:*", "SUBJECT", f'"{kw}"'] if last else ["SINCE", since, "SUBJECT", f'"{kw}"']
@@ -150,6 +155,8 @@ def _scan_folder(box: imaplib.IMAP4, last: int, since: str, stamps: bool, extra:
     added = 0
     new_last = last
     for uid in sorted(uids):
+        if abort_event and abort_event.is_set():
+            break
         typ, data = box.uid("FETCH", str(uid), "(BODY.PEEK[])")
         raw = next((part[1] for part in data or [] if isinstance(part, tuple)), None)
         if typ != "OK" or raw is None:
@@ -160,7 +167,7 @@ def _scan_folder(box: imaplib.IMAP4, last: int, since: str, stamps: bool, extra:
     return len(uids), added, new_last
 
 
-def sync(store: MailStore, opener: Callable[..., imaplib.IMAP4] = open_mailbox) -> dict:
+def sync(store: MailStore, opener: Callable[..., imaplib.IMAP4] = open_mailbox, abort_event: Optional[threading.Event] = None) -> dict:
     """Fetches alerts newer than the cursor across all connected mailboxes."""
     conns: list[dict] = store.data.get("connections") or ([store.data["connection"]] if store.data.get("connection") else [])
     if not conns:
@@ -170,61 +177,84 @@ def sync(store: MailStore, opener: Callable[..., imaplib.IMAP4] = open_mailbox) 
     total_added = 0
     since = _imap_date(date.today() - timedelta(days=FIRST_SYNC_DAYS))
     extra = store.extra_banks()
+    last_exc: Optional[MailError] = None
+    successful_conns = 0
 
     for conn in conns:
+        if abort_event and abort_event.is_set():
+            break
         addr = conn.get("address", "")
         secret = store.secret(addr)
         if not secret:
             continue
         stamps = stamps_auth_results(conn["host"])
-        if conn.get("oauth"):
-            try:
-                access, kept = oauth.refresh(conn["oauth"], secret)
-            except oauth.OAuthError as exc:
-                conn["last_error"] = str(exc)
-                continue
-            if kept != secret:
-                store.set_secret(kept, addr)
-            box = opener(conn["host"], conn["port"], conn["username"], access, True)
-        else:
-            box = opener(conn["host"], conn["port"], conn["username"], secret)
+        try:
+            if conn.get("oauth"):
+                try:
+                    access, kept = oauth.refresh(conn["oauth"], secret)
+                except oauth.OAuthError as exc:
+                    conn["last_error"] = str(exc)
+                    continue
+                if kept != secret:
+                    store.set_secret(kept, addr)
+                box = opener(conn["host"], conn["port"], conn["username"], access, True)
+            else:
+                box = opener(conn["host"], conn["port"], conn["username"], secret)
+        except MailError as exc:
+            conn["last_error"] = exc.code
+            last_exc = exc
+            continue
 
         try:
             validity = (box.response("UIDVALIDITY")[1] or [b""])[0]
             validity = validity.decode() if isinstance(validity, bytes) else str(validity or "")
             cursor = store.data["cursor"]
-            prefix = f"{addr}_" if len(conns) > 1 else ""
+            prefix = f"{addr.lower()}_" if len(conns) > 1 else ""
 
             # Check if UIDVALIDITY changed
-            if cursor.get(f"{prefix}uidvalidity", cursor.get("uidvalidity")) != validity:
+            cur_validity = cursor.get(f"{prefix}uidvalidity") or cursor.get("uidvalidity")
+            if cur_validity is not None and cur_validity != validity:
                 cursor.pop(f"{prefix}last_uid", None)
+                if not prefix:
+                    cursor.pop("last_uid", None)
 
             last = int(cursor.get(f"{prefix}last_uid", cursor.get("last_uid", 0)))
-            r, a, new_last = _scan_folder(box, last, since, stamps, extra, store)
+            r, a, new_last = _scan_folder(box, last, since, stamps, extra, store, abort_event)
             total_read += r
             total_added += a
 
-            for folder in _candidate_folders(box):
-                try:
-                    typ, _ = box.select(folder, readonly=True)
-                    if typ == "OK":
-                        sub_last = int(cursor.get(f"{prefix}last_uid_{folder}", 0))
-                        fr, fa, fn_last = _scan_folder(box, sub_last, since, stamps, extra, store)
-                        total_read += fr
-                        total_added += fa
-                        cursor[f"{prefix}last_uid_{folder}"] = fn_last
-                except Exception:
-                    continue
+            if not (abort_event and abort_event.is_set()):
+                for folder in _candidate_folders(box):
+                    if abort_event and abort_event.is_set():
+                        break
+                    try:
+                        typ, _ = box.select(folder, readonly=True)
+                        if typ == "OK":
+                            sub_last = int(cursor.get(f"{prefix}last_uid_{folder}", 0))
+                            fr, fa, fn_last = _scan_folder(box, sub_last, since, stamps, extra, store, abort_event)
+                            total_read += fr
+                            total_added += fa
+                            cursor[f"{prefix}last_uid_{folder}"] = fn_last
+                    except Exception:
+                        continue
 
-            cursor[f"{prefix}uidvalidity"] = validity
-            cursor[f"{prefix}last_uid"] = new_last
-            cursor["uidvalidity"] = validity
-            cursor["last_uid"] = new_last
-            conn.update(last_sync=datetime.now(timezone.utc).isoformat(timespec="seconds"), last_error=None)
+            if not (abort_event and abort_event.is_set()):
+                cursor[f"{prefix}uidvalidity"] = validity
+                cursor[f"{prefix}last_uid"] = new_last
+                if not prefix:
+                    cursor["uidvalidity"] = validity
+                    cursor["last_uid"] = new_last
+                conn.update(last_sync=datetime.now(timezone.utc).isoformat(timespec="seconds"), last_error=None)
+                successful_conns += 1
         finally:
             try:
                 box.logout()
             except (imaplib.IMAP4.error, OSError):
                 pass
+
+    if len(conns) == 1 and last_exc and successful_conns == 0:
+        raise last_exc
+    if len(conns) > 1 and successful_conns == 0 and last_exc:
+        raise last_exc
 
     return {"read": total_read, "added": total_added}

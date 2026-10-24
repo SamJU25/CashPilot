@@ -23,6 +23,7 @@ interface Snapshot {
 }
 
 let snap: Snapshot = { state: null, loading: true, syncing: false, error: null, checkedAt: null };
+let activeActionId = 0;
 const subs = new Set<() => void>();
 const set = (patch: Partial<Snapshot>) => {
   snap = { ...snap, ...patch };
@@ -41,22 +42,39 @@ const asError = (e: unknown) => (e instanceof ApiError ? e : new ApiError(0, 'UN
 
 /** Runs a change and takes the state it returns; failures stay on the snapshot for the page to show. */
 export async function mailDo(fn: () => Promise<MailState>): Promise<MailState | null> {
+  const actionId = ++activeActionId;
   set({ loading: !snap.state, error: null });
   try {
     const state = await fn();
+    if (actionId < activeActionId) {
+      return null;
+    }
     set({ state, error: null, loading: false });
     return state;
   } catch (e) {
+    if (actionId < activeActionId) {
+      return null;
+    }
     set({ error: asError(e), loading: false });
     return null;
   }
 }
 
+/** Disconnects a specific mailbox or all mailboxes, immediately invalidating any running sync. */
+export async function disconnectMail(address?: string): Promise<MailState | null> {
+  activeActionId++;
+  set({ syncing: false, loading: true, error: null });
+  return mailDo(() => mailApi.disconnect(address));
+}
+
 export async function checkMail() {
   if (snap.syncing) return;
   set({ syncing: true, error: null });
-  await mailDo(() => (snap.state?.connection ? mailApi.sync() : mailApi.state()));
-  set({ syncing: false, checkedAt: Date.now() });
+  try {
+    await mailDo(() => (snap.state?.connection ? mailApi.sync() : mailApi.state()));
+  } finally {
+    set({ syncing: false, checkedAt: Date.now() });
+  }
 }
 
 /** The display name of the account an alert's bank account is linked to. */

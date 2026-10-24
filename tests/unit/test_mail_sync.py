@@ -209,3 +209,92 @@ def test_multi_mailbox_connections_and_edit_alert(vault):
     remaining = s.view()["connections"]
     assert len(remaining) == 1
     assert remaining[0]["address"] == "owner@biz.com"
+
+
+def test_disconnect_when_connection_is_none_does_not_raise_attribute_error(vault):
+    s = MailStore("t_none")
+    s.data["connection"] = None
+    s.data["connections"] = []
+    # Must not raise AttributeError
+    s.disconnect("any@biz.com")
+    assert s.view()["connection"] is None
+
+
+def test_abort_event_stops_sync_immediately(vault):
+    import threading
+
+    s = connected(vault)
+    abort = threading.Event()
+    abort.set()  # Pre-aborted
+    res = sync(s, opener=lambda *a: FakeBox({1: alert(1, "尾号1234 转入人民币1,000.00元")}), abort_event=abort)
+    # Since it was aborted before folder search, no alerts added
+    assert res["added"] == 0
+
+
+def test_multi_mailbox_sync_continues_when_one_fails(vault):
+    from services.mail.sync import MailError
+
+    s = MailStore("t_resilient")
+    s.connect("failing@biz.com", {"host": "imap.fail.com", "port": 993, "username": "failing@biz.com", "name": "Fail"}, "pass1")
+    s.connect("working@biz.com", {"host": "imap.work.com", "port": 993, "username": "working@biz.com", "name": "Work"}, "pass2")
+
+    def opener(host, *args, **kwargs):
+        if "fail" in host:
+            raise MailError("auth_failed", "Refused")
+        return FakeBox({1: alert(1, "尾号9999 转入人民币500.00元")})
+
+    res = sync(s, opener=opener)
+    assert res["added"] == 1
+    view = s.view()
+    failing_conn = next(c for c in view["connections"] if c["address"] == "failing@biz.com")
+    working_conn = next(c for c in view["connections"] if c["address"] == "working@biz.com")
+    assert failing_conn["last_error"] == "auth_failed"
+    assert working_conn["last_error"] is None
+
+
+def test_api_disconnect_while_sync_in_flight(vault, monkeypatch):
+    import time
+    from threading import Thread
+    from fastapi.testclient import TestClient
+    from api.main import app
+
+    client = TestClient(app)
+    h = tenant_headers(client, "t_race")
+
+    s = MailStore("t_race")
+    s.connect("race@biz.com", {"host": "imap.biz.com", "port": 993, "username": "race@biz.com", "name": "Race"}, "pass")
+    s.save()
+
+    import services.mail.sync as sync_mod
+    original_scan = sync_mod._scan_folder
+
+    def slow_scan(*args, **kwargs):
+        time.sleep(0.3)
+        return original_scan(*args, **kwargs)
+
+    monkeypatch.setattr(sync_mod, "_scan_folder", slow_scan)
+    monkeypatch.setattr(sync_mod, "open_mailbox", lambda *a, **kw: FakeBox({1: alert(1, "尾号1234 转入人民币1,000.00元")}))
+
+    sync_result = []
+
+    def run_sync_thread():
+        r = client.post("/api/v1/mail/sync", headers=h)
+        sync_result.append(r)
+
+    t = Thread(target=run_sync_thread)
+    t.start()
+    time.sleep(0.05)
+
+    # User clicks disconnect while sync is in flight
+    del_res = client.delete("/api/v1/mail/connect", headers=h)
+    assert del_res.status_code == 200
+    assert del_res.json()["connection"] is None
+    assert del_res.json()["connections"] == []
+
+    t.join()
+    assert len(sync_result) == 1
+    # Post-sync state must NOT resurrect the connection
+    final_state = client.get("/api/v1/mail/state", headers=h).json()
+    assert final_state["connection"] is None
+    assert final_state["connections"] == []
+

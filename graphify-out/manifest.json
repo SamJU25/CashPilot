@@ -2436,9 +2436,9 @@
     "semantic_hash": ""
   },
   "src/lib/api.ts": {
-    "mtime": 1792802766.4503412,
-    "seen": 1792803053.112882,
-    "ast_hash": "bda4cbe420359367b03ea6a6044c46c5",
+    "mtime": 1792806244.3682551,
+    "seen": 1792807958.5115638,
+    "ast_hash": "2c2a7afe9ca9f5bf5693c2c8c6f5a02e",
     "semantic_hash": ""
   },
   "src/lib/currencies.ts": {
@@ -2820,9 +2820,9 @@
     "semantic_hash": ""
   },
   "api/routes/mail.py": {
-    "mtime": 1792803679.4784997,
-    "seen": 1792804167.111888,
-    "ast_hash": "07829c871482212276367b809b82e4a3",
+    "mtime": 1792809801.52511,
+    "seen": 1792810016.0310013,
+    "ast_hash": "58014843c38a87e0754ebdf6c67205f8",
     "semantic_hash": ""
   },
   "services/mail/__init__.py": {
@@ -2832,51 +2832,51 @@
     "semantic_hash": ""
   },
   "services/mail/banks.py": {
-    "mtime": 1792705996.9970624,
-    "seen": 1792706125.0237746,
-    "ast_hash": "7060a5b76e8d1543194f578a05ef2a7a",
+    "mtime": 1792805233.031596,
+    "seen": 1792807958.5005984,
+    "ast_hash": "9d4ed29a07aa24259d23d3715c1756bd",
     "semantic_hash": ""
   },
   "services/mail/parser.py": {
-    "mtime": 1792706040.623386,
-    "seen": 1792706125.0239952,
-    "ast_hash": "df8c1db871a5011a947704a56a06e3a8",
+    "mtime": 1792805442.2815623,
+    "seen": 1792807958.500882,
+    "ast_hash": "5d07f8da0611d1eb26d5022e7c198712",
     "semantic_hash": ""
   },
   "services/mail/store.py": {
-    "mtime": 1792705550.148616,
-    "seen": 1792705674.7522995,
-    "ast_hash": "1c5245c13afee76d81a8ad9dff4a90b8",
+    "mtime": 1792809740.5855925,
+    "seen": 1792810016.0479236,
+    "ast_hash": "374f317603934f7a0bfd84e6c745f184",
     "semantic_hash": ""
   },
   "services/mail/sync.py": {
-    "mtime": 1792803700.148085,
-    "seen": 1792804167.123458,
-    "ast_hash": "9efeb62b7080aa4078c8f2f6d79512c9",
+    "mtime": 1792809768.7717211,
+    "seen": 1792810016.0479264,
+    "ast_hash": "99c971d116e7286d143449a37db52aa2",
     "semantic_hash": ""
   },
   "src/app/bank-emails/page.tsx": {
-    "mtime": 1792804425.634017,
-    "seen": 1792804571.0698268,
-    "ast_hash": "ebba4e5e73fdabc25097398f782ca005",
+    "mtime": 1792809898.08753,
+    "seen": 1792810016.0515351,
+    "ast_hash": "98db66281b9775b0f2181f1c3e5fca29",
     "semantic_hash": ""
   },
   "src/lib/bank-emails.tsx": {
-    "mtime": 1792802844.202628,
-    "seen": 1792803053.112885,
-    "ast_hash": "13ca11f6cc3b3711c693e566a4059043",
+    "mtime": 1792809841.910257,
+    "seen": 1792810016.0630956,
+    "ast_hash": "4c1f54757cf1247a6729f8c51f1e4426",
     "semantic_hash": ""
   },
   "tests/unit/test_mail_parser.py": {
-    "mtime": 1792706011.9917736,
-    "seen": 1792706125.0414827,
-    "ast_hash": "451a97933390debebc160667bc80cf18",
+    "mtime": 1792805488.935565,
+    "seen": 1792807958.5217183,
+    "ast_hash": "6d0735d9b70e40873b948a21f1eb6869",
     "semantic_hash": ""
   },
   "tests/unit/test_mail_sync.py": {
-    "mtime": 1792663966.3990612,
-    "seen": 1792705674.7688844,
-    "ast_hash": "38079868c4245592abc2bffffe803be3",
+    "mtime": 1792809915.8769417,
+    "seen": 1792810016.0767255,
+    "ast_hash": "29e1e6829de931b861e56be37d8f8036",
     "semantic_hash": ""
   },
   "services/mail/discover.py": {
@@ -2922,9 +2922,9 @@
     "semantic_hash": ""
   },
   "src-tauri/Cargo.toml": {
-    "mtime": 1792794997.3042362,
-    "seen": 1792796615.1080313,
-    "ast_hash": "9150c1b7c408f63aeea0217a253ec4d6",
+    "mtime": 1792807133.947641,
+    "seen": 1792807958.5021727,
+    "ast_hash": "37608df4fa94f139d6ec0ab7d419b874",
     "semantic_hash": ""
   },
   "src-tauri/build.rs": {

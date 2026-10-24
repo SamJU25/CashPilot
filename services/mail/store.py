@@ -123,7 +123,7 @@ class MailStore:
         key = keyring.get_password(KEYRING_SERVICE, self._secret_name(target["address"]))
         try:
             return Fernet(key.encode()).decrypt(target["secret"].encode()).decode() if key else None
-        except InvalidToken:
+        except (InvalidToken, ValueError, Exception):
             return None
 
     def disconnect(self, address: Optional[str] = None) -> None:
@@ -134,18 +134,24 @@ class MailStore:
             if target:
                 try:
                     keyring.delete_password(KEYRING_SERVICE, self._secret_name(target["address"]))
-                except keyring.errors.PasswordDeleteError:
+                except (keyring.errors.KeyringError, Exception):
                     pass
                 conns.remove(target)
-            if self.data.get("connection", {}).get("address", "").lower() == address.lower():
+            curr = self.data.get("connection") or {}
+            if curr.get("address", "").lower() == address.lower():
                 self.data["connection"] = conns[0] if conns else None
+            # Clean up cursor entries for this address
+            prefix = f"{address.lower()}_"
+            for k in list(self.data.get("cursor", {}).keys()):
+                if k.lower().startswith(prefix):
+                    self.data["cursor"].pop(k, None)
             if not conns:
                 self.data.update({"connection": None, "connections": [], "accounts": {}, "alerts": [], "cursor": {}, "trusted": []})
         else:
             for c in conns:
                 try:
                     keyring.delete_password(KEYRING_SERVICE, self._secret_name(c["address"]))
-                except keyring.errors.PasswordDeleteError:
+                except (keyring.errors.KeyringError, Exception):
                     pass
             self.data.update({"connection": None, "connections": [], "accounts": {}, "alerts": [], "cursor": {}, "trusted": []})
 
