@@ -183,3 +183,73 @@ def test_dynamic_currency_symbols():
     assert p2.kind == "review" and p2.review == "unlisted_bank"
     assert p2.alert.currency == "INR" and p2.alert.amount == Decimal("15200.00")
 
+
+
+def test_received_payment_direction_inflow():
+    msg, raw = mail(
+        "Stripe <notifications@stripe.com>",
+        "Payment received",
+        "You received a payment of $850.00 from Acme Holdings on your account ending in 7721.",
+        ["mx.google.com; dkim=pass header.d=stripe.com"],
+    )
+    p = parse_alert(msg, raw, True)
+    assert p.kind == "transaction"
+    assert (p.alert.direction, p.alert.amount, p.alert.account_tail) == ("IN", Decimal("850.00"), "7721")
+
+
+def test_explicit_signed_amounts_and_cr_dr():
+    # Credit token CR
+    msg1, raw1 = mail(
+        "Citi <alerts@citi.com>",
+        "Account notice",
+        "Account ending in 4432: $250.00 CR from Vendor Refund.",
+        ["mx.google.com; dkim=pass header.d=citi.com"],
+    )
+    p1 = parse_alert(msg1, raw1, True)
+    assert p1.kind == "transaction"
+    assert (p1.alert.direction, p1.alert.amount) == ("IN", Decimal("250.00"))
+
+    # Debit token DR
+    msg2, raw2 = mail(
+        "Citi <alerts@citi.com>",
+        "Account notice",
+        "Account ending in 4432: $120.00 DR for Office Supplies.",
+        ["mx.google.com; dkim=pass header.d=citi.com"],
+    )
+    p2 = parse_alert(msg2, raw2, True)
+    assert p2.kind == "transaction"
+    assert (p2.alert.direction, p2.alert.amount) == ("OUT", Decimal("120.00"))
+
+
+def test_various_account_tail_patterns():
+    # Card with bullet format: card ••9012
+    msg, raw = mail(
+        "Barclays <alerts@barclays.co.uk>",
+        "Payment sent",
+        "You paid £45.00 to TFL with card ••9012.",
+        ["mx.google.com; dkim=pass header.d=barclays.co.uk"],
+    )
+    p = parse_alert(msg, raw, True)
+    assert p.kind == "transaction"
+    assert p.alert.account_tail == "9012"
+    assert p.alert.direction == "OUT"
+
+
+def test_pdf_attachment_parsing_in_email():
+    from tests.unit.test_pdf_parser import _create_synthetic_bank_pdf
+    pdf_bytes = _create_synthetic_bank_pdf(["Debit Notice: You paid $340.00 to Dell on account ending in 1188."])
+    
+    msg = EmailMessage()
+    msg["Authentication-Results"] = "mx.google.com; dkim=pass header.d=chase.com"
+    msg["From"] = "Chase <no.reply.alerts@chase.com>"
+    msg["Subject"] = "Transaction Notice"
+    msg["Date"] = "Thu, 22 Oct 2026 10:31:00 +0800"
+    msg["Message-ID"] = "<pdf_test@chase.com>"
+    msg.set_content("Please find your attached debit notice.")
+    msg.add_attachment(pdf_bytes, maintype="application", subtype="pdf", filename="debit_advice.pdf")
+    raw = msg.as_bytes()
+    
+    p = parse_alert(message_from_bytes(raw), raw, True)
+    assert p.kind == "transaction"
+    assert (p.alert.direction, p.alert.amount, p.alert.account_tail) == ("OUT", Decimal("340.00"), "1188")
+

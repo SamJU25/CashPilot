@@ -7,6 +7,7 @@ the agent's prompt, so an alert cannot carry instructions into the copilot.
 from __future__ import annotations
 
 import hashlib
+import io
 import re
 from dataclasses import dataclass
 from datetime import date, datetime
@@ -15,6 +16,8 @@ from email.message import Message
 from email.utils import parseaddr, parsedate_to_datetime
 from html.parser import HTMLParser
 from typing import Literal, Optional
+
+import pypdf
 
 from services.mail.banks import Bank, bank_for, infer_bank_info
 
@@ -66,20 +69,41 @@ class _Text(HTMLParser):
 
 
 def body_text(msg: Message) -> str:
-    """Plain text of the message, preferring the text part and flattening HTML otherwise."""
-    plain, html = [], []
+    """Plain text of the message, preferring the text part and flattening HTML otherwise, with PDF fallback."""
+    plain, html, pdf_parts = [], [], []
     for part in msg.walk() if msg.is_multipart() else [msg]:
         ctype = part.get_content_type()
+        fname = (part.get_filename() or "").lower()
+        if ctype == "application/pdf" or fname.endswith(".pdf"):
+            try:
+                raw_pdf = part.get_payload(decode=True)
+                if raw_pdf:
+                    reader = pypdf.PdfReader(io.BytesIO(raw_pdf))
+                    for page in reader.pages:
+                        extracted = page.extract_text()
+                        if extracted:
+                            pdf_parts.append(extracted)
+            except Exception:
+                pass
+            continue
         if ctype not in ("text/plain", "text/html") or part.get_filename():
             continue
         payload = part.get_payload(decode=True) or b""
         text = payload.decode(part.get_content_charset() or "utf-8", errors="replace")
         (plain if ctype == "text/plain" else html).append(text)
+
+    body = ""
     if plain:
-        return "\n".join(plain)
-    p = _Text()
-    p.feed("\n".join(html))
-    return "".join(p.parts)
+        body = "\n".join(plain)
+    elif html:
+        p = _Text()
+        p.feed("\n".join(html))
+        body = "".join(p.parts)
+
+    if pdf_parts:
+        pdf_text = "\n".join(pdf_parts)
+        body = f"{body}\n{pdf_text}" if body else pdf_text
+    return body
 
 
 def sender_domain(msg: Message) -> str:
@@ -108,13 +132,25 @@ def verify_sender(msg: Message, domain: str, provider_stamps: bool) -> bool:
 
 # Login codes and one-time passwords are dropped, never stored.
 _CODE = re.compile(r"验证码|校验码|动态密码|verification code|one[- ]time (?:pass(?:word|code)|code)|\bOTP\b|security code", re.I)
+
+# Broadened account tail pattern: supports "ending in 1234", "account ...1234", "card ••1234", "acct: 1234", "A/C 1234", etc.
 _TAIL = re.compile(
-    r"(?:尾号|末四位|卡号后四位|账号后四位|ending(?:\s+(?:in|with))?|account\s*(?:no\.?|number)?\s*[x*•·]+|card\s*[x*•·]+|[x*•·]{2,})\s*[:：]?\s*(\d{4})(?!\d)",
+    r"(?:尾号|末四位|卡号后四位|账号后四位|账户后[四4]位|ending(?:\s+(?:in|with))?|account\s*(?:no\.?|number|#)?\s*[x*•·#]+|card\s*[x*•·#]+|[x*•·#]{2,}|a/c\s*(?:no\.?|#)?\s*[x*•·#]*)\s*[:：#]?\s*(\d{4})(?!\d)"
+    r"|(?:account|card|acct|visa|mastercard|amex|debit|checking)\s*[:：#]?\s*(?:[x*•·#]{1,16}|\.{2,4})\s*(\d{4})(?!\d)",
     re.I,
 )
-_OUT = re.compile(r"支出|消费|转出|扣款|取现|付款|debited|\bspent\b|withdrawn|withdrawal|\bpurchase\b|\bpaid\b|payment (?:of|to)|\bsent\b", re.I)
-_IN = re.compile(r"收入|存入|转入|入账|汇入|credited|\bdeposit(?:ed)?\b|\breceived\b|incoming", re.I)
+
+# Compound phrases to accurately resolve direction without confusing "received a payment" for an outflow
+_IN = re.compile(
+    r"(?:received (?:a )?payment|payment (?:was )?received|paid you|direct deposit|refund(?:ed)?|credit(?:ed)?|transferred? from|funds (?:were )?(?:added|received|credited)|money (?:was )?received|incoming (?:wire|transfer|payment)|payout|cash ?back|payroll|interest (?:earned|paid|credited)|收入|存入|转入|入账|汇入|退款|到账|\bdeposit(?:ed)?\b|\breceived\b|incoming)",
+    re.I,
+)
+_OUT = re.compile(
+    r"(?:payment to|paid to|\bpaid\b|\bspent\b|debited|debit of|withdrawal|withdrawn|purchase(?:d)?|transferred? to|sent (?:a )?payment|money sent|\bsent\b|bill payment|charge(?:d)?|\bfee\b|支出|消费|转出|扣款|取现|付款)",
+    re.I,
+)
 _BALANCE = re.compile(r"余额|可用余额|balance|avl\.? bal|avail(?:able)? bal", re.I)
+
 from services.calculations.currency_registry import CurrencyRegistry, SYMBOL_MAP
 
 _SYMS = sorted(list(SYMBOL_MAP.keys()) + ["¥", "￥", "Rs", "Rs.", "₹"], key=len, reverse=True)
@@ -122,17 +158,16 @@ _SYM_PATTERN = "|".join(re.escape(s) for s in _SYMS)
 _CODES_PATTERN = r"\b[A-Za-z]{3}\b|RMB|元"
 
 _MONEY = re.compile(
-    rf"(?:(?P<code>{_CODES_PATTERN})\s*|(?P<sym>{_SYM_PATTERN})\s*)(?P<n>-?\d[\d,]*(?:\.\d{{1,2}})?)"
-    rf"|(?P<n2>-?\d[\d,]*(?:\.\d{{1,2}})?)\s*(?:(?P<code2>{_CODES_PATTERN})|(?P<sym2>{_SYM_PATTERN}))",
+    rf"(?:(?P<code>{_CODES_PATTERN})\s*|(?P<sym>{_SYM_PATTERN})\s*)(?P<n>[-+]?\d[\d,]*(?:\.\d{{1,2}})?)"
+    rf"|(?P<n2>[-+]?\d[\d,]*(?:\.\d{{1,2}})?)\s*(?:(?P<code2>{_CODES_PATTERN})|(?P<sym2>{_SYM_PATTERN}))",
     re.I,
 )
 _DATE_NUM = re.compile(r"(20\d{2})\s*[-/年.]\s*(\d{1,2})\s*[-/月.]\s*(\d{1,2})")
 _DATE_CN_SHORT = re.compile(r"(?<!\d)(\d{1,2})月(\d{1,2})日")
-# The other party: a label then a name, stopping at punctuation or a sentence end ("CAFE. Avl bal").
 _PARTY = re.compile(r"(?:对方户名|对方账户名|商户名称|商户|付款人|收款人|\bfrom\b|\bat\b)\s*[:：]?\s*([^\n,，。;；:：]{2,40}?)(?=\.\s|\.$|[\n,，。;；:：]|\s+(?:on|was|has|is|into|to your)\s|$)", re.I)
 
 
-def _money(text: str, default_currency: str) -> list[tuple[int, str, Decimal]]:
+def _money(text: str, default_currency: str) -> list[tuple[int, int, str, Decimal]]:
     out = []
     for m in _MONEY.finditer(text):
         raw = (m.group("n") or m.group("n2")).replace(",", "")
@@ -161,7 +196,7 @@ def _money(text: str, default_currency: str) -> list[tuple[int, str, Decimal]]:
         else:
             currency = default_currency
 
-        out.append((m.start(), currency, value))
+        out.append((m.start(), m.end(), currency, value))
     return out
 
 
@@ -190,6 +225,49 @@ def message_id(msg: Message, raw: bytes) -> str:
     return hashlib.sha256(basis).hexdigest()[:24]
 
 
+def resolve_direction(text: str, pos: int, end_pos: int, amount: Decimal) -> Optional[Literal["IN", "OUT"]]:
+    surrounding_before = text[max(0, pos - 10) : pos].strip()
+    surrounding_after = text[end_pos : min(len(text), end_pos + 15)].strip()
+
+    if amount < 0 or surrounding_before.endswith("-") or re.search(r"^\s*-\s*", surrounding_before):
+        return "OUT"
+    if surrounding_before.endswith("+") or re.search(r"^\s*\+\s*", surrounding_before):
+        return "IN"
+    if re.search(r"^(?:CR|Cr)\b", surrounding_after):
+        return "IN"
+    if re.search(r"^(?:DR|Dr)\b", surrounding_after):
+        return "OUT"
+
+    window = text[max(0, pos - 120) : min(len(text), end_pos + 60)]
+    in_strong = re.search(
+        r"(?:received (?:a )?payment|payment (?:was )?received|paid you|direct deposit|\bdeposit(?:ed)?\b|refund(?:ed)?|\bcredit(?:ed)?\b|transferred? from|transfer from|funds (?:were )?(?:added|received|credited)|money (?:was )?received|incoming (?:wire|transfer|payment)|payout|cash ?back|payroll|interest (?:earned|paid|credited)|收入|存入|转入|入账|汇入|退款|到账)",
+        window,
+        re.I,
+    )
+    out_strong = re.search(
+        r"(?:payment to|paid to|sent (?:a )?payment|debited|debit of|withdrawal|withdrawn|purchase(?:d)?|transferred? to|transfer to|money sent|\bsent\b|bill payment|charge(?:d)?|\bfee\b|\bspent\b|支出|消费|转出|扣款|取现|付款)",
+        window,
+        re.I,
+    )
+
+    if in_strong and not out_strong:
+        return "IN"
+    if out_strong and not in_strong:
+        return "OUT"
+    if in_strong and out_strong:
+        if re.search(r"(?:received|deposit|credit|refund|from|paid you|入账|转入|到账)", in_strong.group(0), re.I):
+            return "IN"
+        return "OUT" if out_strong.start() > in_strong.start() else "IN"
+
+    before = text[:pos]
+    out_at = max((m.end() for m in _OUT.finditer(before)), default=-1)
+    in_at = max((m.end() for m in _IN.finditer(before)), default=-1)
+    if out_at < 0 and in_at < 0:
+        out_at = 0 if _OUT.search(text) else -1
+        in_at = 0 if _IN.search(text) else -1
+    return "OUT" if out_at > in_at else "IN" if in_at > out_at else None
+
+
 def parse_alert(
     msg: Message,
     raw: bytes,
@@ -214,23 +292,19 @@ def parse_alert(
 
     money = _money(text, bank.currency)
     balance = next((m for m in money if _BALANCE.search(text[max(0, m[0] - 24) : m[0]])), None)
-    amounts = [m for m in money if m is not balance and m[2] > 0]
+    amounts = [m for m in money if m is not balance and abs(m[3]) > 0]
     if not amounts:
         return Parsed("ignored", reason="no_amount")
-    pos, currency, amount = amounts[0]
+    pos, end_pos, currency, raw_amount = amounts[0]
 
-    # The direction word nearest before the amount wins: "转出…余额" style alerts name both.
-    before = text[:pos]
-    out_at = max((m.end() for m in _OUT.finditer(before)), default=-1)
-    in_at = max((m.end() for m in _IN.finditer(before)), default=-1)
-    if out_at < 0 and in_at < 0:
-        out_at = 0 if _OUT.search(text) else -1
-        in_at = 0 if _IN.search(text) else -1
-    direction: Optional[Literal["IN", "OUT"]] = "OUT" if out_at > in_at else "IN" if in_at > out_at else None
+    direction = resolve_direction(text, pos, end_pos, raw_amount)
+    amount = abs(raw_amount)
 
     tail = _TAIL.search(text)
+    tail_val = (tail.group(1) or tail.group(2)) if tail else None
+
     # If unlisted and lacks account tail or direction, ignore as non-bank email
-    if is_unlisted and (not tail or direction is None):
+    if is_unlisted and (not tail_val or direction is None):
         return Parsed("ignored", reason="sender_not_trusted")
 
     party = next((m for m in [*_PARTY.finditer(text[pos:]), *_PARTY.finditer(text)] if re.search(r"[^\W\d_]", m.group(1))), None)
@@ -239,18 +313,18 @@ def parse_alert(
         id=message_id(msg, raw),
         bank=bank.name,
         bank_domain=bank_domain,
-        account_tail=tail.group(1) if tail else "",
+        account_tail=tail_val if tail_val else "primary",
         currency=currency,
         direction=direction or "IN",
         amount=amount,
-        balance_after=balance[2] if balance else None,
+        balance_after=balance[3] if balance else None,
         occurred_on=_occurred(text, msg),
         counterparty=party.group(1).strip()[:40] if party else None,
         verified=verified,
     )
     if is_unlisted and bank_domain not in (trusted or []):
         return Parsed("review", alert, review="unlisted_bank")
-    if not tail:
+    if not tail_val:
         return Parsed("review", alert, review="no_account")
     if direction is None:
         return Parsed("review", alert, review="no_direction")

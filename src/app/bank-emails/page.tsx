@@ -755,11 +755,9 @@ function ReviewList({ alerts }: { alerts: MailAlert[] }) {
                   {t('be.trustBank', { bank: a.bank })}
                 </Button>
               )}
-              {a.account_tail && (
-                <Button size="sm" variant="outline" onClick={() => mailDo(() => mailApi.decideAlert(a.id, 'accept'))}>
-                  {t('be.countIt')}
-                </Button>
-              )}
+              <Button size="sm" variant="outline" onClick={() => mailDo(() => mailApi.decideAlert(a.id, 'accept'))}>
+                {t('be.countIt')}
+              </Button>
               <Button size="sm" variant="ghost" onClick={() => mailDo(() => mailApi.decideAlert(a.id, 'dismiss'))}>
                 {t('be.dismiss')}
               </Button>

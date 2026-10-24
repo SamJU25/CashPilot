@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import imaplib
 import logging
+import re
 import socket
 import ssl
 from datetime import date, datetime, timedelta, timezone
@@ -24,6 +25,12 @@ from services.mail.store import MailStore
 FIRST_SYNC_DAYS = 30  # a new connection reads this far back, not the whole mailbox
 TIMEOUT_S = 20
 IMAPS_PORT = 993
+
+SUBJECT_KEYWORDS = [
+    "alert", "notification", "transaction", "payment", "transfer", "deposit",
+    "receipt", "payout", "debited", "credited", "purchase", "spent", "received",
+    "sent", "动账", "支出", "转入", "汇款", "退款", "入账", "扣款",
+]
 
 logger = logging.getLogger(__name__)
 
@@ -84,6 +91,75 @@ def _imap_date(d: date) -> str:
     return d.strftime("%d-%b-%Y")
 
 
+def _candidate_folders(box: imaplib.IMAP4) -> list[str]:
+    """Discovers subfolders relevant to banking/alerts/finance while skipping trash, spam and drafts."""
+    folders: list[str] = []
+    if not hasattr(box, "list"):
+        return folders
+    try:
+        typ, raw_folders = box.list()
+        if typ == "OK" and raw_folders:
+            for item in raw_folders:
+                if not isinstance(item, (bytes, str)):
+                    continue
+                s = item.decode(errors="ignore") if isinstance(item, bytes) else item
+                m = re.search(r'\((?P<flags>[^)]*)\)\s+"?[^"]*"?\s+"?(?P<name>[^"]+)"?$', s.strip())
+                if not m:
+                    continue
+                flags = m.group("flags").lower()
+                name = m.group("name").strip().strip('"')
+                name_lower = name.lower()
+                if any(bad in flags for bad in ("trash", "junk", "spam", "drafts", "sent")):
+                    continue
+                if any(bad in name_lower for bad in ("trash", "junk", "spam", "draft", "sent", "deleted", "bin")):
+                    continue
+                if any(kw in name_lower for kw in ("bank", "alert", "finance", "notification", "transaction")):
+                    if name not in folders and name.upper() != "INBOX":
+                        folders.append(name)
+    except Exception:
+        pass
+    return folders
+
+
+def _scan_folder(box: imaplib.IMAP4, last: int, since: str, stamps: bool, extra: dict, store: MailStore) -> tuple[int, int, int]:
+    uids: set[int] = set()
+    # 1. Search known bank domains
+    for domain in [*BANKS, *store.data["banks"]]:
+        query = ["UID", f"{last + 1}:*", "FROM", f'"{domain}"'] if last else ["SINCE", since, "FROM", f'"{domain}"']
+        try:
+            typ, data = box.uid("SEARCH", *query)
+            if typ == "OK" and data and data[0]:
+                uids.update(int(u) for u in data[0].split())
+        except (imaplib.IMAP4.error, UnicodeError, AssertionError):
+            continue
+    # 2. Also search candidate alert subjects for unlisted/regional banks
+    for kw in SUBJECT_KEYWORDS:
+        is_ascii = all(ord(c) < 128 for c in kw)
+        if is_ascii:
+            query = ["UID", f"{last + 1}:*", "SUBJECT", f'"{kw}"'] if last else ["SINCE", since, "SUBJECT", f'"{kw}"']
+        else:
+            query = ["CHARSET", "UTF-8", "UID", f"{last + 1}:*", "SUBJECT", f'"{kw}"'] if last else ["CHARSET", "UTF-8", "SINCE", since, "SUBJECT", f'"{kw}"']
+        try:
+            typ, data = box.uid("SEARCH", *query)
+            if typ == "OK" and data and data[0]:
+                uids.update(int(u) for u in data[0].split())
+        except (imaplib.IMAP4.error, UnicodeError, AssertionError):
+            continue
+
+    uids = {u for u in uids if u > last}
+    added = 0
+    new_last = last
+    for uid in sorted(uids):
+        typ, data = box.uid("FETCH", str(uid), "(BODY.PEEK[])")
+        raw = next((part[1] for part in data or [] if isinstance(part, tuple)), None)
+        if typ != "OK" or raw is None:
+            continue
+        msg = message_from_bytes(raw, policy=compat32)
+        added += store.add(parse_alert(msg, raw, stamps, extra, store.data.get("trusted", [])))
+        new_last = max(new_last, uid)
+    return len(uids), added, new_last
+
+
 def sync(store: MailStore, opener: Callable[..., imaplib.IMAP4] = open_mailbox) -> dict:
     """Fetches alerts newer than the cursor; returns how many were read and added."""
     conn = store.data["connection"]
@@ -112,46 +188,27 @@ def sync(store: MailStore, opener: Callable[..., imaplib.IMAP4] = open_mailbox) 
             cursor.clear()
         last = int(cursor.get("last_uid", 0))
         since = _imap_date(date.today() - timedelta(days=FIRST_SYNC_DAYS))
-
-        uids: set[int] = set()
-        # 1. Search known bank domains
-        for domain in [*BANKS, *store.data["banks"]]:
-            query = ["UID", f"{last + 1}:*", "FROM", f'"{domain}"'] if last else ["SINCE", since, "FROM", f'"{domain}"']
-            try:
-                typ, data = box.uid("SEARCH", *query)
-                if typ == "OK" and data and data[0]:
-                    uids.update(int(u) for u in data[0].split())
-            except (imaplib.IMAP4.error, UnicodeError):
-                continue
-        # 2. Also search candidate alert subjects for unlisted/regional banks
-        for kw in ["alert", "notification", "transaction", "动账", "支出", "转入"]:
-            is_ascii = all(ord(c) < 128 for c in kw)
-            if is_ascii:
-                query = ["UID", f"{last + 1}:*", "SUBJECT", f'"{kw}"'] if last else ["SINCE", since, "SUBJECT", f'"{kw}"']
-            else:
-                query = ["CHARSET", "UTF-8", "UID", f"{last + 1}:*", "SUBJECT", f'"{kw}"'] if last else ["CHARSET", "UTF-8", "SINCE", since, "SUBJECT", f'"{kw}"']
-            try:
-                typ, data = box.uid("SEARCH", *query)
-                if typ == "OK" and data and data[0]:
-                    uids.update(int(u) for u in data[0].split())
-            except (imaplib.IMAP4.error, UnicodeError):
-                continue
-        # "N:*" always returns the last message even when it is older than N.
-        uids = {u for u in uids if u > last}
-
-        added = 0
         extra = store.extra_banks()
-        for uid in sorted(uids):
-            typ, data = box.uid("FETCH", str(uid), "(BODY.PEEK[])")
-            raw = next((part[1] for part in data or [] if isinstance(part, tuple)), None)
-            if typ != "OK" or raw is None:
+
+        # Primary scan on INBOX
+        total_read, total_added, last = _scan_folder(box, last, since, stamps, extra, store)
+
+        # Secondary scan on candidate custom folders if available
+        for folder in _candidate_folders(box):
+            try:
+                typ, _ = box.select(folder, readonly=True)
+                if typ == "OK":
+                    sub_last = int(cursor.get(f"last_uid_{folder}", 0))
+                    r, a, new_sub = _scan_folder(box, sub_last, since, stamps, extra, store)
+                    total_read += r
+                    total_added += a
+                    cursor[f"last_uid_{folder}"] = new_sub
+            except Exception:
                 continue
-            msg = message_from_bytes(raw, policy=compat32)
-            added += store.add(parse_alert(msg, raw, stamps, extra, store.data.get("trusted", [])))
-            last = max(last, uid)
+
         cursor.update(uidvalidity=validity, last_uid=last)
         conn.update(last_sync=datetime.now(timezone.utc).isoformat(timespec="seconds"), last_error=None)
-        return {"read": len(uids), "added": added}
+        return {"read": total_read, "added": total_added}
     finally:
         try:
             box.logout()
