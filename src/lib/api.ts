@@ -3,7 +3,7 @@ import { DEFAULT_PROVIDER_MODELS } from '@/lib/providers';
 // Client for the FastAPI backend (api/routes/*). Every call carries this tab's session id, so uploads,
 // chat and drafted actions stay in one backend session. Money stays a decimal string end to end.
 
-import type { BalanceAt, CashAnalysis, LiveForecast, RecurringObligation, FinancingOption, ReceivablesAgeing, StagedActionIntent, UnderwritingDossier } from '@/lib/types';
+import type { BalanceAt, CashAnalysis, LiveForecast, RecurringObligation, FinancingOption, ReceivablesAgeing, StagedActionIntent, StagingRequest, UnderwritingDossier } from '@/lib/types';
 export type { CashAnalysis };
 
 export const API_URL = (process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:8000').replace(/\/$/, '');
@@ -271,6 +271,7 @@ export const api = {
   chat: (body: ChatRequest, signal?: AbortSignal) =>
     request<ChatResponse>('/api/v1/agent/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...body, session_id: sessionId() }), signal }, CHAT_TIMEOUT_MS),
   actions: () => request<StagedActionIntent[]>('/api/v1/actions'),
+  stageAction: (body: StagingRequest) => request<StagedActionIntent>('/api/v1/actions/stage', json('POST', body)),
   prepare: (id: string) => request<StagedActionIntent>(`/api/v1/actions/${encodeURIComponent(id)}/prepare`, { method: 'POST' }),
   reject: (id: string) => request<StagedActionIntent>(`/api/v1/actions/${encodeURIComponent(id)}/reject`, { method: 'POST' }),
   testConnection: (config: NonNullable<ChatRequest['llm_config']>) =>

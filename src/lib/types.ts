@@ -184,6 +184,13 @@ export interface FinancingOption {
 export type ActionType = 'FACTOR_INVOICE' | 'DRAW_CREDIT_LINE' | 'TRANSFER';
 export type IntentStatus = 'STAGED_PENDING_HITL' | 'PREPARED' | 'REJECTED' | 'EXPIRED';
 
+export interface StagingRequest {
+  action_type: ActionType;
+  amount_cents: number;
+  target_identifier: string;
+  tenant_id?: string;
+}
+
 export interface StagedActionIntent {
   id: string;
   tenant_id: string;

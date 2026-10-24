@@ -6,6 +6,7 @@ from typing import Any, Dict, List, Optional, Tuple
 
 from services.decision.base import AbstractDecisionEngine
 from services.decision.adapters.fallback_adapter import FallbackRuleAdapter
+from services.decision.policy_loader import clear_policy_cache
 from services.decision.types import DecisionDomain, DecisionRequest, DecisionResult
 
 logger = logging.getLogger(__name__)
@@ -74,6 +75,7 @@ class DecisionEngineRegistry:
 
     def reload_all(self) -> Dict[str, Any]:
         """Triggers hot-reloading across all registered adapters that support dynamic policies."""
+        clear_policy_cache()
         reload_summary: Dict[str, Any] = {}
         for _, adapter in self._adapters:
             if hasattr(adapter, "reload_tables") and callable(getattr(adapter, "reload_tables")):

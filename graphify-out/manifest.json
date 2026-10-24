@@ -1524,9 +1524,9 @@
     "semantic_hash": ""
   },
   "services/decision/registry.py": {
-    "mtime": 1792623387.1185231,
-    "seen": 1792624256.4919813,
-    "ast_hash": "dc3cdf15505b3031fee0690b05367e9e",
+    "mtime": 1792800270.369665,
+    "seen": 1792800681.1729429,
+    "ast_hash": "3aae1204c7f57235b9dcc39f28c19055",
     "semantic_hash": ""
   },
   "services/decision/types.py": {
@@ -1782,9 +1782,9 @@
     "semantic_hash": ""
   },
   "services/decision/policy_loader.py": {
-    "mtime": 1792189971.6784565,
-    "seen": 1792190196.5923328,
-    "ast_hash": "78bca599c9a2e119dc7ec351e6de45a7",
+    "mtime": 1792800227.3139982,
+    "seen": 1792800681.1729395,
+    "ast_hash": "355440081faf72336b9aaaf572a2657e",
     "semantic_hash": ""
   },
   "services/agent/context_summarizer.py": {
@@ -2220,9 +2220,9 @@
     "semantic_hash": ""
   },
   "src/components/shell/app-shell.tsx": {
-    "mtime": 1792662729.0693855,
-    "seen": 1792663170.695305,
-    "ast_hash": "55d8bb20e55f4c2f021862a9f0ac3525",
+    "mtime": 1792800389.4879403,
+    "seen": 1792800681.1812334,
+    "ast_hash": "784118fa6ce6b5e3f97ac80277c00b2f",
     "semantic_hash": ""
   },
   "src/components/shell/brand.tsx": {
@@ -2448,9 +2448,9 @@
     "semantic_hash": ""
   },
   "src/lib/api.ts": {
-    "mtime": 1792797413.3919418,
-    "seen": 1792797568.9098716,
-    "ast_hash": "4ec5fdf43652cef9dfbc91da8ec7ff9d",
+    "mtime": 1792800437.4239933,
+    "seen": 1792800681.1839247,
+    "ast_hash": "f814e283926ac445791cc4a6af2c1823",
     "semantic_hash": ""
   },
   "src/lib/currencies.ts": {
@@ -2580,9 +2580,9 @@
     "semantic_hash": ""
   },
   "src/lib/types.ts": {
-    "mtime": 1792608286.4068453,
-    "seen": 1792608300.9929392,
-    "ast_hash": "57360841dee06be73616de6e55b5d466",
+    "mtime": 1792800408.4504368,
+    "seen": 1792800681.1870816,
+    "ast_hash": "1be5f20bfdec7f7ebf9b6690c1c3c932",
     "semantic_hash": ""
   },
   "src/lib/use-cash-change.ts": {

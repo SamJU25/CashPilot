@@ -27,6 +27,8 @@ import { useIntents, useWorkspace } from '@/lib/workspace';
 import { cn } from '@/lib/utils';
 import { useT, type Key } from '@/lib/i18n';
 import { CashPilotMark, Wordmark } from '@/components/shell/brand';
+import { LanguageMenu } from '@/components/shell/language-menu';
+import { ThemeSwitch } from '@/components/shell/theme-switch';
 import { QuickCashDialog } from '@/components/overview/quick-cash-dialog';
 import { formatDate } from '@/lib/format';
 import { BankEmailSync } from '@/lib/bank-emails';
@@ -133,9 +135,13 @@ function RailFooter() {
   const effective = pendingHref ?? pathname;
 
   return (
-    <div>
+    <div className="space-y-2">
       <DataFreshness />
-      <div className="border-t pt-3">
+      <div className="flex items-center justify-between gap-1 border-t pt-2">
+        <LanguageMenu className="flex-1" />
+        <ThemeSwitch className="shrink-0" />
+      </div>
+      <div className="border-t pt-2">
         <Link
           href="/settings"
           prefetch={true}

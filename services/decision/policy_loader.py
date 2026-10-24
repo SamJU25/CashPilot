@@ -6,6 +6,7 @@ to prevent hardcoding in adapters, routers, or agent services.
 
 from __future__ import annotations
 
+from functools import lru_cache
 import json
 import logging
 from pathlib import Path
@@ -17,6 +18,7 @@ logger = logging.getLogger(__name__)
 DECISION_TABLES_DIR = Path(__file__).resolve().parent.parent.parent / "contracts" / "decision_tables"
 
 
+@lru_cache(maxsize=16)
 def load_security_policy_config(tables_dir: Path | None = None) -> Tuple[re.Pattern, re.Pattern, Dict[str, Any]]:
     """Loads prompt injection patterns, credential patterns, and staging defaults dynamically from security_gate_policy.json."""
     base_dir = tables_dir or DECISION_TABLES_DIR
@@ -60,6 +62,7 @@ def load_security_policy_config(tables_dir: Path | None = None) -> Tuple[re.Patt
     return inj_pat, cred_pat, defaults
 
 
+@lru_cache(maxsize=16)
 def load_semantic_prototypes(tables_dir: Path | None = None) -> Tuple[Dict[str, str], Dict[str, str], str]:
     """Loads semantic intent and sub-intent vector prototypes dynamically from semantic_intent_prototypes.json."""
     base_dir = tables_dir or DECISION_TABLES_DIR
@@ -76,3 +79,9 @@ def load_semantic_prototypes(tables_dir: Path | None = None) -> Tuple[Dict[str, 
         except Exception as exc:
             logger.warning("Failed to load semantic prototypes from %s: %s", proto_file, exc)
     return {}, {}, ""
+
+
+def clear_policy_cache() -> None:
+    """Clears cached decision table and prototype configurations upon hot reload."""
+    load_security_policy_config.cache_clear()
+    load_semantic_prototypes.cache_clear()
