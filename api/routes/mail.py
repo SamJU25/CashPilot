@@ -169,15 +169,18 @@ def state(tenant: str = Depends(require_tenant)) -> dict:
 @router.post("/connect")
 async def connect(payload: ConnectRequest, tenant: str = Depends(require_tenant)) -> dict:
     host = payload.host.lower()
+    clean_secret = payload.secret.strip()
+    if "gmail" in host or "google" in host:
+        clean_secret = clean_secret.replace(" ", "")
     try:
         # Test before saving: a wrong password is never stored.
-        box = await run_in_threadpool(open_mailbox, host, payload.port, payload.username, payload.secret)
+        box = await run_in_threadpool(open_mailbox, host, payload.port, payload.username, clean_secret)
         await run_in_threadpool(box.logout)
     except MailError as exc:
         raise _fail(exc)
     with tenant_lock(tenant):
         store = MailStore(tenant)
-        store.connect(payload.address, {"host": host, "port": payload.port, "username": payload.username, "name": payload.name or host}, payload.secret)
+        store.connect(payload.address, {"host": host, "port": payload.port, "username": payload.username, "name": payload.name or host}, clean_secret)
         store.save()
     try:
         return await run_sync(tenant)

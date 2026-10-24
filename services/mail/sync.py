@@ -7,6 +7,7 @@ move or even mark anything as read. Only mail from trusted bank domains is searc
 from __future__ import annotations
 
 import imaplib
+import logging
 import socket
 import ssl
 from datetime import date, datetime, timedelta, timezone
@@ -23,6 +24,8 @@ from services.mail.store import MailStore
 FIRST_SYNC_DAYS = 30  # a new connection reads this far back, not the whole mailbox
 TIMEOUT_S = 20
 IMAPS_PORT = 993
+
+logger = logging.getLogger(__name__)
 
 
 class MailError(Exception):
@@ -57,12 +60,16 @@ def open_mailbox(host: str, port: int, username: str, secret: str, bearer: bool 
         box._encoding = "utf-8"
     except (OSError, ssl.SSLError, socket.timeout) as exc:
         raise MailError("unreachable", f"Could not open a secure connection to {host}.") from exc
+    clean_secret = secret.strip()
+    if not bearer and ("gmail" in host or "google" in host):
+        clean_secret = clean_secret.replace(" ", "")
     try:
         if bearer:
             box.authenticate("XOAUTH2", lambda _: oauth.xoauth2(username, secret))
         else:
-            box.login(username, secret)
+            box.login(username, clean_secret)
     except imaplib.IMAP4.error as exc:
+        logger.warning("IMAP authentication failed for %s on %s: %s", username, host, exc)
         raise MailError("auth_failed", "The mail server refused the address or password.") from exc
     if needs_id_command(host):
         imaplib.Commands.setdefault("ID", ("AUTH", "SELECTED"))
