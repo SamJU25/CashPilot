@@ -37,10 +37,31 @@ class FakeBox:
         self.commands.append(command)
         assert command in ("SEARCH", "FETCH")
         if command == "SEARCH":
+            if len(args) == 2 and args[0] == "SINCE":
+                return "OK", [" ".join(map(str, sorted(self.mails.keys()))).encode()]
+            if len(args) == 2 and args[0] == "UID" and ":*" in args[1]:
+                min_u = int(args[1].split(":")[0])
+                hits = [u for u in self.mails if u >= min_u]
+                return "OK", [" ".join(map(str, sorted(hits))).encode()]
             domain = args[-1].strip('"')
             hits = [u for u, raw in self.mails.items() if f"@{domain}".encode() in raw or f".{domain}".encode() in raw]
-            return "OK", [" ".join(map(str, hits)).encode()]
-        assert args[1] == "(BODY.PEEK[])"  # never a fetch that marks mail as read
+            return "OK", [" ".join(map(str, sorted(hits))).encode()]
+        if len(args) > 1 and "HEADER.FIELDS" in args[1]:
+            res = []
+            spec = args[0]
+            if ":" in spec:
+                lo, hi = map(int, spec.split(":"))
+                target_uids = [u for u in self.mails if lo <= u <= hi]
+            else:
+                target_uids = [int(u) for u in spec.split(",") if int(u) in self.mails]
+            from email.policy import compat32
+            for u in sorted(target_uids):
+                raw = self.mails[u]
+                msg = message_from_bytes(raw, policy=compat32)
+                hdr = f"From: {msg.get('From', '')}\r\nSubject: {msg.get('Subject', '')}\r\n\r\n".encode()
+                res.append((f"{u} (UID {u} BODY[HEADER.FIELDS (FROM SUBJECT)] {{{len(hdr)}}}".encode(), hdr))
+                res.append(b")")
+            return "OK", res
         return "OK", [(b"1 (BODY[] {n}", self.mails[int(args[0])]), b")"]
 
     def logout(self):

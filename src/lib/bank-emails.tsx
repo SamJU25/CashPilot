@@ -30,6 +30,10 @@ const set = (patch: Partial<Snapshot>) => {
   subs.forEach((f) => f());
 };
 
+export function clearMailError() {
+  set({ error: null });
+}
+
 export function useMail(): Snapshot {
   return useSyncExternalStore(
     (f) => (subs.add(f), () => subs.delete(f)),

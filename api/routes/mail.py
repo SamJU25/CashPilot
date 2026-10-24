@@ -634,14 +634,17 @@ async def run_sync(
 
             try:
                 result = sync(store, abort_event=abort_event, llm_config=effective_llm_config)
-            except MailError as exc:
+            except (MailError, OSError, ssl.SSLError, socket.timeout, TimeoutError) as exc:
+                code = exc.code if isinstance(exc, MailError) else "unreachable"
                 if not abort_event.is_set():
                     with tenant_lock(tenant):
                         fresh = MailStore(tenant)
+                        for c in fresh.data.get("connections", []):
+                            c["last_error"] = code
                         if fresh.data.get("connection"):
-                            fresh.data["connection"]["last_error"] = exc.code
-                            fresh.save()
-                raise
+                            fresh.data["connection"]["last_error"] = code
+                        fresh.save()
+                raise MailError(code, str(exc))
 
             if abort_event.is_set():
                 return MailStore(tenant).view()
@@ -687,6 +690,8 @@ async def run_sync(
         return await run_in_threadpool(work)
     except MailError as exc:
         raise _fail(exc)
+    except Exception as exc:
+        raise HTTPException(status_code=502, detail={"code": "unreachable", "message": f"Sync failed: {exc}"})
 
 
 @router.put("/accounts/{key}")

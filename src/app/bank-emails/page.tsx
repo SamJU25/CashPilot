@@ -38,7 +38,7 @@ import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, Di
 import { PageHeader, SectionTitle } from '@/components/common/bits';
 import { ErrorState, LoadingBlock } from '@/components/common/states';
 import { mailApi, type MailAccount, type MailAlert, type MailSettings, type MailState } from '@/lib/api';
-import { NEW_ACCOUNT, POLL_MS, checkMail, disconnectMail, holdReason, mailDo, newAccountId, useMail } from '@/lib/bank-emails';
+import { NEW_ACCOUNT, POLL_MS, checkMail, clearMailError, disconnectMail, holdReason, mailDo, newAccountId, useMail } from '@/lib/bank-emails';
 import { formatDate, formatMoney } from '@/lib/format';
 import { useT, type Key } from '@/lib/i18n';
 import { latestBalances, useCashChange } from '@/lib/use-cash-change';
@@ -1455,9 +1455,30 @@ export default function BankEmailsPage() {
       </div>
       <StatusStrip state={state} />
       {mail.error && state && (
-        <p role="alert" className="text-sm text-critical-text">
-          {t(ERROR_KEY[mail.error.code] ?? 'be.err.generic')}
-        </p>
+        <div role="alert" className="mt-3 flex items-center justify-between rounded-lg border border-critical/30 bg-critical/10 px-4 py-2.5 text-sm text-critical-text">
+          <div className="flex items-center gap-2">
+            <TriangleAlert className="size-4 shrink-0 text-critical" aria-hidden />
+            <span>
+              {mail.error.code === 'UNREACHABLE' || mail.error.code === 'TIMEOUT'
+                ? t('be.err.server')
+                : t(ERROR_KEY[mail.error.code] ?? 'be.err.generic')}
+            </span>
+          </div>
+          <div className="flex items-center gap-2">
+            <Button variant="outline" size="sm" className="h-7 border-critical/30 text-xs hover:bg-critical/20" onClick={checkMail} disabled={mail.syncing}>
+              <RefreshCw className={cn('mr-1 size-3', mail.syncing && 'animate-spin')} aria-hidden />
+              {t('common.retry')}
+            </Button>
+            <button
+              type="button"
+              onClick={clearMailError}
+              className="rounded p-1 text-muted-foreground hover:bg-critical/20 hover:text-foreground"
+              aria-label="Dismiss error"
+            >
+              <X className="size-3.5" aria-hidden />
+            </button>
+          </div>
+        </div>
       )}
 
       <dl className="grid grid-cols-2 divide-y rounded-xl border bg-card sm:grid-cols-4 sm:divide-x sm:divide-y-0">

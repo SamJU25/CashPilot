@@ -15,6 +15,7 @@ import threading
 from datetime import date, datetime, timedelta, timezone
 from email import message_from_bytes
 from email.policy import compat32
+from email.utils import parseaddr
 from typing import TYPE_CHECKING, Callable, Optional
 
 from services.mail.banks import BANKS
@@ -136,46 +137,103 @@ def _scan_folder(
     llm_config: Optional[LLMConfig] = None,
 ) -> tuple[int, int, int]:
     uids: set[int] = set()
-    # 1. Search known bank domains
-    for domain in [*BANKS, *store.data["banks"]]:
-        if abort_event and abort_event.is_set():
-            return len(uids), 0, last
-        query = ["UID", f"{last + 1}:*", "FROM", f'"{domain}"'] if last else ["SINCE", since, "FROM", f'"{domain}"']
+    new_last = last
+    fast_search_done = False
+
+    # 1. Fast path: 1 single bulk UID query instead of 100+ sequential round-trips
+    if last > 0:
         try:
-            typ, data = box.uid("SEARCH", *query)
+            typ, data = box.uid("SEARCH", "UID", f"{last + 1}:*")
             if typ == "OK" and data and data[0]:
-                uids.update(int(u) for u in data[0].split())
-        except (imaplib.IMAP4.error, UnicodeError, AssertionError):
-            continue
-    # 2. Also search candidate alert subjects for unlisted/regional banks
-    for kw in SUBJECT_KEYWORDS:
-        if abort_event and abort_event.is_set():
-            return len(uids), 0, last
-        is_ascii = all(ord(c) < 128 for c in kw)
-        if is_ascii:
-            query = ["UID", f"{last + 1}:*", "SUBJECT", f'"{kw}"'] if last else ["SINCE", since, "SUBJECT", f'"{kw}"']
-        else:
-            query = ["CHARSET", "UTF-8", "UID", f"{last + 1}:*", "SUBJECT", f'"{kw}"'] if last else ["CHARSET", "UTF-8", "SINCE", since, "SUBJECT", f'"{kw}"']
+                uids = {int(u) for u in data[0].split() if int(u) > last}
+            fast_search_done = True
+        except (imaplib.IMAP4.error, UnicodeError, AssertionError, OSError):
+            fast_search_done = False
+    elif last == 0:
         try:
-            typ, data = box.uid("SEARCH", *query)
+            typ, data = box.uid("SEARCH", "SINCE", since)
             if typ == "OK" and data and data[0]:
-                uids.update(int(u) for u in data[0].split())
-        except (imaplib.IMAP4.error, UnicodeError, AssertionError):
-            continue
+                all_uids = [int(u) for u in data[0].split()]
+                if all_uids:
+                    uids = set(all_uids[-500:])  # Cap initial sync scan to recent 500
+                    new_last = max(all_uids)
+            fast_search_done = True
+        except (imaplib.IMAP4.error, UnicodeError, AssertionError, OSError):
+            fast_search_done = False
+
+    # 2. Fallback path if bulk query failed or not supported
+    if not fast_search_done:
+        for domain in [*BANKS, *store.data.get("banks", {})]:
+            if abort_event and abort_event.is_set():
+                return len(uids), 0, last
+            query = ["UID", f"{last + 1}:*", "FROM", f'"{domain}"'] if last else ["SINCE", since, "FROM", f'"{domain}"']
+            try:
+                typ, data = box.uid("SEARCH", *query)
+                if typ == "OK" and data and data[0]:
+                    uids.update(int(u) for u in data[0].split())
+            except (imaplib.IMAP4.error, UnicodeError, AssertionError, OSError):
+                continue
+        for kw in SUBJECT_KEYWORDS:
+            if abort_event and abort_event.is_set():
+                return len(uids), 0, last
+            is_ascii = all(ord(c) < 128 for c in kw)
+            if is_ascii:
+                query = ["UID", f"{last + 1}:*", "SUBJECT", f'"{kw}"'] if last else ["SINCE", since, "SUBJECT", f'"{kw}"']
+            else:
+                query = ["CHARSET", "UTF-8", "UID", f"{last + 1}:*", "SUBJECT", f'"{kw}"'] if last else ["CHARSET", "UTF-8", "SINCE", since, "SUBJECT", f'"{kw}"']
+            try:
+                typ, data = box.uid("SEARCH", *query)
+                if typ == "OK" and data and data[0]:
+                    uids.update(int(u) for u in data[0].split())
+            except (imaplib.IMAP4.error, UnicodeError, AssertionError, OSError):
+                continue
 
     uids = {u for u in uids if u > last}
+    if not uids:
+        return 0, 0, new_last
+
+    new_last = max(new_last, max(uids))
+
+    # 3. Header pre-filtering if more than 3 candidate messages
+    candidate_uids = uids
+    if len(uids) > 3 and fast_search_done:
+        try:
+            uid_seq = f"{min(uids)}:{max(uids)}"
+            typ, hdr_data = box.uid("FETCH", uid_seq, "(BODY.PEEK[HEADER.FIELDS (FROM SUBJECT)])")
+            if typ == "OK" and hdr_data:
+                domains = set([*BANKS, *store.data.get("banks", {})])
+                filtered_uids = set()
+                for item in hdr_data:
+                    if isinstance(item, tuple) and item[1]:
+                        header_str = item[0].decode("ascii", errors="ignore")
+                        m_uid = re.search(r"\bUID\s+(\d+)", header_str)
+                        u = int(m_uid.group(1)) if m_uid else None
+                        msg = message_from_bytes(item[1], policy=compat32)
+                        f_addr = parseaddr(msg.get("From", ""))[1].lower()
+                        dom = f_addr.rpartition("@")[2]
+                        subj = (msg.get("Subject", "") or "").lower()
+                        if any(dom == d or dom.endswith("." + d) for d in domains) or any(kw in subj for kw in SUBJECT_KEYWORDS):
+                            if u:
+                                filtered_uids.add(u)
+                candidate_uids = filtered_uids
+        except Exception as exc:
+            logger.debug("Header pre-filtering skipped: %s", exc)
+            candidate_uids = uids
+
     added = 0
-    new_last = last
-    for uid in sorted(uids):
+    for uid in sorted(candidate_uids):
         if abort_event and abort_event.is_set():
             break
-        typ, data = box.uid("FETCH", str(uid), "(BODY.PEEK[])")
-        raw = next((part[1] for part in data or [] if isinstance(part, tuple)), None)
-        if typ != "OK" or raw is None:
+        try:
+            typ, data = box.uid("FETCH", str(uid), "(BODY.PEEK[])")
+            raw = next((part[1] for part in data or [] if isinstance(part, tuple)), None)
+            if typ != "OK" or raw is None:
+                continue
+            msg = message_from_bytes(raw, policy=compat32)
+            added += store.add(parse_alert(msg, raw, stamps, extra, store.data.get("trusted", []), llm_config=llm_config))
+        except (imaplib.IMAP4.error, OSError):
             continue
-        msg = message_from_bytes(raw, policy=compat32)
-        added += store.add(parse_alert(msg, raw, stamps, extra, store.data.get("trusted", []), llm_config=llm_config))
-        new_last = max(new_last, uid)
+
     return len(uids), added, new_last
 
 
@@ -265,6 +323,12 @@ def sync(
                     cursor["last_uid"] = new_last
                 conn.update(last_sync=datetime.now(timezone.utc).isoformat(timespec="seconds"), last_error=None)
                 successful_conns += 1
+        except (socket.timeout, ssl.SSLError, TimeoutError, OSError, imaplib.IMAP4.error) as exc:
+            err_code = "unreachable"
+            logger.warning("Mailbox scan interrupted for %s on %s: %s", addr, conn.get("host"), exc)
+            conn["last_error"] = err_code
+            last_exc = MailError(err_code, f"Connection to {conn.get('host')} interrupted: {exc}")
+            continue
         finally:
             try:
                 box.logout()
