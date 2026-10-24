@@ -2220,9 +2220,9 @@
     "semantic_hash": ""
   },
   "src/components/shell/app-shell.tsx": {
-    "mtime": 1792800389.4879403,
-    "seen": 1792800681.1812334,
-    "ast_hash": "784118fa6ce6b5e3f97ac80277c00b2f",
+    "mtime": 1792803234.034583,
+    "seen": 1792803369.8757687,
+    "ast_hash": "55d8bb20e55f4c2f021862a9f0ac3525",
     "semantic_hash": ""
   },
   "src/components/shell/brand.tsx": {
@@ -2231,22 +2231,10 @@
     "ast_hash": "9989012a40c2e138f0af6eab0b354117",
     "semantic_hash": ""
   },
-  "src/components/shell/language-menu.tsx": {
-    "mtime": 1792458683.05727,
-    "seen": 1792459197.7218876,
-    "ast_hash": "6ad8f378ea79620cf3d349bd4a98b63c",
-    "semantic_hash": ""
-  },
   "src/components/shell/providers.tsx": {
     "mtime": 1792370807.497051,
     "seen": 1792431959.8000033,
     "ast_hash": "584823fd959d9ac81601648ced087072",
-    "semantic_hash": ""
-  },
-  "src/components/shell/theme-switch.tsx": {
-    "mtime": 1792375179.6174448,
-    "seen": 1792431959.8000047,
-    "ast_hash": "54c8e93abe42c4a84858fe1d1d2d8034",
     "semantic_hash": ""
   },
   "src/components/ui/badge.tsx": {
