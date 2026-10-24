@@ -982,6 +982,12 @@ export default function BankEmailsPage() {
   const { live, source, accountNames } = useWorkspace();
   const state = mail.state;
 
+  useEffect(() => {
+    if (!state && !mail.syncing) {
+      void checkMail();
+    }
+  }, [state, mail.syncing]);
+
   if (mail.loading && !state) {
     return (
       <div>

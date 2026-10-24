@@ -42,23 +42,44 @@ export function resetSession() {
 
 // The signed tenant token comes from our own Next.js route, which holds the enrollment key server side.
 let tokenPromise: Promise<string | null> | null = null;
-function tenantToken(): Promise<string | null> {
-  tokenPromise ??= fetch('/api/session', { method: 'POST' })
-    .then(async (r) => (r.ok ? ((await r.json()) as { token: string }).token : null))
-    .catch(() => null)
-    .then(async (token) => {
-      if (token) return token;
-      try {
-        const res = await fetch(`${API_URL}/api/v1/auth/local-session`, { method: 'POST' });
-        if (res.ok) {
-          const data = (await res.json()) as { access_token: string };
-          return data.access_token;
-        }
-      } catch {
-        // Fall through
+async function fetchTenantToken(): Promise<string | null> {
+  try {
+    const r = await fetch('/api/session', { method: 'POST' });
+    if (r.ok) {
+      const data = (await r.json()) as { token: string };
+      if (data.token) return data.token;
+    }
+  } catch {
+    // In desktop export there is no Next.js server; fall through to local FastAPI
+  }
+
+  // In Desktop / local FastAPI: /api/v1/auth/local-session
+  // If the backend is cold-starting, retry with backoff over ~3.5s before giving up
+  const retryDelays = [200, 400, 800, 1200];
+  for (let attempt = 0; attempt <= retryDelays.length; attempt++) {
+    try {
+      const res = await fetch(`${API_URL}/api/v1/auth/local-session`, { method: 'POST' });
+      if (res.ok) {
+        const data = (await res.json()) as { access_token: string };
+        return data.access_token;
       }
-      return null;
+    } catch {
+      // Backend is still initializing
+    }
+    if (attempt < retryDelays.length) {
+      await new Promise((resolve) => setTimeout(resolve, retryDelays[attempt]));
+    }
+  }
+  return null;
+}
+
+function tenantToken(): Promise<string | null> {
+  if (!tokenPromise) {
+    tokenPromise = fetchTenantToken().then((tok) => {
+      if (!tok) tokenPromise = null;
+      return tok;
     });
+  }
   return tokenPromise;
 }
 
@@ -88,30 +109,34 @@ async function request<T>(path: string, init: RequestInit = {}, timeoutMs = TIME
   }
 
   let res: Response;
-  try {
-    res = await fetch(API_URL + path, { ...init, headers, signal });
-  } catch (e) {
-    // If the server is still booting up (e.g. desktop launch), retry GET requests once after a brief pause
-    if ((!init.method || init.method.toUpperCase() === 'GET') && !init.signal?.aborted) {
-      await new Promise((r) => setTimeout(r, 800));
-      try {
-        res = await fetch(API_URL + path, { ...init, headers, signal });
-      } catch (retryErr) {
-        if (init.signal?.aborted || (retryErr instanceof DOMException && retryErr.name === 'AbortError')) {
-          throw retryErr;
-        }
-        if (retryErr instanceof DOMException && retryErr.name === 'TimeoutError') throw new ApiError(0, 'TIMEOUT', `The CashPilot server did not answer within ${timeoutMs / 1000} seconds.`);
-        throw new ApiError(0, 'UNREACHABLE', 'The CashPilot server did not answer. Check that it is running.');
+  const isRead = !init.method || init.method.toUpperCase() === 'GET';
+  const delays = [300, 600, 1000, 1500];
+  let attempt = 0;
+  while (true) {
+    try {
+      res = await fetch(API_URL + path, { ...init, headers, signal });
+      break;
+    } catch (e) {
+      if (init.signal?.aborted || (e instanceof DOMException && e.name === 'AbortError')) throw e;
+      if (isRead && attempt < delays.length) {
+        await new Promise((r) => setTimeout(r, delays[attempt++]));
+        continue;
       }
-    } else {
-      if (init.signal?.aborted || (e instanceof DOMException && e.name === 'AbortError')) {
-        throw e;
+      if (e instanceof DOMException && e.name === 'TimeoutError') {
+        throw new ApiError(0, 'TIMEOUT', `The CashPilot server did not answer within ${timeoutMs / 1000} seconds.`);
       }
-      if (e instanceof DOMException && e.name === 'TimeoutError') throw new ApiError(0, 'TIMEOUT', `The CashPilot server did not answer within ${timeoutMs / 1000} seconds.`);
       throw new ApiError(0, 'UNREACHABLE', 'The CashPilot server did not answer. Check that it is running.');
     }
   }
-  if (res.status === 401) tokenPromise = null;
+
+  if (res.status === 401) {
+    tokenPromise = null;
+    const freshToken = await tenantToken();
+    if (freshToken && freshToken !== token) {
+      headers.set('X-Tenant-Token', freshToken);
+      res = await fetch(API_URL + path, { ...init, headers, signal });
+    }
+  }
   const body = await res.json().catch(() => null);
   if (!res.ok) {
     // Routes answer either {error:{code,message}} or FastAPI's {detail}.

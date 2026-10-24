@@ -2448,9 +2448,9 @@
     "semantic_hash": ""
   },
   "src/lib/api.ts": {
-    "mtime": 1792800437.4239933,
-    "seen": 1792800681.1839247,
-    "ast_hash": "f814e283926ac445791cc4a6af2c1823",
+    "mtime": 1792802766.4503412,
+    "seen": 1792803053.112882,
+    "ast_hash": "bda4cbe420359367b03ea6a6044c46c5",
     "semantic_hash": ""
   },
   "src/lib/currencies.ts": {
@@ -2868,15 +2868,15 @@
     "semantic_hash": ""
   },
   "src/app/bank-emails/page.tsx": {
-    "mtime": 1792705550.15179,
-    "seen": 1792705674.7536883,
-    "ast_hash": "c545f2d43988edabe1ea356b0d88e904",
+    "mtime": 1792802844.2036264,
+    "seen": 1792803053.1044073,
+    "ast_hash": "59808de4a8b5cd5da9f7d152688586fa",
     "semantic_hash": ""
   },
   "src/lib/bank-emails.tsx": {
-    "mtime": 1792662956.294088,
-    "seen": 1792663170.6984155,
-    "ast_hash": "b5c869019b2c2ead589b23120d50a013",
+    "mtime": 1792802844.202628,
+    "seen": 1792803053.112885,
+    "ast_hash": "13ca11f6cc3b3711c693e566a4059043",
     "semantic_hash": ""
   },
   "tests/unit/test_mail_parser.py": {

@@ -41,6 +41,7 @@ const asError = (e: unknown) => (e instanceof ApiError ? e : new ApiError(0, 'UN
 
 /** Runs a change and takes the state it returns; failures stay on the snapshot for the page to show. */
 export async function mailDo(fn: () => Promise<MailState>): Promise<MailState | null> {
+  set({ loading: !snap.state, error: null });
   try {
     const state = await fn();
     set({ state, error: null, loading: false });
@@ -53,7 +54,7 @@ export async function mailDo(fn: () => Promise<MailState>): Promise<MailState | 
 
 export async function checkMail() {
   if (snap.syncing) return;
-  set({ syncing: true });
+  set({ syncing: true, error: null });
   await mailDo(() => (snap.state?.connection ? mailApi.sync() : mailApi.state()));
   set({ syncing: false, checkedAt: Date.now() });
 }
