@@ -114,7 +114,7 @@ def _candidate_folders(box: imaplib.IMAP4) -> list[str]:
                     continue
                 if any(bad in name_lower for bad in ("trash", "junk", "spam", "draft", "sent", "deleted", "bin")):
                     continue
-                if any(kw in name_lower for kw in ("bank", "alert", "finance", "notification", "transaction")):
+                if any(kw in name_lower for kw in ("bank", "alert", "finance", "notification", "transaction", "账单", "银行", "财务", "通知", "提醒", "动账")):
                     if name not in folders and name.upper() != "INBOX":
                         folders.append(name)
     except Exception:

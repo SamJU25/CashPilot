@@ -298,3 +298,27 @@ def test_api_disconnect_while_sync_in_flight(vault, monkeypatch):
     assert final_state["connection"] is None
     assert final_state["connections"] == []
 
+
+def test_candidate_folders_discovers_multilingual_banking_folders():
+    from services.mail.sync import _candidate_folders
+
+    class MockBox:
+        def list(self):
+            return "OK", [
+                b'(\\HasNoChildren) "/" "INBOX"',
+                b'(\\HasNoChildren) "/" "Trash"',
+                b'(\\HasNoChildren) "/" "Spam"',
+                b'(\\HasNoChildren) "/" "Bank Alerts"',
+                b'(\\HasNoChildren) "/" "\xe5\x8a\xa8\xe8\xb4\xa6\xe6\x8f\x90\xe9\x86\x92"',  # 动账提醒 in UTF-8
+                b'(\\HasNoChildren) "/" "\xe8\xb4\xa2\xe5\x8a\xa1\xe8\xb4\xa6\xe5\x8d\x95"',  # 财务账单 in UTF-8
+                b'(\\HasNoChildren) "/" "Personal"',
+            ]
+
+    folders = _candidate_folders(MockBox())
+    assert "Bank Alerts" in folders
+    assert "动账提醒" in folders
+    assert "财务账单" in folders
+    assert "Trash" not in folders
+    assert "Personal" not in folders
+
+

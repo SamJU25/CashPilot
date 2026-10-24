@@ -1,6 +1,7 @@
 'use client';
 
 import { Fragment, useEffect, useRef, useState } from 'react';
+import Link from 'next/link';
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
 import {
   ArrowDownLeft,
@@ -15,6 +16,7 @@ import {
   Filter,
   KeyRound,
   Laptop,
+  LayoutDashboard,
   Lock,
   Mail,
   MoreHorizontal,
@@ -352,8 +354,8 @@ function Connect({ onDone }: { onDone?: () => void } = {}) {
   const slide = reduce ? {} : { initial: { opacity: 0, x: 12 }, animate: { opacity: 1, x: 0 }, exit: { opacity: 0, x: -12 }, transition: spring.snappy };
 
   return (
-    <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px] lg:items-start">
-      <div className="mx-auto w-full max-w-[440px] rounded-2xl border bg-card px-6 py-8 shadow-sm sm:px-9 sm:py-10">
+    <div className={cn(onDone ? 'w-full' : 'grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px] lg:items-start')}>
+      <div className={cn('mx-auto w-full max-w-[440px] rounded-2xl border bg-card px-6 py-8 shadow-sm sm:px-9 sm:py-10', onDone && 'border-0 bg-transparent px-2 py-2 shadow-none sm:px-4 sm:py-4')}>
         <div className="mb-7 text-center">
           <span className="mx-auto mb-4 grid size-12 place-items-center rounded-2xl bg-primary/10 text-primary ring-1 ring-primary/20">
             <Mail className="size-6" aria-hidden />
@@ -582,11 +584,13 @@ function Connect({ onDone }: { onDone?: () => void } = {}) {
         </p>
       </div>
 
-      <aside className="space-y-5 rounded-xl border bg-card p-5">
-        <h2 className="font-display text-base font-semibold tracking-tight">{t('be.privacyTitle')}</h2>
-        <PathDiagram />
-        <Promises />
-      </aside>
+      {!onDone && (
+        <aside className="space-y-5 rounded-xl border bg-card p-5">
+          <h2 className="font-display text-base font-semibold tracking-tight">{t('be.privacyTitle')}</h2>
+          <PathDiagram />
+          <Promises />
+        </aside>
+      )}
     </div>
   );
 }
@@ -624,7 +628,8 @@ function StatusStrip({ state }: { state: MailState }) {
   const [disconnecting, setDisconnecting] = useState<string | null>(null);
   const conn = state.connection!;
   const connections = state.connections && state.connections.length > 0 ? state.connections : [conn];
-  const failing = !!conn.last_error;
+  const failingConn = connections.find((c) => !!c.last_error);
+  const failing = !!failingConn;
   const checked = mail.checkedAt ?? (conn.last_sync ? Date.parse(conn.last_sync) : null);
   const nextIn = checked ? Math.max(0, Math.round((checked + POLL_MS - now) / 1000)) : null;
 
@@ -652,7 +657,9 @@ function StatusStrip({ state }: { state: MailState }) {
           </span>
           <div className="min-w-0">
             <p className={cn('text-sm font-medium', !failing && 'truncate')}>
-              {failing ? t(ERROR_KEY[conn.last_error!] ?? 'be.err.generic') : t('be.watching', { address: conn.address })}
+              {failing
+                ? `${connections.length > 1 ? failingConn!.address + ': ' : ''}${t(ERROR_KEY[failingConn!.last_error!] ?? 'be.err.generic')}`
+                : t('be.watching', { address: conn.address })}
             </p>
             <p className="text-xs text-muted-foreground">
               {checked ? t('be.checked', { when: ago(checked, lang) }) : t('be.neverChecked')}
@@ -730,9 +737,16 @@ function StatusStrip({ state }: { state: MailState }) {
         <div className="flex flex-wrap items-center gap-2 rounded-xl border bg-muted/20 px-4 py-2.5 text-xs">
           <span className="font-medium text-muted-foreground">Connected Inboxes ({connections.length}):</span>
           {connections.map((c) => (
-            <div key={c.address} className="inline-flex items-center gap-1.5 rounded-full border bg-card px-2.5 py-1 text-ink-1 shadow-2xs">
-              <span className="size-1.5 rounded-full bg-good" />
+            <div
+              key={c.address}
+              className={cn(
+                'inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-ink-1 shadow-2xs transition-colors',
+                c.last_error ? 'border-critical/40 bg-critical/10 text-critical-text' : 'bg-card',
+              )}
+            >
+              <span className={cn('size-1.5 rounded-full', c.last_error ? 'bg-critical' : 'bg-good')} />
               <span className="font-mono text-[11px]">{c.address}</span>
+              {c.last_error && <span className="text-[10px] uppercase font-semibold">({c.last_error})</span>}
               <button
                 type="button"
                 disabled={!!disconnecting}
@@ -757,9 +771,19 @@ function AccountCard({ acc, targets }: { acc: MailAccount; targets: { id: string
   const { t } = useT();
   const [target, setTarget] = useState<string>(acc.target ?? targets[0]?.id ?? NEW_ACCOUNT);
   const [editing, setEditing] = useState(false);
+  const [saving, setSaving] = useState(false);
   const pending = acc.status === 'pending' || editing;
   const name = acc.target === NEW_ACCOUNT ? newAccountId(acc) : targets.find((x) => x.id === acc.target)?.name ?? acc.target;
-  const save = (status: MailAccount['status']) => mailDo(() => mailApi.decideAccount(acc.key, status, status === 'use' ? target : undefined)).then(() => setEditing(false));
+
+  const save = async (status: MailAccount['status'], customTarget?: string) => {
+    setSaving(true);
+    try {
+      await mailDo(() => mailApi.decideAccount(acc.key, status, status === 'use' ? (customTarget ?? target) : undefined));
+      setEditing(false);
+    } finally {
+      setSaving(false);
+    }
+  };
 
   return (
     <li
@@ -799,23 +823,24 @@ function AccountCard({ acc, targets }: { acc: MailAccount; targets: { id: string
                 <SelectItem value={NEW_ACCOUNT}>{t('be.addNew', { name: newAccountId(acc) })}</SelectItem>
               </SelectContent>
             </Select>
-            <Button size="sm" onClick={() => save('use')}>
-              <Check aria-hidden />
+            <Button size="sm" disabled={saving} onClick={() => save('use')}>
+              {saving ? <RefreshCw className="size-3.5 animate-spin" /> : <Check aria-hidden />}
               {t('be.useIt')}
             </Button>
             {target !== NEW_ACCOUNT && (
               <Button
                 size="sm"
                 variant="outline"
+                disabled={saving}
                 onClick={() => {
                   setTarget(NEW_ACCOUNT);
-                  mailDo(() => mailApi.decideAccount(acc.key, 'use', NEW_ACCOUNT)).then(() => setEditing(false));
+                  void save('use', NEW_ACCOUNT);
                 }}
               >
                 Track as New
               </Button>
             )}
-            <Button size="sm" variant="ghost" onClick={() => save('ignore')}>
+            <Button size="sm" variant="ghost" disabled={saving} onClick={() => save('ignore')}>
               {t('be.notMine')}
             </Button>
           </div>
@@ -860,39 +885,71 @@ const REVIEW_KEY: Record<NonNullable<MailAlert['review']>, Key> = {
 
 function ReviewList({ alerts }: { alerts: MailAlert[] }) {
   const { t } = useT();
+  const [actioningId, setActioningId] = useState<string | null>(null);
   if (alerts.length === 0) return null;
+
+  const handleAlert = async (id: string, action: 'accept' | 'dismiss' | 'trust') => {
+    setActioningId(`${id}:${action}`);
+    try {
+      await mailDo(() => mailApi.decideAlert(id, action));
+    } finally {
+      setActioningId(null);
+    }
+  };
+
   return (
     <section>
       <SectionTitle aside={t('be.reviewAside')}>{t('be.review')}</SectionTitle>
       <ul className="divide-y rounded-xl border bg-card">
-        {alerts.map((a) => (
-          <li key={a.id} className="flex flex-wrap items-center gap-x-4 gap-y-2 px-4 py-3">
-            <TriangleAlert className="size-4 shrink-0 text-warning-text" aria-hidden />
-            <div className="min-w-0 flex-1">
-              <p className="text-sm font-medium">{t(a.review ? REVIEW_KEY[a.review] : 'be.r.noAccount', { bank: a.bank })}</p>
-              <p className="truncate text-xs text-muted-foreground">
-                {a.bank} {a.account_tail && <Tail tail={a.account_tail} />} · {formatDate(a.occurred_on)} · {a.counterparty ?? '—'}
-              </p>
-            </div>
-            <span className={cn('figures text-sm font-medium', a.direction === 'IN' && 'text-good-text')}>
-              {a.direction === 'IN' ? '+' : '−'}
-              {formatMoney(a.amount, a.currency)}
-            </span>
-            <div className="flex gap-1.5">
-              {(a.review === 'unverified_sender' || a.review === 'unlisted_bank') && (
-                <Button size="sm" variant="outline" onClick={() => mailDo(() => mailApi.decideAlert(a.id, 'trust'))}>
-                  {t('be.trustBank', { bank: a.bank })}
+        {alerts.map((a) => {
+          const isBusy = !!actioningId && actioningId.startsWith(`${a.id}:`);
+          return (
+            <li key={a.id} className="flex flex-wrap items-center gap-x-4 gap-y-2 px-4 py-3">
+              <TriangleAlert className="size-4 shrink-0 text-warning-text" aria-hidden />
+              <div className="min-w-0 flex-1">
+                <p className="text-sm font-medium">{t(a.review ? REVIEW_KEY[a.review] : 'be.r.noAccount', { bank: a.bank })}</p>
+                <p className="truncate text-xs text-muted-foreground">
+                  {a.bank} {a.account_tail && <Tail tail={a.account_tail} />} · {formatDate(a.occurred_on)} · {a.counterparty ?? '—'}
+                </p>
+              </div>
+              <span className={cn('figures text-sm font-medium', a.direction === 'IN' && 'text-good-text')}>
+                {a.direction === 'IN' ? '+' : '−'}
+                {formatMoney(a.amount, a.currency)}
+              </span>
+              <div className="flex gap-1.5">
+                {(a.review === 'unverified_sender' || a.review === 'unlisted_bank') && (
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    disabled={isBusy}
+                    onClick={() => handleAlert(a.id, 'trust')}
+                  >
+                    {actioningId === `${a.id}:trust` ? <RefreshCw className="mr-1.5 size-3 animate-spin" /> : null}
+                    {t('be.trustBank', { bank: a.bank })}
+                  </Button>
+                )}
+                <Button
+                  size="sm"
+                  variant="outline"
+                  disabled={isBusy}
+                  onClick={() => handleAlert(a.id, 'accept')}
+                >
+                  {actioningId === `${a.id}:accept` ? <RefreshCw className="mr-1.5 size-3 animate-spin" /> : null}
+                  {t('be.countIt')}
                 </Button>
-              )}
-              <Button size="sm" variant="outline" onClick={() => mailDo(() => mailApi.decideAlert(a.id, 'accept'))}>
-                {t('be.countIt')}
-              </Button>
-              <Button size="sm" variant="ghost" onClick={() => mailDo(() => mailApi.decideAlert(a.id, 'dismiss'))}>
-                {t('be.dismiss')}
-              </Button>
-            </div>
-          </li>
-        ))}
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  disabled={isBusy}
+                  onClick={() => handleAlert(a.id, 'dismiss')}
+                >
+                  {actioningId === `${a.id}:dismiss` ? <RefreshCw className="mr-1.5 size-3 animate-spin" /> : null}
+                  {t('be.dismiss')}
+                </Button>
+              </div>
+            </li>
+          );
+        })}
       </ul>
     </section>
   );
@@ -921,7 +978,12 @@ function Feed({ alerts, address, accounts }: { alerts: MailAlert[]; address: str
 
   // Newest alert per account (alerts arrive newest first).
   const latest = new Map<string, string>();
-  for (const a of alerts) if (a.status !== 'dismissed' && !latest.has(a.bank_domain + a.account_tail)) latest.set(a.bank_domain + a.account_tail, a.id);
+  for (const a of alerts) {
+    if (a.status !== 'dismissed') {
+      const k = `${a.bank_domain}|${a.account_tail}|${a.currency}`;
+      if (!latest.has(k)) latest.set(k, a.id);
+    }
+  }
   const useBankBalance = (a: MailAlert) => {
     const acc = accounts.find((x) => x.bank_domain === a.bank_domain && x.tail === a.account_tail && x.currency === a.currency);
     if (!acc?.target) return;
@@ -1126,6 +1188,10 @@ function Feed({ alerts, address, accounts }: { alerts: MailAlert[]; address: str
                             <Input
                               value={editCounterparty}
                               onChange={(e) => setEditCounterparty(e.target.value)}
+                              onKeyDown={(e) => {
+                                if (e.key === 'Enter') void saveEdit(a.id);
+                                else if (e.key === 'Escape') cancelEdit();
+                              }}
                               className="h-7 text-xs bg-background"
                               placeholder="Counterparty / Merchant"
                               autoFocus
@@ -1136,6 +1202,10 @@ function Feed({ alerts, address, accounts }: { alerts: MailAlert[]; address: str
                             <Input
                               value={editNote}
                               onChange={(e) => setEditNote(e.target.value)}
+                              onKeyDown={(e) => {
+                                if (e.key === 'Enter') void saveEdit(a.id);
+                                else if (e.key === 'Escape') cancelEdit();
+                              }}
                               className="h-7 text-xs bg-background"
                               placeholder="Accounting note (optional)"
                             />
@@ -1189,7 +1259,7 @@ function Feed({ alerts, address, accounts }: { alerts: MailAlert[]; address: str
                     <div className="flex flex-wrap items-center gap-x-3 gap-y-2 border-t border-dashed border-warning/40 bg-warning/5 px-4 py-2 text-xs text-warning-text">
                       <TriangleAlert className="size-3.5 shrink-0" aria-hidden />
                       <span className="min-w-0 flex-1">{t('be.gap', { v: formatMoney(a.gap.replace('-', ''), a.currency) })}</span>
-                      {counted.has(a.id) && a.balance_after && latest.get(a.bank_domain + a.account_tail) === a.id && (
+                      {counted.has(a.id) && a.balance_after && latest.get(`${a.bank_domain}|${a.account_tail}|${a.currency}`) === a.id && (
                         <Button size="sm" variant="outline" className="h-7 border-warning/50 text-xs" onClick={() => useBankBalance(a)}>
                           {t('be.useBankBalance')}
                         </Button>
@@ -1256,7 +1326,9 @@ function Senders({ state }: { state: MailState }) {
   const own = Object.entries(state.banks);
   const add = async (e: React.FormEvent) => {
     e.preventDefault();
-    const ok = await mailDo(() => mailApi.addBank({ domain: domain.trim().toLowerCase(), name: name.trim(), currency }));
+    const cleanDomain = domain.replace(/^https?:\/\//i, '').split('/')[0].split(':')[0].trim().toLowerCase();
+    if (!cleanDomain) return;
+    const ok = await mailDo(() => mailApi.addBank({ domain: cleanDomain, name: name.trim(), currency }));
     if (ok) {
       setDomain('');
       setName('');
@@ -1368,10 +1440,19 @@ export default function BankEmailsPage() {
   const pending = state.accounts.filter((a) => a.status === 'pending');
   const counted = new Set((live.entries ?? []).map((e) => e.alertId).filter(Boolean));
   const accounts = [...state.accounts].sort((a, b) => Number(b.status === 'pending') - Number(a.status === 'pending'));
+  const latestActiveAlert = state.alerts.find((a) => a.status !== 'dismissed');
 
   return (
     <div className="space-y-6">
-      <PageHeader title={t('nav.bankEmails')} description={t('be.desc')} />
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <PageHeader title={t('nav.bankEmails')} description={t('be.desc')} />
+        <Button variant="outline" size="sm" asChild className="gap-2 self-start sm:self-center shrink-0">
+          <Link href="/">
+            <LayoutDashboard className="size-4" />
+            Live Cash Overview
+          </Link>
+        </Button>
+      </div>
       <StatusStrip state={state} />
       {mail.error && state && (
         <p role="alert" className="text-sm text-critical-text">
@@ -1383,7 +1464,7 @@ export default function BankEmailsPage() {
         <Stat label={t('be.stat.accounts')} value={state.accounts.filter((a) => a.status === 'use').length} />
         <Stat label={t('be.stat.counted')} value={state.alerts.filter((a) => counted.has(a.id)).length} />
         <Stat label={t('be.stat.waiting')} value={pending.length + review.length} tone={pending.length + review.length ? 'warning' : undefined} />
-        <Stat label={t('be.stat.last')} value={state.alerts[0] ? formatDate(state.alerts[0].occurred_on) : '—'} />
+        <Stat label={t('be.stat.last')} value={latestActiveAlert ? formatDate(latestActiveAlert.occurred_on) : '—'} />
       </dl>
 
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_300px]">
