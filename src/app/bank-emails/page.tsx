@@ -9,14 +9,21 @@ import {
   Building2,
   Check,
   ChevronDown,
+  ChevronLeft,
+  ChevronRight,
   EyeOff,
+  Filter,
   KeyRound,
   Laptop,
   Lock,
   Mail,
   MoreHorizontal,
+  Pencil,
+  Plus,
   RefreshCw,
+  Search,
   ShieldCheck,
+  Trash2,
   TriangleAlert,
   X,
 } from 'lucide-react';
@@ -234,7 +241,7 @@ function Field({
   );
 }
 
-function Connect() {
+function Connect({ onDone }: { onDone?: () => void } = {}) {
   const { t } = useT();
   const reduce = useReducedMotion();
   const [stage, setStage] = useState<Stage>('email');
@@ -289,6 +296,7 @@ function Connect() {
     try {
       const state = await mailApi.connect({ address: trimmed, secret, host, port: 993, username: server.username.trim(), name: !manual && settings ? settings.name : host });
       await mailDo(async () => state);
+      onDone?.();
     } catch (x) {
       setError(ERROR_KEY[(x as { code?: string }).code ?? ''] ?? 'be.err.generic');
       passwordRef.current?.select();
@@ -306,6 +314,8 @@ function Connect() {
       if (r === 'timeout') {
         setError('be.err.signinTimeout');
         setStage('password');
+      } else if (r === 'connected') {
+        onDone?.();
       }
     } catch (x) {
       setError(ERROR_KEY[(x as { code?: string }).code ?? ''] ?? 'be.err.generic');
@@ -570,66 +580,116 @@ function StatusStrip({ state }: { state: MailState }) {
   const { t, lang } = useT();
   const mail = useMail();
   const now = useNow();
+  const [addingMailbox, setAddingMailbox] = useState(false);
   const conn = state.connection!;
+  const connections = state.connections && state.connections.length > 0 ? state.connections : [conn];
   const failing = !!conn.last_error;
   const checked = mail.checkedAt ?? (conn.last_sync ? Date.parse(conn.last_sync) : null);
   const nextIn = checked ? Math.max(0, Math.round((checked + POLL_MS - now) / 1000)) : null;
 
   return (
-    <div
-      className={cn(
-        'flex flex-wrap items-center gap-x-6 gap-y-3 rounded-xl border px-5 py-4',
-        failing ? 'border-critical/40 bg-critical/5' : 'bg-card',
-      )}
-    >
-      <div className="flex min-w-0 items-center gap-3">
-        <span className="relative grid size-2.5 place-items-center" aria-hidden>
-          {!failing && <span className="absolute inset-0 animate-ping rounded-full bg-good/60 motion-reduce:hidden" />}
-          <span className={cn('relative size-2.5 rounded-full', failing ? 'bg-critical' : 'bg-good')} />
-        </span>
-        <div className="min-w-0">
-          <p className={cn('text-sm font-medium', !failing && 'truncate')}>{failing ? t(ERROR_KEY[conn.last_error!] ?? 'be.err.generic') : t('be.watching', { address: conn.address })}</p>
-          <p className="text-xs text-muted-foreground">
-            {checked ? t('be.checked', { when: ago(checked, lang) }) : t('be.neverChecked')}
-            {!failing && nextIn !== null && <span className="figures"> · {t('be.nextIn', { s: nextIn })}</span>}
-          </p>
+    <div className="space-y-2.5">
+      <div
+        className={cn(
+          'flex flex-wrap items-center gap-x-6 gap-y-3 rounded-xl border px-5 py-4',
+          failing ? 'border-critical/40 bg-critical/5' : 'bg-card',
+        )}
+      >
+        <div className="flex min-w-0 items-center gap-3">
+          <span className="relative grid size-2.5 place-items-center" aria-hidden>
+            {!failing && <span className="absolute inset-0 animate-ping rounded-full bg-good/60 motion-reduce:hidden" />}
+            <span className={cn('relative size-2.5 rounded-full', failing ? 'bg-critical' : 'bg-good')} />
+          </span>
+          <div className="min-w-0">
+            <p className={cn('text-sm font-medium', !failing && 'truncate')}>
+              {failing ? t(ERROR_KEY[conn.last_error!] ?? 'be.err.generic') : t('be.watching', { address: conn.address })}
+            </p>
+            <p className="text-xs text-muted-foreground">
+              {checked ? t('be.checked', { when: ago(checked, lang) }) : t('be.neverChecked')}
+              {!failing && nextIn !== null && <span className="figures"> · {t('be.nextIn', { s: nextIn })}</span>}
+            </p>
+          </div>
+        </div>
+        <div className="ml-auto flex flex-wrap items-center gap-2">
+          {conn.oauth && conn.last_error === 'signin_expired' && (
+            <Button size="sm" onClick={() => signInInBrowser({ address: conn.address, host: conn.host, username: conn.username, name: conn.name }).catch(() => {})}>
+              <ProviderMark provider={conn.oauth} />
+              {t('be.signInAgain')}
+            </Button>
+          )}
+          <Button variant="outline" size="sm" onClick={checkMail} disabled={mail.syncing}>
+            <RefreshCw className={cn(mail.syncing && 'animate-spin')} aria-hidden />
+            {t('be.checkNow')}
+          </Button>
+
+          {/* Add Another Mailbox Dialog */}
+          <Dialog open={addingMailbox} onOpenChange={setAddingMailbox}>
+            <DialogTrigger asChild>
+              <Button variant="outline" size="sm" className="gap-1.5">
+                <Plus className="size-3.5" aria-hidden />
+                Add Mailbox
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-xl">
+              <DialogHeader>
+                <DialogTitle>Connect another mailbox</DialogTitle>
+                <DialogDescription>
+                  Monitor multiple company inboxes simultaneously. Transactions from all connected accounts will feed directly into your live cash view.
+                </DialogDescription>
+              </DialogHeader>
+              <div className="pt-2">
+                <Connect onDone={() => setAddingMailbox(false)} />
+              </div>
+            </DialogContent>
+          </Dialog>
+
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button variant="ghost" size="sm" className="text-muted-foreground">
+                {t('be.disconnect')}
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>{t('be.disconnectTitle')}</DialogTitle>
+                <DialogDescription>{t('be.disconnectBody', { address: conn.address })}</DialogDescription>
+              </DialogHeader>
+              <DialogFooter>
+                <DialogClose asChild>
+                  <Button variant="outline">{t('be.keep')}</Button>
+                </DialogClose>
+                <DialogClose asChild>
+                  <Button variant="destructive" onClick={() => mailDo(() => mailApi.disconnect())}>
+                    {t('be.disconnect')}
+                  </Button>
+                </DialogClose>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
         </div>
       </div>
-      <div className="ml-auto flex items-center gap-2">
-        {conn.oauth && conn.last_error === 'signin_expired' && (
-          <Button size="sm" onClick={() => signInInBrowser({ address: conn.address, host: conn.host, username: conn.username, name: conn.name }).catch(() => {})}>
-            <ProviderMark provider={conn.oauth} />
-            {t('be.signInAgain')}
-          </Button>
-        )}
-        <Button variant="outline" size="sm" onClick={checkMail} disabled={mail.syncing}>
-          <RefreshCw className={cn(mail.syncing && 'animate-spin')} aria-hidden />
-          {t('be.checkNow')}
-        </Button>
-        <Dialog>
-          <DialogTrigger asChild>
-            <Button variant="ghost" size="sm" className="text-muted-foreground">
-              {t('be.disconnect')}
-            </Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>{t('be.disconnectTitle')}</DialogTitle>
-              <DialogDescription>{t('be.disconnectBody', { address: conn.address })}</DialogDescription>
-            </DialogHeader>
-            <DialogFooter>
-              <DialogClose asChild>
-                <Button variant="outline">{t('be.keep')}</Button>
-              </DialogClose>
-              <DialogClose asChild>
-                <Button variant="destructive" onClick={() => mailDo(mailApi.disconnect)}>
-                  {t('be.disconnect')}
-                </Button>
-              </DialogClose>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
-      </div>
+
+      {/* Multiple connected inboxes bar */}
+      {connections.length > 1 && (
+        <div className="flex flex-wrap items-center gap-2 rounded-xl border bg-muted/20 px-4 py-2.5 text-xs">
+          <span className="font-medium text-muted-foreground">Connected Inboxes ({connections.length}):</span>
+          {connections.map((c) => (
+            <div key={c.address} className="inline-flex items-center gap-1.5 rounded-full border bg-card px-2.5 py-1 text-ink-1 shadow-2xs">
+              <span className="size-1.5 rounded-full bg-good" />
+              <span className="font-mono text-[11px]">{c.address}</span>
+              <button
+                type="button"
+                onClick={() => mailDo(() => mailApi.disconnect(c.address))}
+                className="ml-1 text-muted-foreground hover:text-critical-text"
+                title={`Disconnect ${c.address}`}
+                aria-label={`Disconnect ${c.address}`}
+              >
+                <X className="size-3" />
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
@@ -686,6 +746,18 @@ function AccountCard({ acc, targets }: { acc: MailAccount; targets: { id: string
               <Check aria-hidden />
               {t('be.useIt')}
             </Button>
+            {target !== NEW_ACCOUNT && (
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => {
+                  setTarget(NEW_ACCOUNT);
+                  mailDo(() => mailApi.decideAccount(acc.key, 'use', NEW_ACCOUNT)).then(() => setEditing(false));
+                }}
+              >
+                Track as New
+              </Button>
+            )}
             <Button size="sm" variant="ghost" onClick={() => save('ignore')}>
               {t('be.notMine')}
             </Button>
@@ -775,6 +847,21 @@ function Feed({ alerts, address, accounts }: { alerts: MailAlert[]; address: str
   const { t } = useT();
   const { live, source, hasData } = useWorkspace();
   const apply = useCashChange();
+  const reduce = useReducedMotion();
+
+  // Filters & Search
+  const [query, setQuery] = useState('');
+  const [directionFilter, setDirectionFilter] = useState<'all' | 'IN' | 'OUT' | 'transfer'>('all');
+  const [statusFilter, setStatusFilter] = useState<'all' | 'counted' | 'waiting' | 'ignored'>('all');
+  const [page, setPage] = useState(1);
+  const pageSize = 20;
+
+  // Editing state for counterparty / note
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editCounterparty, setEditCounterparty] = useState('');
+  const [editNote, setEditNote] = useState('');
+  const [savingEdit, setSavingEdit] = useState(false);
+
   // Newest alert per account (alerts arrive newest first).
   const latest = new Map<string, string>();
   for (const a of alerts) if (a.status !== 'dismissed' && !latest.has(a.bank_domain + a.account_tail)) latest.set(a.bank_domain + a.account_tail, a.id);
@@ -796,7 +883,58 @@ function Feed({ alerts, address, accounts }: { alerts: MailAlert[]; address: str
     statementEnd: analysis && analysis.document_format !== 'MANUAL' ? analysis.end_date ?? undefined : undefined,
   };
   const counted = new Set((live.entries ?? []).map((e) => e.alertId).filter(Boolean));
-  const shown = alerts.filter((a) => a.status !== 'dismissed' && a.status !== 'review');
+  const baseShown = alerts.filter((a) => a.status !== 'dismissed' && a.status !== 'review');
+
+  const startEdit = (a: MailAlert) => {
+    setEditingId(a.id);
+    setEditCounterparty(a.counterparty || '');
+    setEditNote(a.note || '');
+  };
+
+  const cancelEdit = () => {
+    setEditingId(null);
+  };
+
+  const saveEdit = async (alertId: string) => {
+    setSavingEdit(true);
+    await mailDo(() => mailApi.editAlert(alertId, { counterparty: editCounterparty, note: editNote }));
+    setSavingEdit(false);
+    setEditingId(null);
+  };
+
+  // Filter application
+  const filtered = baseShown.filter((a) => {
+    if (directionFilter === 'transfer' && !a.transfer_with) return false;
+    if (directionFilter === 'IN' && (a.direction !== 'IN' || a.transfer_with)) return false;
+    if (directionFilter === 'OUT' && (a.direction !== 'OUT' || a.transfer_with)) return false;
+
+    if (statusFilter === 'counted' && !counted.has(a.id)) return false;
+    if (statusFilter === 'waiting' && a.status !== 'waiting') return false;
+    if (statusFilter === 'ignored' && a.status !== 'ignored') return false;
+
+    if (query.trim()) {
+      const q = query.toLowerCase().trim();
+      const matchParty = (a.counterparty ?? '').toLowerCase().includes(q);
+      const matchBank = a.bank.toLowerCase().includes(q);
+      const matchTail = a.account_tail.toLowerCase().includes(q);
+      const matchAmount = a.amount.includes(q);
+      const matchDate = a.occurred_on.includes(q);
+      const matchNote = (a.note ?? '').toLowerCase().includes(q);
+      if (!matchParty && !matchBank && !matchTail && !matchAmount && !matchDate && !matchNote) {
+        return false;
+      }
+    }
+    return true;
+  });
+
+  // Reset page when filtering
+  useEffect(() => {
+    setPage(1);
+  }, [query, directionFilter, statusFilter]);
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
+  const currentPage = Math.min(page, totalPages);
+  const pagedAlerts = filtered.slice((currentPage - 1) * pageSize, currentPage * pageSize);
 
   const state = (a: MailAlert): [string, 'good' | 'warning' | 'muted' | 'info'] => {
     if (counted.has(a.id)) return [t('be.st.counted'), 'good'];
@@ -807,64 +945,241 @@ function Feed({ alerts, address, accounts }: { alerts: MailAlert[]; address: str
     return [t('be.st.counting'), 'info'];
   };
 
+  const hasActiveFilters = query.trim() !== '' || directionFilter !== 'all' || statusFilter !== 'all';
+  const resetFilters = () => {
+    setQuery('');
+    setDirectionFilter('all');
+    setStatusFilter('all');
+    setPage(1);
+  };
+
   return (
-    <section>
-      <SectionTitle aside={t('be.feedAside')}>{t('be.feed')}</SectionTitle>
-      {shown.length === 0 ? (
+    <section className="space-y-3">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <SectionTitle aside={t('be.feedAside')}>{t('be.feed')}</SectionTitle>
+
+        {/* Search & Filter Toolbar */}
+        {baseShown.length > 0 && (
+          <div className="flex flex-wrap items-center gap-2">
+            {/* Search Input */}
+            <div className="relative min-w-[190px] flex-1 sm:w-56 sm:flex-initial">
+              <Search className="pointer-events-none absolute left-2.5 top-1/2 size-3.5 -translate-y-1/2 text-muted-foreground" aria-hidden />
+              <Input
+                type="text"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="Search merchant, bank..."
+                className="h-8 pl-8 pr-7 text-xs bg-card"
+              />
+              {query && (
+                <button
+                  type="button"
+                  onClick={() => setQuery('')}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                  aria-label="Clear search"
+                >
+                  <X className="size-3" />
+                </button>
+              )}
+            </div>
+
+            {/* Direction Filter Tabs */}
+            <div className="flex items-center rounded-lg border bg-muted/30 p-0.5 text-[11px]">
+              <button
+                type="button"
+                onClick={() => setDirectionFilter('all')}
+                className={cn('rounded px-2 py-1 font-medium transition-colors', directionFilter === 'all' ? 'bg-card text-foreground shadow-2xs' : 'text-muted-foreground hover:text-foreground')}
+              >
+                All
+              </button>
+              <button
+                type="button"
+                onClick={() => setDirectionFilter('IN')}
+                className={cn('rounded px-2 py-1 font-medium transition-colors', directionFilter === 'IN' ? 'bg-good/15 text-good-text shadow-2xs' : 'text-muted-foreground hover:text-foreground')}
+              >
+                + In
+              </button>
+              <button
+                type="button"
+                onClick={() => setDirectionFilter('OUT')}
+                className={cn('rounded px-2 py-1 font-medium transition-colors', directionFilter === 'OUT' ? 'bg-card text-foreground shadow-2xs' : 'text-muted-foreground hover:text-foreground')}
+              >
+                − Out
+              </button>
+              <button
+                type="button"
+                onClick={() => setDirectionFilter('transfer')}
+                className={cn('rounded px-2 py-1 font-medium transition-colors', directionFilter === 'transfer' ? 'bg-card text-foreground shadow-2xs' : 'text-muted-foreground hover:text-foreground')}
+              >
+                ⇄ Transfer
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {hasActiveFilters && (
+        <div className="flex items-center justify-between text-xs text-muted-foreground px-1">
+          <span>
+            Found <strong className="font-medium text-foreground">{filtered.length}</strong> matching transactions
+          </span>
+          <button type="button" onClick={resetFilters} className="text-primary hover:underline font-medium">
+            Reset filters
+          </button>
+        </div>
+      )}
+
+      {filtered.length === 0 ? (
         <div className="rounded-xl border border-dashed px-6 py-10 text-center">
           <Mail className="mx-auto size-6 text-muted-foreground" aria-hidden />
-          <p className="mt-3 font-medium">{t('be.emptyTitle')}</p>
-          <p className="mx-auto mt-1 max-w-md text-sm text-muted-foreground">{t('be.emptyBody', { address })}</p>
+          <p className="mt-3 font-medium">{hasActiveFilters ? 'No transactions match filters' : t('be.emptyTitle')}</p>
+          <p className="mx-auto mt-1 max-w-md text-sm text-muted-foreground">
+            {hasActiveFilters ? 'Try adjusting your search query or direction filter.' : t('be.emptyBody', { address })}
+          </p>
+          {hasActiveFilters && (
+            <Button variant="outline" size="sm" className="mt-4" onClick={resetFilters}>
+              Clear Filters
+            </Button>
+          )}
         </div>
       ) : (
-        <ol className="overflow-hidden rounded-xl border bg-card">
-          {shown.map((a) => {
-            const [label, tone] = state(a);
-            const Icon = a.transfer_with ? ArrowLeftRight : a.direction === 'IN' ? ArrowDownLeft : ArrowUpRight;
-            return (
-              <li key={a.id} className="border-b last:border-b-0">
-                <div className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-x-4 gap-y-1 px-4 py-3 sm:grid-cols-[auto_minmax(0,1fr)_auto_auto]">
-                  <span
-                    className={cn(
-                      'grid size-8 place-items-center rounded-lg',
-                      a.transfer_with ? 'bg-muted text-ink-2' : a.direction === 'IN' ? 'bg-good/10 text-good-text' : 'bg-muted text-ink-2',
-                    )}
-                  >
-                    <Icon className="size-4" aria-hidden />
-                  </span>
-                  <div className="min-w-0">
-                    <p className="truncate text-sm font-medium">{a.transfer_with ? t('be.transfer') : a.counterparty ?? (a.direction === 'IN' ? t('be.moneyIn') : t('be.moneyOut'))}</p>
-                    <p className="truncate text-xs text-muted-foreground">
-                      {formatDate(a.occurred_on)} · {a.bank} <Tail tail={a.account_tail} />
-                    </p>
+        <div className="space-y-3">
+          <ol className="overflow-hidden rounded-xl border bg-card">
+            {pagedAlerts.map((a) => {
+              const [label, tone] = state(a);
+              const Icon = a.transfer_with ? ArrowLeftRight : a.direction === 'IN' ? ArrowDownLeft : ArrowUpRight;
+              const isEditing = editingId === a.id;
+              return (
+                <li key={a.id} className="border-b last:border-b-0 transition-colors hover:bg-muted/15">
+                  <div className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-x-4 gap-y-1 px-4 py-3 sm:grid-cols-[auto_minmax(0,1fr)_auto_auto]">
+                    <span
+                      className={cn(
+                        'grid size-8 place-items-center rounded-lg shrink-0',
+                        a.transfer_with ? 'bg-muted text-ink-2' : a.direction === 'IN' ? 'bg-good/10 text-good-text' : 'bg-muted text-ink-2',
+                      )}
+                    >
+                      <Icon className="size-4" aria-hidden />
+                    </span>
+
+                    <div className="min-w-0 flex-1">
+                      {isEditing ? (
+                        <div className="my-1.5 flex flex-col gap-2 rounded-lg border bg-muted/40 p-2 text-xs">
+                          <div className="flex items-center gap-2">
+                            <span className="w-16 shrink-0 font-medium text-muted-foreground">Merchant:</span>
+                            <Input
+                              value={editCounterparty}
+                              onChange={(e) => setEditCounterparty(e.target.value)}
+                              className="h-7 text-xs bg-background"
+                              placeholder="Counterparty / Merchant"
+                              autoFocus
+                            />
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span className="w-16 shrink-0 font-medium text-muted-foreground">Note:</span>
+                            <Input
+                              value={editNote}
+                              onChange={(e) => setEditNote(e.target.value)}
+                              className="h-7 text-xs bg-background"
+                              placeholder="Accounting note (optional)"
+                            />
+                          </div>
+                          <div className="flex justify-end gap-1.5 pt-1">
+                            <Button size="sm" variant="ghost" className="h-6 text-xs" onClick={cancelEdit}>
+                              Cancel
+                            </Button>
+                            <Button size="sm" className="h-6 text-xs" disabled={savingEdit} onClick={() => saveEdit(a.id)}>
+                              Save
+                            </Button>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-2">
+                          <p className="truncate text-sm font-medium">
+                            {a.transfer_with ? t('be.transfer') : a.counterparty ?? (a.direction === 'IN' ? t('be.moneyIn') : t('be.moneyOut'))}
+                          </p>
+                          <button
+                            type="button"
+                            onClick={() => startEdit(a)}
+                            className="text-muted-foreground/50 hover:text-foreground transition-colors"
+                            title="Edit merchant or note"
+                            aria-label="Edit merchant or note"
+                          >
+                            <Pencil className="size-3" />
+                          </button>
+                        </div>
+                      )}
+
+                      <p className="truncate text-xs text-muted-foreground">
+                        {formatDate(a.occurred_on)} · {a.bank} <Tail tail={a.account_tail} />
+                        {a.note && <span className="ml-2 font-normal text-foreground/80 italic">· {a.note}</span>}
+                      </p>
+                    </div>
+
+                    <div className="text-right">
+                      <p className={cn('figures text-sm font-semibold', a.direction === 'IN' && !a.transfer_with && 'text-good-text')}>
+                        {a.direction === 'IN' ? '+' : '−'}
+                        {formatMoney(a.amount, a.currency)}
+                      </p>
+                      {a.balance_after && <p className="figures text-[11px] text-muted-foreground">{t('be.balanceAfter', { v: formatMoney(a.balance_after, a.currency) })}</p>}
+                    </div>
+
+                    <div className="col-span-full flex justify-end sm:col-span-1 sm:w-32">
+                      <Chip tone={tone}>{label}</Chip>
+                    </div>
                   </div>
-                  <div className="text-right">
-                    <p className={cn('figures text-sm font-semibold', a.direction === 'IN' && !a.transfer_with && 'text-good-text')}>
-                      {a.direction === 'IN' ? '+' : '−'}
-                      {formatMoney(a.amount, a.currency)}
-                    </p>
-                    {a.balance_after && <p className="figures text-[11px] text-muted-foreground">{t('be.balanceAfter', { v: formatMoney(a.balance_after, a.currency) })}</p>}
-                  </div>
-                  <div className="col-span-full flex justify-end sm:col-span-1 sm:w-32">
-                    <Chip tone={tone}>{label}</Chip>
-                  </div>
-                </div>
-                {a.gap && (
-                  <div className="flex flex-wrap items-center gap-x-3 gap-y-2 border-t border-dashed border-warning/40 bg-warning/5 px-4 py-2 text-xs text-warning-text">
-                    <TriangleAlert className="size-3.5 shrink-0" aria-hidden />
-                    <span className="min-w-0 flex-1">{t('be.gap', { v: formatMoney(a.gap.replace('-', ''), a.currency) })}</span>
-                    {/* Only the account's newest alert: an older balance would undo what came after it. */}
-                    {counted.has(a.id) && a.balance_after && latest.get(a.bank_domain + a.account_tail) === a.id && (
-                      <Button size="sm" variant="outline" className="h-7 border-warning/50 text-xs" onClick={() => useBankBalance(a)}>
-                        {t('be.useBankBalance')}
-                      </Button>
-                    )}
-                  </div>
-                )}
-              </li>
-            );
-          })}
-        </ol>
+
+                  {a.gap && (
+                    <div className="flex flex-wrap items-center gap-x-3 gap-y-2 border-t border-dashed border-warning/40 bg-warning/5 px-4 py-2 text-xs text-warning-text">
+                      <TriangleAlert className="size-3.5 shrink-0" aria-hidden />
+                      <span className="min-w-0 flex-1">{t('be.gap', { v: formatMoney(a.gap.replace('-', ''), a.currency) })}</span>
+                      {counted.has(a.id) && a.balance_after && latest.get(a.bank_domain + a.account_tail) === a.id && (
+                        <Button size="sm" variant="outline" className="h-7 border-warning/50 text-xs" onClick={() => useBankBalance(a)}>
+                          {t('be.useBankBalance')}
+                        </Button>
+                      )}
+                    </div>
+                  )}
+                </li>
+              );
+            })}
+          </ol>
+
+          {/* Pagination Controls */}
+          {totalPages > 1 && (
+            <div className="flex flex-wrap items-center justify-between gap-3 px-1 pt-1 text-xs text-muted-foreground">
+              <span>
+                Showing <strong className="font-medium text-foreground">{(currentPage - 1) * pageSize + 1}</strong> to{' '}
+                <strong className="font-medium text-foreground">{Math.min(currentPage * pageSize, filtered.length)}</strong> of{' '}
+                <strong className="font-medium text-foreground">{filtered.length}</strong> transactions
+              </span>
+              <div className="flex items-center gap-1.5">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={currentPage <= 1}
+                  onClick={() => setPage((p) => Math.max(1, p - 1))}
+                  className="h-8 gap-1 px-2.5 text-xs"
+                >
+                  <ChevronLeft className="size-3.5" aria-hidden />
+                  Previous
+                </Button>
+                <span className="figures px-2 font-medium text-foreground">
+                  {currentPage} / {totalPages}
+                </span>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={currentPage >= totalPages}
+                  onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                  className="h-8 gap-1 px-2.5 text-xs"
+                >
+                  Next
+                  <ChevronRight className="size-3.5" aria-hidden />
+                </Button>
+              </div>
+            </div>
+          )}
+        </div>
       )}
     </section>
   );

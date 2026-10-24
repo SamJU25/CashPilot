@@ -51,7 +51,7 @@ class MailStore:
         # Tenant ids are opaque strings; hash them so none can name a path.
         self.path = (root or DATA_DIR) / f"{hashlib.sha256(tenant.encode()).hexdigest()[:32]}.json"
         # trusted: bank domains the owner trusts in this mailbox although its provider cannot check senders.
-        self.data: dict[str, Any] = {"connection": None, "banks": {}, "accounts": {}, "alerts": [], "cursor": {}, "trusted": []}
+        self.data: dict[str, Any] = {"connection": None, "connections": [], "banks": {}, "accounts": {}, "alerts": [], "cursor": {}, "trusted": []}
         if self.path.is_file():
             self.data.update(json.loads(open_text(self.path.read_text(encoding="utf-8"))))
 
@@ -71,48 +71,83 @@ class MailStore:
         return f"{self.tenant}:{address.lower()}"
 
     def connect(self, address: str, server: dict, secret: str, oauth: Optional[str] = None) -> None:
-        """`server` holds host, port, username and the provider's display name; `oauth` names the
-        provider when `secret` is a refresh token rather than a password."""
-        old = self.data["connection"]
-        if old and old["address"].lower() != address.lower():
-            self.disconnect()
-        self.data["connection"] = {
+        """Connects a mailbox (or updates it if already present). Supports multiple connected mailboxes."""
+        conns: list[dict] = self.data.setdefault("connections", [])
+        conn_dict = {
             "address": address,
             **{k: server[k] for k in ("host", "port", "username", "name")},
             "oauth": oauth,
             "last_sync": None,
             "last_error": None,
         }
-        self.set_secret(secret)
-        self.data["cursor"] = {}
-
-    def set_secret(self, secret: str) -> None:
-        name = self._secret_name(self.data["connection"]["address"])
+        name = self._secret_name(address)
         key = keyring.get_password(KEYRING_SERVICE, name)
         if not key:
             key = Fernet.generate_key().decode()
             keyring.set_password(KEYRING_SERVICE, name, key)
-        self.data["connection"]["secret"] = Fernet(key.encode()).encrypt(secret.encode()).decode()
+        conn_dict["secret"] = Fernet(key.encode()).encrypt(secret.encode()).decode()
 
-    def secret(self) -> Optional[str]:
-        c = self.data["connection"]
-        if not c or not c.get("secret"):
+        existing_idx = next((i for i, c in enumerate(conns) if c.get("address", "").lower() == address.lower()), None)
+        if existing_idx is not None:
+            conns[existing_idx] = conn_dict
+        else:
+            conns.append(conn_dict)
+
+        self.data["connection"] = conn_dict
+
+    def set_secret(self, secret: str, address: Optional[str] = None) -> None:
+        addr = address or (self.data.get("connection") or {}).get("address", "")
+        if not addr:
+            return
+        name = self._secret_name(addr)
+        key = keyring.get_password(KEYRING_SERVICE, name)
+        if not key:
+            key = Fernet.generate_key().decode()
+            keyring.set_password(KEYRING_SERVICE, name, key)
+        encrypted = Fernet(key.encode()).encrypt(secret.encode()).decode()
+        if self.data.get("connection") and self.data["connection"].get("address", "").lower() == addr.lower():
+            self.data["connection"]["secret"] = encrypted
+        for c in self.data.get("connections", []):
+            if c.get("address", "").lower() == addr.lower():
+                c["secret"] = encrypted
+
+    def secret(self, address: Optional[str] = None) -> Optional[str]:
+        target = None
+        conns = self.data.get("connections", [])
+        if address:
+            target = next((c for c in conns if c.get("address", "").lower() == address.lower()), None)
+        if not target:
+            target = self.data.get("connection") or (conns[0] if conns else None)
+        if not target or not target.get("secret"):
             return None
-        key = keyring.get_password(KEYRING_SERVICE, self._secret_name(c["address"]))
+        key = keyring.get_password(KEYRING_SERVICE, self._secret_name(target["address"]))
         try:
-            return Fernet(key.encode()).decrypt(c["secret"].encode()).decode() if key else None
+            return Fernet(key.encode()).decrypt(target["secret"].encode()).decode() if key else None
         except InvalidToken:
             return None
 
-    def disconnect(self) -> None:
-        """Forgets the mailbox, its password and everything read from it."""
-        c = self.data["connection"]
-        if c:
-            try:
-                keyring.delete_password(KEYRING_SERVICE, self._secret_name(c["address"]))
-            except keyring.errors.PasswordDeleteError:
-                pass
-        self.data.update({"connection": None, "accounts": {}, "alerts": [], "cursor": {}, "trusted": []})
+    def disconnect(self, address: Optional[str] = None) -> None:
+        """Forgets a mailbox or all mailboxes, their password and everything read from them."""
+        conns: list[dict] = self.data.setdefault("connections", [])
+        if address:
+            target = next((c for c in conns if c.get("address", "").lower() == address.lower()), None)
+            if target:
+                try:
+                    keyring.delete_password(KEYRING_SERVICE, self._secret_name(target["address"]))
+                except keyring.errors.PasswordDeleteError:
+                    pass
+                conns.remove(target)
+            if self.data.get("connection", {}).get("address", "").lower() == address.lower():
+                self.data["connection"] = conns[0] if conns else None
+            if not conns:
+                self.data.update({"connection": None, "connections": [], "accounts": {}, "alerts": [], "cursor": {}, "trusted": []})
+        else:
+            for c in conns:
+                try:
+                    keyring.delete_password(KEYRING_SERVICE, self._secret_name(c["address"]))
+                except keyring.errors.PasswordDeleteError:
+                    pass
+            self.data.update({"connection": None, "connections": [], "accounts": {}, "alerts": [], "cursor": {}, "trusted": []})
 
     def extra_banks(self) -> dict[str, Bank]:
         return {d: Bank(b["name"], b["currency"]) for d, b in self.data["banks"].items()}
@@ -127,7 +162,7 @@ class MailStore:
         if any(x["id"] == a.id for x in self.data["alerts"]):
             return False
         row = {k: (str(v) if isinstance(v, Decimal) else v) for k, v in asdict(a).items()}
-        row.update(review=parsed.review, resolved=None)
+        row.update(review=parsed.review, resolved=None, note=None)
         self.data["alerts"].append(row)
         self.data["alerts"] = self.data["alerts"][-MAX_ALERTS:]
         if a.account_tail:
@@ -137,6 +172,16 @@ class MailStore:
                 {"key": key, "bank": a.bank, "bank_domain": a.bank_domain, "tail": a.account_tail, "currency": a.currency, "status": "pending", "target": None},
             )
             acc["last_seen"] = a.occurred_on
+        return True
+
+    def edit_alert(self, alert_id: str, counterparty: Optional[str] = None, note: Optional[str] = None) -> bool:
+        row = next((x for x in self.data["alerts"] if x["id"] == alert_id), None)
+        if not row:
+            return False
+        if counterparty is not None:
+            row["counterparty"] = counterparty.strip()
+        if note is not None:
+            row["note"] = note.strip()
         return True
 
     def decide_account(self, key: str, status: AccountStatus, target: Optional[str]) -> None:
@@ -178,9 +223,14 @@ class MailStore:
         for r in rows:
             if r["status"] != "dismissed" and r["account_tail"]:
                 latest[account_key(r)] = r
-        conn = self.data["connection"]
+        conns: list[dict] = self.data.get("connections") or ([self.data["connection"]] if self.data.get("connection") else [])
+        conn = self.data.get("connection") or (conns[0] if conns else None)
         return {
             "connection": conn and {**{k: v for k, v in conn.items() if k != "secret"}, "verifies_sender": stamps_auth_results(conn["host"])},
+            "connections": [
+                {**{k: v for k, v in c.items() if k != "secret"}, "verifies_sender": stamps_auth_results(c["host"])}
+                for c in conns
+            ],
             "banks": self.data["banks"],
             "trusted": self.data["trusted"],
             "accounts": [

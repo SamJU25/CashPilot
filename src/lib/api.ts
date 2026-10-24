@@ -171,6 +171,7 @@ export interface MailAlert {
   balance_after: string | null;
   occurred_on: string;
   counterparty: string | null;
+  note?: string | null;
   verified: boolean;
   review: 'no_account' | 'no_direction' | 'unverified_sender' | 'unlisted_bank' | null;
   resolved: 'accept' | 'dismiss' | null;
@@ -191,8 +192,20 @@ export interface MailAccount {
   alerts: number;
   last_seen?: string;
 }
+export interface MailConnection {
+  address: string;
+  host: string;
+  port: number;
+  username: string;
+  name: string;
+  oauth: 'google' | 'microsoft' | null;
+  verifies_sender: boolean;
+  last_sync: string | null;
+  last_error: string | null;
+}
 export interface MailState {
-  connection: { address: string; host: string; port: number; username: string; name: string; oauth: 'google' | 'microsoft' | null; verifies_sender: boolean; last_sync: string | null; last_error: string | null } | null;
+  connection: MailConnection | null;
+  connections?: MailConnection[];
   banks: Record<string, { name: string; currency: string }>;
   trusted: string[];
   accounts: MailAccount[];
@@ -225,12 +238,13 @@ export const mailApi = {
   discover: (address: string) => request<{ settings: MailSettings | null }>('/api/v1/mail/discover', json('POST', { address })),
   state: () => request<MailState>('/api/v1/mail/state'),
   connect: (body: { address: string; secret: string; host: string; port: number; username: string; name: string }) => request<MailState>('/api/v1/mail/connect', json('POST', body)),
-  disconnect: () => request<MailState>('/api/v1/mail/connect', { method: 'DELETE' }),
+  disconnect: (address?: string) => request<MailState>(address ? `/api/v1/mail/connect?address=${encodeURIComponent(address)}` : '/api/v1/mail/connect', { method: 'DELETE' }),
   sync: () => request<MailState>('/api/v1/mail/sync', { method: 'POST' }),
   oauthStart: (body: { address: string; host: string; username: string; name: string; return_to?: string }) => request<{ url: string }>('/api/v1/mail/oauth/start', json('POST', body)),
   decideAccount: (key: string, status: MailAccount['status'], target?: string) =>
     request<MailState>(`/api/v1/mail/accounts/${encodeURIComponent(key)}`, json('PUT', { status, target })),
   decideAlert: (id: string, action: 'accept' | 'dismiss' | 'trust') => request<MailState>(`/api/v1/mail/alerts/${encodeURIComponent(id)}`, json('PUT', { action })),
+  editAlert: (id: string, body: { counterparty?: string; note?: string }) => request<MailState>(`/api/v1/mail/alerts/${encodeURIComponent(id)}`, json('PATCH', body)),
   addBank: (body: { domain: string; name: string; currency: string }) => request<MailState>('/api/v1/mail/banks', json('POST', body)),
   removeBank: (domain: string) => request<MailState>(`/api/v1/mail/banks/${encodeURIComponent(domain)}`, { method: 'DELETE' }),
 };

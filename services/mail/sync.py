@@ -161,56 +161,70 @@ def _scan_folder(box: imaplib.IMAP4, last: int, since: str, stamps: bool, extra:
 
 
 def sync(store: MailStore, opener: Callable[..., imaplib.IMAP4] = open_mailbox) -> dict:
-    """Fetches alerts newer than the cursor; returns how many were read and added."""
-    conn = store.data["connection"]
-    if not conn:
+    """Fetches alerts newer than the cursor across all connected mailboxes."""
+    conns: list[dict] = store.data.get("connections") or ([store.data["connection"]] if store.data.get("connection") else [])
+    if not conns:
         raise MailError("not_connected", "No alerts mailbox is connected.")
-    secret = store.secret()
-    if not secret:
-        raise MailError("auth_failed", "The saved password is missing from this computer's credential store.")
-    stamps = stamps_auth_results(conn["host"])
-    if conn.get("oauth"):
-        try:
-            access, kept = oauth.refresh(conn["oauth"], secret)
-        except oauth.OAuthError as exc:
-            raise MailError("signin_expired" if exc.code == "revoked" else "unreachable", str(exc)) from exc
-        if kept != secret:
-            store.set_secret(kept)
-        box = opener(conn["host"], conn["port"], conn["username"], access, True)
-    else:
-        box = opener(conn["host"], conn["port"], conn["username"], secret)
-    try:
-        validity = (box.response("UIDVALIDITY")[1] or [b""])[0]
-        validity = validity.decode() if isinstance(validity, bytes) else str(validity or "")
-        cursor = store.data["cursor"]
-        # A changed UIDVALIDITY means the server renumbered the mailbox; start again (ids dedupe).
-        if cursor.get("uidvalidity") != validity:
-            cursor.clear()
-        last = int(cursor.get("last_uid", 0))
-        since = _imap_date(date.today() - timedelta(days=FIRST_SYNC_DAYS))
-        extra = store.extra_banks()
 
-        # Primary scan on INBOX
-        total_read, total_added, last = _scan_folder(box, last, since, stamps, extra, store)
+    total_read = 0
+    total_added = 0
+    since = _imap_date(date.today() - timedelta(days=FIRST_SYNC_DAYS))
+    extra = store.extra_banks()
 
-        # Secondary scan on candidate custom folders if available
-        for folder in _candidate_folders(box):
+    for conn in conns:
+        addr = conn.get("address", "")
+        secret = store.secret(addr)
+        if not secret:
+            continue
+        stamps = stamps_auth_results(conn["host"])
+        if conn.get("oauth"):
             try:
-                typ, _ = box.select(folder, readonly=True)
-                if typ == "OK":
-                    sub_last = int(cursor.get(f"last_uid_{folder}", 0))
-                    r, a, new_sub = _scan_folder(box, sub_last, since, stamps, extra, store)
-                    total_read += r
-                    total_added += a
-                    cursor[f"last_uid_{folder}"] = new_sub
-            except Exception:
+                access, kept = oauth.refresh(conn["oauth"], secret)
+            except oauth.OAuthError as exc:
+                conn["last_error"] = str(exc)
                 continue
+            if kept != secret:
+                store.set_secret(kept, addr)
+            box = opener(conn["host"], conn["port"], conn["username"], access, True)
+        else:
+            box = opener(conn["host"], conn["port"], conn["username"], secret)
 
-        cursor.update(uidvalidity=validity, last_uid=last)
-        conn.update(last_sync=datetime.now(timezone.utc).isoformat(timespec="seconds"), last_error=None)
-        return {"read": total_read, "added": total_added}
-    finally:
         try:
-            box.logout()
-        except (imaplib.IMAP4.error, OSError):
-            pass
+            validity = (box.response("UIDVALIDITY")[1] or [b""])[0]
+            validity = validity.decode() if isinstance(validity, bytes) else str(validity or "")
+            cursor = store.data["cursor"]
+            prefix = f"{addr}_" if len(conns) > 1 else ""
+
+            # Check if UIDVALIDITY changed
+            if cursor.get(f"{prefix}uidvalidity", cursor.get("uidvalidity")) != validity:
+                cursor.pop(f"{prefix}last_uid", None)
+
+            last = int(cursor.get(f"{prefix}last_uid", cursor.get("last_uid", 0)))
+            r, a, new_last = _scan_folder(box, last, since, stamps, extra, store)
+            total_read += r
+            total_added += a
+
+            for folder in _candidate_folders(box):
+                try:
+                    typ, _ = box.select(folder, readonly=True)
+                    if typ == "OK":
+                        sub_last = int(cursor.get(f"{prefix}last_uid_{folder}", 0))
+                        fr, fa, fn_last = _scan_folder(box, sub_last, since, stamps, extra, store)
+                        total_read += fr
+                        total_added += fa
+                        cursor[f"{prefix}last_uid_{folder}"] = fn_last
+                except Exception:
+                    continue
+
+            cursor[f"{prefix}uidvalidity"] = validity
+            cursor[f"{prefix}last_uid"] = new_last
+            cursor["uidvalidity"] = validity
+            cursor["last_uid"] = new_last
+            conn.update(last_sync=datetime.now(timezone.utc).isoformat(timespec="seconds"), last_error=None)
+        finally:
+            try:
+                box.logout()
+            except (imaplib.IMAP4.error, OSError):
+                pass
+
+    return {"read": total_read, "added": total_added}

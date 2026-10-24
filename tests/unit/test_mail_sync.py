@@ -181,3 +181,31 @@ def test_trusting_an_unchecked_sender_counts_its_alerts(vault):
     assert {r["status"] for r in rows} == {"review"}
     s.resolve_alert(rows[0]["id"], "trust")
     assert {r["status"] for r in s.view()["alerts"]} == {"ready"}
+
+
+def test_multi_mailbox_connections_and_edit_alert(vault):
+    s = MailStore("t_multi")
+    s.connect("owner@biz.com", {"host": "imap.biz.com", "port": 993, "username": "owner@biz.com", "name": "Biz 1"}, "secret1")
+    s.connect("finance@biz.com", {"host": "imap.biz.com", "port": 993, "username": "finance@biz.com", "name": "Biz 2"}, "secret2")
+    
+    view = s.view()
+    assert len(view["connections"]) == 2
+    assert {c["address"] for c in view["connections"]} == {"owner@biz.com", "finance@biz.com"}
+
+    # Sync with fake boxes
+    sync(s, opener=lambda *a: FakeBox({1: alert(1, "尾号1111 转入人民币100.00元", day=21)}))
+    rows = s.view()["alerts"]
+    assert len(rows) == 1
+    alert_id = rows[0]["id"]
+
+    # Edit alert counterparty and note
+    assert s.edit_alert(alert_id, counterparty="Acme Corp Refined", note="Verified invoice payment") is True
+    updated = s.view()["alerts"][0]
+    assert updated["counterparty"] == "Acme Corp Refined"
+    assert updated["note"] == "Verified invoice payment"
+
+    # Disconnect one address
+    s.disconnect("finance@biz.com")
+    remaining = s.view()["connections"]
+    assert len(remaining) == 1
+    assert remaining[0]["address"] == "owner@biz.com"

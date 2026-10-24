@@ -57,6 +57,12 @@ class AlertDecision(BaseModel):
     action: Literal["accept", "dismiss", "trust"]
 
 
+class EditAlertRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    counterparty: Optional[str] = Field(default=None, max_length=100)
+    note: Optional[str] = Field(default=None, max_length=200)
+
+
 class BankRequest(BaseModel):
     model_config = ConfigDict(extra="forbid")
     domain: str = Field(pattern=_DOMAIN)
@@ -190,10 +196,10 @@ async def connect(payload: ConnectRequest, tenant: str = Depends(require_tenant)
 
 
 @router.delete("/connect")
-def disconnect(tenant: str = Depends(require_tenant)) -> dict:
+def disconnect(address: Optional[str] = None, tenant: str = Depends(require_tenant)) -> dict:
     with tenant_lock(tenant):
         store = MailStore(tenant)
-        store.disconnect()
+        store.disconnect(address)
         store.save()
         return store.view()
 
@@ -237,6 +243,17 @@ def decide_alert(alert_id: str, payload: AlertDecision, tenant: str = Depends(re
         if not any(a["id"] == alert_id for a in store.data["alerts"]):
             raise HTTPException(status_code=404, detail={"code": "unknown_alert", "message": "No such alert."})
         store.resolve_alert(alert_id, payload.action)
+        store.save()
+        return store.view()
+
+
+@router.patch("/alerts/{alert_id}")
+def edit_alert(alert_id: str, payload: EditAlertRequest, tenant: str = Depends(require_tenant)) -> dict:
+    with tenant_lock(tenant):
+        store = MailStore(tenant)
+        if not any(a["id"] == alert_id for a in store.data["alerts"]):
+            raise HTTPException(status_code=404, detail={"code": "unknown_alert", "message": "No such alert."})
+        store.edit_alert(alert_id, payload.counterparty, payload.note)
         store.save()
         return store.view()
 
