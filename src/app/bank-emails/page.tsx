@@ -1,6 +1,6 @@
 'use client';
 
-import { Fragment, useEffect, useRef, useState } from 'react';
+import { Fragment, useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
 import {
@@ -9,11 +9,13 @@ import {
   ArrowUpRight,
   Building2,
   Check,
+  CheckCircle2,
   ChevronDown,
   ChevronLeft,
   ChevronRight,
   EyeOff,
   Filter,
+  Globe,
   KeyRound,
   Laptop,
   LayoutDashboard,
@@ -29,9 +31,11 @@ import {
   TriangleAlert,
   X,
 } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
@@ -43,6 +47,7 @@ import { formatDate, formatMoney } from '@/lib/format';
 import { useT, type Key } from '@/lib/i18n';
 import { latestBalances, useCashChange } from '@/lib/use-cash-change';
 import { useWorkspace } from '@/lib/workspace';
+import { WORLD_CURRENCIES } from '@/lib/currencies';
 import { spring } from '@/lib/motion';
 import { cn } from '@/lib/utils';
 
@@ -1314,74 +1319,776 @@ function Feed({ alerts, address, accounts }: { alerts: MailAlert[]; address: str
 
 /* ------------------------------------------------------------------ trusted senders */
 
-function Senders({ state }: { state: MailState }) {
+interface BuiltInBank {
+  domain: string;
+  name: string;
+  currency: string;
+}
+
+const POPULAR_CURRENCIES = [
+  'USD',
+  'EUR',
+  'GBP',
+  'CAD',
+  'AUD',
+  'JPY',
+  'CHF',
+  'CNY',
+  'SGD',
+  'HKD',
+  'INR',
+  'BDT',
+  'AED',
+  'SAR',
+  'BRL',
+  'MXN',
+];
+
+function cleanBankDomain(input: string): string {
+  let s = (input || '').trim().toLowerCase();
+  s = s.replace(/^(mailto:|https?:\/\/)/i, '');
+  if (s.includes('@')) {
+    s = s.split('@')[1];
+  }
+  s = s.split('/')[0].split('?')[0].split('#')[0].split(':')[0].trim();
+  s = s.replace(/^\.+|\.+$/g, '');
+  return s;
+}
+
+function inferBankName(cleanDomain: string): string {
+  if (!cleanDomain) return '';
+  const labels = cleanDomain.toLowerCase().split('.');
+  if (labels.length === 0) return '';
+  const filtered = labels.filter(
+    (p) => !['alerts', 'notify', 'notifications', 'email', 'mail', 'ebank', 'online', 'service', 'secure', 'm', 'www', 'auth'].includes(p)
+  );
+  const workLabels = filtered.length > 0 ? filtered : labels;
+
+  const core =
+    workLabels.length >= 3 && ['co', 'com', 'net', 'org', 'ac', 'gov'].includes(workLabels[workLabels.length - 2])
+      ? workLabels[workLabels.length - 3]
+      : workLabels.length >= 2
+      ? workLabels[workLabels.length - 2]
+      : workLabels[0];
+
+  const KNOWN: Record<string, string> = {
+    chase: 'Chase',
+    bankofamerica: 'Bank of America',
+    wellsfargo: 'Wells Fargo',
+    citi: 'Citi',
+    citibank: 'Citibank',
+    capitalone: 'Capital One',
+    barclays: 'Barclays',
+    hsbc: 'HSBC',
+    icbc: 'ICBC',
+    ccb: 'China Construction Bank',
+    boc: 'Bank of China',
+    dbs: 'DBS',
+    ocbc: 'OCBC',
+    uob: 'UOB',
+    bmo: 'BMO',
+    cibc: 'CIBC',
+    rbc: 'RBC',
+    royalbank: 'RBC Royal Bank',
+    scotiabank: 'Scotiabank',
+    anz: 'ANZ',
+    nab: 'NAB',
+    westpac: 'Westpac',
+    commbank: 'CommBank',
+    tsb: 'TSB',
+    rbs: 'Royal Bank of Scotland',
+    ubs: 'UBS',
+    bbva: 'BBVA',
+    santander: 'Santander',
+    svb: 'Silicon Valley Bank',
+    pnc: 'PNC Bank',
+    td: 'TD Bank',
+    tdbank: 'TD Bank',
+    stripe: 'Stripe',
+    paypal: 'PayPal',
+    wise: 'Wise',
+    revolut: 'Revolut',
+    monzo: 'Monzo',
+    mercury: 'Mercury',
+    brex: 'Brex',
+    ramp: 'Ramp',
+  };
+
+  if (KNOWN[core]) return KNOWN[core];
+
+  return core
+    .replace(/[-_]+/g, ' ')
+    .split(' ')
+    .filter(Boolean)
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+}
+
+function inferCurrencyFromDomain(cleanDomain: string, homeCurrency: string = 'USD'): string {
+  const d = cleanDomain.toLowerCase();
+  if (d.endsWith('.uk') || d.endsWith('.co.uk')) return 'GBP';
+  if (
+    d.endsWith('.eu') ||
+    d.endsWith('.de') ||
+    d.endsWith('.fr') ||
+    d.endsWith('.it') ||
+    d.endsWith('.es') ||
+    d.endsWith('.nl') ||
+    d.endsWith('.ie') ||
+    d.endsWith('.be') ||
+    d.endsWith('.at') ||
+    d.endsWith('.fi') ||
+    d.endsWith('.pt') ||
+    d.endsWith('.gr')
+  ) {
+    return 'EUR';
+  }
+  if (d.endsWith('.ca')) return 'CAD';
+  if (d.endsWith('.au') || d.endsWith('.com.au')) return 'AUD';
+  if (d.endsWith('.nz') || d.endsWith('.co.nz')) return 'NZD';
+  if (d.endsWith('.jp') || d.endsWith('.co.jp')) return 'JPY';
+  if (d.endsWith('.ch')) return 'CHF';
+  if (d.endsWith('.sg') || d.endsWith('.com.sg')) return 'SGD';
+  if (d.endsWith('.hk') || d.endsWith('.com.hk')) return 'HKD';
+  if (d.endsWith('.cn') || d.endsWith('.com.cn')) return 'CNY';
+  if (d.endsWith('.in') || d.endsWith('.co.in')) return 'INR';
+  if (d.endsWith('.bd') || d.endsWith('.com.bd')) return 'BDT';
+  if (d.endsWith('.ae')) return 'AED';
+  if (d.endsWith('.sa')) return 'SAR';
+  if (d.endsWith('.br') || d.endsWith('.com.br')) return 'BRL';
+  if (d.endsWith('.mx') || d.endsWith('.com.mx')) return 'MXN';
+  return homeCurrency || 'USD';
+}
+
+function DirectoryDialog({
+  builtIn,
+  open,
+  onOpenChange,
+  onAddCustom,
+}: {
+  builtIn: BuiltInBank[];
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onAddCustom: () => void;
+}) {
   const { t } = useT();
-  const [builtIn, setBuiltIn] = useState<{ domain: string; name: string }[]>([]);
-  const [domain, setDomain] = useState('');
+  const [search, setSearch] = useState('');
+  const [region, setRegion] = useState<'all' | 'americas' | 'europe' | 'apac' | 'fintech'>('all');
+
+  const filtered = useMemo(() => {
+    let list = builtIn;
+    const q = search.trim().toLowerCase();
+    if (q) {
+      list = list.filter(
+        (b) =>
+          b.name.toLowerCase().includes(q) ||
+          b.domain.toLowerCase().includes(q) ||
+          b.currency.toLowerCase().includes(q)
+      );
+    }
+    if (region === 'americas') {
+      list = list.filter((b) => ['USD', 'CAD', 'BRL', 'MXN'].includes(b.currency));
+    } else if (region === 'europe') {
+      list = list.filter((b) => ['GBP', 'EUR', 'CHF'].includes(b.currency));
+    } else if (region === 'apac') {
+      list = list.filter((b) => ['CNY', 'HKD', 'SGD', 'JPY', 'AUD', 'INR'].includes(b.currency));
+    } else if (region === 'fintech') {
+      const fintechDomains = [
+        'stripe.com',
+        'paypal.com',
+        'wise.com',
+        'revolut.com',
+        'mercury.com',
+        'brex.com',
+        'ramp.com',
+        'relayfi.com',
+        'cash.app',
+        'square.com',
+        'squareup.com',
+        'airwallex.com',
+        'payoneer.com',
+        'venmo.com',
+        'shopify.com',
+      ];
+      list = list.filter((b) => fintechDomains.includes(b.domain));
+    }
+    return list;
+  }, [builtIn, search, region]);
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-xl">
+        <DialogHeader>
+          <div className="flex items-center gap-2.5">
+            <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+              <Building2 className="size-5" />
+            </div>
+            <div>
+              <DialogTitle className="text-base font-semibold">{t('be.directoryTitle')}</DialogTitle>
+              <DialogDescription className="text-xs text-muted-foreground mt-0.5">
+                {t('be.directoryDesc')}
+              </DialogDescription>
+            </div>
+          </div>
+        </DialogHeader>
+
+        <div className="space-y-3 pt-1">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" aria-hidden />
+            <Input
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder={t('be.searchBanks')}
+              className="h-9 pl-9 pr-8 text-xs"
+            />
+            {search && (
+              <button
+                type="button"
+                onClick={() => setSearch('')}
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 rounded p-0.5 text-muted-foreground hover:text-foreground"
+                aria-label="Clear search"
+              >
+                <X className="size-3.5" />
+              </button>
+            )}
+          </div>
+
+          <div className="flex flex-wrap gap-1.5 text-xs">
+            <button
+              type="button"
+              onClick={() => setRegion('all')}
+              className={cn(
+                'rounded-full px-2.5 py-1 font-medium transition-colors',
+                region === 'all'
+                  ? 'bg-primary text-primary-foreground'
+                  : 'bg-muted/60 text-muted-foreground hover:bg-muted hover:text-foreground'
+              )}
+            >
+              {t('be.allRegions')} ({builtIn.length})
+            </button>
+            <button
+              type="button"
+              onClick={() => setRegion('americas')}
+              className={cn(
+                'rounded-full px-2.5 py-1 font-medium transition-colors',
+                region === 'americas'
+                  ? 'bg-primary text-primary-foreground'
+                  : 'bg-muted/60 text-muted-foreground hover:bg-muted hover:text-foreground'
+              )}
+            >
+              Americas
+            </button>
+            <button
+              type="button"
+              onClick={() => setRegion('europe')}
+              className={cn(
+                'rounded-full px-2.5 py-1 font-medium transition-colors',
+                region === 'europe'
+                  ? 'bg-primary text-primary-foreground'
+                  : 'bg-muted/60 text-muted-foreground hover:bg-muted hover:text-foreground'
+              )}
+            >
+              Europe & UK
+            </button>
+            <button
+              type="button"
+              onClick={() => setRegion('apac')}
+              className={cn(
+                'rounded-full px-2.5 py-1 font-medium transition-colors',
+                region === 'apac'
+                  ? 'bg-primary text-primary-foreground'
+                  : 'bg-muted/60 text-muted-foreground hover:bg-muted hover:text-foreground'
+              )}
+            >
+              Asia-Pacific
+            </button>
+            <button
+              type="button"
+              onClick={() => setRegion('fintech')}
+              className={cn(
+                'rounded-full px-2.5 py-1 font-medium transition-colors',
+                region === 'fintech'
+                  ? 'bg-primary text-primary-foreground'
+                  : 'bg-muted/60 text-muted-foreground hover:bg-muted hover:text-foreground'
+              )}
+            >
+              FinTech & Neo
+            </button>
+          </div>
+
+          <ScrollArea className="h-[340px] rounded-lg border bg-muted/15 p-2">
+            {filtered.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-12 text-center text-xs text-muted-foreground">
+                <Search className="size-8 opacity-30 mb-2" />
+                <p className="font-medium text-foreground">No banks match &ldquo;{search}&rdquo;</p>
+                <p className="mt-1 max-w-xs">You can add this institution as a custom sender domain.</p>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    onOpenChange(false);
+                    onAddCustom();
+                  }}
+                  className="mt-3 h-8 text-xs gap-1.5"
+                >
+                  <Plus className="size-3.5" />
+                  {t('be.addCustomBank')}
+                </Button>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                {filtered.map((b) => {
+                  const initials = b.name
+                    .split(' ')
+                    .filter(Boolean)
+                    .slice(0, 2)
+                    .map((w) => w[0]?.toUpperCase() ?? '')
+                    .join('');
+                  return (
+                    <div
+                      key={b.domain}
+                      className="flex items-center justify-between gap-2.5 rounded-lg border bg-card p-2.5 text-xs shadow-xs hover:border-primary/30 transition-colors"
+                    >
+                      <div className="flex items-center gap-2.5 min-w-0">
+                        <div className="flex size-7 shrink-0 items-center justify-center rounded-md bg-primary/10 font-mono font-semibold text-[11px] text-primary">
+                          {initials || 'BK'}
+                        </div>
+                        <div className="min-w-0">
+                          <p className="font-medium text-foreground truncate">{b.name}</p>
+                          <p className="font-mono text-[11px] text-muted-foreground truncate">{b.domain}</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-1.5 shrink-0">
+                        <Badge variant="outline" className="font-mono text-[10px] px-1.5 py-0 h-5">
+                          {b.currency}
+                        </Badge>
+                        <span className="flex items-center text-good" title="Native Support">
+                          <ShieldCheck className="size-3.5" />
+                        </span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </ScrollArea>
+        </div>
+
+        <DialogFooter className="flex items-center justify-between sm:justify-between pt-2">
+          <p className="text-xs text-muted-foreground">
+            {filtered.length} of {builtIn.length} institutions
+          </p>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                onOpenChange(false);
+                onAddCustom();
+              }}
+              className="text-xs gap-1.5"
+            >
+              <Plus className="size-3.5" />
+              {t('be.addCustomBank')}
+            </Button>
+            <DialogClose asChild>
+              <Button size="sm" variant="ghost" className="text-xs">
+                {t('common.close')}
+              </Button>
+            </DialogClose>
+          </div>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function AddBankDialog({
+  builtIn,
+  ownDomains,
+  open,
+  onOpenChange,
+  onSuccess,
+  onOpenDirectory,
+}: {
+  builtIn: BuiltInBank[];
+  ownDomains: [string, { name: string; currency: string }][];
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onSuccess?: () => void;
+  onOpenDirectory?: () => void;
+}) {
+  const { t } = useT();
+  const { homeCurrency } = useWorkspace();
+  const [rawInput, setRawInput] = useState('');
   const [name, setName] = useState('');
-  const [currency, setCurrency] = useState('CNY');
+  const [currency, setCurrency] = useState(homeCurrency || 'USD');
+  const [nameEdited, setNameEdited] = useState(false);
+  const [currencyEdited, setCurrencyEdited] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+
+  const cleanDomain = useMemo(() => cleanBankDomain(rawInput), [rawInput]);
+  const isValidDomain = useMemo(
+    () => /^[a-z0-9-]{1,63}(\.[a-z0-9-]{1,63}){1,6}$/i.test(cleanDomain),
+    [cleanDomain]
+  );
+
   useEffect(() => {
-    mailApi.banks().then((r) => setBuiltIn(r.banks), () => {});
-  }, []);
-  const own = Object.entries(state.banks);
-  const add = async (e: React.FormEvent) => {
+    if (!nameEdited) {
+      const inferred = inferBankName(cleanDomain);
+      setName(inferred);
+    }
+    if (!currencyEdited) {
+      const inferredCurr = inferCurrencyFromDomain(cleanDomain, homeCurrency);
+      setCurrency(inferredCurr);
+    }
+  }, [cleanDomain, nameEdited, currencyEdited, homeCurrency]);
+
+  const matchingNative = useMemo(
+    () =>
+      cleanDomain
+        ? builtIn.find((b) => cleanDomain === b.domain || cleanDomain.endsWith('.' + b.domain))
+        : null,
+    [cleanDomain, builtIn]
+  );
+
+  const matchingCustom = useMemo(
+    () => (cleanDomain ? ownDomains.find(([d]) => d === cleanDomain) : null),
+    [cleanDomain, ownDomains]
+  );
+
+  const canSubmit =
+    isValidDomain &&
+    name.trim().length > 0 &&
+    !matchingNative &&
+    !matchingCustom &&
+    !submitting;
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const cleanDomain = domain.replace(/^https?:\/\//i, '').split('/')[0].split(':')[0].trim().toLowerCase();
-    if (!cleanDomain) return;
-    const ok = await mailDo(() => mailApi.addBank({ domain: cleanDomain, name: name.trim(), currency }));
+    if (!canSubmit) return;
+    setSubmitting(true);
+    const ok = await mailDo(() =>
+      mailApi.addBank({ domain: cleanDomain, name: name.trim(), currency })
+    );
+    setSubmitting(false);
     if (ok) {
-      setDomain('');
+      setRawInput('');
       setName('');
+      setNameEdited(false);
+      setCurrencyEdited(false);
+      onOpenChange(false);
+      onSuccess?.();
     }
   };
 
   return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <div className="flex items-center gap-2.5">
+            <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+              <Globe className="size-5" />
+            </div>
+            <div>
+              <DialogTitle className="text-base font-semibold">{t('be.addBankTitle')}</DialogTitle>
+              <DialogDescription className="text-xs text-muted-foreground mt-0.5">
+                {t('be.addBankDesc')}
+              </DialogDescription>
+            </div>
+          </div>
+        </DialogHeader>
+
+        <form onSubmit={handleSubmit} className="space-y-4 pt-1">
+          <div className="space-y-1.5">
+            <Label htmlFor="add-bank-domain" className="text-xs font-medium">
+              {t('be.domainLabel')}
+            </Label>
+            <Input
+              id="add-bank-domain"
+              value={rawInput}
+              onChange={(e) => setRawInput(e.target.value)}
+              placeholder={t('be.domainPlaceholder')}
+              className="h-9 font-mono text-xs"
+              autoFocus
+              required
+            />
+            {cleanDomain && cleanDomain !== rawInput.trim().toLowerCase() && (
+              <p className="text-[11px] text-muted-foreground">
+                {t('be.cleanedDomain', { domain: cleanDomain })}
+              </p>
+            )}
+
+            {matchingNative && (
+              <div className="flex items-start gap-2.5 rounded-lg border border-good/30 bg-good/10 p-3 text-xs">
+                <CheckCircle2 className="size-4 shrink-0 text-good mt-0.5" />
+                <div className="space-y-1">
+                  <p className="font-medium text-good-text">
+                    {matchingNative.name} ({matchingNative.currency}) is natively supported!
+                  </p>
+                  <p className="text-muted-foreground leading-relaxed text-[11px]">
+                    Alerts from <code className="font-mono text-foreground">{cleanDomain}</code> are already parsed automatically without any custom configuration.
+                  </p>
+                  {onOpenDirectory && (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        onOpenChange(false);
+                        onOpenDirectory();
+                      }}
+                      className="mt-1 h-7 text-xs"
+                    >
+                      {t('be.viewDirectory')}
+                    </Button>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {matchingCustom && (
+              <div className="flex items-start gap-2 rounded-lg border border-warning/30 bg-warning/10 p-2.5 text-xs text-warning-text">
+                <TriangleAlert className="size-4 shrink-0 text-warning mt-0.5" />
+                <span>{t('be.alreadyCustom', { domain: cleanDomain })}</span>
+              </div>
+            )}
+
+            {!isValidDomain && rawInput.trim() && !matchingNative && !matchingCustom && (
+              <p className="text-[11px] text-critical-text">{t('be.invalidDomain')}</p>
+            )}
+          </div>
+
+          <div className="space-y-1.5">
+            <Label htmlFor="add-bank-name" className="text-xs font-medium">
+              {t('be.bankName')}
+            </Label>
+            <Input
+              id="add-bank-name"
+              value={name}
+              onChange={(e) => {
+                setName(e.target.value);
+                setNameEdited(true);
+              }}
+              placeholder="e.g. Mercury Bank"
+              className="h-9 text-xs"
+              required
+            />
+          </div>
+
+          <div className="space-y-1.5">
+            <Label className="text-xs font-medium">{t('be.currency')}</Label>
+            <Select
+              value={currency}
+              onValueChange={(val) => {
+                setCurrency(val);
+                setCurrencyEdited(true);
+              }}
+            >
+              <SelectTrigger className="h-9 text-xs font-mono">
+                <SelectValue placeholder="Select currency" />
+              </SelectTrigger>
+              <SelectContent className="max-h-60">
+                <div className="px-2 py-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+                  Popular Currencies
+                </div>
+                {POPULAR_CURRENCIES.map((code) => {
+                  const meta = WORLD_CURRENCIES.find((c) => c.code === code);
+                  return (
+                    <SelectItem key={code} value={code} className="text-xs">
+                      <span className="flex items-center gap-2">
+                        <span className="font-mono font-semibold">{code}</span>
+                        <span className="text-muted-foreground">({meta?.symbol ?? code})</span>
+                        {meta && <span className="text-muted-foreground truncate">— {meta.name}</span>}
+                      </span>
+                    </SelectItem>
+                  );
+                })}
+                <div className="my-1 border-t" />
+                <div className="px-2 py-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+                  All World Currencies
+                </div>
+                {WORLD_CURRENCIES.filter((c) => !POPULAR_CURRENCIES.includes(c.code)).map((c) => (
+                  <SelectItem key={c.code} value={c.code} className="text-xs">
+                    <span className="flex items-center gap-2">
+                      <span className="font-mono font-semibold">{c.code}</span>
+                      <span className="text-muted-foreground">({c.symbol})</span>
+                      <span className="text-muted-foreground truncate">— {c.name}</span>
+                    </span>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="rounded-lg border bg-muted/20 p-3 space-y-2">
+            <div className="flex items-center justify-between text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
+              <span>{t('be.previewTitle')}</span>
+              <span className="text-primary font-normal lowercase tracking-normal">matches alerts</span>
+            </div>
+            <div className="flex items-center justify-between gap-3 rounded-md border bg-card p-2.5 shadow-2xs">
+              <div className="flex items-center gap-2.5 min-w-0">
+                <div className="flex size-8 shrink-0 items-center justify-center rounded-md bg-primary/10 text-primary font-mono font-semibold text-xs">
+                  {name ? name.slice(0, 2).toUpperCase() : 'BK'}
+                </div>
+                <div className="min-w-0">
+                  <p className="font-medium text-xs truncate text-foreground">{name || 'Your Bank'}</p>
+                  <p className="font-mono text-[11px] text-muted-foreground truncate">
+                    alerts@{cleanDomain || 'bank.com'}
+                  </p>
+                </div>
+              </div>
+              <div className="text-right shrink-0">
+                <p className="figures font-mono font-semibold text-xs text-good-text">
+                  +{formatMoney(1250, currency)}
+                </p>
+                <p className="text-[10px] text-muted-foreground">Account ••4821</p>
+              </div>
+            </div>
+          </div>
+
+          <DialogFooter className="pt-2">
+            <DialogClose asChild>
+              <Button type="button" variant="ghost" size="sm" className="text-xs">
+                {t('common.cancel')}
+              </Button>
+            </DialogClose>
+            <Button
+              type="submit"
+              size="sm"
+              disabled={!canSubmit}
+              className="text-xs"
+            >
+              {submitting && <RefreshCw className="mr-1.5 size-3.5 animate-spin" />}
+              {t('be.add')}
+            </Button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function Senders({ state }: { state: MailState }) {
+  const { t } = useT();
+  const [builtIn, setBuiltIn] = useState<BuiltInBank[]>([]);
+  const [directoryOpen, setDirectoryOpen] = useState(false);
+  const [addOpen, setAddOpen] = useState(false);
+
+  useEffect(() => {
+    mailApi.banks().then(
+      (r) => setBuiltIn(r.banks),
+      () => {}
+    );
+  }, []);
+
+  const own = Object.entries(state.banks);
+
+  return (
     <section className="space-y-4 rounded-xl border bg-card p-5">
       <div>
-        <h2 className="font-display text-base font-semibold tracking-tight">{t('be.senders')}</h2>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="flex size-7 items-center justify-center rounded-md bg-primary/10 text-primary">
+              <Building2 className="size-4" />
+            </div>
+            <h2 className="font-display text-base font-semibold tracking-tight">{t('be.senders')}</h2>
+          </div>
+          <Badge variant="secondary" className="font-mono text-[10px]">
+            {builtIn.length} built-in
+          </Badge>
+        </div>
         <p className="mt-1 text-[13px] leading-relaxed text-muted-foreground">{t('be.sendersBody')}</p>
       </div>
-      <details className="group text-sm">
-        <summary className="cursor-pointer list-none text-ink-2 hover:text-foreground">
-          <span className="underline decoration-dotted underline-offset-4">{t('be.builtIn', { n: builtIn.length })}</span>
-        </summary>
-        <ul className="mt-2 grid gap-1 text-xs text-muted-foreground">
-          {builtIn.map((b) => (
-            <li key={b.domain} className="flex justify-between gap-2">
-              <span>{b.name}</span>
-              <span className="truncate font-mono">{b.domain}</span>
-            </li>
-          ))}
-        </ul>
-      </details>
-      {own.length > 0 && (
-        <ul className="divide-y rounded-lg border">
-          {own.map(([d, b]) => (
-            <li key={d} className="flex items-center gap-2 px-3 py-2 text-sm">
-              <span className="min-w-0 flex-1 truncate">
-                {b.name} <span className="font-mono text-xs text-muted-foreground">{d}</span>
-              </span>
-              {state.trusted.includes(d) && <Chip tone="muted">{t('be.trustedTag')}</Chip>}
-              <Button variant="ghost" size="icon" className="size-7" aria-label={t('be.removeSender', { name: b.name })} onClick={() => mailDo(() => mailApi.removeBank(d))}>
-                <X aria-hidden />
-              </Button>
-            </li>
-          ))}
-        </ul>
-      )}
-      <form onSubmit={add} className="grid gap-2 border-t pt-4">
-        <Label htmlFor="be-domain" className="text-xs font-medium text-muted-foreground">
-          {t('be.addSender')}
-        </Label>
-        <Input id="be-domain" value={domain} onChange={(e) => setDomain(e.target.value)} placeholder="alerts.mybank.com" className="h-9 font-mono text-xs" required />
-        <div className="flex gap-2">
-          <Input value={name} onChange={(e) => setName(e.target.value)} placeholder={t('be.bankName')} aria-label={t('be.bankName')} className="h-9" required />
-          <Input value={currency} onChange={(e) => setCurrency(e.target.value.toUpperCase().slice(0, 3))} aria-label={t('be.currency')} className="figures h-9 w-20 font-mono" required />
-        </div>
-        <Button type="submit" size="sm" variant="outline" className="justify-self-start">
+
+      <div className="flex items-center gap-2">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => setDirectoryOpen(true)}
+          className="flex-1 h-8 text-xs gap-1.5"
+        >
+          <Search className="size-3.5" aria-hidden />
+          {t('be.browseDirectory', { n: builtIn.length })}
+        </Button>
+        <Button
+          variant="default"
+          size="sm"
+          onClick={() => setAddOpen(true)}
+          className="h-8 text-xs gap-1"
+        >
+          <Plus className="size-3.5" aria-hidden />
           {t('be.add')}
         </Button>
-      </form>
+      </div>
+
+      {own.length > 0 ? (
+        <div className="space-y-2">
+          <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+            {t('be.customSenders')} ({own.length})
+          </p>
+          <ul className="divide-y rounded-lg border bg-muted/10">
+            {own.map(([d, b]) => {
+              const initials = b.name
+                .split(' ')
+                .filter(Boolean)
+                .slice(0, 2)
+                .map((w) => w[0]?.toUpperCase() ?? '')
+                .join('');
+              return (
+                <li key={d} className="flex items-center justify-between gap-2 p-2.5 text-xs">
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <div className="flex size-7 shrink-0 items-center justify-center rounded-md bg-accent font-mono font-semibold text-[11px] text-foreground">
+                      {initials || 'BK'}
+                    </div>
+                    <div className="min-w-0">
+                      <p className="font-medium text-foreground truncate">{b.name}</p>
+                      <p className="font-mono text-[11px] text-muted-foreground truncate">{d}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-1.5 shrink-0">
+                    <Badge variant="outline" className="font-mono text-[10px] px-1.5 py-0 h-5">
+                      {b.currency}
+                    </Badge>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="size-6 text-muted-foreground hover:text-critical"
+                      aria-label={t('be.removeSender', { name: b.name })}
+                      onClick={() => mailDo(() => mailApi.removeBank(d))}
+                    >
+                      <Trash2 className="size-3.5" aria-hidden />
+                    </Button>
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      ) : (
+        <div className="rounded-lg border border-dashed bg-muted/15 p-4 text-center">
+          <ShieldCheck className="mx-auto size-7 text-primary/70 mb-1.5" />
+          <p className="font-medium text-xs text-foreground">{t('be.noCustomSenders')}</p>
+          <p className="text-[11px] text-muted-foreground mt-1 leading-relaxed">
+            {t('be.noCustomSendersDesc')}
+          </p>
+        </div>
+      )}
+
+      <DirectoryDialog
+        builtIn={builtIn}
+        open={directoryOpen}
+        onOpenChange={setDirectoryOpen}
+        onAddCustom={() => setAddOpen(true)}
+      />
+
+      <AddBankDialog
+        builtIn={builtIn}
+        ownDomains={own}
+        open={addOpen}
+        onOpenChange={setAddOpen}
+        onOpenDirectory={() => setDirectoryOpen(true)}
+      />
     </section>
   );
 }

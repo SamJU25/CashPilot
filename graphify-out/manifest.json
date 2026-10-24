@@ -2472,9 +2472,9 @@
     "semantic_hash": ""
   },
   "src/lib/i18n/en.ts": {
-    "mtime": 1792795682.4413085,
-    "seen": 1792796615.1179984,
-    "ast_hash": "4d8b04c149bb276cb2f75f3b7d37880b",
+    "mtime": 1792813974.0769782,
+    "seen": 1792814154.0892563,
+    "ast_hash": "0cb90e7bc8ced757bf4a5fb03a355dc4",
     "semantic_hash": ""
   },
   "src/lib/i18n/es.ts": {
@@ -2856,9 +2856,9 @@
     "semantic_hash": ""
   },
   "src/app/bank-emails/page.tsx": {
-    "mtime": 1792813226.9479146,
-    "seen": 1792813320.204106,
-    "ast_hash": "53820369ce9e6a4afeea13e3e1f6fc8b",
+    "mtime": 1792814052.2027073,
+    "seen": 1792814154.0790293,
+    "ast_hash": "d6dc48cf41639dd0a2b2924bf3f0befa",
     "semantic_hash": ""
   },
   "src/lib/bank-emails.tsx": {
