@@ -1,9 +1,12 @@
+from __future__ import annotations
+
 """
 FastAPI Main Application Entrypoint.
 Configures CORS, Security Headers, and Router Mounts.
 Aligns with docs/system.md Section 4 and docs/security.md Section 4.
 """
 
+from typing import Optional
 import os
 import sys
 import threading
@@ -139,7 +142,11 @@ async def health_alias():
 
 
 @app.get("/")
-async def root():
+async def root(code: Optional[str] = None, state: Optional[str] = None, error: Optional[str] = None):
+    """Root metadata endpoint, or OAuth loopback callback when using Mozilla Thunderbird preset."""
+    if state and (code or error):
+        from api.routes.mail import oauth_callback
+        return await oauth_callback(state=state, code=code or "", error=error or "")
     return {
         "project": "SME Finance Copilot",
         "description": "Autonomous AI CFO & Financial Participant for Small & Medium Enterprises",

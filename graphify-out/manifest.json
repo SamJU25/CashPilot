@@ -1026,9 +1026,9 @@
     "semantic_hash": ""
   },
   "api/main.py": {
-    "mtime": 1792796897.7062292,
-    "seen": 1792797568.8863792,
-    "ast_hash": "01c900a6328b4d675193491e3fa16360",
+    "mtime": 1792801316.0288355,
+    "seen": 1792801533.373775,
+    "ast_hash": "c4c4ce2ff799be2767695b842abcc3bd",
     "semantic_hash": ""
   },
   "api/routes/__init__.py": {
@@ -2898,9 +2898,9 @@
     "semantic_hash": ""
   },
   "services/mail/oauth.py": {
-    "mtime": 1792664234.3888006,
-    "seen": 1792705674.7522955,
-    "ast_hash": "993985e82036eeb2e77f7b45142f5cac",
+    "mtime": 1792801212.6345396,
+    "seen": 1792801533.3882074,
+    "ast_hash": "4ee834f2fff9a93f3dd09dbd3d4a19ac",
     "semantic_hash": ""
   },
   "tests/unit/test_mail_discover.py": {
@@ -2910,15 +2910,15 @@
     "semantic_hash": ""
   },
   "tests/unit/test_mail_oauth.py": {
-    "mtime": 1792664234.4522932,
-    "seen": 1792705674.7688801,
-    "ast_hash": "9bb999b626fccc991fb9bc62a7c02a3a",
+    "mtime": 1792801334.710613,
+    "seen": 1792801533.4077451,
+    "ast_hash": "804d35ed2c8de3ec755281aa0de7ac01",
     "semantic_hash": ""
   },
   "docs/bank-emails-oauth.md": {
-    "mtime": 1792784142.7189581,
-    "seen": 1792784164.2489266,
-    "ast_hash": "8c66eddd6dfc40ae1da5508af7b9dacf",
+    "mtime": 1792801398.8357587,
+    "seen": 1792801533.430359,
+    "ast_hash": "261d98c55c119b178a2b6ef1e815a25b",
     "semantic_hash": ""
   },
   "src/app/privacy/page.tsx": {

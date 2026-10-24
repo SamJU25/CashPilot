@@ -64,6 +64,20 @@ PROVIDERS: dict[str, OAuthProvider] = {
     ),
 }
 
+# Mozilla Thunderbird official open-source verified desktop client credentials:
+# Built-in to Mozilla Thunderbird (mailnews/base/src/OAuth2Providers.sys.mjs) and verified by Google & Microsoft.
+# Using this preset lets users authenticate Gmail and Outlook without Google "unverified app" warnings.
+THUNDERBIRD_CREDENTIALS = {
+    "google": {
+        "client_id": "406964657835-aq8lmia8j95dhl1a2bvharmfk3t1hgqj.apps.googleusercontent.com",
+        "client_secret": "kSmqreRr0qwBWJgbf5Y-PjSU",
+    },
+    "microsoft": {
+        "client_id": "08162f7c-0fd2-4200-a84a-f25a4db0b584",
+        "client_secret": None,
+    },
+}
+
 CALLBACK_PATH = "/api/v1/mail/oauth/callback"
 
 
@@ -77,8 +91,35 @@ def provider_for(host: str) -> Optional[str]:
     return next((k for k, p in PROVIDERS.items() if host in p.hosts), None)
 
 
+def thunderbird_enabled() -> bool:
+    return os.getenv("USE_THUNDERBIRD_OAUTH", "1").strip().lower() not in ("0", "false", "no", "off")
+
+
+def get_client_id(provider: str) -> str:
+    env_id = os.getenv(PROVIDERS[provider].client_id_env, "").strip()
+    if env_id:
+        return env_id
+    if thunderbird_enabled():
+        return THUNDERBIRD_CREDENTIALS.get(provider, {}).get("client_id", "")
+    return ""
+
+
+def get_client_secret(provider: str) -> Optional[str]:
+    p = PROVIDERS[provider]
+    if p.client_secret_env and os.getenv(p.client_secret_env):
+        return os.environ[p.client_secret_env].strip()
+    if thunderbird_enabled():
+        return THUNDERBIRD_CREDENTIALS.get(provider, {}).get("client_secret")
+    return None
+
+
+def is_thunderbird_active(provider: str) -> bool:
+    env_id = os.getenv(PROVIDERS[provider].client_id_env, "").strip()
+    return not bool(env_id) and thunderbird_enabled()
+
+
 def configured(name: str) -> bool:
-    return bool(os.getenv(PROVIDERS[name].client_id_env, "").strip())
+    return bool(get_client_id(name))
 
 
 def _url(template: str) -> str:
@@ -86,6 +127,8 @@ def _url(template: str) -> str:
 
 
 def redirect_uri(name: str, port: int) -> str:
+    if is_thunderbird_active(name):
+        return f"http://{PROVIDERS[name].loopback}:{port}/"
     return f"http://{PROVIDERS[name].loopback}:{port}{CALLBACK_PATH}"
 
 
@@ -120,7 +163,7 @@ def start(tenant: str, provider: str, address: str, server: dict, port: int, ret
             del _pending[k]
         _pending[state] = Pending(tenant, provider, address, server, verifier, redirect, return_to)
     params = {
-        "client_id": os.environ[p.client_id_env].strip(),
+        "client_id": get_client_id(provider),
         "response_type": "code",
         "redirect_uri": redirect,
         "scope": p.scope,
@@ -147,7 +190,7 @@ def take(state: str) -> Pending:
 
 def _token(provider: str, data: dict, client: Optional[httpx.Client] = None) -> dict:
     p = PROVIDERS[provider]
-    data = {"client_id": os.environ[p.client_id_env].strip(), **data}
+    data = {"client_id": get_client_id(provider), **data}
     if p.client_secret_env and os.getenv(p.client_secret_env):
         data["client_secret"] = os.environ[p.client_secret_env].strip()
     own = client is None

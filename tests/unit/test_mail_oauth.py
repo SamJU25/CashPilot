@@ -53,6 +53,7 @@ def test_microsoft_url(env):
 
 def test_not_configured(env, monkeypatch):
     monkeypatch.delenv("MICROSOFT_OAUTH_CLIENT_ID")
+    monkeypatch.setenv("USE_THUNDERBIRD_OAUTH", "0")
     with pytest.raises(oauth.OAuthError) as e:
         oauth.start("t1", "microsoft", "a@outlook.com", SERVER, 8000)
     assert e.value.code == "not_configured"
@@ -136,3 +137,46 @@ def test_return_link_only_for_local_app_pages(env):
         state = q(client.post("/api/v1/mail/oauth/start", headers=h, json={**body, "return_to": back}).json()["url"])["state"]
         page = client.get("/api/v1/mail/oauth/callback", params={"state": state, "error": "access_denied"}).text
         assert ("Back to CashPilot" in page) is kept and "evil.example" not in page
+
+
+def test_thunderbird_oauth_credentials_used_by_default(tmp_path, monkeypatch):
+    monkeypatch.delenv("GOOGLE_OAUTH_CLIENT_ID", raising=False)
+    monkeypatch.delenv("GOOGLE_OAUTH_CLIENT_SECRET", raising=False)
+    monkeypatch.delenv("MICROSOFT_OAUTH_CLIENT_ID", raising=False)
+    monkeypatch.setenv("USE_THUNDERBIRD_OAUTH", "1")
+    url = oauth.start("t1", "google", "biz@gmail.com", SERVER, 8000)
+    p = q(url)
+    assert p["client_id"] == oauth.THUNDERBIRD_CREDENTIALS["google"]["client_id"]
+    assert p["redirect_uri"] == "http://127.0.0.1:8000/"
+
+    ms_url = oauth.start("t1", "microsoft", "biz@outlook.com", {**SERVER, "host": "outlook.office365.com"}, 8000)
+    ms_p = q(ms_url)
+    assert ms_p["client_id"] == oauth.THUNDERBIRD_CREDENTIALS["microsoft"]["client_id"]
+    assert ms_p["redirect_uri"] == "http://localhost:8000/"
+
+
+def test_root_callback_delegates_to_mail_oauth(env, monkeypatch):
+    from api.main import app
+    client = TestClient(app)
+    import api.routes.mail as routes
+
+    class Box:
+        def logout(self):
+            pass
+
+    monkeypatch.setattr(routes.oauth, "exchange", lambda pending, code: ("ACCESS", "REFRESH"))
+    monkeypatch.setattr(routes, "open_mailbox", lambda *a: Box())
+    monkeypatch.setattr(routes, "sync", lambda store: {"read": 0, "added": 0})
+
+    pending_state = "tb-state"
+    routes.oauth._pending[pending_state] = routes.oauth.Pending(
+        tenant="tb-tenant",
+        provider="google",
+        address="biz@gmail.com",
+        server=SERVER,
+        verifier="v",
+        redirect="http://127.0.0.1:8000/",
+    )
+    res = client.get("/", params={"state": pending_state, "code": "the-code"})
+    assert res.status_code == 200
+    assert "Connected" in res.text
