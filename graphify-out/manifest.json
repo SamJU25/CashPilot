@@ -2856,9 +2856,9 @@
     "semantic_hash": ""
   },
   "src/app/bank-emails/page.tsx": {
-    "mtime": 1792802844.2036264,
-    "seen": 1792803053.1044073,
-    "ast_hash": "59808de4a8b5cd5da9f7d152688586fa",
+    "mtime": 1792804425.634017,
+    "seen": 1792804571.0698268,
+    "ast_hash": "ebba4e5e73fdabc25097398f782ca005",
     "semantic_hash": ""
   },
   "src/lib/bank-emails.tsx": {

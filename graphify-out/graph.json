@@ -17424,7 +17424,7 @@
       "file_type": "code",
       "norm_label": "accountcard()",
       "source_file": "src/app/bank-emails/page.tsx",
-      "source_location": "L660"
+      "source_location": "L639"
     },
     {
       "id": "src_app_bank_emails_page_ago",
@@ -17448,7 +17448,7 @@
       "file_type": "code",
       "norm_label": "bankemailspage()",
       "source_file": "src/app/bank-emails/page.tsx",
-      "source_location": "L979"
+      "source_location": "L958"
     },
     {
       "id": "src_app_bank_emails_page_chip",
@@ -17484,7 +17484,7 @@
       "file_type": "code",
       "norm_label": "feed()",
       "source_file": "src/app/bank-emails/page.tsx",
-      "source_location": "L797"
+      "source_location": "L776"
     },
     {
       "id": "src_app_bank_emails_page_field",
@@ -17532,7 +17532,7 @@
       "file_type": "code",
       "norm_label": "providermark()",
       "source_file": "src/app/bank-emails/page.tsx",
-      "source_location": "L566"
+      "source_location": "L545"
     },
     {
       "id": "src_app_bank_emails_page_reviewlist",
@@ -17544,7 +17544,7 @@
       "file_type": "code",
       "norm_label": "reviewlist()",
       "source_file": "src/app/bank-emails/page.tsx",
-      "source_location": "L753"
+      "source_location": "L732"
     },
     {
       "id": "src_app_bank_emails_page_senders",
@@ -17556,7 +17556,7 @@
       "file_type": "code",
       "norm_label": "senders()",
       "source_file": "src/app/bank-emails/page.tsx",
-      "source_location": "L898"
+      "source_location": "L877"
     },
     {
       "id": "src_app_bank_emails_page_signininbrowser",
@@ -17580,7 +17580,7 @@
       "file_type": "code",
       "norm_label": "stat()",
       "source_file": "src/app/bank-emails/page.tsx",
-      "source_location": "L970"
+      "source_location": "L949"
     },
     {
       "id": "src_app_bank_emails_page_statusstrip",
@@ -17592,7 +17592,7 @@
       "file_type": "code",
       "norm_label": "statusstrip()",
       "source_file": "src/app/bank-emails/page.tsx",
-      "source_location": "L590"
+      "source_location": "L569"
     },
     {
       "id": "src_app_bank_emails_page_tail",
@@ -45560,7 +45560,7 @@
       "file_type": "code",
       "norm_label": "review_key",
       "source_file": "src/app/bank-emails/page.tsx",
-      "source_location": "L746"
+      "source_location": "L725"
     },
     {
       "id": "src_components_copilot_entry_card",
@@ -80976,7 +80976,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/bank-emails/page.tsx",
-      "source_location": "L661",
+      "source_location": "L640",
       "weight": 1.0
     },
     {
@@ -80988,7 +80988,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/bank-emails/page.tsx",
-      "source_location": "L665",
+      "source_location": "L644",
       "weight": 1.0
     },
     {
@@ -81000,7 +81000,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/bank-emails/page.tsx",
-      "source_location": "L666",
+      "source_location": "L645",
       "weight": 1.0
     },
     {
@@ -81012,7 +81012,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/bank-emails/page.tsx",
-      "source_location": "L670",
+      "source_location": "L649",
       "weight": 1.0
     },
     {
@@ -81024,7 +81024,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/bank-emails/page.tsx",
-      "source_location": "L679",
+      "source_location": "L658",
       "weight": 1.0
     },
     {
@@ -81036,7 +81036,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/bank-emails/page.tsx",
-      "source_location": "L684",
+      "source_location": "L663",
       "weight": 1.0
     },
     {
@@ -81048,7 +81048,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/bank-emails/page.tsx",
-      "source_location": "L694",
+      "source_location": "L673",
       "weight": 1.0
     },
     {
@@ -81060,7 +81060,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/bank-emails/page.tsx",
-      "source_location": "L697",
+      "source_location": "L676",
       "weight": 1.0
     },
     {
@@ -81072,7 +81072,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/bank-emails/page.tsx",
-      "source_location": "L699",
+      "source_location": "L678",
       "weight": 1.0
     },
     {
@@ -81084,7 +81084,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/bank-emails/page.tsx",
-      "source_location": "L706",
+      "source_location": "L685",
       "weight": 1.0
     },
     {
@@ -81096,7 +81096,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/bank-emails/page.tsx",
-      "source_location": "L731",
+      "source_location": "L710",
       "weight": 1.0
     },
     {
@@ -81108,43 +81108,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/bank-emails/page.tsx",
-      "source_location": "L732",
-      "weight": 1.0
-    },
-    {
-      "source": "src_app_bank_emails_page_bankemailspage",
-      "target": "src_components_common_states_errorstate",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "src/app/bank-emails/page.tsx",
-      "source_location": "L1003",
-      "weight": 1.0
-    },
-    {
-      "source": "src_app_bank_emails_page_bankemailspage",
-      "target": "src_app_bank_emails_page_connect",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "src/app/bank-emails/page.tsx",
-      "source_location": "L1011",
-      "weight": 1.0
-    },
-    {
-      "source": "src_app_bank_emails_page_bankemailspage",
-      "target": "src_lib_use_cash_change_latestbalances",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "src/app/bank-emails/page.tsx",
-      "source_location": "L1017",
+      "source_location": "L711",
       "weight": 1.0
     },
     {
@@ -81156,7 +81120,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/bank-emails/page.tsx",
-      "source_location": "L1026",
+      "source_location": "L1005",
       "weight": 1.0
     },
     {
@@ -81168,7 +81132,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/bank-emails/page.tsx",
-      "source_location": "L1034",
+      "source_location": "L1013",
       "weight": 1.0
     },
     {
@@ -81180,7 +81144,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/bank-emails/page.tsx",
-      "source_location": "L1037",
+      "source_location": "L1016",
       "weight": 1.0
     },
     {
@@ -81192,7 +81156,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/bank-emails/page.tsx",
-      "source_location": "L1044",
+      "source_location": "L1023",
       "weight": 1.0
     },
     {
@@ -81204,7 +81168,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/bank-emails/page.tsx",
-      "source_location": "L1047",
+      "source_location": "L1026",
       "weight": 1.0
     },
     {
@@ -81216,7 +81180,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/bank-emails/page.tsx",
-      "source_location": "L1052",
+      "source_location": "L1031",
       "weight": 1.0
     },
     {
@@ -81228,7 +81192,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/bank-emails/page.tsx",
-      "source_location": "L1053",
+      "source_location": "L1032",
       "weight": 1.0
     },
     {
@@ -81240,7 +81204,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/bank-emails/page.tsx",
-      "source_location": "L1056",
+      "source_location": "L1035",
       "weight": 1.0
     },
     {
@@ -81252,7 +81216,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/bank-emails/page.tsx",
-      "source_location": "L1059",
+      "source_location": "L1038",
       "weight": 1.0
     },
     {
@@ -81264,7 +81228,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/bank-emails/page.tsx",
-      "source_location": "L1060",
+      "source_location": "L1039",
       "weight": 1.0
     },
     {
@@ -81276,7 +81240,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/bank-emails/page.tsx",
-      "source_location": "L980",
+      "source_location": "L959",
       "weight": 1.0
     },
     {
@@ -81288,7 +81252,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/bank-emails/page.tsx",
-      "source_location": "L981",
+      "source_location": "L960",
       "weight": 1.0
     },
     {
@@ -81300,7 +81264,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/bank-emails/page.tsx",
-      "source_location": "L982",
+      "source_location": "L961",
       "weight": 1.0
     },
     {
@@ -81312,7 +81276,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/bank-emails/page.tsx",
-      "source_location": "L987",
+      "source_location": "L966",
       "weight": 1.0
     },
     {
@@ -81324,7 +81288,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/bank-emails/page.tsx",
-      "source_location": "L994",
+      "source_location": "L973",
       "weight": 1.0
     },
     {
@@ -81336,7 +81300,43 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/bank-emails/page.tsx",
-      "source_location": "L995",
+      "source_location": "L974",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_bank_emails_page_bankemailspage",
+      "target": "src_components_common_states_errorstate",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/app/bank-emails/page.tsx",
+      "source_location": "L982",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_bank_emails_page_bankemailspage",
+      "target": "src_app_bank_emails_page_connect",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/app/bank-emails/page.tsx",
+      "source_location": "L990",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_bank_emails_page_bankemailspage",
+      "target": "src_lib_use_cash_change_latestbalances",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/app/bank-emails/page.tsx",
+      "source_location": "L996",
       "weight": 1.0
     },
     {
@@ -81372,7 +81372,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/bank-emails/page.tsx",
-      "source_location": "L293",
+      "source_location": "L291",
       "weight": 1.0
     },
     {
@@ -81384,7 +81384,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/bank-emails/page.tsx",
-      "source_location": "L307",
+      "source_location": "L305",
       "weight": 1.0
     },
     {
@@ -81396,7 +81396,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/bank-emails/page.tsx",
-      "source_location": "L355",
+      "source_location": "L353",
       "weight": 1.0
     },
     {
@@ -81408,7 +81408,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/bank-emails/page.tsx",
-      "source_location": "L382",
+      "source_location": "L380",
       "weight": 1.0
     },
     {
@@ -81420,7 +81420,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/bank-emails/page.tsx",
-      "source_location": "L402",
+      "source_location": "L400",
       "weight": 1.0
     },
     {
@@ -81432,7 +81432,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/bank-emails/page.tsx",
-      "source_location": "L429",
+      "source_location": "L426",
       "weight": 1.0
     },
     {
@@ -81444,7 +81444,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/bank-emails/page.tsx",
-      "source_location": "L517",
+      "source_location": "L496",
       "weight": 1.0
     },
     {
@@ -81456,7 +81456,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/bank-emails/page.tsx",
-      "source_location": "L518",
+      "source_location": "L497",
       "weight": 1.0
     },
     {
@@ -81468,7 +81468,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/bank-emails/page.tsx",
-      "source_location": "L558",
+      "source_location": "L537",
       "weight": 1.0
     },
     {
@@ -81480,7 +81480,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/bank-emails/page.tsx",
-      "source_location": "L559",
+      "source_location": "L538",
       "weight": 1.0
     },
     {
@@ -81492,7 +81492,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/bank-emails/page.tsx",
-      "source_location": "L798",
+      "source_location": "L777",
       "weight": 1.0
     },
     {
@@ -81504,7 +81504,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/bank-emails/page.tsx",
-      "source_location": "L799",
+      "source_location": "L778",
       "weight": 1.0
     },
     {
@@ -81516,7 +81516,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/bank-emails/page.tsx",
-      "source_location": "L800",
+      "source_location": "L779",
       "weight": 1.0
     },
     {
@@ -81528,7 +81528,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/bank-emails/page.tsx",
-      "source_location": "L810",
+      "source_location": "L789",
       "weight": 1.0
     },
     {
@@ -81540,7 +81540,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/bank-emails/page.tsx",
-      "source_location": "L828",
+      "source_location": "L807",
       "weight": 1.0
     },
     {
@@ -81552,7 +81552,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/bank-emails/page.tsx",
-      "source_location": "L835",
+      "source_location": "L814",
       "weight": 1.0
     },
     {
@@ -81564,7 +81564,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/bank-emails/page.tsx",
-      "source_location": "L851",
+      "source_location": "L830",
       "weight": 1.0
     },
     {
@@ -81576,7 +81576,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/bank-emails/page.tsx",
-      "source_location": "L861",
+      "source_location": "L840",
       "weight": 1.0
     },
     {
@@ -81588,7 +81588,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/bank-emails/page.tsx",
-      "source_location": "L861",
+      "source_location": "L840",
       "weight": 1.0
     },
     {
@@ -81600,7 +81600,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/bank-emails/page.tsx",
-      "source_location": "L867",
+      "source_location": "L846",
       "weight": 1.0
     },
     {
@@ -81612,7 +81612,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/bank-emails/page.tsx",
-      "source_location": "L872",
+      "source_location": "L851",
       "weight": 1.0
     },
     {
@@ -81624,7 +81624,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/bank-emails/page.tsx",
-      "source_location": "L881",
+      "source_location": "L860",
       "weight": 1.0
     },
     {
@@ -81684,7 +81684,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/bank-emails/page.tsx",
-      "source_location": "L754",
+      "source_location": "L733",
       "weight": 1.0
     },
     {
@@ -81696,7 +81696,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/bank-emails/page.tsx",
-      "source_location": "L758",
+      "source_location": "L737",
       "weight": 1.0
     },
     {
@@ -81708,7 +81708,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/bank-emails/page.tsx",
-      "source_location": "L766",
+      "source_location": "L745",
       "weight": 1.0
     },
     {
@@ -81720,7 +81720,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/bank-emails/page.tsx",
-      "source_location": "L766",
+      "source_location": "L745",
       "weight": 1.0
     },
     {
@@ -81732,7 +81732,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/bank-emails/page.tsx",
-      "source_location": "L769",
+      "source_location": "L748",
       "weight": 1.0
     },
     {
@@ -81744,7 +81744,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/bank-emails/page.tsx",
-      "source_location": "L771",
+      "source_location": "L750",
       "weight": 1.0
     },
     {
@@ -81756,7 +81756,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/bank-emails/page.tsx",
-      "source_location": "L775",
+      "source_location": "L754",
       "weight": 1.0
     },
     {
@@ -81768,7 +81768,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/bank-emails/page.tsx",
-      "source_location": "L775",
+      "source_location": "L754",
       "weight": 1.0
     },
     {
@@ -81780,7 +81780,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/bank-emails/page.tsx",
-      "source_location": "L899",
+      "source_location": "L878",
       "weight": 1.0
     },
     {
@@ -81792,7 +81792,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/bank-emails/page.tsx",
-      "source_location": "L910",
+      "source_location": "L889",
       "weight": 1.0
     },
     {
@@ -81804,7 +81804,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/bank-emails/page.tsx",
-      "source_location": "L943",
+      "source_location": "L922",
       "weight": 1.0
     },
     {
@@ -81816,7 +81816,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/bank-emails/page.tsx",
-      "source_location": "L944",
+      "source_location": "L923",
       "weight": 1.0
     },
     {
@@ -81828,7 +81828,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/bank-emails/page.tsx",
-      "source_location": "L952",
+      "source_location": "L931",
       "weight": 1.0
     },
     {
@@ -81840,7 +81840,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/bank-emails/page.tsx",
-      "source_location": "L955",
+      "source_location": "L934",
       "weight": 1.0
     },
     {
@@ -81864,7 +81864,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/bank-emails/page.tsx",
-      "source_location": "L974",
+      "source_location": "L953",
       "weight": 1.0
     },
     {
@@ -81876,7 +81876,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/bank-emails/page.tsx",
-      "source_location": "L591",
+      "source_location": "L570",
       "weight": 1.0
     },
     {
@@ -81888,7 +81888,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/bank-emails/page.tsx",
-      "source_location": "L592",
+      "source_location": "L571",
       "weight": 1.0
     },
     {
@@ -81900,7 +81900,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/bank-emails/page.tsx",
-      "source_location": "L593",
+      "source_location": "L572",
       "weight": 1.0
     },
     {
@@ -81912,7 +81912,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/bank-emails/page.tsx",
-      "source_location": "L601",
+      "source_location": "L580",
       "weight": 1.0
     },
     {
@@ -81924,7 +81924,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/bank-emails/page.tsx",
-      "source_location": "L614",
+      "source_location": "L593",
       "weight": 1.0
     },
     {
@@ -81936,7 +81936,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/bank-emails/page.tsx",
-      "source_location": "L621",
+      "source_location": "L600",
       "weight": 1.0
     },
     {
@@ -81948,7 +81948,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/bank-emails/page.tsx",
-      "source_location": "L621",
+      "source_location": "L600",
       "weight": 1.0
     },
     {
@@ -81960,7 +81960,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/bank-emails/page.tsx",
-      "source_location": "L622",
+      "source_location": "L601",
       "weight": 1.0
     },
     {
@@ -81972,7 +81972,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/bank-emails/page.tsx",
-      "source_location": "L636",
+      "source_location": "L615",
       "weight": 1.0
     },
     {
@@ -81984,7 +81984,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/bank-emails/page.tsx",
-      "source_location": "L637",
+      "source_location": "L616",
       "weight": 1.0
     },
     {
@@ -81996,7 +81996,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/bank-emails/page.tsx",
-      "source_location": "L638",
+      "source_location": "L617",
       "weight": 1.0
     },
     {
@@ -82008,7 +82008,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/bank-emails/page.tsx",
-      "source_location": "L639",
+      "source_location": "L618",
       "weight": 1.0
     },
     {
@@ -82020,7 +82020,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/bank-emails/page.tsx",
-      "source_location": "L641",
+      "source_location": "L620",
       "weight": 1.0
     },
     {
@@ -82032,7 +82032,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/bank-emails/page.tsx",
-      "source_location": "L646",
+      "source_location": "L625",
       "weight": 1.0
     },
     {
@@ -177628,7 +177628,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/app/bank-emails/page.tsx",
-      "source_location": "L566",
+      "source_location": "L545",
       "weight": 1.0
     },
     {
@@ -177639,7 +177639,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/app/bank-emails/page.tsx",
-      "source_location": "L590",
+      "source_location": "L569",
       "weight": 1.0
     },
     {
@@ -177672,7 +177672,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/app/bank-emails/page.tsx",
-      "source_location": "L660",
+      "source_location": "L639",
       "weight": 1.0
     },
     {
@@ -177683,7 +177683,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/app/bank-emails/page.tsx",
-      "source_location": "L746",
+      "source_location": "L725",
       "weight": 1.0
     },
     {
@@ -177694,7 +177694,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/app/bank-emails/page.tsx",
-      "source_location": "L753",
+      "source_location": "L732",
       "weight": 1.0
     },
     {
@@ -177705,7 +177705,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/app/bank-emails/page.tsx",
-      "source_location": "L797",
+      "source_location": "L776",
       "weight": 1.0
     },
     {
@@ -177727,7 +177727,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/app/bank-emails/page.tsx",
-      "source_location": "L898",
+      "source_location": "L877",
       "weight": 1.0
     },
     {
@@ -177749,7 +177749,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/app/bank-emails/page.tsx",
-      "source_location": "L970",
+      "source_location": "L949",
       "weight": 1.0
     },
     {
@@ -177760,7 +177760,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/app/bank-emails/page.tsx",
-      "source_location": "L979",
+      "source_location": "L958",
       "weight": 1.0
     },
     {
@@ -210906,5 +210906,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "f9dfbd8cdb917eb855eb18adc2ad0935a218bdd8"
+  "built_at_commit": "9b945161b95a362f64e99ece835d9567c54b4e0e"
 }

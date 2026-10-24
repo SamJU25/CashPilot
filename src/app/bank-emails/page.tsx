@@ -243,7 +243,6 @@ function Connect() {
   const [show, setShow] = useState(false);
   const [settings, setSettings] = useState<MailSettings | null>(null);
   const [manual, setManual] = useState(false);
-  const [usePassword, setUsePassword] = useState(false);
   const [server, setServer] = useState({ host: '', username: '' });
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<Key | null>(null);
@@ -253,8 +252,8 @@ function Connect() {
   const trimmed = address.trim();
   const domain = trimmed.split('@')[1] ?? '';
   const valid = /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(trimmed);
-  const oauth = settings?.oauth && !manual && !usePassword ? settings.oauth : null;
-  const blocked = !!settings?.oauth_only && !settings.oauth && !manual && !usePassword;
+  const oauth = settings?.oauth && !manual ? settings.oauth : null;
+  const blocked = !!settings?.oauth_only && !settings.oauth && !manual;
   const host = server.host.trim().toLowerCase();
   const kind = manual || !settings ? (/\.(qq|163)\.com$/.test(host) ? 'auth_code' : 'password') : settings.secret_kind;
   const secretLabel = kind === 'auth_code' ? t('be.authCode') : kind === 'app_password' ? t('be.appPassword') : t('be.password');
@@ -273,7 +272,6 @@ function Connect() {
       setSettings(found);
       setServer(found ? { host: found.host, username: found.username } : { host: `imap.${domain}`, username: trimmed });
       setManual(!found);
-      setUsePassword(false);
       setStage('password');
     } catch {
       setError('be.err.server');
@@ -415,7 +413,6 @@ function Connect() {
                     variant="outline"
                     className="w-full text-[13px]"
                     onClick={() => {
-                      setUsePassword(true);
                       setManual(true);
                     }}
                   >
@@ -430,19 +427,6 @@ function Connect() {
                     {t('be.signInWith', { provider: OAUTH_LABEL[oauth] })}
                   </Button>
                   <p className="text-center text-[12.5px] leading-relaxed text-muted-foreground">{t('be.browserBody', { provider: OAUTH_LABEL[oauth] })}</p>
-                  {!settings!.oauth_only && (
-                    <>
-                      <div className="flex items-center gap-3 text-xs text-muted-foreground" aria-hidden>
-                        <span className="h-px flex-1 bg-border" />
-                        {t('be.si.or')}
-                        <span className="h-px flex-1 bg-border" />
-                      </div>
-                      <Button type="button" variant="ghost" className="w-full" onClick={() => setUsePassword(true)}>
-                        <KeyRound aria-hidden />
-                        {t('be.usePasswordInstead')}
-                      </Button>
-                    </>
-                  )}
                 </div>
               ) : (
                 <>
@@ -492,11 +476,6 @@ function Connect() {
                     {busy ? <RefreshCw className="animate-spin" aria-hidden /> : null}
                     {busy ? t('be.si.signingIn') : t('be.si.signIn')}
                   </Button>
-                  {settings?.oauth && (
-                    <button type="button" className="mx-auto block text-[13px] text-ink-2 underline decoration-dotted underline-offset-4 hover:text-foreground" onClick={() => setUsePassword(false)}>
-                      {t('be.signInWith', { provider: OAUTH_LABEL[settings.oauth] })}
-                    </button>
-                  )}
                 </>
               )}
 
