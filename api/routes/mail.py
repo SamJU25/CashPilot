@@ -181,13 +181,16 @@ def _page(ok: bool, title: str, body: str, back: str = "", address: str = "") ->
                 <span class="live-dot"></span>
                 <span class="guidance-title">Ready in Desktop App</span>
               </div>
-              <p class="guidance-text">CashPilot is already active in your desktop window. You can safely close this browser tab or switch back using your taskbar.</p>
+              <p class="guidance-text">CashPilot is active and syncing in your desktop application. Click below to close this tab and resume in CashPilot.</p>
             </div>
             <div class="actions">
               <button onclick="closeOrSwitch()" class="btn-primary" id="action-btn">
                 Close This Window
               </button>
               {f'<a href="{safe_back}" class="btn-secondary">Back to CashPilot</a>' if safe_back else ''}
+              <p id="switch-hint" style="display:none;font-size:0.75rem;color:#94a3b8;margin-top:0.4rem;">
+                Tab still open? Switch back to the CashPilot desktop window on your taskbar (or press Alt+Tab).
+              </p>
             </div>
             """
         elif back:
@@ -210,7 +213,7 @@ def _page(ok: bool, title: str, body: str, back: str = "", address: str = "") ->
               <p class="guidance-text">CashPilot has linked your mailbox. You can return to the CashPilot application.</p>
             </div>
             <div class="actions">
-              <button onclick="window.close()" class="btn-primary">Close Tab</button>
+              <button onclick="window.close()" class="btn-primary">Close Window</button>
             </div>
             """
     else:
