@@ -227,6 +227,24 @@ export interface MailSettings {
   oauth: 'google' | 'microsoft' | null;
 }
 
+export interface CurrencyConversionResult {
+  original_amount: string;
+  from_currency: string;
+  from_currency_name: string;
+  from_symbol: string;
+  to_currency: string;
+  to_currency_name: string;
+  to_symbol: string;
+  spot_exchange_rate: string;
+  exchange_rate_source: string;
+  is_live_market_rate: boolean;
+  spread_bps: string;
+  spread_fee: string;
+  gross_converted_amount: string;
+  net_converted_amount: string;
+  effective_exchange_rate: string;
+}
+
 const json = (method: string, body?: unknown): RequestInit => ({
   method,
   headers: { 'Content-Type': 'application/json' },
@@ -303,6 +321,18 @@ export const api = {
     one_off_inflows?: { date: string; amount: string }[];
   }) =>
     request<{ forecast: LiveForecast; projection: BalanceAt[] }>('/api/v1/analyze/scenario', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    }),
+  convertCurrency: (body: {
+    amount: string;
+    from_currency: string;
+    to_currency: string;
+    exchange_rate?: string;
+    spread_bps?: string;
+  }) =>
+    request<CurrencyConversionResult>('/api/v1/currency/convert', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body),

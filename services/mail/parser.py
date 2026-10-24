@@ -102,8 +102,8 @@ def decode_payload(payload: bytes, charset: str | None) -> str:
 
 
 def body_text(msg: Message) -> str:
-    """Plain text of the message, preferring the text part and flattening HTML otherwise, with PDF fallback."""
-    plain, html, pdf_parts = [], [], []
+    """Plain text of the message, preferring the text part and flattening HTML otherwise, with PDF and CSV/TSV/TXT attachment fallback."""
+    plain, html, attachment_parts = [], [], []
     for part in msg.walk() if msg.is_multipart() else [msg]:
         ctype = part.get_content_type()
         fname = (part.get_filename() or "").lower()
@@ -115,7 +115,16 @@ def body_text(msg: Message) -> str:
                     for page in reader.pages:
                         extracted = page.extract_text()
                         if extracted:
-                            pdf_parts.append(extracted)
+                            attachment_parts.append(extracted)
+            except Exception:
+                pass
+            continue
+        if fname.endswith((".csv", ".tsv", ".txt")) or ctype in ("text/csv", "text/tab-separated-values"):
+            try:
+                payload = part.get_payload(decode=True) or b""
+                text = decode_payload(payload, part.get_content_charset())
+                if text.strip():
+                    attachment_parts.append(text)
             except Exception:
                 pass
             continue
@@ -133,9 +142,9 @@ def body_text(msg: Message) -> str:
         p.feed("\n".join(html))
         body = "".join(p.parts)
 
-    if pdf_parts:
-        pdf_text = "\n".join(pdf_parts)
-        body = f"{body}\n{pdf_text}" if body else pdf_text
+    if attachment_parts:
+        att_text = "\n".join(attachment_parts)
+        body = f"{body}\n{att_text}" if body else att_text
     return body
 
 

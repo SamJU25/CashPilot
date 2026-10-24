@@ -41,7 +41,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { PageHeader, SectionTitle } from '@/components/common/bits';
 import { ErrorState, LoadingBlock } from '@/components/common/states';
-import { mailApi, type MailAccount, type MailAlert, type MailSettings, type MailState } from '@/lib/api';
+import { api, mailApi, type CurrencyConversionResult, type MailAccount, type MailAlert, type MailSettings, type MailState } from '@/lib/api';
 import { NEW_ACCOUNT, POLL_MS, checkMail, clearMailError, disconnectMail, holdReason, mailDo, newAccountId, useMail } from '@/lib/bank-emails';
 import { formatDate, formatMoney } from '@/lib/format';
 import { useT, type Key } from '@/lib/i18n';
@@ -62,8 +62,8 @@ function ago(ms: number, lang: string) {
   return rtf.format(Math.round(s / 86400), 'day');
 }
 
-/** Re-renders every few seconds so "checked 2 minutes ago" stays true. */
-function useNow(every = 15_000) {
+/** Re-renders every second so countdowns and "checked 2 minutes ago" stay accurate. */
+function useNow(every = 1_000) {
   const [now, setNow] = useState(() => Date.now());
   useEffect(() => {
     const id = window.setInterval(() => setNow(Date.now()), every);
@@ -995,6 +995,63 @@ function Feed({ alerts, address, accounts }: { alerts: MailAlert[]; address: str
   const [editNote, setEditNote] = useState('');
   const [savingEdit, setSavingEdit] = useState(false);
 
+  // Cross-currency alert conversion state
+  const [convertingAlert, setConvertingAlert] = useState<MailAlert | null>(null);
+  const [conversionQuote, setConversionQuote] = useState<CurrencyConversionResult | null>(null);
+  const [conversionLoading, setConversionLoading] = useState(false);
+  const [conversionError, setConversionError] = useState<string | null>(null);
+  const [convertingApplying, setConvertingApplying] = useState(false);
+
+  const startConvert = async (a: MailAlert) => {
+    if (!ctx.currency) return;
+    setConvertingAlert(a);
+    setConversionQuote(null);
+    setConversionLoading(true);
+    setConversionError(null);
+    try {
+      const res = await api.convertCurrency({
+        amount: a.amount,
+        from_currency: a.currency,
+        to_currency: ctx.currency,
+      });
+      setConversionQuote(res);
+    } catch (err) {
+      setConversionError(err instanceof Error ? err.message : String(err));
+    } finally {
+      setConversionLoading(false);
+    }
+  };
+
+  const applyConversion = async () => {
+    if (!convertingAlert || !conversionQuote || !ctx.currency) return;
+    setConvertingApplying(true);
+    try {
+      const a = convertingAlert;
+      const acc = accounts.find((x) => x.bank_domain === a.bank_domain && x.tail === a.account_tail && x.currency === a.currency);
+      const targetId = acc?.target && acc.target !== NEW_ACCOUNT ? acc.target : newAccountId(acc ?? { bank: a.bank, tail: a.account_tail });
+      const known = latestBalances(analysis).some((b) => b.id === targetId);
+      const description = `${a.counterparty || targetId} (${a.amount} ${a.currency} @ ${conversionQuote.spot_exchange_rate})`;
+      const change = !known && a.balance_after
+        ? { mode: 'SET_BALANCE' as const, amount: conversionQuote.net_converted_amount, description }
+        : { mode: a.direction === 'IN' ? ('INFLOW' as const) : ('OUTFLOW' as const), amount: conversionQuote.net_converted_amount, description };
+
+      await apply({
+        ...change,
+        accountId: targetId,
+        effectiveDate: a.occurred_on,
+        alertId: a.id,
+        transfer: !!a.transfer_with,
+        currency: ctx.currency,
+      });
+      setConvertingAlert(null);
+      setConversionQuote(null);
+    } catch (err) {
+      setConversionError(err instanceof Error ? err.message : String(err));
+    } finally {
+      setConvertingApplying(false);
+    }
+  };
+
   // Newest alert per account (alerts arrive newest first).
   const latest = new Map<string, string>();
   for (const a of alerts) {
@@ -1186,6 +1243,7 @@ function Feed({ alerts, address, accounts }: { alerts: MailAlert[]; address: str
           <ol className="overflow-hidden rounded-xl border bg-card">
             {pagedAlerts.map((a) => {
               const [label, tone] = state(a);
+              const hold = holdReason(a, ctx);
               const Icon = a.transfer_with ? ArrowLeftRight : a.direction === 'IN' ? ArrowDownLeft : ArrowUpRight;
               const isEditing = editingId === a.id;
               return (
@@ -1270,8 +1328,19 @@ function Feed({ alerts, address, accounts }: { alerts: MailAlert[]; address: str
                       {a.balance_after && <p className="figures text-[11px] text-muted-foreground">{t('be.balanceAfter', { v: formatMoney(a.balance_after, a.currency) })}</p>}
                     </div>
 
-                    <div className="col-span-full flex justify-end sm:col-span-1 sm:w-32">
+                    <div className="col-span-full flex flex-wrap items-center justify-end gap-1.5 sm:col-span-1 sm:w-auto">
                       <Chip tone={tone}>{label}</Chip>
+                      {hold === 'currency' && ctx.currency && !counted.has(a.id) && (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="h-6 text-[11px] gap-1 px-2 border-primary/40 text-primary hover:bg-primary/10"
+                          onClick={() => startConvert(a)}
+                        >
+                          <RefreshCw className="size-3" />
+                          {t('be.convertAlert')}
+                        </Button>
+                      )}
                     </div>
                   </div>
 
@@ -1328,6 +1397,85 @@ function Feed({ alerts, address, accounts }: { alerts: MailAlert[]; address: str
           )}
         </div>
       )}
+
+      {/* Dialog for converting foreign currency alert to home currency */}
+      <Dialog open={!!convertingAlert} onOpenChange={(open) => { if (!open) setConvertingAlert(null); }}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <RefreshCw className="size-4 text-primary" />
+              {t('be.convertTitle')}
+            </DialogTitle>
+            <DialogDescription className="text-xs">
+              {t('be.convertDesc')}
+            </DialogDescription>
+          </DialogHeader>
+
+          {conversionLoading ? (
+            <div className="flex flex-col items-center justify-center py-8 gap-2 text-xs text-muted-foreground">
+              <RefreshCw className="size-5 animate-spin text-primary" />
+              <span>Fetching live exchange rate...</span>
+            </div>
+          ) : conversionError ? (
+            <div className="rounded-lg border border-critical/30 bg-critical/5 p-3 text-xs text-critical-text space-y-2">
+              <p className="font-medium">Failed to retrieve exchange rate</p>
+              <p>{conversionError}</p>
+              <Button size="sm" variant="outline" className="h-7 text-xs" onClick={() => convertingAlert && startConvert(convertingAlert)}>
+                Retry
+              </Button>
+            </div>
+          ) : conversionQuote && convertingAlert && ctx.currency ? (
+            <div className="space-y-3.5 py-1 text-xs">
+              <div className="rounded-xl border bg-muted/20 p-3 space-y-2.5">
+                <div className="flex items-center justify-between text-muted-foreground">
+                  <span>Source Transaction:</span>
+                  <span className="font-medium text-foreground">
+                    {convertingAlert.bank} ••{convertingAlert.account_tail}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between text-muted-foreground">
+                  <span>Original Amount:</span>
+                  <span className="font-semibold text-foreground figures text-sm">
+                    {formatMoney(convertingAlert.amount, convertingAlert.currency)}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between border-t border-dashed pt-2 text-muted-foreground">
+                  <span>{t('be.convertExchangeRate')}:</span>
+                  <span className="font-mono text-[11px] text-foreground">
+                    1 {conversionQuote.from_currency} = {conversionQuote.spot_exchange_rate} {conversionQuote.to_currency}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between border-t pt-2">
+                  <span className="font-medium text-foreground">{t('be.convertConvertedAmount')} ({ctx.currency}):</span>
+                  <span className={cn('figures text-base font-bold', convertingAlert.direction === 'IN' ? 'text-good-text' : 'text-foreground')}>
+                    {convertingAlert.direction === 'IN' ? '+' : '−'}
+                    {formatMoney(conversionQuote.net_converted_amount, ctx.currency)}
+                  </span>
+                </div>
+              </div>
+
+              <p className="text-[11px] text-muted-foreground leading-relaxed">
+                Source: <span className="font-medium">{conversionQuote.exchange_rate_source}</span>. Once confirmed, this amount will be applied to your live cash balance in {ctx.currency}.
+              </p>
+            </div>
+          ) : null}
+
+          <DialogFooter className="gap-2 sm:gap-0">
+            <Button variant="ghost" size="sm" onClick={() => setConvertingAlert(null)} disabled={convertingApplying}>
+              Cancel
+            </Button>
+            <Button
+              size="sm"
+              onClick={applyConversion}
+              disabled={conversionLoading || !!conversionError || convertingApplying || !conversionQuote}
+              className="gap-1.5"
+            >
+              {convertingApplying ? <RefreshCw className="size-3.5 animate-spin" /> : <Check className="size-3.5" />}
+              {convertingApplying ? t('be.convertApplying') : t('be.convertConfirm')}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </section>
   );
 }

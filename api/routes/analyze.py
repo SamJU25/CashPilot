@@ -6,9 +6,9 @@ import json
 import os
 from datetime import date, timedelta
 from decimal import Decimal, ROUND_HALF_UP
-from typing import Literal, Optional
+from typing import Any, Literal, Optional
 
-from fastapi import APIRouter, File, Form, Header, Request, UploadFile
+from fastapi import APIRouter, File, Form, Header, HTTPException, Request, UploadFile
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
@@ -929,3 +929,48 @@ async def analyze_scenario(payload: ScenarioRequest) -> ScenarioResponse:
         payload.current_balance, payload.average_daily_burn, payload.anchor_date, obligations, scenario, payload.days
     )
     return ScenarioResponse(forecast=forecast, projection=projection)
+
+
+class CurrencyConvertRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    amount: Decimal = Field(gt=0, max_digits=18, decimal_places=4)
+    from_currency: str = Field(min_length=2, max_length=10)
+    to_currency: str = Field(min_length=2, max_length=10)
+    exchange_rate: Optional[Decimal] = Field(default=None, gt=0, max_digits=18, decimal_places=6)
+    spread_bps: Decimal = Field(default=Decimal("0.00"), ge=0, max_digits=8, decimal_places=2)
+
+
+class CurrencyConvertResponse(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    original_amount: str
+    from_currency: str
+    from_currency_name: str
+    from_symbol: str
+    to_currency: str
+    to_currency_name: str
+    to_symbol: str
+    spot_exchange_rate: str
+    exchange_rate_source: str
+    is_live_market_rate: bool
+    spread_bps: str
+    spread_fee: str
+    gross_converted_amount: str
+    net_converted_amount: str
+    effective_exchange_rate: str
+
+
+@router.post("/currency/convert", response_model=CurrencyConvertResponse)
+def convert_currency_endpoint(payload: CurrencyConvertRequest) -> CurrencyConvertResponse:
+    """Deterministic multi-currency conversion using the universal currency registry and live FX resolver."""
+    from services.calculations.currency import calculate_currency_conversion
+    try:
+        res = calculate_currency_conversion(
+            amount=payload.amount,
+            exchange_rate=payload.exchange_rate,
+            from_currency=payload.from_currency,
+            to_currency=payload.to_currency,
+            spread_bps=payload.spread_bps,
+        )
+        return CurrencyConvertResponse(**res)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail={"code": "conversion_error", "message": str(exc)})

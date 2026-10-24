@@ -458,3 +458,36 @@ def test_adjustment_rejects_duplicate_or_unnamed_accounts():
     unnamed = {**base, "accounts": [{"account_id": "A", "balance": "1"}]}
     assert client.post("/api/v1/analyze/adjust", json=dup).status_code == 422
     assert client.post("/api/v1/analyze/adjust", json=unnamed).status_code == 422
+
+
+def test_currency_convert_api():
+    payload = {
+        "amount": "1000.00",
+        "from_currency": "EUR",
+        "to_currency": "USD",
+        "exchange_rate": "1.0850",
+    }
+    resp = client.post("/api/v1/currency/convert", json=payload)
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["from_currency"] == "EUR"
+    assert data["to_currency"] == "USD"
+    assert data["original_amount"] == "1000.00"
+    assert data["gross_converted_amount"] == "1085.00"
+    assert data["net_converted_amount"] == "1085.00"
+
+
+def test_currency_convert_api_with_spread():
+    from decimal import Decimal
+    payload = {
+        "amount": "50000.00",
+        "from_currency": "CNY",
+        "to_currency": "USD",
+        "exchange_rate": "0.1400",
+        "spread_bps": "50.00",
+    }
+    resp = client.post("/api/v1/currency/convert", json=payload)
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["gross_converted_amount"] == "7000.00"
+    assert Decimal(data["net_converted_amount"]) < Decimal("7000.00")

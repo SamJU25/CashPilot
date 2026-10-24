@@ -1116,9 +1116,9 @@
     "semantic_hash": ""
   },
   "api/routes/analyze.py": {
-    "mtime": 1792608286.2102265,
-    "seen": 1792608300.9759357,
-    "ast_hash": "e5d2624e4b495c97ee8b0abf24a0b69d",
+    "mtime": 1792818907.5658803,
+    "seen": 1792819263.8598819,
+    "ast_hash": "6d7947450b6be400df2cc99d916fefcc",
     "semantic_hash": ""
   },
   "next-env.d.ts": {
@@ -1146,9 +1146,9 @@
     "semantic_hash": ""
   },
   "tests/integration/test_analyze_api.py": {
-    "mtime": 1792608286.408788,
-    "seen": 1792608300.9941702,
-    "ast_hash": "b97529b7dc44a25cb35ef101b0c8f440",
+    "mtime": 1792818926.2493424,
+    "seen": 1792819263.8868148,
+    "ast_hash": "d34c264b78a33e5f543596cc9d76b37d",
     "semantic_hash": ""
   },
   "tests/unit/test_cash_analysis.py": {
@@ -2436,9 +2436,9 @@
     "semantic_hash": ""
   },
   "src/lib/api.ts": {
-    "mtime": 1792811562.20857,
-    "seen": 1792811691.6627266,
-    "ast_hash": "6ba5c00613e22caef3b3f74283c5bd48",
+    "mtime": 1792819000.0491724,
+    "seen": 1792819263.8817961,
+    "ast_hash": "992e05a588196ed8cd891a6ddc5ed771",
     "semantic_hash": ""
   },
   "src/lib/currencies.ts": {
@@ -2472,9 +2472,9 @@
     "semantic_hash": ""
   },
   "src/lib/i18n/en.ts": {
-    "mtime": 1792813974.0769782,
-    "seen": 1792814154.0892563,
-    "ast_hash": "0cb90e7bc8ced757bf4a5fb03a355dc4",
+    "mtime": 1792819098.56335,
+    "seen": 1792819263.8827357,
+    "ast_hash": "145b6ad3ccdd6b692251519e429a0685",
     "semantic_hash": ""
   },
   "src/lib/i18n/es.ts": {
@@ -2838,9 +2838,9 @@
     "semantic_hash": ""
   },
   "services/mail/parser.py": {
-    "mtime": 1792814790.4477825,
-    "seen": 1792815004.6270273,
-    "ast_hash": "84dbb86404c1c9e97f29c2faefaccf02",
+    "mtime": 1792818765.5928042,
+    "seen": 1792819263.8720865,
+    "ast_hash": "27a239faae70a88f321a1f6bae57650e",
     "semantic_hash": ""
   },
   "services/mail/store.py": {
@@ -2856,9 +2856,9 @@
     "semantic_hash": ""
   },
   "src/app/bank-emails/page.tsx": {
-    "mtime": 1792814838.5347548,
-    "seen": 1792815004.6314273,
-    "ast_hash": "eee2e53b685fca956813815208c6c11a",
+    "mtime": 1792819195.8777366,
+    "seen": 1792819263.8746202,
+    "ast_hash": "2088d5c8d04226cf75d8b1af6c6e0c7c",
     "semantic_hash": ""
   },
   "src/lib/bank-emails.tsx": {
@@ -2868,9 +2868,9 @@
     "semantic_hash": ""
   },
   "tests/unit/test_mail_parser.py": {
-    "mtime": 1792814861.1157167,
-    "seen": 1792815004.6596863,
-    "ast_hash": "178b038cc31e4d8c102defcdc8eb1e65",
+    "mtime": 1792818779.7010312,
+    "seen": 1792819263.8912046,
+    "ast_hash": "6fa056912e994dc7dd3c218f4d897060",
     "semantic_hash": ""
   },
   "tests/unit/test_mail_sync.py": {

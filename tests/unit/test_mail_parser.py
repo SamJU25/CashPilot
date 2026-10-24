@@ -447,3 +447,46 @@ def test_gb18030_chinese_payload_decoding():
     assert p.alert.account_tail == "8888"
 
 
+def test_csv_attachment_parsing():
+    m = EmailMessage()
+    m["Authentication-Results"] = "mx.google.com; dkim=pass header.d=chase.com; dmarc=pass header.from=chase.com"
+    m["From"] = "Chase <no.reply.alerts@chase.com>"
+    m["Subject"] = "Daily Transaction Summary"
+    m["Date"] = "Thu, 24 Oct 2026 10:00:00 +0000"
+    m["Message-ID"] = "<csv1@chase.com>"
+    m.set_content("Please find your daily transaction report attached.")
+    csv_payload = b"Date,Description,Amount,Account\n2026-10-24,Vendor Payment,-$450.00,Ending in 7788\n"
+    m.add_attachment(csv_payload, maintype="text", subtype="csv", filename="report_20261024.csv")
+
+    raw = m.as_bytes()
+    msg = message_from_bytes(raw)
+    p = parse_alert(msg, raw, True)
+    assert p.kind == "transaction"
+    assert p.alert.amount == Decimal("450.00")
+    assert p.alert.direction == "OUT"
+    assert p.alert.account_tail == "7788"
+    assert p.alert.occurred_on == "2026-10-24"
+
+
+def test_txt_attachment_parsing():
+    m = EmailMessage()
+    m["Authentication-Results"] = GMAIL_PASS
+    m["From"] = "工商银行 <notice@mail.icbc.com.cn>"
+    m["Subject"] = "电子对账通知"
+    m["Date"] = "Thu, 24 Oct 2026 10:00:00 +0800"
+    m["Message-ID"] = "<txt1@icbc.com.cn>"
+    m.set_content("对账清单见附件。")
+    txt_payload = "账户尾号9911于2026年10月24日存入人民币15,000.00元，可用余额人民币20,000.00元。".encode("utf-8")
+    m.add_attachment(txt_payload, maintype="text", subtype="plain", filename="notice.txt")
+
+    raw = m.as_bytes()
+    msg = message_from_bytes(raw)
+    p = parse_alert(msg, raw, True)
+    assert p.kind == "transaction"
+    assert p.alert.amount == Decimal("15000.00")
+    assert p.alert.balance_after == Decimal("20000.00")
+    assert p.alert.direction == "IN"
+    assert p.alert.account_tail == "9911"
+
+
+
