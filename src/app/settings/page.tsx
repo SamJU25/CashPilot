@@ -836,7 +836,23 @@ export default function SettingsPage() {
 
   return (
     <div className="max-w-5xl">
-      <PageHeader title={t('nav.settings')} />
+      <PageHeader
+        title={t('nav.settings')}
+        actions={
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => select('updates')}
+            className={cn(
+              'h-8 gap-2 text-xs font-medium',
+              tab === 'updates' ? 'border-primary/50 bg-primary/10 text-primary' : 'hover:bg-muted'
+            )}
+          >
+            <RotateCw className="size-3.5 text-primary" />
+            <span>Check for Updates</span>
+          </Button>
+        }
+      />
       <Tabs value={tab} onValueChange={select} orientation="vertical" className="lg:grid lg:grid-cols-[180px_minmax(0,1fr)] lg:gap-12">
         <TabsList
           aria-label={t('set.sections')}

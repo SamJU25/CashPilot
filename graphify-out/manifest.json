@@ -2142,9 +2142,9 @@
     "semantic_hash": ""
   },
   "src/app/settings/page.tsx": {
-    "mtime": 1792821863.9096115,
-    "seen": 1792821917.3974679,
-    "ast_hash": "26575033e0fccd6dec0cd4b56643afb4",
+    "mtime": 1792822265.8675902,
+    "seen": 1792822328.2352219,
+    "ast_hash": "6a800b24c4073eff30a8da332c3cc414",
     "semantic_hash": ""
   },
   "src/app/statements/page.tsx": {
@@ -2220,9 +2220,9 @@
     "semantic_hash": ""
   },
   "src/components/shell/app-shell.tsx": {
-    "mtime": 1792803234.034583,
-    "seen": 1792803369.8757687,
-    "ast_hash": "55d8bb20e55f4c2f021862a9f0ac3525",
+    "mtime": 1792822265.8660922,
+    "seen": 1792822328.2397609,
+    "ast_hash": "b6d23263e15c1434515f9c6273a44cb8",
     "semantic_hash": ""
   },
   "src/components/shell/brand.tsx": {

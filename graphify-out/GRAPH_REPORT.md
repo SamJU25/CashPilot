@@ -1,17 +1,17 @@
 # Graph Report - SME Finance Copilot  (2026-10-24)
 
 ## Corpus Check
-- 485 files · ~367,979 words
+- 485 files · ~368,052 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 28 file(s) not represented in the graph (top: .csv 14, (none) 7, .example 1)
 
 ## Summary
-- 5626 nodes · 12754 edges · 454 communities (308 shown, 146 thin omitted)
+- 5626 nodes · 12756 edges · 454 communities (308 shown, 146 thin omitted)
 - Extraction: 97% EXTRACTED · 3% INFERRED · 0% AMBIGUOUS · INFERRED: 362 edges (avg confidence: 0.93)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `e93803f8`
+- Built from commit: `3dcf3515`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -466,13 +466,13 @@
 - test_workstation_inventory.py
 
 ## God Nodes (most connected - your core abstractions)
-1. `cn()` - 178 edges
+1. `cn()` - 179 edges
 2. `DecisionRequest` - 163 edges
 3. `useT()` - 146 edges
 4. `run_copilot_supervisor()` - 109 edges
 5. `AgentChatRequest` - 100 edges
 6. `useWorkspace()` - 79 edges
-7. `Button` - 76 edges
+7. `Button` - 77 edges
 8. `DecisionDomain` - 62 edges
 9. `DecisionEngineRegistry` - 61 edges
 10. `LocalTransformersEngine` - 56 edges

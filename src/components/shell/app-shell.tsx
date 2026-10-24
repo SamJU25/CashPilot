@@ -14,6 +14,7 @@ import {
   Plus,
   MessageSquare,
   ReceiptText,
+  RotateCw,
   Settings2,
   Workflow,
   Mail,
@@ -135,7 +136,7 @@ function RailFooter() {
   return (
     <div>
       <DataFreshness />
-      <div className="border-t pt-3">
+      <div className="border-t pt-3 space-y-1">
         <Link
           href="/settings"
           prefetch={true}
@@ -149,6 +150,19 @@ function RailFooter() {
         >
           <Settings2 className="size-4" aria-hidden />
           {t('nav.settings')}
+        </Link>
+        <Link
+          href="/settings#updates"
+          onClick={() => {
+            if (pathname !== '/settings') setPendingHref('/settings');
+          }}
+          className="flex items-center justify-between rounded-md px-3 py-1 text-[11px] text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+        >
+          <span className="font-mono text-[11px]">v1.0.0</span>
+          <span className="flex items-center gap-1 font-medium text-primary">
+            <RotateCw className="size-2.5" />
+            Check updates
+          </span>
         </Link>
       </div>
     </div>

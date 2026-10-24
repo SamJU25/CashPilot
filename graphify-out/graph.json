@@ -6486,7 +6486,7 @@
       "file_type": "code",
       "norm_label": "appshell()",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L327"
+      "source_location": "L341"
     },
     {
       "id": "src_components_shell_app_shell_brand",
@@ -6498,7 +6498,7 @@
       "file_type": "code",
       "norm_label": "brand()",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L182"
+      "source_location": "L196"
     },
     {
       "id": "src_components_shell_app_shell_datafreshness",
@@ -6510,7 +6510,7 @@
       "file_type": "code",
       "norm_label": "datafreshness()",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L111"
+      "source_location": "L112"
     },
     {
       "id": "src_components_shell_app_shell_demobadge",
@@ -6522,7 +6522,7 @@
       "file_type": "code",
       "norm_label": "demobadge()",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L194"
+      "source_location": "L208"
     },
     {
       "id": "src_components_shell_app_shell_minirail",
@@ -6534,7 +6534,7 @@
       "file_type": "code",
       "norm_label": "minirail()",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L270"
+      "source_location": "L284"
     },
     {
       "id": "src_components_shell_app_shell_navlinks",
@@ -6546,7 +6546,7 @@
       "file_type": "code",
       "norm_label": "navlinks()",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L60"
+      "source_location": "L61"
     },
     {
       "id": "src_components_shell_app_shell_railfooter",
@@ -6558,7 +6558,7 @@
       "file_type": "code",
       "norm_label": "railfooter()",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L129"
+      "source_location": "L130"
     },
     {
       "id": "src_components_shell_app_shell_recordbutton",
@@ -6570,7 +6570,7 @@
       "file_type": "code",
       "norm_label": "recordbutton()",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L246"
+      "source_location": "L260"
     },
     {
       "id": "src_components_shell_app_shell_sessionendedbanner",
@@ -6582,7 +6582,7 @@
       "file_type": "code",
       "norm_label": "sessionendedbanner()",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L159"
+      "source_location": "L173"
     },
     {
       "id": "src_components_shell_brand_blueprintmark",
@@ -30826,7 +30826,7 @@
       "file_type": "code",
       "norm_label": "nav",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L45"
+      "source_location": "L46"
     },
     {
       "id": "src_components_shell_app_shell_navcontext",
@@ -30837,7 +30837,7 @@
       "file_type": "code",
       "norm_label": "navcontext",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L39"
+      "source_location": "L40"
     },
     {
       "id": "src_components_shell_brand",
@@ -86188,19 +86188,19 @@
     },
     {
       "source": "src_app_settings_page_settingspage",
-      "target": "src_components_ui_tabs_tabslist",
+      "target": "src_components_ui_button_button",
       "relation": "calls",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/settings/page.tsx",
-      "source_location": "L841",
+      "source_location": "L842",
       "weight": 1.0
     },
     {
       "source": "src_app_settings_page_settingspage",
-      "target": "src_components_ui_tabs_tabstrigger",
+      "target": "src_lib_utils_cn",
       "relation": "calls",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -86212,31 +86212,19 @@
     },
     {
       "source": "src_app_settings_page_settingspage",
-      "target": "src_components_ui_tabs_tabscontent",
+      "target": "src_components_ui_tabs_tabslist",
       "relation": "calls",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/settings/page.tsx",
-      "source_location": "L860",
+      "source_location": "L857",
       "weight": 1.0
     },
     {
       "source": "src_app_settings_page_settingspage",
-      "target": "src_app_settings_page_sectionheading",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "src/app/settings/page.tsx",
-      "source_location": "L861",
-      "weight": 1.0
-    },
-    {
-      "source": "src_app_settings_page_settingspage",
-      "target": "src_app_settings_page_aisection",
+      "target": "src_components_ui_tabs_tabstrigger",
       "relation": "calls",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -86248,6 +86236,42 @@
     },
     {
       "source": "src_app_settings_page_settingspage",
+      "target": "src_components_ui_tabs_tabscontent",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/app/settings/page.tsx",
+      "source_location": "L876",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_settings_page_settingspage",
+      "target": "src_app_settings_page_sectionheading",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/app/settings/page.tsx",
+      "source_location": "L877",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_settings_page_settingspage",
+      "target": "src_app_settings_page_aisection",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/app/settings/page.tsx",
+      "source_location": "L878",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_settings_page_settingspage",
       "target": "src_app_settings_page_privacysection",
       "relation": "calls",
       "_origin": "ast",
@@ -86255,7 +86279,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/settings/page.tsx",
-      "source_location": "L863",
+      "source_location": "L879",
       "weight": 1.0
     },
     {
@@ -86267,7 +86291,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/settings/page.tsx",
-      "source_location": "L864",
+      "source_location": "L880",
       "weight": 1.0
     },
     {
@@ -86279,7 +86303,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/settings/page.tsx",
-      "source_location": "L865",
+      "source_location": "L881",
       "weight": 1.0
     },
     {
@@ -86291,7 +86315,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/settings/page.tsx",
-      "source_location": "L866",
+      "source_location": "L882",
       "weight": 1.0
     },
     {
@@ -91403,7 +91427,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L348",
+      "source_location": "L362",
       "weight": 1.0
     },
     {
@@ -91415,7 +91439,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L364",
+      "source_location": "L378",
       "weight": 1.0
     },
     {
@@ -91427,7 +91451,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L373",
+      "source_location": "L387",
       "weight": 1.0
     },
     {
@@ -91439,7 +91463,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L379",
+      "source_location": "L393",
       "weight": 1.0
     },
     {
@@ -91451,7 +91475,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L380",
+      "source_location": "L394",
       "weight": 1.0
     },
     {
@@ -91463,7 +91487,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L384",
+      "source_location": "L398",
       "weight": 1.0
     },
     {
@@ -91475,7 +91499,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L385",
+      "source_location": "L399",
       "weight": 1.0
     },
     {
@@ -91487,7 +91511,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L388",
+      "source_location": "L402",
       "weight": 1.0
     },
     {
@@ -91499,7 +91523,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L390",
+      "source_location": "L404",
       "weight": 1.0
     },
     {
@@ -91511,7 +91535,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L406",
+      "source_location": "L420",
       "weight": 1.0
     },
     {
@@ -91523,7 +91547,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L407",
+      "source_location": "L421",
       "weight": 1.0
     },
     {
@@ -91535,7 +91559,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L416",
+      "source_location": "L430",
       "weight": 1.0
     },
     {
@@ -91547,7 +91571,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L432",
+      "source_location": "L446",
       "weight": 1.0
     },
     {
@@ -91559,7 +91583,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L433",
+      "source_location": "L447",
       "weight": 1.0
     },
     {
@@ -91571,7 +91595,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L185",
+      "source_location": "L199",
       "weight": 1.0
     },
     {
@@ -91583,24 +91607,12 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L187",
+      "source_location": "L201",
       "weight": 1.0
     },
     {
       "source": "src_components_shell_app_shell_datafreshness",
       "target": "src_lib_workspace_useworkspace",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L112",
-      "weight": 1.0
-    },
-    {
-      "source": "src_components_shell_app_shell_datafreshness",
-      "target": "src_lib_i18n_index_uset",
       "relation": "calls",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -91612,6 +91624,18 @@
     },
     {
       "source": "src_components_shell_app_shell_datafreshness",
+      "target": "src_lib_i18n_index_uset",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/components/shell/app-shell.tsx",
+      "source_location": "L114",
+      "weight": 1.0
+    },
+    {
+      "source": "src_components_shell_app_shell_datafreshness",
       "target": "src_lib_live_forecast_todayiso",
       "relation": "calls",
       "_origin": "ast",
@@ -91619,7 +91643,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L116",
+      "source_location": "L117",
       "weight": 1.0
     },
     {
@@ -91631,7 +91655,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L120",
+      "source_location": "L121",
       "weight": 1.0
     },
     {
@@ -91643,7 +91667,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L122",
+      "source_location": "L123",
       "weight": 1.0
     },
     {
@@ -91655,7 +91679,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L195",
+      "source_location": "L209",
       "weight": 1.0
     },
     {
@@ -91667,48 +91691,12 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L196",
+      "source_location": "L210",
       "weight": 1.0
     },
     {
       "source": "src_components_shell_app_shell_minirail",
       "target": "src_lib_i18n_index_uset",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L274",
-      "weight": 1.0
-    },
-    {
-      "source": "src_components_shell_app_shell_minirail",
-      "target": "src_lib_workspace_useintents",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L275",
-      "weight": 1.0
-    },
-    {
-      "source": "src_components_shell_app_shell_minirail",
-      "target": "src_lib_workspace_useworkspace",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L276",
-      "weight": 1.0
-    },
-    {
-      "source": "src_components_shell_app_shell_minirail",
-      "target": "src_lib_utils_cn",
       "relation": "calls",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -91720,6 +91708,42 @@
     },
     {
       "source": "src_components_shell_app_shell_minirail",
+      "target": "src_lib_workspace_useintents",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/components/shell/app-shell.tsx",
+      "source_location": "L289",
+      "weight": 1.0
+    },
+    {
+      "source": "src_components_shell_app_shell_minirail",
+      "target": "src_lib_workspace_useworkspace",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/components/shell/app-shell.tsx",
+      "source_location": "L290",
+      "weight": 1.0
+    },
+    {
+      "source": "src_components_shell_app_shell_minirail",
+      "target": "src_lib_utils_cn",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/components/shell/app-shell.tsx",
+      "source_location": "L302",
+      "weight": 1.0
+    },
+    {
+      "source": "src_components_shell_app_shell_minirail",
       "target": "src_components_ui_tooltip_tooltipcontent",
       "relation": "calls",
       "_origin": "ast",
@@ -91727,7 +91751,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L294",
+      "source_location": "L308",
       "weight": 1.0
     },
     {
@@ -91739,7 +91763,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L300",
+      "source_location": "L314",
       "weight": 1.0
     },
     {
@@ -91751,7 +91775,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L303",
+      "source_location": "L317",
       "weight": 1.0
     },
     {
@@ -91763,24 +91787,12 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L306",
+      "source_location": "L320",
       "weight": 1.0
     },
     {
       "source": "src_components_shell_app_shell_navlinks",
       "target": "src_lib_i18n_index_uset",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L64",
-      "weight": 1.0
-    },
-    {
-      "source": "src_components_shell_app_shell_navlinks",
-      "target": "src_lib_workspace_useintents",
       "relation": "calls",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -91792,6 +91804,18 @@
     },
     {
       "source": "src_components_shell_app_shell_navlinks",
+      "target": "src_lib_workspace_useintents",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/components/shell/app-shell.tsx",
+      "source_location": "L66",
+      "weight": 1.0
+    },
+    {
+      "source": "src_components_shell_app_shell_navlinks",
       "target": "src_lib_utils_cn",
       "relation": "calls",
       "_origin": "ast",
@@ -91799,7 +91823,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L70",
+      "source_location": "L71",
       "weight": 1.0
     },
     {
@@ -91811,7 +91835,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L130",
+      "source_location": "L131",
       "weight": 1.0
     },
     {
@@ -91823,7 +91847,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L137",
+      "source_location": "L138",
       "weight": 1.0
     },
     {
@@ -91835,7 +91859,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L145",
+      "source_location": "L146",
       "weight": 1.0
     },
     {
@@ -91847,7 +91871,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L247",
+      "source_location": "L261",
       "weight": 1.0
     },
     {
@@ -91859,7 +91883,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L248",
+      "source_location": "L262",
       "weight": 1.0
     },
     {
@@ -91871,7 +91895,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L252",
+      "source_location": "L266",
       "weight": 1.0
     },
     {
@@ -91883,7 +91907,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L255",
+      "source_location": "L269",
       "weight": 1.0
     },
     {
@@ -91895,7 +91919,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L160",
+      "source_location": "L174",
       "weight": 1.0
     },
     {
@@ -91907,7 +91931,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L161",
+      "source_location": "L175",
       "weight": 1.0
     },
     {
@@ -91919,7 +91943,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L171",
+      "source_location": "L185",
       "weight": 1.0
     },
     {
@@ -130356,7 +130380,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L22",
+      "source_location": "L23",
       "weight": 1.0
     },
     {
@@ -130368,7 +130392,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L22",
+      "source_location": "L23",
       "weight": 1.0
     },
     {
@@ -130380,7 +130404,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L22",
+      "source_location": "L23",
       "weight": 1.0
     },
     {
@@ -130392,7 +130416,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L22",
+      "source_location": "L23",
       "weight": 1.0
     },
     {
@@ -130404,7 +130428,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L23",
+      "source_location": "L24",
       "weight": 1.0
     },
     {
@@ -130416,7 +130440,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L24",
+      "source_location": "L25",
       "weight": 1.0
     },
     {
@@ -130428,7 +130452,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L24",
+      "source_location": "L25",
       "weight": 1.0
     },
     {
@@ -130440,7 +130464,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L24",
+      "source_location": "L25",
       "weight": 1.0
     },
     {
@@ -130452,7 +130476,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L25",
+      "source_location": "L26",
       "weight": 1.0
     },
     {
@@ -130464,7 +130488,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L25",
+      "source_location": "L26",
       "weight": 1.0
     },
     {
@@ -130476,7 +130500,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L26",
+      "source_location": "L27",
       "weight": 1.0
     },
     {
@@ -130488,7 +130512,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L26",
+      "source_location": "L27",
       "weight": 1.0
     },
     {
@@ -130500,7 +130524,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L27",
+      "source_location": "L28",
       "weight": 1.0
     },
     {
@@ -130512,7 +130536,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L28",
+      "source_location": "L29",
       "weight": 1.0
     },
     {
@@ -130524,7 +130548,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L28",
+      "source_location": "L29",
       "weight": 1.0
     },
     {
@@ -130536,7 +130560,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L28",
+      "source_location": "L29",
       "weight": 1.0
     },
     {
@@ -130548,7 +130572,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L29",
+      "source_location": "L30",
       "weight": 1.0
     },
     {
@@ -130560,7 +130584,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L29",
+      "source_location": "L30",
       "weight": 1.0
     },
     {
@@ -130572,7 +130596,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L30",
+      "source_location": "L31",
       "weight": 1.0
     },
     {
@@ -130584,7 +130608,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L31",
+      "source_location": "L32",
       "weight": 1.0
     },
     {
@@ -130596,7 +130620,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L32",
+      "source_location": "L33",
       "weight": 1.0
     },
     {
@@ -130608,7 +130632,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L33",
+      "source_location": "L34",
       "weight": 1.0
     },
     {
@@ -130620,7 +130644,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L34",
+      "source_location": "L35",
       "weight": 1.0
     },
     {
@@ -130632,7 +130656,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L34",
+      "source_location": "L35",
       "weight": 1.0
     },
     {
@@ -148581,7 +148605,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L22",
+      "source_location": "L23",
       "weight": 1.0
     },
     {
@@ -148593,7 +148617,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L23",
+      "source_location": "L24",
       "weight": 1.0
     },
     {
@@ -148605,7 +148629,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L24",
+      "source_location": "L25",
       "weight": 1.0
     },
     {
@@ -148617,7 +148641,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L25",
+      "source_location": "L26",
       "weight": 1.0
     },
     {
@@ -148629,7 +148653,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L26",
+      "source_location": "L27",
       "weight": 1.0
     },
     {
@@ -148641,7 +148665,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L27",
+      "source_location": "L28",
       "weight": 1.0
     },
     {
@@ -148653,7 +148677,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L28",
+      "source_location": "L29",
       "weight": 1.0
     },
     {
@@ -148665,7 +148689,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L29",
+      "source_location": "L30",
       "weight": 1.0
     },
     {
@@ -148677,7 +148701,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L30",
+      "source_location": "L31",
       "weight": 1.0
     },
     {
@@ -148689,7 +148713,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L31",
+      "source_location": "L32",
       "weight": 1.0
     },
     {
@@ -148701,7 +148725,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L32",
+      "source_location": "L33",
       "weight": 1.0
     },
     {
@@ -148713,7 +148737,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L33",
+      "source_location": "L34",
       "weight": 1.0
     },
     {
@@ -148725,7 +148749,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L34",
+      "source_location": "L35",
       "weight": 1.0
     },
     {
@@ -182902,7 +182926,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L111",
+      "source_location": "L112",
       "weight": 1.0
     },
     {
@@ -182913,7 +182937,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L129",
+      "source_location": "L130",
       "weight": 1.0
     },
     {
@@ -182924,7 +182948,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L159",
+      "source_location": "L173",
       "weight": 1.0
     },
     {
@@ -182935,7 +182959,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L182",
+      "source_location": "L196",
       "weight": 1.0
     },
     {
@@ -182946,7 +182970,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L194",
+      "source_location": "L208",
       "weight": 1.0
     },
     {
@@ -182957,7 +182981,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L246",
+      "source_location": "L260",
       "weight": 1.0
     },
     {
@@ -182968,7 +182992,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L270",
+      "source_location": "L284",
       "weight": 1.0
     },
     {
@@ -182979,7 +183003,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L327",
+      "source_location": "L341",
       "weight": 1.0
     },
     {
@@ -182990,7 +183014,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L39",
+      "source_location": "L40",
       "weight": 1.0
     },
     {
@@ -183001,7 +183025,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L45",
+      "source_location": "L46",
       "weight": 1.0
     },
     {
@@ -183012,7 +183036,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/components/shell/app-shell.tsx",
-      "source_location": "L60",
+      "source_location": "L61",
       "weight": 1.0
     },
     {
@@ -214809,5 +214833,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "e93803f8c757c6f79f666b638452139fe1549223"
+  "built_at_commit": "3dcf35154f51de74ac09807287428465902d1492"
 }
