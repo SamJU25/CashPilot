@@ -107,6 +107,12 @@
   ::selection {
     background: rgb(var(--primary) / 0.18);
   }
+
+  /* Suppress Edge / WebView2 native password reveal icon to prevent duplicate eye toggle */
+  input::-ms-reveal,
+  input::-ms-clear {
+    display: none !important;
+  }
 }
 
 @layer components {

@@ -2820,9 +2820,9 @@
     "semantic_hash": ""
   },
   "api/routes/mail.py": {
-    "mtime": 1792771492.8188968,
-    "seen": 1792783955.4062836,
-    "ast_hash": "2a7076f80eac262daf7d1d4d78647200",
+    "mtime": 1792803679.4784997,
+    "seen": 1792804167.111888,
+    "ast_hash": "07829c871482212276367b809b82e4a3",
     "semantic_hash": ""
   },
   "services/mail/__init__.py": {
@@ -2850,9 +2850,9 @@
     "semantic_hash": ""
   },
   "services/mail/sync.py": {
-    "mtime": 1792771478.50109,
-    "seen": 1792783955.4190667,
-    "ast_hash": "57cbd966ca3df193ecd2e6f873fec743",
+    "mtime": 1792803700.148085,
+    "seen": 1792804167.123458,
+    "ast_hash": "9efeb62b7080aa4078c8f2f6d79512c9",
     "semantic_hash": ""
   },
   "src/app/bank-emails/page.tsx": {

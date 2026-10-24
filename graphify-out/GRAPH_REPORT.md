@@ -1,17 +1,17 @@
 # Graph Report - SME Finance Copilot  (2026-10-24)
 
 ## Corpus Check
-- 485 files · ~357,270 words
+- 485 files · ~357,321 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 28 file(s) not represented in the graph (top: .csv 14, (none) 7, .example 1)
 
 ## Summary
-- 5554 nodes · 12494 edges · 444 communities (298 shown, 146 thin omitted)
+- 5554 nodes · 12495 edges · 444 communities (298 shown, 146 thin omitted)
 - Extraction: 97% EXTRACTED · 3% INFERRED · 0% AMBIGUOUS · INFERRED: 344 edges (avg confidence: 0.94)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `d50cadd1`
+- Built from commit: `f9dfbd8c`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -1684,9 +1684,9 @@ Nodes (65): extract_cac_payback_params(), extract_eva_params(), extract_roa_para
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `CashPilot: Master Security Architecture (`security.md`)` connect `CashPilot: Master Security Architecture (`security.md`)` to `.get_instance`, `AGENTS.md`?**
-  _High betweenness centrality (0.049) - this node is a cross-community bridge._
+  _High betweenness centrality (0.050) - this node is a cross-community bridge._
 - **Why does `LocalTransformersEngine` connect `LocalTransformersEngine` to `CashPilot: Master Security Architecture (`security.md`)`, `agent.py`, `supervisor.py`, `llm_bridge.py`, `main.py`, `CashPilot: Master System Design (`system.md`)`, `test_backend_hardening.py`, `2. Subagent Suites Directory (57 Specialized Subagents)`, `DynamicModelCatalog`?**
-  _High betweenness centrality (0.040) - this node is a cross-community bridge._
+  _High betweenness centrality (0.041) - this node is a cross-community bridge._
 - **Why does `DecisionRequest` connect `DecisionRequest` to `calculate_lease_vs_buy`, `FallbackRuleAdapter`, `.get_instance`, `test_prompts.py`, `pdf_parser.py`, `DecisionEngineRegistry`, `DecisionDomain`, `SystemOneModelAdapter`, `test_bridge_plan.py`, `test_calculations.py`, `test_financial_metrics.py`, `test_matcher.py`, `parametrize`, `test_treasury_dupont_lease.py`, `test_enterprise_finance_tools.py`, `run_copilot_supervisor`, `trace.py`, `typing`, `test_solvency_and_trade_credit.py`, `test_outflow_breakdown.py`, `supervisor.py`, `calculate_dupont_roe`, `credit_distress.py`, `calculate_cash_analysis`, `three_tier_gate.py`, `analyze.py`, `.evaluate`, `calculate_trade_credit_apr`, `liquidity_matcher.py`, `calculate_predictive_cash`?**
   _High betweenness centrality (0.035) - this node is a cross-community bridge._
 - **Are the 9 inferred relationships involving `DecisionRequest` (e.g. with `FallbackRuleAdapter` and `SystemOneModelAdapter`) actually correct?**
