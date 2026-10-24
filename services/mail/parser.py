@@ -8,6 +8,8 @@ from __future__ import annotations
 
 import hashlib
 import io
+import json
+import logging
 import re
 from dataclasses import dataclass
 from datetime import date, datetime
@@ -15,11 +17,16 @@ from decimal import Decimal, InvalidOperation
 from email.message import Message
 from email.utils import parseaddr, parsedate_to_datetime
 from html.parser import HTMLParser
-from typing import Literal, Optional
+from typing import TYPE_CHECKING, Literal, Optional
 
 import pypdf
 
 from services.mail.banks import Bank, bank_for, infer_bank_info
+
+if TYPE_CHECKING:
+    from services.agent.schema import LLMConfig
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass(frozen=True)
@@ -268,6 +275,63 @@ def resolve_direction(text: str, pos: int, end_pos: int, amount: Decimal) -> Opt
     return "OUT" if out_at > in_at else "IN" if in_at > out_at else None
 
 
+KIE_ALERT_DIRECTIVE = (
+    "You are a bank transaction Key Information Extraction (KIE) engine.\n"
+    "Your role is strictly to extract structured transaction data from bank notification emails.\n"
+    "Respond ONLY with a valid JSON object matching this schema:\n"
+    "{\n"
+    '  "is_bank_alert": true,\n'
+    '  "bank_name": "string or null",\n'
+    '  "account_tail": "string (last 4 digits of card/account) or null",\n'
+    '  "direction": "IN" or "OUT" or null,\n'
+    '  "amount": "string number, e.g. 1250.00, or null",\n'
+    '  "currency": "ISO 3-letter currency code or null",\n'
+    '  "balance_after": "string number or null",\n'
+    '  "counterparty": "string or null",\n'
+    '  "occurred_on": "YYYY-MM-DD or null"\n'
+    "}\n"
+    "Rules:\n"
+    "- Set is_bank_alert to false if the email is marketing, spam, newsletter, or a one-time verification password (OTP).\n"
+    '- "direction": "IN" for deposits, incoming transfers, salary, credits, received payments, refunds. "OUT" for withdrawals, purchases, payments, debits, charges, fees.\n'
+    "- Output ONLY the JSON string without any markdown formatting, backticks, or explanation.\n"
+)
+
+
+def extract_alert_with_llm(
+    text: str,
+    llm_config: Optional[LLMConfig],
+    default_currency: str = "USD",
+) -> Optional[dict]:
+    """Fallback extractor using an LLM to resolve ambiguous alerts (e.g. unknown direction or account phrasing)."""
+    if not llm_config or getattr(llm_config, "provider", "offline").lower() == "offline":
+        return None
+    try:
+        from services.agent.llm_bridge import mask_pii, query_external_llm
+
+        sanitized = mask_pii(text[:2500])
+        prompt = f"Extract transaction details from this bank notification:\n\n{sanitized}"
+        raw_res = query_external_llm(
+            prompt=prompt,
+            system_instruction=KIE_ALERT_DIRECTIVE,
+            config=llm_config,
+        )
+        if not raw_res:
+            return None
+        cleaned = raw_res.strip()
+        if cleaned.startswith("```"):
+            cleaned = re.sub(r"^```(?:json)?\s*", "", cleaned)
+            cleaned = re.sub(r"\s*```$", "", cleaned)
+        data = json.loads(cleaned)
+        if not isinstance(data, dict):
+            return None
+        if not data.get("is_bank_alert", True):
+            return None
+        return data
+    except Exception as exc:
+        logger.debug("LLM KIE extraction skipped or failed: %s", exc)
+        return None
+
+
 def parse_alert(
     msg: Message,
     raw: bytes,
@@ -275,6 +339,7 @@ def parse_alert(
     extra_banks: Optional[dict[str, Bank]] = None,
     trusted: Optional[list[str]] = None,
     default_currency: str = "USD",
+    llm_config: Optional[LLMConfig] = None,
 ) -> Parsed:
     domain = sender_domain(msg)
     found = bank_for(domain, extra_banks)
@@ -293,6 +358,22 @@ def parse_alert(
     money = _money(text, bank.currency)
     balance = next((m for m in money if _BALANCE.search(text[max(0, m[0] - 24) : m[0]])), None)
     amounts = [m for m in money if m is not balance and abs(m[3]) > 0]
+
+    kie_data: Optional[dict] = None
+
+    if not amounts and llm_config:
+        kie_data = extract_alert_with_llm(text, llm_config, default_currency=bank.currency)
+        if kie_data and kie_data.get("amount"):
+            try:
+                amt_str = str(kie_data["amount"]).replace(",", "").strip()
+                val = Decimal(amt_str)
+                if val > 0:
+                    curr_str = str(kie_data.get("currency") or bank.currency).strip().upper()
+                    resolved_curr = CurrencyRegistry.resolve_currency(curr_str, bank.currency) or bank.currency
+                    amounts = [(0, len(text), resolved_curr, val)]
+            except Exception:
+                pass
+
     if not amounts:
         return Parsed("ignored", reason="no_amount")
     pos, end_pos, currency, raw_amount = amounts[0]
@@ -303,11 +384,49 @@ def parse_alert(
     tail = _TAIL.search(text)
     tail_val = (tail.group(1) or tail.group(2)) if tail else None
 
+    # If direction or account tail is missing and LLM fallback is configured, extract via KIE
+    if (direction is None or not tail_val) and llm_config and not kie_data:
+        kie_data = extract_alert_with_llm(text, llm_config, default_currency=currency)
+
+    if kie_data:
+        if direction is None and kie_data.get("direction") in ("IN", "OUT"):
+            direction = kie_data["direction"]
+        if not tail_val and kie_data.get("account_tail"):
+            raw_tail = str(kie_data["account_tail"]).strip()
+            m_t = re.search(r"(\d{4})", raw_tail)
+            if m_t:
+                tail_val = m_t.group(1)
+            elif len(raw_tail) in (4, 5, 6) and raw_tail.isalnum():
+                tail_val = raw_tail
+
     # If unlisted and lacks account tail or direction, ignore as non-bank email
     if is_unlisted and (not tail_val or direction is None):
         return Parsed("ignored", reason="sender_not_trusted")
 
     party = next((m for m in [*_PARTY.finditer(text[pos:]), *_PARTY.finditer(text)] if re.search(r"[^\W\d_]", m.group(1))), None)
+    counterparty = party.group(1).strip()[:40] if party else None
+    if not counterparty and kie_data and kie_data.get("counterparty"):
+        cp = str(kie_data["counterparty"]).strip()
+        if cp and cp.lower() not in ("null", "none"):
+            counterparty = cp[:40]
+
+    balance_val = balance[3] if balance else None
+    if balance_val is None and kie_data and kie_data.get("balance_after"):
+        try:
+            balance_val = Decimal(str(kie_data["balance_after"]).replace(",", "").strip())
+        except Exception:
+            pass
+
+    occurred_date = _occurred(text, msg)
+    if kie_data and kie_data.get("occurred_on"):
+        raw_date = str(kie_data["occurred_on"]).strip()
+        if re.match(r"^\d{4}-\d{2}-\d{2}$", raw_date):
+            try:
+                datetime.strptime(raw_date, "%Y-%m-%d")
+                occurred_date = raw_date
+            except ValueError:
+                pass
+
     verified = (bank_domain in (trusted or [])) or verify_sender(msg, bank_domain, provider_stamps)
     alert = Alert(
         id=message_id(msg, raw),
@@ -317,9 +436,9 @@ def parse_alert(
         currency=currency,
         direction=direction or "IN",
         amount=amount,
-        balance_after=balance[3] if balance else None,
-        occurred_on=_occurred(text, msg),
-        counterparty=party.group(1).strip()[:40] if party else None,
+        balance_after=balance_val,
+        occurred_on=occurred_date,
+        counterparty=counterparty,
         verified=verified,
     )
     if is_unlisted and bank_domain not in (trusted or []):

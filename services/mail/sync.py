@@ -15,13 +15,16 @@ import threading
 from datetime import date, datetime, timedelta, timezone
 from email import message_from_bytes
 from email.policy import compat32
-from typing import Callable, Optional
+from typing import TYPE_CHECKING, Callable, Optional
 
 from services.mail.banks import BANKS
 from services.mail.discover import needs_id_command, public_ips, stamps_auth_results
 from services.mail import oauth
 from services.mail.parser import parse_alert
 from services.mail.store import MailStore
+
+if TYPE_CHECKING:
+    from services.agent.schema import LLMConfig
 
 FIRST_SYNC_DAYS = 30  # a new connection reads this far back, not the whole mailbox
 TIMEOUT_S = 20
@@ -122,7 +125,16 @@ def _candidate_folders(box: imaplib.IMAP4) -> list[str]:
     return folders
 
 
-def _scan_folder(box: imaplib.IMAP4, last: int, since: str, stamps: bool, extra: dict, store: MailStore, abort_event: Optional[threading.Event] = None) -> tuple[int, int, int]:
+def _scan_folder(
+    box: imaplib.IMAP4,
+    last: int,
+    since: str,
+    stamps: bool,
+    extra: dict,
+    store: MailStore,
+    abort_event: Optional[threading.Event] = None,
+    llm_config: Optional[LLMConfig] = None,
+) -> tuple[int, int, int]:
     uids: set[int] = set()
     # 1. Search known bank domains
     for domain in [*BANKS, *store.data["banks"]]:
@@ -162,13 +174,20 @@ def _scan_folder(box: imaplib.IMAP4, last: int, since: str, stamps: bool, extra:
         if typ != "OK" or raw is None:
             continue
         msg = message_from_bytes(raw, policy=compat32)
-        added += store.add(parse_alert(msg, raw, stamps, extra, store.data.get("trusted", [])))
+        added += store.add(parse_alert(msg, raw, stamps, extra, store.data.get("trusted", []), llm_config=llm_config))
         new_last = max(new_last, uid)
     return len(uids), added, new_last
 
 
-def sync(store: MailStore, opener: Callable[..., imaplib.IMAP4] = open_mailbox, abort_event: Optional[threading.Event] = None) -> dict:
+def sync(
+    store: MailStore,
+    opener: Optional[Callable[..., imaplib.IMAP4]] = None,
+    abort_event: Optional[threading.Event] = None,
+    llm_config: Optional[LLMConfig] = None,
+) -> dict:
     """Fetches alerts newer than the cursor across all connected mailboxes."""
+    if opener is None:
+        opener = open_mailbox
     conns: list[dict] = store.data.get("connections") or ([store.data["connection"]] if store.data.get("connection") else [])
     if not conns:
         raise MailError("not_connected", "No alerts mailbox is connected.")
@@ -219,7 +238,7 @@ def sync(store: MailStore, opener: Callable[..., imaplib.IMAP4] = open_mailbox, 
                     cursor.pop("last_uid", None)
 
             last = int(cursor.get(f"{prefix}last_uid", cursor.get("last_uid", 0)))
-            r, a, new_last = _scan_folder(box, last, since, stamps, extra, store, abort_event)
+            r, a, new_last = _scan_folder(box, last, since, stamps, extra, store, abort_event, llm_config=llm_config)
             total_read += r
             total_added += a
 
@@ -231,7 +250,7 @@ def sync(store: MailStore, opener: Callable[..., imaplib.IMAP4] = open_mailbox, 
                         typ, _ = box.select(folder, readonly=True)
                         if typ == "OK":
                             sub_last = int(cursor.get(f"{prefix}last_uid_{folder}", 0))
-                            fr, fa, fn_last = _scan_folder(box, sub_last, since, stamps, extra, store, abort_event)
+                            fr, fa, fn_last = _scan_folder(box, sub_last, since, stamps, extra, store, abort_event, llm_config=llm_config)
                             total_read += fr
                             total_added += fa
                             cursor[f"{prefix}last_uid_{folder}"] = fn_last

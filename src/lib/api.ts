@@ -239,7 +239,13 @@ export const mailApi = {
   state: () => request<MailState>('/api/v1/mail/state'),
   connect: (body: { address: string; secret: string; host: string; port: number; username: string; name: string }) => request<MailState>('/api/v1/mail/connect', json('POST', body)),
   disconnect: (address?: string) => request<MailState>(address ? `/api/v1/mail/connect?address=${encodeURIComponent(address)}` : '/api/v1/mail/connect', { method: 'DELETE' }),
-  sync: () => request<MailState>('/api/v1/mail/sync', { method: 'POST' }),
+  sync: (llmConfig?: ChatRequest['llm_config']) => {
+    const headers: Record<string, string> = {};
+    if (llmConfig) {
+      headers['X-LLM-Config'] = JSON.stringify(llmConfig);
+    }
+    return request<MailState>('/api/v1/mail/sync', { method: 'POST', headers });
+  },
   oauthStart: (body: { address: string; host: string; username: string; name: string; return_to?: string }) => request<{ url: string }>('/api/v1/mail/oauth/start', json('POST', body)),
   decideAccount: (key: string, status: MailAccount['status'], target?: string) =>
     request<MailState>(`/api/v1/mail/accounts/${encodeURIComponent(key)}`, json('PUT', { status, target })),

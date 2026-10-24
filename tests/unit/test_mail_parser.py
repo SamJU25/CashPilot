@@ -253,3 +253,136 @@ def test_pdf_attachment_parsing_in_email():
     assert p.kind == "transaction"
     assert (p.alert.direction, p.alert.amount, p.alert.account_tail) == ("OUT", Decimal("340.00"), "1188")
 
+
+def test_llm_kie_resolves_ambiguous_direction(monkeypatch):
+    from services.agent.schema import LLMConfig
+    cfg = LLMConfig(provider="gemini", api_key="test-key", model_name="gemini-2.0-flash")
+
+    # Email with no direction keywords in regex
+    msg, raw = mail(
+        "Chase <no.reply.alerts@chase.com>",
+        "Account activity notification",
+        "An activity of $450.00 occurred on your account ending in 1234 on 2026-10-22.",
+        ["mx.google.com; dkim=pass header.d=chase.com"],
+    )
+
+    # 1. Without LLM config -> needs review due to no direction
+    p_offline = parse_alert(msg, raw, True, llm_config=None)
+    assert p_offline.kind == "review"
+    assert p_offline.review == "no_direction"
+
+    # 2. With LLM config and mock returning direction OUT
+    def mock_query(prompt, system_instruction, config, history=None):
+        return '{"is_bank_alert": true, "direction": "OUT", "account_tail": "1234", "amount": "450.00", "currency": "USD"}'
+
+    monkeypatch.setattr("services.agent.llm_bridge.query_external_llm", mock_query)
+    p_kie = parse_alert(msg, raw, True, llm_config=cfg)
+    assert p_kie.kind == "transaction"
+    assert p_kie.alert.direction == "OUT"
+    assert p_kie.alert.amount == Decimal("450.00")
+    assert p_kie.alert.account_tail == "1234"
+
+
+def test_llm_kie_resolves_missing_account_tail(monkeypatch):
+    from services.agent.schema import LLMConfig
+    cfg = LLMConfig(provider="gemini", api_key="test-key", model_name="gemini-2.0-flash")
+
+    # Email with obscure phrasing for account tail
+    msg, raw = mail(
+        "Chase <no.reply.alerts@chase.com>",
+        "Direct deposit received",
+        "Direct deposit of $1,500.00 posted to payroll bucket primary-ref-7788.",
+        ["mx.google.com; dkim=pass header.d=chase.com"],
+    )
+
+    # 1. Without LLM config -> review no_account
+    p_offline = parse_alert(msg, raw, True, llm_config=None)
+    assert p_offline.kind == "review"
+    assert p_offline.review == "no_account"
+
+    # 2. With LLM config resolving account tail
+    def mock_query(prompt, system_instruction, config, history=None):
+        return '{"is_bank_alert": true, "direction": "IN", "account_tail": "7788", "amount": "1500.00", "currency": "USD"}'
+
+    monkeypatch.setattr("services.agent.llm_bridge.query_external_llm", mock_query)
+    p_kie = parse_alert(msg, raw, True, llm_config=cfg)
+    assert p_kie.kind == "transaction"
+    assert p_kie.alert.account_tail == "7788"
+    assert p_kie.alert.direction == "IN"
+    assert p_kie.alert.amount == Decimal("1500.00")
+
+
+def test_llm_kie_unlisted_bank_triage(monkeypatch):
+    from services.agent.schema import LLMConfig
+    cfg = LLMConfig(provider="gemini", api_key="test-key", model_name="gemini-2.0-flash")
+
+    # Unlisted bank with ambiguous phrasing
+    msg, raw = mail(
+        "Regional Credit Union <alerts@myregionalcu.org>",
+        "Notification",
+        "Activity recorded: $250.00 on record 4321.",
+        ["mx.google.com; dkim=pass header.d=myregionalcu.org"],
+    )
+
+    # Without LLM -> ignored as sender_not_trusted
+    p_offline = parse_alert(msg, raw, True, llm_config=None)
+    assert p_offline.kind == "ignored"
+    assert p_offline.reason == "sender_not_trusted"
+
+    # With LLM resolving direction and tail -> rescued to human review queue as unlisted_bank
+    def mock_query(prompt, system_instruction, config, history=None):
+        return '{"is_bank_alert": true, "direction": "OUT", "account_tail": "4321", "amount": "250.00", "currency": "USD"}'
+
+    monkeypatch.setattr("services.agent.llm_bridge.query_external_llm", mock_query)
+    p_kie = parse_alert(msg, raw, True, llm_config=cfg)
+    assert p_kie.kind == "review"
+    assert p_kie.review == "unlisted_bank"
+    assert p_kie.alert.account_tail == "4321"
+    assert p_kie.alert.direction == "OUT"
+
+
+def test_llm_kie_graceful_fallback_on_failure(monkeypatch):
+    from services.agent.schema import LLMConfig
+    cfg = LLMConfig(provider="gemini", api_key="test-key", model_name="gemini-2.0-flash")
+
+    msg, raw = mail(
+        "Chase <no.reply.alerts@chase.com>",
+        "Notification",
+        "An activity of $450.00 occurred on your account ending in 1234 on 2026-10-22.",
+        ["mx.google.com; dkim=pass header.d=chase.com"],
+    )
+
+    # When query_external_llm raises an exception
+    def mock_query_error(prompt, system_instruction, config, history=None):
+        raise ConnectionError("API rate limit exceeded")
+
+    monkeypatch.setattr("services.agent.llm_bridge.query_external_llm", mock_query_error)
+    p = parse_alert(msg, raw, True, llm_config=cfg)
+    # Safely falls back to regex review object without crashing
+    assert p.kind == "review"
+    assert p.review == "no_direction"
+
+
+def test_llm_kie_resolves_missing_amount(monkeypatch):
+    from services.agent.schema import LLMConfig
+    cfg = LLMConfig(provider="gemini", api_key="test-key", model_name="gemini-2.0-flash")
+
+    # Email with unusual tabular structure where regex missed amount
+    msg, raw = mail(
+        "Chase <no.reply.alerts@chase.com>",
+        "Transaction update",
+        "Debit notice: your account ending in 9988 was debited. Amount in words: Five Hundred USD.",
+        ["mx.google.com; dkim=pass header.d=chase.com"],
+    )
+
+    def mock_query(prompt, system_instruction, config, history=None):
+        return '{"is_bank_alert": true, "direction": "OUT", "account_tail": "9988", "amount": "500.00", "currency": "USD"}'
+
+    monkeypatch.setattr("services.agent.llm_bridge.query_external_llm", mock_query)
+    p = parse_alert(msg, raw, True, llm_config=cfg)
+    assert p.kind == "transaction"
+    assert p.alert.amount == Decimal("500.00")
+    assert p.alert.direction == "OUT"
+    assert p.alert.account_tail == "9988"
+
+

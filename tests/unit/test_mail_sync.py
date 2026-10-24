@@ -322,3 +322,45 @@ def test_candidate_folders_discovers_multilingual_banking_folders():
     assert "Personal" not in folders
 
 
+def test_sync_with_llm_config_header(vault, monkeypatch):
+    import json
+    from api.main import app
+
+    raw_mail = alert(1, "尾号1234 发生交易金额1,000.00元。")  # ambiguous direction in Chinese
+    client = TestClient(app)
+    h = tenant_headers(client, "t_sync_llm")
+
+    # Connect mailbox in test (using imap.gmail.com so provider_stamps is True)
+    store = MailStore("t_sync_llm")
+    store.connect("owner@gmail.com", {"host": "imap.gmail.com", "port": 993, "username": "owner@gmail.com", "name": "Test"}, "secret")
+    store.save()
+
+    monkeypatch.setattr("services.mail.sync.open_mailbox", lambda *a, **k: FakeBox({1: raw_mail}))
+
+    # Mock LLM to resolve direction as OUT
+    def mock_query(prompt, system_instruction, config, history=None):
+        return json.dumps({
+            "is_bank_alert": True,
+            "direction": "OUT",
+            "account_tail": "1234",
+            "amount": "1000.00",
+            "currency": "CNY"
+        })
+
+    monkeypatch.setattr("services.agent.llm_bridge.query_external_llm", mock_query)
+
+    llm_payload = {"provider": "gemini", "api_key": "test_key", "model_name": "gemini-2.0-flash"}
+    h_with_llm = {**h, "X-LLM-Config": json.dumps(llm_payload)}
+
+    res = client.post("/api/v1/mail/sync", headers=h_with_llm)
+    assert res.status_code == 200
+    state = res.json()
+    assert len(state["alerts"]) == 1
+    # Alert should be upgraded to transaction with direction OUT instead of review no_direction
+    assert state["alerts"][0]["direction"] == "OUT"
+    assert state["alerts"][0]["amount"] == "1000.00"
+    assert state["alerts"][0]["review"] is None
+    assert state["alerts"][0]["status"] == "waiting"
+
+
+

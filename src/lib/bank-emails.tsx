@@ -5,7 +5,7 @@
 // the same state and changes it.
 
 import { useEffect, useRef, useSyncExternalStore } from 'react';
-import { ApiError, mailApi, type MailAccount, type MailAlert, type MailState } from '@/lib/api';
+import { ApiError, llmConfig, mailApi, type ChatRequest, type MailAccount, type MailAlert, type MailState } from '@/lib/api';
 import { useT } from '@/lib/i18n';
 import { latestBalances, useCashChange } from '@/lib/use-cash-change';
 import { useWorkspace } from '@/lib/workspace';
@@ -67,11 +67,28 @@ export async function disconnectMail(address?: string): Promise<MailState | null
   return mailDo(() => mailApi.disconnect(address));
 }
 
+function getCurrentLlmConfig(): ChatRequest['llm_config'] | undefined {
+  try {
+    const raw = typeof window !== 'undefined' ? window.localStorage.getItem('copilot.workspace.v1') : null;
+    if (!raw) return undefined;
+    const prefs = JSON.parse(raw);
+    const provider = prefs.provider || 'local';
+    const keys = prefs.providerKeys || {};
+    const urls = prefs.providerUrls || {};
+    const models = prefs.providerModels || {};
+    const defaultUrl = provider === 'ollama' ? 'http://localhost:11434' : '';
+    const selectedModel = provider === 'local' ? prefs.localModel : models[provider];
+    return llmConfig(provider, keys, urls, defaultUrl, selectedModel);
+  } catch {
+    return undefined;
+  }
+}
+
 export async function checkMail() {
   if (snap.syncing) return;
   set({ syncing: true, error: null });
   try {
-    await mailDo(() => (snap.state?.connection ? mailApi.sync() : mailApi.state()));
+    await mailDo(() => (snap.state?.connection ? mailApi.sync(getCurrentLlmConfig()) : mailApi.state()));
   } finally {
     set({ syncing: false, checkedAt: Date.now() });
   }

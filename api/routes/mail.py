@@ -6,11 +6,12 @@ Tier 1 (read-only) only: nothing here can send mail, move money or change the ma
 from __future__ import annotations
 
 import html
+import json
 import re
 import threading
 from typing import Literal, Optional
 
-from fastapi import APIRouter, Depends, HTTPException, Request
+from fastapi import APIRouter, Depends, Header, HTTPException, Request
 from fastapi.responses import HTMLResponse
 from fastapi.concurrency import run_in_threadpool
 from pydantic import BaseModel, ConfigDict, Field
@@ -546,7 +547,11 @@ def state(tenant: str = Depends(require_tenant)) -> dict:
 
 
 @router.post("/connect")
-async def connect(payload: ConnectRequest, tenant: str = Depends(require_tenant)) -> dict:
+async def connect(
+    payload: ConnectRequest,
+    x_llm_config: Optional[str] = Header(default=None, alias="X-LLM-Config"),
+    tenant: str = Depends(require_tenant),
+) -> dict:
     host = payload.host.lower()
     clean_secret = payload.secret.strip()
     if "gmail" in host or "google" in host:
@@ -562,7 +567,7 @@ async def connect(payload: ConnectRequest, tenant: str = Depends(require_tenant)
         store.connect(payload.address, {"host": host, "port": payload.port, "username": payload.username, "name": payload.name or host}, clean_secret)
         store.save()
     try:
-        return await run_sync(tenant)
+        return await run_sync(x_llm_config=x_llm_config, tenant=tenant)
     except HTTPException:
         # Connected; the first read failed and the error is on the connection for the app to show.
         return MailStore(tenant).view()
@@ -605,8 +610,19 @@ def disconnect(address: Optional[str] = None, tenant: str = Depends(require_tena
 
 
 @router.post("/sync")
-async def run_sync(tenant: str = Depends(require_tenant)) -> dict:
+async def run_sync(
+    x_llm_config: Optional[str] = Header(default=None, alias="X-LLM-Config"),
+    tenant: str = Depends(require_tenant),
+) -> dict:
     abort_event = register_sync(tenant)
+
+    effective_llm_config = None
+    if x_llm_config:
+        try:
+            from services.agent.schema import LLMConfig
+            effective_llm_config = LLMConfig(**json.loads(x_llm_config))
+        except Exception:
+            pass
 
     def work() -> dict:
         try:
@@ -617,7 +633,7 @@ async def run_sync(tenant: str = Depends(require_tenant)) -> dict:
                     raise MailError("not_connected", "No alerts mailbox is connected.")
 
             try:
-                result = sync(store, abort_event=abort_event)
+                result = sync(store, abort_event=abort_event, llm_config=effective_llm_config)
             except MailError as exc:
                 if not abort_event.is_set():
                     with tenant_lock(tenant):
