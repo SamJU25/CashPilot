@@ -2142,9 +2142,9 @@
     "semantic_hash": ""
   },
   "src/app/settings/page.tsx": {
-    "mtime": 1792634646.0477562,
-    "seen": 1792634776.0372417,
-    "ast_hash": "a5dbca8de6785ccfbac96db180c0cfe0",
+    "mtime": 1792821611.5003474,
+    "seen": 1792821705.3191218,
+    "ast_hash": "f23cba24289f05329b9987be0a1638e8",
     "semantic_hash": ""
   },
   "src/app/statements/page.tsx": {
@@ -2472,9 +2472,9 @@
     "semantic_hash": ""
   },
   "src/lib/i18n/en.ts": {
-    "mtime": 1792819098.56335,
-    "seen": 1792819263.8827357,
-    "ast_hash": "145b6ad3ccdd6b692251519e429a0685",
+    "mtime": 1792821551.5790622,
+    "seen": 1792821705.3263965,
+    "ast_hash": "c5f39257b85bead591319fa62d1da624",
     "semantic_hash": ""
   },
   "src/lib/i18n/es.ts": {
@@ -2964,9 +2964,9 @@
     "semantic_hash": ""
   },
   "src/lib/native.ts": {
-    "mtime": 1792795127.015975,
-    "seen": 1792796615.1199412,
-    "ast_hash": "8cb624d36ca1d8d03e6446e061afd1d4",
+    "mtime": 1792821496.3941834,
+    "seen": 1792821705.328249,
+    "ast_hash": "4a268d256c7743f686fbb8c2fc80b8f4",
     "semantic_hash": ""
   },
   "src-tauri/icons/128x128.png": {

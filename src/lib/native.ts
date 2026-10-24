@@ -13,42 +13,100 @@ export interface EngineStatus {
 export interface UpdateInfo {
   available: boolean;
   version?: string;
+  currentVersion?: string;
   notes?: string;
+  date?: string;
+  downloadUrl?: string;
+  isNative?: boolean;
+}
+
+function compareVersions(v1: string, v2: string): number {
+  const c1 = v1.replace(/^v/, '').split('.').map((x) => parseInt(x, 10) || 0);
+  const c2 = v2.replace(/^v/, '').split('.').map((x) => parseInt(x, 10) || 0);
+  for (let i = 0; i < Math.max(c1.length, c2.length); i++) {
+    const a = c1[i] ?? 0;
+    const b = c2[i] ?? 0;
+    if (a > b) return 1;
+    if (a < b) return -1;
+  }
+  return 0;
 }
 
 /**
- * Checks for over-the-air updates from GitHub Releases.
+ * Checks for over-the-air updates from GitHub Releases (desktop Tauri or web fallback).
  */
-export async function nativeCheckForUpdates(): Promise<UpdateInfo> {
-  if (!isNativeDesktop()) return { available: false };
+export async function nativeCheckForUpdates(currentVersion = '1.0.0'): Promise<UpdateInfo> {
+  const isNative = isNativeDesktop();
+  if (isNative) {
+    try {
+      const update = await check();
+      if (update) {
+        return {
+          available: true,
+          version: update.version,
+          currentVersion: update.currentVersion,
+          notes: update.body ?? undefined,
+          date: update.date ?? undefined,
+          isNative: true,
+        };
+      }
+      return { available: false, currentVersion, isNative: true };
+    } catch (err) {
+      console.warn('Native update check failed, attempting web fallback:', err);
+    }
+  }
+
+  // Universal fallback: check GitHub Releases API
   try {
-    const update = await check();
-    if (update) {
+    const res = await fetch('https://api.github.com/repos/SamJU25/CashPilot/releases/latest', {
+      headers: { Accept: 'application/vnd.github.v3+json' },
+    });
+    if (res.ok) {
+      const release = await res.json();
+      const latestTag = (release.tag_name || '').replace(/^v/, '');
+      const hasNewer = compareVersions(latestTag, currentVersion) > 0;
       return {
-        available: true,
-        version: update.version,
-        notes: update.body ?? undefined,
+        available: hasNewer,
+        version: release.tag_name,
+        currentVersion,
+        notes: release.body || undefined,
+        date: release.published_at || undefined,
+        downloadUrl: release.html_url || 'https://github.com/SamJU25/CashPilot/releases',
+        isNative,
       };
     }
   } catch (err) {
-    console.warn('Update check failed:', err);
+    console.warn('Web update check failed:', err);
   }
-  return { available: false };
+
+  return { available: false, currentVersion, isNative };
 }
 
 /**
- * Downloads and applies the latest update, then prompts for relaunch.
+ * Downloads and applies the latest update, invoking progress callbacks.
  */
-export async function nativeInstallUpdate(): Promise<boolean> {
+export async function nativeInstallUpdate(
+  onProgress?: (downloaded: number, total: number | null) => void
+): Promise<boolean> {
   if (!isNativeDesktop()) return false;
   try {
     const update = await check();
     if (update) {
-      await update.downloadAndInstall();
+      let downloaded = 0;
+      let total: number | null = null;
+      await update.downloadAndInstall((event) => {
+        if (event.event === 'Started') {
+          total = event.data.contentLength ?? null;
+        } else if (event.event === 'Progress') {
+          downloaded += event.data.chunkLength;
+          if (onProgress) onProgress(downloaded, total);
+        }
+      });
       return true;
     }
   } catch (err) {
     console.error('Failed to download/install update:', err);
+    throw err;
   }
   return false;
 }

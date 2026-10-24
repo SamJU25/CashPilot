@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { motion } from 'motion/react';
-import { AlertCircle, AlertTriangle, Check, CheckCircle2, ChevronsUpDown, ExternalLink, Globe, RotateCw, Search } from 'lucide-react';
+import { AlertCircle, AlertTriangle, ArrowUpCircle, Check, CheckCircle2, ChevronsUpDown, Download, ExternalLink, Globe, RotateCw, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -33,6 +33,7 @@ import { ApiError, api, llmConfig } from '@/lib/api';
 import { cn } from '@/lib/utils';
 import { useWorkspace, type Theme } from '@/lib/workspace';
 import { WORLD_CURRENCIES } from '@/lib/currencies';
+import { isNativeDesktop, nativeCheckForUpdates, nativeInstallUpdate, type UpdateInfo } from '@/lib/native';
 
 // Stays in English in every language. Illustrative; the tags are the ones services/agent/llm_bridge.py
 // (mask_pii) and services/agent/name_masking.py write before text goes to a cloud provider.
@@ -562,6 +563,191 @@ function AboutFact({ label, children }: { label: string; children: React.ReactNo
   );
 }
 
+function AppUpdaterCard({ currentVersion }: { currentVersion?: string | null }) {
+  const { t } = useT();
+  const [checking, setChecking] = useState(false);
+  const [updateInfo, setUpdateInfo] = useState<UpdateInfo | null>(null);
+  const [installing, setInstalling] = useState(false);
+  const [installProgress, setInstallProgress] = useState<{ downloaded: number; total: number | null } | null>(null);
+  const [installed, setInstalled] = useState(false);
+  const [checkError, setCheckError] = useState<string | null>(null);
+  const [lastChecked, setLastChecked] = useState<number | null>(null);
+
+  const isNative = isNativeDesktop();
+
+  const handleCheck = async () => {
+    setChecking(true);
+    setCheckError(null);
+    try {
+      const res = await nativeCheckForUpdates(currentVersion || '1.0.0');
+      setUpdateInfo(res);
+      setLastChecked(Date.now());
+    } catch (err) {
+      setCheckError(err instanceof Error ? err.message : t('set.updatesError'));
+    } finally {
+      setChecking(false);
+    }
+  };
+
+  const handleInstall = async () => {
+    if (!isNative) {
+      if (updateInfo?.downloadUrl) {
+        window.open(updateInfo.downloadUrl, '_blank', 'noopener,noreferrer');
+      }
+      return;
+    }
+    setInstalling(true);
+    setCheckError(null);
+    try {
+      const success = await nativeInstallUpdate((downloaded, total) => {
+        setInstallProgress({ downloaded, total });
+      });
+      if (success) {
+        setInstalled(true);
+      } else {
+        setCheckError('Installation could not be completed.');
+      }
+    } catch (err) {
+      setCheckError(err instanceof Error ? err.message : 'Update installation failed.');
+    } finally {
+      setInstalling(false);
+    }
+  };
+
+  return (
+    <div className="mt-6 rounded-xl border bg-card p-5 space-y-4">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <div className="flex items-center gap-2">
+            <h3 className="font-semibold text-sm text-foreground">{t('set.updatesTitle')}</h3>
+            <span
+              className={cn(
+                'px-2 py-0.5 text-[11px] font-medium rounded-full border',
+                isNative ? 'bg-primary/10 text-primary border-primary/20' : 'bg-muted text-muted-foreground border-border'
+              )}
+            >
+              {isNative ? t('set.updatesDesktop') : t('set.updatesWeb')}
+            </span>
+          </div>
+          <p className="mt-1 text-xs text-muted-foreground leading-relaxed">
+            {t('set.updatesDesc')}
+          </p>
+        </div>
+
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={handleCheck}
+          disabled={checking || installing}
+          className="gap-2 shrink-0 h-8 text-xs font-medium"
+        >
+          <RotateCw className={cn('size-3.5', checking && 'animate-spin')} />
+          {checking ? t('set.updatesChecking') : t('set.updatesCheck')}
+        </Button>
+      </div>
+
+      {checkError && (
+        <div className="flex items-start gap-2.5 rounded-lg border border-critical/30 bg-critical/5 p-3 text-xs text-critical-text">
+          <AlertCircle className="size-4 shrink-0 mt-0.5" />
+          <div className="min-w-0 flex-1">
+            <p className="font-medium">{t('set.updatesError')}</p>
+            <p className="mt-0.5 text-[11px] text-muted-foreground">{checkError}</p>
+          </div>
+          <Button variant="ghost" size="sm" onClick={handleCheck} className="h-6 px-2 text-xs">
+            Retry
+          </Button>
+        </div>
+      )}
+
+      {installed && (
+        <div className="flex items-start gap-2.5 rounded-lg border border-good/30 bg-good/10 p-3 text-xs text-good-text">
+          <CheckCircle2 className="size-4 shrink-0 mt-0.5" />
+          <div className="min-w-0 flex-1">
+            <p className="font-semibold">{t('set.updatesInstalled')}</p>
+          </div>
+        </div>
+      )}
+
+      {updateInfo?.available && !installed && (
+        <div className="rounded-lg border border-primary/30 bg-primary/5 p-4 space-y-3">
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-center gap-2">
+              <span className="grid size-6 place-items-center rounded-full bg-primary/20 text-primary">
+                <ArrowUpCircle className="size-4" />
+              </span>
+              <div>
+                <span className="font-semibold text-xs text-foreground">
+                  {t('set.updatesAvailable', { v: updateInfo.version || '' })}
+                </span>
+                {updateInfo.currentVersion && (
+                  <span className="ml-2 font-mono text-[11px] text-muted-foreground">
+                    (Current: v{updateInfo.currentVersion})
+                  </span>
+                )}
+              </div>
+            </div>
+
+            <Button
+              size="sm"
+              onClick={handleInstall}
+              disabled={installing}
+              className="gap-2 h-8 text-xs font-medium"
+            >
+              {installing ? (
+                <RotateCw className="size-3.5 animate-spin" />
+              ) : isNative ? (
+                <Download className="size-3.5" />
+              ) : (
+                <ExternalLink className="size-3.5" />
+              )}
+              {installing ? t('set.updatesInstalling') : isNative ? t('set.updatesInstall') : t('set.updatesDownload')}
+            </Button>
+          </div>
+
+          {installProgress && (
+            <div className="space-y-1.5 pt-1">
+              <div className="flex justify-between text-[11px] text-muted-foreground">
+                <span>Downloading update…</span>
+                <span className="font-mono">
+                  {Math.round((installProgress.downloaded / 1024 / 1024) * 10) / 10} MB
+                  {installProgress.total ? ` / ${Math.round((installProgress.total / 1024 / 1024) * 10) / 10} MB` : ''}
+                </span>
+              </div>
+              <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
+                <div
+                  className="h-full bg-primary transition-all duration-300"
+                  style={{
+                    width: installProgress.total
+                      ? `${Math.min(100, Math.round((installProgress.downloaded / installProgress.total) * 100))}%`
+                      : '50%',
+                  }}
+                />
+              </div>
+            </div>
+          )}
+
+          {updateInfo.notes && (
+            <div className="rounded-md border bg-background/50 p-2.5 text-[11px] leading-relaxed text-muted-foreground">
+              <p className="font-medium text-foreground mb-1">Release Highlights:</p>
+              <div className="line-clamp-4 whitespace-pre-wrap">{updateInfo.notes}</div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {lastChecked && !updateInfo?.available && !checkError && !installed && (
+        <div className="flex items-center gap-2 rounded-lg border border-good/20 bg-good/5 px-3 py-2 text-xs text-good-text">
+          <CheckCircle2 className="size-4 shrink-0" />
+          <span>{t('set.updatesUpToDate')}</span>
+          <span className="text-[11px] text-muted-foreground ml-auto">
+            {t('set.updatesUpToDateSub')}
+          </span>
+        </div>
+      )}
+    </div>
+  );
+}
+
 function AboutSection() {
   const { t } = useT();
   // The backend reports the release it runs; the app and server ship together under one version.
@@ -583,6 +769,9 @@ function AboutSection() {
       </div>
       <p className="mt-4 max-w-lg text-sm leading-relaxed text-ink-2">{t('set.aboutTagline')}</p>
 
+      {/* App Updater Section */}
+      <AppUpdaterCard currentVersion={version} />
+
       <dl className="mt-6 divide-y border-y">
         <AboutFact label={t('set.aboutBy')}>
           <span className="inline-flex items-center gap-2">
@@ -594,13 +783,13 @@ function AboutSection() {
         <AboutFact label={t('set.aboutRuntime')}>{t('set.aboutRuntimeValue')}</AboutFact>
         <AboutFact label={t('set.aboutSource')}>
           <a
-            href="https://github.com/SamJU25/F-SME-Finance-Copilot"
+            href="https://github.com/SamJU25/CashPilot"
             target="_blank"
             rel="noopener noreferrer"
             aria-label={t('set.source')}
             className="inline-flex max-w-full items-center gap-1.5 font-medium underline-offset-2 hover:underline"
           >
-            <span className="truncate font-mono text-[13px]">SamJU25/F-SME-Finance-Copilot</span>
+            <span className="truncate font-mono text-[13px]">SamJU25/CashPilot</span>
             <ExternalLink className="size-3.5 shrink-0" aria-hidden />
           </a>
         </AboutFact>
