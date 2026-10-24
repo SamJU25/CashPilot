@@ -187,9 +187,11 @@ async function signInInBrowser(body: { address: string; host: string; username: 
   }
   const until = Date.now() + SIGNIN_WAIT_MS;
   while (Date.now() < until) {
-    await new Promise((r) => setTimeout(r, 2000));
+    await new Promise((r) => setTimeout(r, 1500));
     const state = await mailApi.state().catch(() => null);
-    if (state?.connection?.address.toLowerCase() === body.address.toLowerCase()) {
+    const conns = state?.connections || (state?.connection ? [state.connection] : []);
+    const match = conns.find((c) => c.address.toLowerCase() === body.address.toLowerCase());
+    if (state && match) {
       await mailDo(async () => state);
       return 'connected';
     }
@@ -197,7 +199,7 @@ async function signInInBrowser(body: { address: string; host: string; username: 
   return 'timeout';
 }
 
-type Stage = 'email' | 'password' | 'waiting';
+type Stage = 'email' | 'password' | 'waiting' | 'success';
 
 /** A form field with its label floating above the value, as mail sign-in pages draw it. */
 function Field({
@@ -305,6 +307,19 @@ function Connect({ onDone }: { onDone?: () => void } = {}) {
     }
   };
 
+  const checkNow = async () => {
+    const st = await mailApi.state().catch(() => null);
+    const conns = st?.connections || (st?.connection ? [st.connection] : []);
+    if (st && conns.some((c) => c.address.toLowerCase() === trimmed.toLowerCase())) {
+      await mailDo(async () => st);
+      setStage('success');
+      setTimeout(() => {
+        onDone?.();
+        void checkMail();
+      }, 1200);
+    }
+  };
+
   const browserSignIn = async () => {
     if (!oauth) return;
     setError(null);
@@ -315,7 +330,11 @@ function Connect({ onDone }: { onDone?: () => void } = {}) {
         setError('be.err.signinTimeout');
         setStage('password');
       } else if (r === 'connected') {
-        onDone?.();
+        setStage('success');
+        setTimeout(() => {
+          onDone?.();
+          void checkMail();
+        }, 1200);
       }
     } catch (x) {
       setError(ERROR_KEY[(x as { code?: string }).code ?? ''] ?? 'be.err.generic');
@@ -529,9 +548,30 @@ function Connect({ onDone }: { onDone?: () => void } = {}) {
                 <p className="font-medium">{t('be.waitingSignin', { provider: OAUTH_LABEL[oauth] })}</p>
                 <p className="mt-1 text-sm text-muted-foreground">{t('be.waitingBody')}</p>
               </div>
-              <Button type="button" variant="ghost" onClick={() => setStage('password')}>
-                {t('be.si.cancel')}
-              </Button>
+              <div className="flex flex-col gap-2">
+                <Button type="button" size="sm" onClick={checkNow} className="gap-2">
+                  <Check className="size-4" />
+                  I have finished sign-in
+                </Button>
+                <Button type="button" variant="ghost" size="sm" onClick={() => setStage('password')}>
+                  {t('be.si.cancel')}
+                </Button>
+              </div>
+            </motion.div>
+          )}
+
+          {stage === 'success' && (
+            <motion.div key="success" {...slide} className="space-y-4 py-3 text-center" aria-live="polite">
+              <span className="mx-auto grid size-14 place-items-center rounded-full bg-good/15 text-good-text ring-1 ring-good/30">
+                <Check className="size-7" />
+              </span>
+              <div>
+                <p className="font-semibold text-base text-foreground">Connected to {trimmed}!</p>
+                <p className="mt-1 text-xs text-muted-foreground">Syncing transaction alerts and debit notifications...</p>
+              </div>
+              <div className="flex justify-center pt-2">
+                <RefreshCw className="size-5 animate-spin text-muted-foreground" />
+              </div>
             </motion.div>
           )}
         </AnimatePresence>
