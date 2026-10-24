@@ -14,6 +14,7 @@ import ssl
 import threading
 from datetime import date, datetime, timedelta, timezone
 from email import message_from_bytes
+from email.header import decode_header, make_header
 from email.policy import compat32
 from email.utils import parseaddr
 from typing import TYPE_CHECKING, Callable, Optional
@@ -90,6 +91,15 @@ def open_mailbox(host: str, port: int, username: str, secret: str, bearer: bool 
     if typ != "OK":
         raise MailError("no_inbox", "The mailbox has no INBOX to read.")
     return box
+
+
+def decode_header_text(val: str | None) -> str:
+    if not val:
+        return ""
+    try:
+        return str(make_header(decode_header(val)))
+    except Exception:
+        return str(val)
 
 
 def _imap_date(d: date) -> str:
@@ -211,7 +221,7 @@ def _scan_folder(
                         msg = message_from_bytes(item[1], policy=compat32)
                         f_addr = parseaddr(msg.get("From", ""))[1].lower()
                         dom = f_addr.rpartition("@")[2]
-                        subj = (msg.get("Subject", "") or "").lower()
+                        subj = decode_header_text(msg.get("Subject", "")).lower()
                         if any(dom == d or dom.endswith("." + d) for d in domains) or any(kw in subj for kw in SUBJECT_KEYWORDS):
                             if u:
                                 filtered_uids.add(u)

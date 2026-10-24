@@ -14,6 +14,7 @@ import re
 from dataclasses import dataclass
 from datetime import date, datetime
 from decimal import Decimal, InvalidOperation
+from email.header import decode_header, make_header
 from email.message import Message
 from email.utils import parseaddr, parsedate_to_datetime
 from html.parser import HTMLParser
@@ -75,6 +76,31 @@ class _Text(HTMLParser):
             self.parts.append(data)
 
 
+def decode_header_text(val: str | None) -> str:
+    if not val:
+        return ""
+    try:
+        return str(make_header(decode_header(val)))
+    except Exception:
+        return str(val)
+
+
+def decode_payload(payload: bytes, charset: str | None) -> str:
+    if not payload:
+        return ""
+    if charset:
+        try:
+            return payload.decode(charset, errors="replace")
+        except (LookupError, Exception):
+            pass
+    for enc in ("utf-8", "gb18030", "latin1"):
+        try:
+            return payload.decode(enc)
+        except (UnicodeDecodeError, LookupError):
+            continue
+    return payload.decode("utf-8", errors="replace")
+
+
 def body_text(msg: Message) -> str:
     """Plain text of the message, preferring the text part and flattening HTML otherwise, with PDF fallback."""
     plain, html, pdf_parts = [], [], []
@@ -96,7 +122,7 @@ def body_text(msg: Message) -> str:
         if ctype not in ("text/plain", "text/html") or part.get_filename():
             continue
         payload = part.get_payload(decode=True) or b""
-        text = payload.decode(part.get_content_charset() or "utf-8", errors="replace")
+        text = decode_payload(payload, part.get_content_charset())
         (plain if ctype == "text/plain" else html).append(text)
 
     body = ""
@@ -171,7 +197,19 @@ _MONEY = re.compile(
 )
 _DATE_NUM = re.compile(r"(20\d{2})\s*[-/年.]\s*(\d{1,2})\s*[-/月.]\s*(\d{1,2})")
 _DATE_CN_SHORT = re.compile(r"(?<!\d)(\d{1,2})月(\d{1,2})日")
-_PARTY = re.compile(r"(?:对方户名|对方账户名|商户名称|商户|付款人|收款人|\bfrom\b|\bat\b)\s*[:：]?\s*([^\n,，。;；:：]{2,40}?)(?=\.\s|\.$|[\n,，。;；:：]|\s+(?:on|was|has|is|into|to your)\s|$)", re.I)
+_MONTHS = {
+    "jan": 1, "feb": 2, "mar": 3, "apr": 4, "may": 5, "jun": 6,
+    "jul": 7, "aug": 8, "sep": 9, "oct": 10, "nov": 11, "dec": 12,
+}
+_DATE_EN = re.compile(
+    r"\b(?P<m>jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|jun(?:e)?|jul(?:y)?|aug(?:ust)?|sep(?:tember)?|oct(?:ober)?|nov(?:ember)?|dec(?:ember)?)\s+(?P<d>\d{1,2})(?:st|nd|rd|th)?,?\s+(?P<y>20\d{2})\b"
+    r"|\b(?P<d2>\d{1,2})(?:st|nd|rd|th)?\s+(?P<m2>jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|jun(?:e)?|jul(?:y)?|aug(?:ust)?|sep(?:tember)?|oct(?:ober)?|nov(?:ember)?|dec(?:ember)?),?\s+(?P<y2>20\d{2})\b",
+    re.I,
+)
+_PARTY = re.compile(
+    r"(?:对方户名|对方账户名|商户名称|商户|交易对手|付款人|收款人|\bpaid to\b|\bsent to\b|\bto(?!\s+(?:your|account|card|acct|checking|savings))\b|\bfrom(?!\s+(?:your|account|card|acct|checking|savings))\b|\bat\b)\s*[:：]?\s*([^\n,，。;；:：]{2,40}?)(?=\.\s|\.$|[\n,，。;；:：]|\s+(?:on|was|has|is|into|for)\s|$)",
+    re.I,
+)
 
 
 def _money(text: str, default_currency: str) -> list[tuple[int, int, str, Decimal]]:
@@ -211,12 +249,20 @@ def _occurred(text: str, msg: Message) -> str:
     sent: Optional[datetime] = None
     try:
         sent = parsedate_to_datetime(msg.get("Date", ""))
-    except (TypeError, ValueError):
+    except Exception:
         pass
     if m := _DATE_NUM.search(text):
         try:
             return date(int(m.group(1)), int(m.group(2)), int(m.group(3))).isoformat()
         except ValueError:
+            pass
+    if m := _DATE_EN.search(text):
+        try:
+            m_str = (m.group("m") or m.group("m2"))[:3].lower()
+            d_val = int(m.group("d") or m.group("d2"))
+            y_val = int(m.group("y") or m.group("y2"))
+            return date(y_val, _MONTHS[m_str], d_val).isoformat()
+        except (KeyError, ValueError):
             pass
     if (m := _DATE_CN_SHORT.search(text)) and sent:
         try:
@@ -351,7 +397,8 @@ def parse_alert(
         bank_domain = domain
         bank = infer_bank_info(domain, default_currency)
 
-    text = f"{msg.get('Subject', '')}\n{body_text(msg)}"
+    subject = decode_header_text(msg.get("Subject", ""))
+    text = f"{subject}\n{body_text(msg)}"
     if _CODE.search(text):
         return Parsed("ignored", reason="login_code")
 

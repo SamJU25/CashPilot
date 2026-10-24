@@ -2820,9 +2820,9 @@
     "semantic_hash": ""
   },
   "api/routes/mail.py": {
-    "mtime": 1792813015.7533598,
-    "seen": 1792813320.186431,
-    "ast_hash": "9948a5bb68ab0ac5f96c9330ecc3ea83",
+    "mtime": 1792814658.9851663,
+    "seen": 1792815004.6071012,
+    "ast_hash": "0d7d3a2198651571e6f2fa6552e70873",
     "semantic_hash": ""
   },
   "services/mail/__init__.py": {
@@ -2838,9 +2838,9 @@
     "semantic_hash": ""
   },
   "services/mail/parser.py": {
-    "mtime": 1792811279.7888863,
-    "seen": 1792811691.6538641,
-    "ast_hash": "431e97400f3b240cf9679e53fc3ea216",
+    "mtime": 1792814790.4477825,
+    "seen": 1792815004.6270273,
+    "ast_hash": "84dbb86404c1c9e97f29c2faefaccf02",
     "semantic_hash": ""
   },
   "services/mail/store.py": {
@@ -2850,15 +2850,15 @@
     "semantic_hash": ""
   },
   "services/mail/sync.py": {
-    "mtime": 1792813032.4137158,
-    "seen": 1792813320.2008915,
-    "ast_hash": "1412cb9c17488d3813185caaa836fffd",
+    "mtime": 1792814700.1190996,
+    "seen": 1792815004.6272311,
+    "ast_hash": "5d27f802fdad2134bc13a4d127154289",
     "semantic_hash": ""
   },
   "src/app/bank-emails/page.tsx": {
-    "mtime": 1792814052.2027073,
-    "seen": 1792814154.0790293,
-    "ast_hash": "d6dc48cf41639dd0a2b2924bf3f0befa",
+    "mtime": 1792814838.5347548,
+    "seen": 1792815004.6314273,
+    "ast_hash": "eee2e53b685fca956813815208c6c11a",
     "semantic_hash": ""
   },
   "src/lib/bank-emails.tsx": {
@@ -2868,9 +2868,9 @@
     "semantic_hash": ""
   },
   "tests/unit/test_mail_parser.py": {
-    "mtime": 1792811390.8993402,
-    "seen": 1792811691.6714392,
-    "ast_hash": "b257801f17ce97f4be5f110aa50cee75",
+    "mtime": 1792814861.1157167,
+    "seen": 1792815004.6596863,
+    "ast_hash": "178b038cc31e4d8c102defcdc8eb1e65",
     "semantic_hash": ""
   },
   "tests/unit/test_mail_sync.py": {

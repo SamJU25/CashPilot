@@ -386,3 +386,64 @@ def test_llm_kie_resolves_missing_amount(monkeypatch):
     assert p.alert.account_tail == "9988"
 
 
+def test_mime_encoded_subject_decoding():
+    # RFC 2047 encoded subject: "=?UTF-8?B?5pS25Yiw5Lqk5piT6YCa55+l?=" -> "收到交易通知"
+    raw_bytes = (
+        b"From: notice@mail.icbc.com.cn\r\n"
+        b"Subject: =?UTF-8?B?5pS25Yiw5Lqk5piT6YCa55+l?=\r\n"
+        b"Authentication-Results: " + GMAIL_PASS.encode() + b"\r\n"
+        b"Date: Thu, 22 Oct 2026 10:31:00 +0800\r\n\r\n"
+        b"\xe6\x82\xa8\xe5\xb0\xbe\xe5\x8f\xb71234\xe7\x9a\x84\xe8\xb4\xa6\xe6\x88\xb7\xe4\xba\x8e2026\xe5\xb9\xb410\xe6\x9c\x8822\xe6\x97\xa5\xe6\x94\xb6\xe5\x85\xa5\xe4\xba\xba\xe6\xb0\x91\xe5\xb8\x811,200.00\xe5\x85\x83\xe3\x80\x82"
+    )
+    msg = message_from_bytes(raw_bytes)
+    p = parse_alert(msg, raw_bytes, provider_stamps=True)
+    assert p.kind == "transaction"
+    assert p.alert.amount == Decimal("1200.00")
+    assert p.alert.direction == "IN"
+    assert p.alert.account_tail == "1234"
+
+
+def test_english_textual_date_parsing():
+    msg, raw = mail(
+        "Chase <no.reply.alerts@chase.com>",
+        "Payment Notice",
+        "A payment of $85.00 was debited from your card ending in 4433 on October 24, 2026.",
+        ["mx.google.com; dkim=pass header.d=chase.com"],
+    )
+    p = parse_alert(msg, raw, True)
+    assert p.kind == "transaction"
+    assert p.alert.occurred_on == "2026-10-24"
+    assert p.alert.amount == Decimal("85.00")
+    assert p.alert.direction == "OUT"
+    assert p.alert.account_tail == "4433"
+
+
+def test_outflow_counterparty_extraction():
+    msg, raw = mail(
+        "Chase <no.reply.alerts@chase.com>",
+        "Debit notification",
+        "You sent $42.50 to Starbucks Coffee on 2026-10-24 from account ending in 5566.",
+        ["mx.google.com; dkim=pass header.d=chase.com"],
+    )
+    p = parse_alert(msg, raw, True)
+    assert p.kind == "transaction"
+    assert p.alert.counterparty == "Starbucks Coffee"
+
+
+def test_gb18030_chinese_payload_decoding():
+    # Simulates a Chinese bank sending GB2312/GB18030 encoded body with no charset header
+    body_gb = "您尾号8888的账户于2026年10月24日转入人民币3,000.00元。".encode("gb18030")
+    raw_bytes = (
+        b"From: notice@mail.icbc.com.cn\r\n"
+        b"Subject: ICBC Alert\r\n"
+        b"Content-Type: text/plain\r\n"
+        b"Authentication-Results: " + GMAIL_PASS.encode() + b"\r\n\r\n" + body_gb
+    )
+    msg = message_from_bytes(raw_bytes)
+    p = parse_alert(msg, raw_bytes, True)
+    assert p.kind == "transaction"
+    assert p.alert.amount == Decimal("3000.00")
+    assert p.alert.direction == "IN"
+    assert p.alert.account_tail == "8888"
+
+

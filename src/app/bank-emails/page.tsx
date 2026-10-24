@@ -752,6 +752,15 @@ function StatusStrip({ state }: { state: MailState }) {
               <span className={cn('size-1.5 rounded-full', c.last_error ? 'bg-critical' : 'bg-good')} />
               <span className="font-mono text-[11px]">{c.address}</span>
               {c.last_error && <span className="text-[10px] uppercase font-semibold">({c.last_error})</span>}
+              {c.oauth && c.last_error === 'signin_expired' && (
+                <button
+                  type="button"
+                  onClick={() => signInInBrowser({ address: c.address, host: c.host, username: c.username, name: c.name }).catch(() => {})}
+                  className="ml-1 rounded bg-primary px-1.5 py-0.5 text-[10px] font-semibold text-primary-foreground hover:bg-primary/90 transition-colors"
+                >
+                  {t('be.signInAgain')}
+                </button>
+              )}
               <button
                 type="button"
                 disabled={!!disconnecting}
@@ -848,6 +857,11 @@ function AccountCard({ acc, targets }: { acc: MailAccount; targets: { id: string
             <Button size="sm" variant="ghost" disabled={saving} onClick={() => save('ignore')}>
               {t('be.notMine')}
             </Button>
+            {editing && acc.status !== 'pending' && (
+              <Button size="sm" variant="ghost" disabled={saving} onClick={() => setEditing(false)}>
+                {t('common.cancel')}
+              </Button>
+            )}
           </div>
         </div>
       ) : (
@@ -998,6 +1012,7 @@ function Feed({ alerts, address, accounts }: { alerts: MailAlert[]; address: str
       accountId: acc.target === NEW_ACCOUNT ? newAccountId(acc) : acc.target,
       description: t('be.openingFrom', { bank: newAccountId(acc) }),
       effectiveDate: a.occurred_on,
+      currency: a.currency,
     }).catch(() => {});
   };
   const analysis = source === 'live' ? live.analysis : undefined;

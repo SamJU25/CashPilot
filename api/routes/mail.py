@@ -535,7 +535,7 @@ async def oauth_callback(state: str = "", code: str = "", error: str = "") -> HT
         store.connect(pending.address, pending.server, refresh, oauth=pending.provider)
         store.save()
     try:
-        await run_sync(pending.tenant)
+        await run_sync(tenant=pending.tenant)
     except Exception:
         pass  # connected; the first read's error shows in the app
     return _page(True, "Connected", f"CashPilot can now read bank alerts in {pending.address}.", pending.return_to, pending.address)
